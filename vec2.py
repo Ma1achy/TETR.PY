@@ -1,4 +1,5 @@
 import numpy as np
+
 class Vec2():
     def __init__(self, x, y):
         """

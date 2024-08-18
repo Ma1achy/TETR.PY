@@ -1,5 +1,5 @@
-from maths import Vec2
-from srs import get_rotation_state
+from vec2 import Vec2
+from srs import pieces
 
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int):
@@ -12,9 +12,16 @@ class Tetromino():
         
         self.type = type
         self.state = state
-        print(self.state)
         self.positon = (x, y)
-        self.blocks = get_rotation_state(self.type, self.state)
+        self.blocks = pieces(self.type)
+        
+        # default state is 0, but this is allows for pre-rotation
+        if self.state == 1:
+            self.blocks = self.__rotate_cw()
+        elif self.state == 2:
+            self.blocks = self.__rotate_180()
+        elif self.state == 3:
+            self.blocks = self.__rotate_ccw()
         
     def rotate(self, direction:str):
         """
@@ -25,28 +32,47 @@ class Tetromino():
         if direction == 'CW':     
             desired_state = (self.state + 1) % 4
             print(desired_state)
-            rotated_piece = get_rotation_state(self.type, desired_state)
+            rotated_piece = self.__rotate_cw()
+            print (rotated_piece)
             
             pass 
         
         elif direction == 'CCW': 
             desired_state = (self.state - 1) % 4
             print(desired_state)
-            rotated_piece = get_rotation_state(self.type, desired_state)
+            rotated_piece = self.__rotate_ccw()
+            print (rotated_piece)
             
             pass
         
         elif direction == '180':
             desired_state = (self.state + 2) % 4
             print(desired_state)
-            rotated_piece = get_rotation_state(self.type, desired_state)
+            rotated_piece = self.__rotate_180()
+            print (rotated_piece)
          
             pass
         
-        self.blocks = rotated_piece
-        
         pass
-        
+    
+    def __rotate_cw(self):
+        """
+        Rotate the piece clockwise
+        """
+        return [list(reversed(col)) for col in zip(*self.blocks)]
+    
+    def __rotate_ccw(self):
+        """
+        Rotate the piece counter clockwise
+        """
+        return [list(col) for col in reversed(list(zip(*self.blocks)))]
+    
+    def __rotate_180(self):
+        """
+        Rotate the piece 180 degrees
+        """
+        return [row[::-1] for row in reversed(self.blocks)]
+               
     def __validate_rotation(self, rotated_piece, desired_state):
         """
         Check if the rotated piece is valid
@@ -81,5 +107,4 @@ class Tetromino():
 piece = Tetromino('T', 0, 0, 0)
 print(piece.blocks)
 
-piece.rotate('180')
-print(piece.blocks)
+piece.rotate('CW')
