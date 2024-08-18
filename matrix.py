@@ -22,10 +22,8 @@ class Matrix():
             6: "\033[93m",  # Yellow
             7: "\033[36m",  # Cyan
         }
-        reset_color = "\033[0m"
-        
         rows = [
-            "| " + " ".join(f"{color_map[val]}{val}{reset_color}" for val in row) + " |"
+            "| " + " ".join(f"{color_map[val]}■\033[0m" if 1 <= val <= 7 else f"{color_map[val]}{val}\033[0m" if val != 0 else " " for val in row) + " |"
             for row in self.matrix[10:30]
         ]
         bottom_border = "=" * (self.WIDTH * 2 + 3)  # 2 chars per element + 2 spaces + 2 '|' + 1 space
