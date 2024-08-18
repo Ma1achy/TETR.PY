@@ -34,3 +34,4 @@ class Vec2():
     
     def distance(a, b): #define the distance between two vectors
         return np.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
+    
