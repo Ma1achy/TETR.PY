@@ -1,3 +1,5 @@
+from tetromino import Tetromino
+
 class Matrix():
     def __init__(self, WIDTH:int, HEIGHT:int):
         
@@ -24,10 +26,17 @@ class Matrix():
         
         rows = [
             "| " + " ".join(f"{color_map[val]}{val}{reset_color}" for val in row) + " |"
-            for row in self.matrix
+            for row in self.matrix[10:30]
         ]
         bottom_border = "=" * (self.WIDTH * 2 + 3)  # 2 chars per element + 2 spaces + 2 '|' + 1 space
         return "\n\n\n" + "\n".join(rows) + "\n" + bottom_border
+    
+    def insert(self, tetromino:Tetromino):
+        for y, row in enumerate(tetromino.blocks):
+            for x, block in enumerate(row):
+                self.matrix[tetromino.position.y + y][tetromino.position.x + x] = block
         
-matrix = Matrix(10, 20)
+matrix = Matrix(10, 30)
+tetromino = Tetromino('I', 0, 5, 19)
+matrix.insert(tetromino)
 print(matrix)

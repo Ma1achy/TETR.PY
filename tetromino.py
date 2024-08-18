@@ -12,7 +12,7 @@ class Tetromino():
         
         self.type = type
         self.state = state
-        self.positon = (x, y)
+        self.position = self.get_origin(x, y)
         self.blocks = pieces(self.type)
         
         # default state is 0, but this is allows for pre-rotation
@@ -22,7 +22,27 @@ class Tetromino():
             self.blocks = self.__rotate_180()
         elif self.state == 3:
             self.blocks = self.__rotate_ccw()
+    
+    def get_origin(self, x:int, y:int):
+        """
+        Get the origin of the piece
         
+        x (int): x position of the piece
+        y (int): y position of the piece
+        """
+        x = -x # invert coordinates as the origin is at the top left for the matrix
+        y = -y
+        
+        if self.type in ['S', 'Z', 'J', 'L', 'T', 'O']:
+           x -= 2
+           y -= 2
+            
+        elif self.type == 'I':
+            x -= 3
+            y -= 3
+        
+        return Vec2(x, y)
+            
     def rotate(self, direction:str):
         """
         Rotate the piece in the given direction
