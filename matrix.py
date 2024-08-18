@@ -1,0 +1,1 @@
+# the grid/playspace is a 10x20 grid. The grid is represented as a 2D array of 0s. 0s represent empty spaces.
