@@ -62,7 +62,7 @@ class Tetromino():
         
         1 / apply a kick to the piece starting from the 0th kick. 
 
-        2/ kicks are calculated by taking the desired rotation state offset and subtracting the initial rotation state offset from it to obtain a translation vector. 
+        2/ kicks are calculated by taking the desired rotation state offset and subtracting it from the initial rotation state offset to obtain a translation vector. 
 
         3/ if the kicked and rotated piece would overlap with another block or is outside the grid (invalid rotation), recursively check if the piece can be kicked to a new (valid) position.
 
