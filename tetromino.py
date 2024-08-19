@@ -30,16 +30,15 @@ class Tetromino():
         x (int): x position of the piece
         y (int): y position of the piece
         """
-        x = -x # invert coordinates as the origin is at the top left for the matrix
-        y = -y
+        y = -y # invert y coordinates as the origin is at the top left for the matrix
         
-        if self.type in ['S', 'Z', 'J', 'L', 'T', 'O']:
-           x -= 2
+        if self.type in ['S', 'Z', 'J', 'L', 'T', 'O']:  # 3x3 box, origin is at the center
            y -= 2
-            
-        elif self.type == 'I':
-            x -= 3
-            y -= 3
+           x -= 1                                       
+           
+        elif self.type == 'I': # 5x5 box, origin is at the center                 
+            x -= 2
+            y -= 2
         
         return Vec2(x, y)
             

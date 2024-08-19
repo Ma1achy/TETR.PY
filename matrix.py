@@ -23,7 +23,7 @@ class Matrix():
             7: "\033[36m",  # Cyan
         }
         rows = [
-            "| " + " ".join(f"{color_map[val]}■\033[0m" if 1 <= val <= 7 else f"{color_map[val]}{val}\033[0m" if val != 0 else " " for val in row) + " |"
+            "| " + " ".join(f"{color_map[val]}■\033[0m" if 1 <= val <= 7 else f"{color_map[val]}{val}\033[0m" if val != 0 else f"{color_map[0]}.\033[0m" for val in row) + " |"
             for row in self.matrix[10:30]
         ]
         bottom_border = "=" * (self.WIDTH * 2 + 3)  # 2 chars per element + 2 spaces + 2 '|' + 1 space
@@ -35,6 +35,6 @@ class Matrix():
                 self.matrix[tetromino.position.y + y][tetromino.position.x + x] = block
         
 matrix = Matrix(10, 30)
-tetromino = Tetromino('I', 0, 5, 19)
+tetromino = Tetromino('I', 0, 4, 18)
 matrix.insert(tetromino)
 print(matrix)
