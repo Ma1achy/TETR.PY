@@ -165,14 +165,12 @@ class Tetromino():
             2/ The direction a T piece faces is the direction the non-flat side of the T piece "points".
         
         A Spin is a T-Spin Mini if:
-            1/ 1 corner of the T piece is filled 
-            2/ The piece "faces" the filled corner.
+            1/ 1 corner of the T piece is filled and the piece "faces" the filled corner.
+            2/ The 2 back corners of the T piece are filled.
         
             Exceptions to T-Spin Mini:
                 If the last kick translation was used when rotating from 0 to 3, it is a full T-spin despite not meeting the above conditions.
-                If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.  
-        
-        Rules from (https://four.lol/srs/t-spin)       
+                If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.         
         """
         corner_pairs = {
             0: [Vec2(0, 0), Vec2(2, 0)],
@@ -183,14 +181,18 @@ class Tetromino():
         filled_corners = self.__test_corners(corner_pairs[desired_state], kick, matrix) # do facing test
             
         if len(filled_corners) == 1: # 1 corner test for T-Spin Mini
-        
-            if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions
-                flags.T_SPIN_FLAG = "T-Spin"
-                play_t_spin_sound()
-            elif kick.x != 0 and kick.y != 0: # have to check if kick is 0 otherwise rotating in a t shaped hole with no overhang will be considered a T-Spin
-                flags.T_SPIN_FLAG = "T-Spin Mini"
-                play_t_spin_sound()
-
+    
+            filled_corners = self.__test_corners(corner_pairs[(desired_state + 2) % 4], kick, matrix) # do back corner test
+            
+            if len(filled_corners) > 1:
+                
+                if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions
+                    flags.T_SPIN_FLAG = "T-Spin"
+                    play_t_spin_sound()
+                else:
+                    flags.T_SPIN_FLAG = "T-Spin Mini"
+                    play_t_spin_sound()
+            
         elif len(filled_corners) == 2: # 2 corner test for T-Spin
         
             corners = [Vec2(0, 0), Vec2(2, 0), Vec2(0, 2), Vec2(2, 2)]
