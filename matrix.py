@@ -40,6 +40,19 @@ class Matrix():
         Remove the piece from the matrix
         """
         self.piece = self.init_matrix()
+        
+    def clear_lines(self):
+        """
+        Remove full lines from the matrix
+        """
+        full_lines = [row for row in self.matrix if all(val != 0 for val in row)]
+        
+        for row in full_lines:
+            self.matrix.remove(row)
+            self.matrix.insert(0, [0 for _ in range(self.WIDTH)])
+        
+        if len(full_lines) > 0:
+            print (len(full_lines))
     
     def __str__(self):
         """
