@@ -1,4 +1,3 @@
-from tetromino import Tetromino
 import os
 class Matrix():
     def __init__(self, WIDTH:int, HEIGHT:int):
