@@ -14,7 +14,7 @@ I_OFFSETS = ([
     ([Vec2(0, 1),  Vec2(0, 1),  Vec2(0, 1),  Vec2(0, -1), Vec2(0, 2)]),
 ])
 
-O_OFFSETS = ([
+O_OFFSETS = ([ # technically in SRS O actually has non zero offsets here but they only exist because for some reason standard tetris doesn't make the O piece a 2x2 array so it has to be kicked every time it rotates???
     [(Vec2(0, 0))],
     [(Vec2(0, 0))],
     [(Vec2(0, 0))],
@@ -104,7 +104,8 @@ def get_kick(rotation:str, piece:str, initial_state:int, desired_state:int, offs
         
 def pieces(piece:str):
     """
-    Get the blocks for the given piece
+    Get the blocks for the given piece.
+    This is the 0th rotation state of the piece that SRS uses.
     
     returns:
     blocks (list): The pieces blocks
@@ -141,9 +142,9 @@ def pieces(piece:str):
                 (5, 5, 5),
                 (0, 0, 0)
             ],
-        'O': 
+        'O': # easier to make O 2x2 and consider it seperately like I rather than make it 3x3 and have to kick it every time it rotates
             [
-                (6, 6),
+                (6, 6), 
                 (6, 6),
             ],
         'I': 
