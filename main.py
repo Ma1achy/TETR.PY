@@ -28,6 +28,15 @@ def seven_bag(bag):
     bag.remove(piece)
         
     return piece
+
+def draw_blocks(matrix, color_map, window, field, grid_size, field_height, blend=False, blend_color=(0, 0, 0), blend_factor=0.33):
+    for i, row in enumerate(matrix):
+        for j, value in enumerate(row):
+            if value != 0:
+                color = color_map[value]
+                if blend:
+                    color = lerpBlendRGBA(blend_color, color, blend_factor)
+                pygame.draw.rect(window, color, (field.x + j * grid_size, field.y + i * grid_size - field_height, grid_size, grid_size))
     
 def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
     bag = ['I', 'O', 'T', 'S', 'Z', 'J', 'L']
@@ -138,26 +147,11 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
         BORDER_WIDTH = 10
         pygame.draw.line(WINDOW, (255, 255, 255), (field.x - BORDER_WIDTH//2 - 1, field.y), (field.x - BORDER_WIDTH//2 - 1, field.y + field.height), BORDER_WIDTH )
         pygame.draw.line(WINDOW, (255, 255, 255), (field.x + field.width + BORDER_WIDTH//2 - 1 , field.y), (field.x + field.width + BORDER_WIDTH//2 - 1, field.y + field.height), BORDER_WIDTH )
-        
         pygame.draw.line(WINDOW, (255, 255, 255), (field.x - BORDER_WIDTH, field.y + field.height + BORDER_WIDTH//2 - 1), (field.x + field.width + BORDER_WIDTH - 1, field.y + field.height + BORDER_WIDTH//2 - 1), BORDER_WIDTH )
 
-        for i in enumerate(MATRIX.matrix):
-            for j in enumerate(MATRIX.matrix[i[0]]):
-                if MATRIX.matrix[i[0]][j[0]] != 0:
-                    value = MATRIX.matrix[i[0]][j[0]]
-                    pygame.draw.rect(WINDOW, COLOUR_MAP[value], (field.x + j[0]*GRID_SIZE, field.y + i[0]*GRID_SIZE - FIELD_HEIGHT , GRID_SIZE, GRID_SIZE))
-                    
-        for i in enumerate(MATRIX.matrix):
-            for j in enumerate(MATRIX.ghost_blocks[i[0]]):
-                if MATRIX.ghost_blocks[i[0]][j[0]] != 0:
-                    value = MATRIX.ghost_blocks[i[0]][j[0]]
-                    pygame.draw.rect(WINDOW, lerpBlendRGBA((0, 0, 0), COLOUR_MAP[value], 0.33), (field.x + j[0]*GRID_SIZE, field.y + i[0]*GRID_SIZE - FIELD_HEIGHT , GRID_SIZE, GRID_SIZE))
-                    
-        for i in enumerate(MATRIX.matrix):
-            for j in enumerate(MATRIX.piece[i[0]]):
-                if MATRIX.piece[i[0]][j[0]] != 0:
-                    value = MATRIX.piece[i[0]][j[0]]
-                    pygame.draw.rect(WINDOW, COLOUR_MAP[value], (field.x + j[0]*GRID_SIZE, field.y + i[0]*GRID_SIZE - FIELD_HEIGHT , GRID_SIZE, GRID_SIZE))
+        draw_blocks(MATRIX.matrix, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT)
+        draw_blocks(MATRIX.ghost_blocks, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend=True)
+        draw_blocks(MATRIX.piece, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT)
                                 
         pygame.display.flip()
         pygame.time.Clock().tick(FPS)
