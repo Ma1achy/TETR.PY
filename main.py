@@ -127,7 +127,7 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS, SEED):
         
         pygame.display.flip()
         pygame.time.Clock().tick(FPS)
-        print(flags.T_SPIN_FLAG)
+        #print(flags.T_SPIN_FLAG)
         
     pygame.quit()
 
