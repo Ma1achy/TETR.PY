@@ -5,7 +5,7 @@ from vec2 import Vec2
 # row = offset order, column = rotation state
 
 # 90 degree rotation offsets
-    # offset 0    offset 1     offset 2     offset 3    offset 4 
+
 TSZLJ_OFFSETS = ([                                                      # rotation state
     ([Vec2(0, 0), Vec2(0, 0),  Vec2(0, 0),   Vec2(0, 0), Vec2(0, 0)]),  # 0
     ([Vec2(0, 0), Vec2(1, 0),  Vec2(1, -1),  Vec2(0, 2), Vec2(1, 2)]),  # 1
@@ -22,9 +22,9 @@ I_OFFSETS = ([
 
 O_OFFSETS = ([
     [(Vec2(0, 0))],
-    [(Vec2(0, -1))],
-    [(Vec2(-1, -1))],
-    [(Vec2(-1, 0))],
+    [(Vec2(0, 0))],
+    [(Vec2(0, 0))],
+    [(Vec2(0, 0))],
 ])
 
 # 180 degree rotation offsets
@@ -42,6 +42,7 @@ I_180_OFFSETS = (
     ([Vec2(0, 0), Vec2(1, 0),  Vec2(2, 0),  Vec2(-1, 0), Vec2(-2, 0), Vec2(0, -1), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0)]),
     ([Vec2(0, 0), Vec2(0, 1),  Vec2(0, 2),  Vec2(0, -1), Vec2(0, -2), Vec2(1, 0),  Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0)])
 )
+
 
 def get_kick(rotation:str, piece:str, initial_state:int, desired_state:int, offset_order:int):
     """
@@ -61,37 +62,53 @@ def get_kick(rotation:str, piece:str, initial_state:int, desired_state:int, offs
     if rotation in ['CW', 'CCW']:
         if piece in ['T', 'S', 'Z', 'L', 'J']:
             
-            desired_state_offset = TSZLJ_OFFSETS[desired_state][offset_order]
-            initial_state_offset = TSZLJ_OFFSETS[initial_state][offset_order]
+            if offset_order > 4:
+                return None
+            else:
+                desired_state_offset = TSZLJ_OFFSETS[desired_state][offset_order]
+                initial_state_offset = TSZLJ_OFFSETS[initial_state][offset_order]
             
         elif piece == 'O':
             
-            desired_state_offset = O_OFFSETS[desired_state][offset_order]
-            initial_state_offset = O_OFFSETS[initial_state][offset_order]
+            if offset_order > 0:
+                return None
+            else:
+                desired_state_offset = O_OFFSETS[desired_state][offset_order]
+                initial_state_offset = O_OFFSETS[initial_state][offset_order]
             
         elif piece == 'I':
             
-            desired_state_offset = I_OFFSETS[desired_state][offset_order]
-            initial_state_offset = I_OFFSETS[initial_state][offset_order]
+            if offset_order > 4:
+                return None
+            else:
+                desired_state_offset = I_OFFSETS[desired_state][offset_order]
+                initial_state_offset = I_OFFSETS[initial_state][offset_order]
             
     elif rotation == '180':
         if piece in ['T', 'S', 'Z', 'L', 'J']:
             
-            desired_state_offset = TSZLKJ_180_OFFSETS[desired_state][offset_order]
-            initial_state_offset = TSZLKJ_180_OFFSETS[initial_state][offset_order]
+            if offset_order > 11:
+                return None
+            else:
+                desired_state_offset = TSZLKJ_180_OFFSETS[desired_state][offset_order]
+                initial_state_offset = TSZLKJ_180_OFFSETS[initial_state][offset_order]
             
         elif piece == 'O':
             
-            desired_state_offset = O_OFFSETS[desired_state][offset_order]
-            initial_state_offset = O_OFFSETS[initial_state][offset_order]
+            if offset_order > 0:
+                return None
+            else:
+                desired_state_offset = O_OFFSETS[desired_state][offset_order]
+                initial_state_offset = O_OFFSETS[initial_state][offset_order]
             
         elif piece == 'I':
             
-            desired_state_offset = I_180_OFFSETS[desired_state][offset_order]
-            initial_state_offset = I_180_OFFSETS[initial_state][offset_order]
-    
-    print(f"desired offset: {desired_state_offset}")
-    print(f"initial offset: {initial_state_offset}") 
+            if offset_order > 11:
+                return None
+            else:
+                desired_state_offset = I_180_OFFSETS[desired_state][offset_order]
+                initial_state_offset = I_180_OFFSETS[initial_state][offset_order]
+                
     return initial_state_offset - desired_state_offset
         
 
@@ -136,9 +153,8 @@ def pieces(piece:str):
             ],
         'O': 
             [
-                (0, 6, 6),
-                (0, 6, 6),
-                (0, 0, 0)
+                (6, 6),
+                (6, 6),
             ],
         'I': 
             [
