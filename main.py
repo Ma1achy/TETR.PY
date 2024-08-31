@@ -3,6 +3,21 @@ from matrix import Matrix
 from tetromino import Tetromino
 import random
 
+#TODO:
+# - DAS AND ARR (FOR LEFT AND RIGHT MOVEMENT AND DOWN MOVEMENT)
+# - HOLD PIECE	
+# - LINE CLEARING
+# - SEEDED 7 BAG & NEXT QUEUE
+# - PIECE SPAWNING (SPAWN ABOVE THE FIELD IN A BOX, SEE WIKI) 
+# - GAME OVER CONDITIONS
+# - GRAVITY
+# - LOCK DELAY
+# - T-SPIN (SPIN FOR OTHER PIECES) DETECTION
+# - PERFECT CLEAR DETECTION
+# - COMBO DETECTION
+# - SCORING
+# - LEVELS
+
 def seven_bag(bag:list):
 
     piece = random.choice(bag)
