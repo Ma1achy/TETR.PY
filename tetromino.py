@@ -1,5 +1,5 @@
 from vec2 import Vec2
-from srs import pieces, get_kick
+from rotation import pieces, get_kick
 
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int):
@@ -156,5 +156,5 @@ class Tetromino():
           
         if not self.collision(self.blocks, self.ghost_position, matrix):
             matrix.ghost_blocks = matrix.init_matrix()
-            matrix.insert_ghost_blocks(self)
+            matrix.insert_blocks(self.blocks, self.ghost_position, matrix.ghost_blocks)
         

@@ -59,15 +59,6 @@ class Matrix():
                 if val != 0:
                     target_matrix[position.y + y][position.x + x] = val
                     
-    def insert_piece_blocks(self, tetromino):
-        self.insert_blocks(tetromino.blocks, tetromino.position, self.piece)
-
-    def insert_ghost_blocks(self, tetromino):
-        self.insert_blocks(tetromino.blocks, tetromino.ghost_position, self.ghost_blocks)
-
-    def place_piece(self, tetromino):
-        self.insert_blocks(tetromino.blocks, tetromino.position, self.matrix)
-    
     def clear_piece(self):
         self.piece = self.init_matrix()
         
