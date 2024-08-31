@@ -37,7 +37,7 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
     pygame.display.set_caption("Four")
     
     MATRIX = Matrix(MATRIX_WIDTH, MATRIX_HEIGHT)
-    PIECE = Tetromino(seven_bag(bag), 0, 4, 21)
+    PIECE = Tetromino(seven_bag(bag), 0, 4, 18)
     MATRIX.insert_piece_blocks(PIECE)
    
     COLOUR_MAP = {
@@ -55,7 +55,7 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
     running = True
     
     while running:   
-           
+        
         PIECE.ghost(MATRIX)
         
         if len(bag) == 0:
@@ -128,7 +128,7 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
                     PIECE.position = PIECE.ghost_position
                     MATRIX.clear_piece(PIECE)
                     PIECE.place(MATRIX)
-                    PIECE = Tetromino(seven_bag(bag), 0, 4, 21)
+                    PIECE = Tetromino(seven_bag(bag), 0, 4, 18)
                     MATRIX.insert_piece_blocks(PIECE)
                 
         WINDOW.fill((0, 0, 0))

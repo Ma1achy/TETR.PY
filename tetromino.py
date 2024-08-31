@@ -32,14 +32,10 @@ class Tetromino():
         y (int): y position of the piece
         """
         
-        if self.type in ['S', 'Z', 'J', 'L', 'T']:  # 3x3 box, origin is at the center
+        if self.type in ['S', 'Z', 'J', 'L', 'T', 'O']:  # 3x3 box, origin is at the center
            x -= 1                                       
            y -= 1
         
-        elif self.type == 'O': 
-            x -= 1
-            y -= 1
-           
         elif self.type == 'I': # 5x5 box, origin is at the center                 
             x -= 2
             y -= 1
