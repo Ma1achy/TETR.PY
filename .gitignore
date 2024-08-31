@@ -3,3 +3,4 @@ __pycache__/
 
 # Ignore .pyc files
 *.pyc
+*.wav
