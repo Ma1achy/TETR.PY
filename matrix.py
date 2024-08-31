@@ -1,7 +1,14 @@
 import os
+from vec2 import Vec2
 class Matrix():
     def __init__(self, WIDTH:int, HEIGHT:int):
+        """
+        Create a matrix that represents the game field
         
+        args:
+        WIDTH (int): The width of the matrix
+        HEIGHT (int): The height of the matrix
+        """
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
         self.matrix = self.init_matrix() # blocks that are already placed
@@ -9,10 +16,35 @@ class Matrix():
         self.ghost_blocks = self.init_matrix()
         
     def init_matrix(self):
+        """
+        Create a matrix filled with zeros	
+        """
         return [[0 for _ in range(self.WIDTH)] for _ in range(self.HEIGHT)]
     
-    def __str__(self):
+    def insert_blocks(self, blocks:list, position:Vec2, target_matrix:list):
+        """
+        Insert the piece blocks into the target matrix
         
+        args:
+        blocks (list): The piece blocks
+        position (Vec2): The position of the piece
+        target_matrix (list): The matrix to insert the piece blocks into
+        """
+        for y, row in enumerate(blocks):
+            for x, val in enumerate(row):
+                if val != 0:
+                    target_matrix[position.y + y][position.x + x] = val
+                    
+    def clear_piece(self):
+        """
+        Remove the piece from the matrix
+        """
+        self.piece = self.init_matrix()
+    
+    def __str__(self):
+        """
+        String representation of the matrix
+        """
         os.system('cls' if os.name == 'nt' else 'clear')
         
         color_map = {
@@ -52,15 +84,4 @@ class Matrix():
         ]
         bottom_border = "=" * (self.WIDTH * 2 + 3)  # 2 chars per element + 2 spaces + 2 '|' + 1 space
         return "\n\n"+ "\n".join(rows) + "\n" + bottom_border
-    
-    def insert_blocks(self, blocks, position, target_matrix):
-        for y, row in enumerate(blocks):
-            for x, val in enumerate(row):
-                if val != 0:
-                    target_matrix[position.y + y][position.x + x] = val
-                    
-    def clear_piece(self):
-        self.piece = self.init_matrix()
-        
-   
         

@@ -1,16 +1,10 @@
 from vec2 import Vec2
 
-# when rotating from A to B, A - B gives the kick translation to apply to the piece
-# the offsets are applied in order, so the 0th is applied first, then the 1st, 2nd, etc.
-# row = offset order, column = rotation state
-
-# 90 degree rotation offsets
-
-TSZLJ_OFFSETS = ([                                                      # rotation state
-    ([Vec2(0, 0), Vec2(0, 0),  Vec2(0, 0),   Vec2(0, 0), Vec2(0, 0)]),  # 0
-    ([Vec2(0, 0), Vec2(1, 0),  Vec2(1, -1),  Vec2(0, 2), Vec2(1, 2)]),  # 1
-    ([Vec2(0, 0), Vec2(0, 0),  Vec2(0, 0),   Vec2(0, 0), Vec2(0, 0)]),  # 2
-    ([Vec2(0, 0), Vec2(-1, 0), Vec2(-1, -1), Vec2(0, 2), Vec2(-1, 2)]), # 3
+TSZLJ_OFFSETS = ([                                                      
+    ([Vec2(0, 0), Vec2(0, 0),  Vec2(0, 0),   Vec2(0, 0), Vec2(0, 0)]),  
+    ([Vec2(0, 0), Vec2(1, 0),  Vec2(1, -1),  Vec2(0, 2), Vec2(1, 2)]),  
+    ([Vec2(0, 0), Vec2(0, 0),  Vec2(0, 0),   Vec2(0, 0), Vec2(0, 0)]),  
+    ([Vec2(0, 0), Vec2(-1, 0), Vec2(-1, -1), Vec2(0, 2), Vec2(-1, 2)]), 
 ])
 
 I_OFFSETS = ([ 
@@ -27,8 +21,6 @@ O_OFFSETS = ([
     [(Vec2(0, 0))],
 ])
 
-# 180 degree rotation offsets
-
 TSZLKJ_180_OFFSETS = ([
     ([Vec2(0, 0), Vec2(1, 0),  Vec2(2, 0),  Vec2(1, 1),   Vec2(2, 1),   Vec2(-1, 0), Vec2(-2, 0), Vec2(-1, 1),  Vec2(-2, 1),  Vec2(0, -1), Vec2(3, 0),  Vec2(-3, 0)]),
     ([Vec2(0, 0), Vec2(0, 1),  Vec2(0, 2),  Vec2(-1, 1),  Vec2(-1, 2),  Vec2(0, -1), Vec2(0, -2), Vec2(-1, -1), Vec2(-1, -2), Vec2(1, 0),  Vec2(0, 3),  Vec2(0, -3)]),
@@ -43,17 +35,16 @@ I_180_OFFSETS = (
     ([Vec2(0, 0), Vec2(0, 1),  Vec2(0, 2),  Vec2(0, -1), Vec2(0, -2), Vec2(1, 0),  Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0), Vec2(0, 0)])
 )
 
-
 def get_kick(rotation:str, piece:str, initial_state:int, desired_state:int, offset_order:int):
     """
     Get the kick translation to apply to the piece
     kick = initial_state_offset - desired_state_offset
     
     args:
-    rotation (str): Rotation direction 'CW', 'CCW', '180'
-    piece (str): Type of the piece S, Z, J, L, I, T, O
-    initial_state (int): Initial rotation state of the piece 0, 1, 2, 3
-    desired_state (int): Desired rotation state of the piece 0, 1, 2, 3
+    rotation (str): Rotation direction: ['CW', 'CCW', '180']
+    piece (str): Type of the piece: ['T', 'S', 'Z', 'L', 'J', 'I', 'O']
+    initial_state (int): Initial rotation state of the piece: [0, 1, 2, 3]
+    desired_state (int): Desired rotation state of the piece: [0, 1, 2, 3]
     offset_order (int): Offset order to use 
     
     returns:
@@ -111,7 +102,6 @@ def get_kick(rotation:str, piece:str, initial_state:int, desired_state:int, offs
                 
     return initial_state_offset - desired_state_offset
         
-
 def pieces(piece:str):
     """
     Get the piece blocks
@@ -166,6 +156,3 @@ def pieces(piece:str):
             ] 
     }
     return blocks[piece]
-
-kick = get_kick('CW', 'S', 0, 1, 0)
-print(f"kick: {kick}")

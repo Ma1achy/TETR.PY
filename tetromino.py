@@ -1,11 +1,12 @@
 from vec2 import Vec2
 from rotation import pieces, get_kick
+from matrix import Matrix
 
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int):
         """
-        Type (str): Type of the piece S, Z, J, L, I, T, O
-        State (int): Rotation state of the piece 0, 1, 2, 3
+        Type (str): Type of the piece: ['T', 'S', 'Z', 'L', 'J', 'I', 'O'] 
+        State (int): Rotation state of the piece: [0, 1, 2, 3]
         x (int): x position of the piece
         y (int): y position of the piece
         """
@@ -32,21 +33,22 @@ class Tetromino():
         y (int): y position of the piece
         """
         
-        if self.type in ['S', 'Z', 'J', 'L', 'T', 'O']:  # 3x3 box, origin is at the center
+        if self.type in ['S', 'Z', 'J', 'L', 'T', 'O']:  
            x -= 1                                       
            y -= 1
         
-        elif self.type == 'I': # 5x5 box, origin is at the center                 
+        elif self.type == 'I':                 
             x -= 2
             y -= 1
         
         return Vec2(x, y)
             
-    def rotate(self, direction:str, matrix):
+    def rotate(self, direction:str, matrix:Matrix):
         """
         Rotate the piece in the given direction
         
-        direction (str): 'CW' or 'CCW'
+        direction (str): The direction to rotate the piece in: ['CW', 'CCW', '180']
+        matrix (Matrix): The matrix object that contains the blocks that are already placed
         """
         if direction == 'CW':     
             desired_state = (self.state + 1) % 4
@@ -62,11 +64,13 @@ class Tetromino():
         
         self.__SRS(direction, rotated_piece, desired_state, matrix, offset = 0)
         
-    def move(self, direction:str, matrix):
+    def move(self, direction:str, matrix: Matrix):
         """
         Move the piece in the given direction
         
-        direction (str): 'LEFT', 'RIGHT', 'DOWN', 'UP'
+        args:
+        direction (str): The direction to move the piece in: ['LEFT', 'RIGHT', 'UP' 'DOWN']
+        matrix (Matrix): The matrix object that contains the blocks that are already placed
         """
         if direction == 'LEFT':
             desired_position = Vec2(self.position.x - 1, self.position.y)
@@ -74,11 +78,11 @@ class Tetromino():
         elif direction == 'RIGHT':
             desired_position = Vec2(self.position.x + 1, self.position.y)
 
-        elif direction == 'DOWN':
-            desired_position = Vec2(self.position.x, self.position.y + 1)
-
         elif direction == 'UP':
             desired_position = Vec2(self.position.x, self.position.y - 1)
+            
+        elif direction == 'DOWN':
+            desired_position = Vec2(self.position.x, self.position.y + 1)
             
         if not self.collision(self.blocks, desired_position, matrix):
             self.position = desired_position
@@ -121,36 +125,42 @@ class Tetromino():
         """
         return [row[::-1] for row in reversed(self.blocks)]
                        
-    def __SRS(self, rotation, rotated_piece, desired_state, matrix, offset):
-    
+    def __SRS(self, rotation:str, rotated_piece:list, desired_state:int, matrix:list, offset:int):
+        """
+        Apply the Super Rotation System to the piece by recursively applying kick translations to the piece
+        until a valid rotation is found or no more offsets are available
+        
+        rotation (str): Rotation direction ['CW', 'CCW', '180']
+        rotated_piece (list): The rotated piece
+        desired_state (int): Desired rotation state of the piece [0, 1, 2, 3]
+        matrix (Matrix): The matrix object that contains the blocks that are already placed
+        offset (int): Offset order to use when calculating the kick translation
+        """
         kick = get_kick(rotation, self.type, self.state, desired_state, offset)
         
-        if kick is None:
+        if kick is None: # no more offsets to try => rotation is invalid
             return
 
         kick = Vec2(kick.x, -kick.y) # have to invert y as top left of the matrix is (0, 0)
          
-        if self.collision(rotated_piece, self.position + kick, matrix):
+        if self.collision(rotated_piece, self.position + kick, matrix): 
             self.__SRS(rotation, rotated_piece, desired_state, matrix, offset + 1)
         else:
             self.state = desired_state
             self.blocks = rotated_piece
             self.position += kick
-    
-    def place(self, matrix):
+                
+    def ghost(self, matrix:Matrix):
         """
-        Place the piece in the matrix
-        """
-        if not self.collision(self.blocks, self.position, matrix):
-            matrix.place_piece(self)
-            
-    def ghost(self, matrix):
-        """
-        Get the ghost piece
+        Create a ghost piece that shows where the piece will land
+        
+        matrix (Matrix): The matrix object that contains the blocks that are already placed
         """
         self.ghost_position = Vec2(self.position.x, self.position.y)
+        
         while not self.collision(self.blocks, self.ghost_position, matrix):
             self.ghost_position.y += 1
+            
         self.ghost_position.y -= 1
         self.ghost_position.x = self.position.x 
           

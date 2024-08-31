@@ -3,7 +3,14 @@ from matrix import Matrix
 from tetromino import Tetromino
 import random
 
-def lerpBlendRGBA(base, overlay, alpha):
+def seven_bag(bag:list):
+
+    piece = random.choice(bag)
+    bag.remove(piece)
+        
+    return piece
+
+def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     """
     linearly interpolate between two colours
     
@@ -22,21 +29,27 @@ def lerpBlendRGBA(base, overlay, alpha):
 
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
-def seven_bag(bag):
-   
-    piece = random.choice(bag)
-    bag.remove(piece)
-        
-    return piece
-
-def draw_blocks(matrix, color_map, window, field, grid_size, field_height, blend=False, blend_color=(0, 0, 0), blend_factor=0.33):
+def draw_blocks(matrix:Matrix, colour_map:dict, window:pygame, field:pygame, grid_size:int, field_height:int, blend:bool, alpha:float):
+    """
+    Draw the blocks in the matrix
+    
+    args:
+    matrix (Matrix): The matrix object that contains the blocks
+    colour_map (dict): A dictionary that maps the block values to RGB colours
+    window (pygame): The window to draw the blocks on
+    field (pygame): The field to draw the blocks on
+    grid_size (int): The size of the grid
+    field_height (int): The height of the field
+    blend (bool): Whether to blend the blocks
+    alpha (float): The alpha value to blend the blocks
+    """
     for i, row in enumerate(matrix):
         for j, value in enumerate(row):
             if value != 0:
-                color = color_map[value]
+                colour = colour_map[value]
                 if blend:
-                    color = lerpBlendRGBA(blend_color, color, blend_factor)
-                pygame.draw.rect(window, color, (field.x + j * grid_size, field.y + i * grid_size - field_height, grid_size, grid_size))
+                    colour = lerpBlendRGBA((0, 0, 0), colour, alpha)
+                pygame.draw.rect(window, colour, (field.x + j * grid_size, field.y + i * grid_size - field_height, grid_size, grid_size))
     
 def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
     bag = ['I', 'O', 'T', 'S', 'Z', 'J', 'L']
@@ -149,9 +162,9 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
         pygame.draw.line(WINDOW, (255, 255, 255), (field.x + field.width + BORDER_WIDTH//2 - 1 , field.y), (field.x + field.width + BORDER_WIDTH//2 - 1, field.y + field.height), BORDER_WIDTH )
         pygame.draw.line(WINDOW, (255, 255, 255), (field.x - BORDER_WIDTH, field.y + field.height + BORDER_WIDTH//2 - 1), (field.x + field.width + BORDER_WIDTH - 1, field.y + field.height + BORDER_WIDTH//2 - 1), BORDER_WIDTH )
 
-        draw_blocks(MATRIX.matrix, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT)
-        draw_blocks(MATRIX.ghost_blocks, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend=True)
-        draw_blocks(MATRIX.piece, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT)
+        draw_blocks(MATRIX.matrix, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = False, alpha = 1)
+        draw_blocks(MATRIX.ghost_blocks, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend= True, alpha = 0.33)
+        draw_blocks(MATRIX.piece, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = False, alpha = 1)
         
         print(MATRIX, end="\r", flush=True)                
         pygame.display.flip()
