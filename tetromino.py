@@ -167,9 +167,11 @@ class Tetromino():
             1/ 1 corner of the T piece is filled 
             2/ The piece "faces" the filled corner.
         
-            Exceptions to T-Spin Mini: (https://four.lol/srs/t-spin#exceptions)
+            Exceptions to T-Spin Mini:
                 If the last kick translation was used when rotating from 0 to 3, it is a full T-spin despite not meeting the above conditions.
-                If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.         
+                If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.  
+        
+        Rules from (https://four.lol/srs/t-spin)       
         """
         corner_pairs = {
             0: [Vec2(0, 0), Vec2(2, 0)],
