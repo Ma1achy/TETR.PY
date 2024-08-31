@@ -182,12 +182,12 @@ class Tetromino():
         }
         filled_corners = self.__test_corners(corner_pairs[desired_state], kick, matrix) # do facing test
             
-        if len(filled_corners) == 1 and kick.x != 0 or kick.y != 0: # have to check if kick is 0 otherwise rotating in a t shaped hole with no overhang will be considered a T-Spin
+        if len(filled_corners) == 1: # 1 corner test for T-Spin Mini
         
             if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions
                 flags.T_SPIN_FLAG = "T-Spin"
                 play_t_spin_sound()
-            else:
+            elif kick.x != 0 and kick.y != 0: # have to check if kick is 0 otherwise rotating in a t shaped hole with no overhang will be considered a T-Spin
                 flags.T_SPIN_FLAG = "T-Spin Mini"
                 play_t_spin_sound()
 
