@@ -182,7 +182,7 @@ class Tetromino():
             
         if len(filled_corners) == 1: # 1 corner test for T-Spin Mini
         
-            if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception but still requires 1 corner test
+            if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions
                 print("T-Spin!")
             else:
                 print("T-Spin Mini!")    
