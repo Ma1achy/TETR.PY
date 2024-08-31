@@ -160,16 +160,16 @@ class Tetromino():
         Test if the T piece rotation is a T-spin.
         
         A Spin is a T spin if:
-        3 out of 4 corners of the T piece are filled and the piece "faces" 2 of the filled corners.
-        The direction a T piece faces is the direction of the non-flat side of the T piece.
+            1/ 3 out of 4 corners of the T piece are filled and the piece "faces" 2 of the filled corners.
+            2/ The direction a T piece faces is the direction the non-flat side of the T piece "points".
         
         A Spin is a T-Spin Mini if:
-        1 corner of the T piece is filled and the piece "faces" the filled corner.
+            1/ 1 corner of the T piece is filled 
+            2/ The piece "faces" the filled corner.
         
-        Exceptions:
-        
-        If the last kick translation was used when rotating from 0 to 3, it is a full T-spin despite not meeting the above conditions.
-        If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.         
+        Exceptions to T-Spin Mini:
+            If the last kick translation was used when rotating from 0 to 3, it is a full T-spin despite not meeting the above conditions.
+            If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.         
         """
         corner_pairs = {
             0: [Vec2(0, 0), Vec2(2, 0)],
@@ -178,7 +178,7 @@ class Tetromino():
             3: [Vec2(0, 2), Vec2(0, 0)]
         }
         
-        filled_corners = self.__test_corners(corner_pairs[desired_state], kick, matrix)
+        filled_corners = self.__test_corners(corner_pairs[desired_state], kick, matrix) # do facing test
             
         if len(filled_corners) == 1: # 1 corner test for T-Spin Mini
         
