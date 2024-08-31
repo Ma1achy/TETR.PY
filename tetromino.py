@@ -148,10 +148,79 @@ class Tetromino():
         if self.collision(rotated_piece, self.position + kick, matrix): 
             self.__SRS(rotation, rotated_piece, desired_state, matrix, offset + 1)
         else:
+            if self.type == 'T' and rotation in ['CW', 'CCW']:
+                self.__Is_T_Spin(offset, desired_state, kick, matrix)
+                
             self.state = desired_state
             self.blocks = rotated_piece
             self.position += kick
-                
+            
+    def __Is_T_Spin(self, offset:int, desired_state:int, kick:Vec2, matrix:Matrix):
+        """
+        Test if the T piece rotation is a T-spin.
+        
+        A Spin is a T spin if:
+        3 out of 4 corners of the T piece are filled and the piece "faces" 2 of the filled corners.
+        The direction a T piece faces is the direction of the non-flat side of the T piece.
+        
+        A Spin is a T-Spin Mini if:
+        1 corner of the T piece is filled and the piece "faces" the filled corner.
+        
+        Exceptions:
+        
+        If the last kick translation was used when rotating from 0 to 3, it is a full T-spin despite not meeting the above conditions.
+        If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.         
+        """
+        corner_pairs = {
+            0: [Vec2(0, 0), Vec2(2, 0)],
+            1: [Vec2(2, 0), Vec2(2, 2)],
+            2: [Vec2(2, 2), Vec2(0, 2)],
+            3: [Vec2(0, 2), Vec2(0, 0)]
+        }
+        
+        filled_corners = self.__test_corners(corner_pairs[desired_state], kick, matrix)
+            
+        if len(filled_corners) == 1: # 1 corner test for T-Spin Mini
+        
+            if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception but still requires 1 corner test
+                print("T-Spin!")
+            else:
+                print("T-Spin Mini!")    
+            
+        elif len(filled_corners) == 2: # 2 corner test for T-Spin
+        
+            corners = [Vec2(0, 0), Vec2(2, 0), Vec2(0, 2), Vec2(2, 2)]
+            filled_corners = self.__test_corners(corners, kick, matrix)
+            
+            if len(filled_corners) >= 3: # 3 corner test for T-Spin
+                print("T-Spin!")
+        
+    def __test_corners(self, corners:list, kick:Vec2, matrix:Matrix):
+        """
+        Test if the corners of the pieces bounding box are occupied
+        
+        args:
+        corners (list): The corners of the piece bounding box
+        kick (Vec2): The kick translation to apply
+        matrix (Matrix): The matrix object that contains the blocks that are already placed
+        
+        returns:
+        filled_corners (list): The corners that are occupied
+        """
+        filled_corners = []
+        
+        for idx, corner in enumerate(corners):
+            
+            corner_pos = self.position + kick + corner
+            
+            if corner_pos.x < 0 or corner_pos.x >= matrix.WIDTH or corner_pos.y < 0 or corner_pos.y >= matrix.HEIGHT:
+                filled_corners.append(corner)
+            else:
+                if matrix.matrix[corner_pos.y][corner_pos.x] != 0:
+                    filled_corners.append(corner)
+                                        
+        return filled_corners     
+       
     def ghost(self, matrix:Matrix):
         """
         Create a ghost piece that shows where the piece will land
@@ -169,4 +238,4 @@ class Tetromino():
         if not self.collision(self.blocks, self.ghost_position, matrix):
             matrix.ghost_blocks = matrix.init_matrix()
             matrix.insert_blocks(self.blocks, self.ghost_position, matrix.ghost_blocks)
-        
+    

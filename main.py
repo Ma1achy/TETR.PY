@@ -44,6 +44,14 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
 
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
+def draw_grid(window:pygame, field:pygame, grid_size:int, field_height:int, matrix:Matrix):
+    grid_colour = lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.25)
+    
+    for idx in range(matrix.HEIGHT//2, matrix.HEIGHT + 1):
+        pygame.draw.line(window, grid_colour, (field.x, field.y + idx * grid_size - field_height), (field.x + matrix.WIDTH * grid_size, field.y + idx * grid_size - field_height))
+    for idx in range(matrix.WIDTH + 1):
+        pygame.draw.line(window, grid_colour, (field.x + idx * grid_size, field.y + field_height), (field.x + idx * grid_size, field.y + matrix.HEIGHT//2 * grid_size - field_height))
+        
 def draw_blocks(matrix:Matrix, colour_map:dict, window:pygame, field:pygame, grid_size:int, field_height:int, blend:bool, alpha:float):
     """
     Draw the blocks in the matrix
@@ -86,13 +94,18 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
         5: (38, 64, 202), # J
         6: (221, 158, 0), # O
         7: (51, 156, 218), # I
-        8: (105, 105, 105) # garbage
+        8: (105, 105, 105), # garbage
+        50: (255, 0, 0), # ghost
+        51: (0, 255, 0), # ghost
+        52: (0, 0, 255), # ghost
+        53: (255, 255, 255), # ghost 
     }
 
     running = True
     
     while running:   
-        
+    
+        MATRIX.clear_lines()
         PIECE.ghost(MATRIX)
         
         if len(bag) == 0:
@@ -172,6 +185,8 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
         
         field = pygame.Rect((WIDTH - FIELD_WIDTH)//2, (HEIGHT - FIELD_HEIGHT)//2, FIELD_WIDTH, FIELD_HEIGHT)
         
+        draw_grid(WINDOW, field, GRID_SIZE, FIELD_HEIGHT, MATRIX)
+        
         BORDER_WIDTH = 10
         pygame.draw.line(WINDOW, (255, 255, 255), (field.x - BORDER_WIDTH//2 - 1, field.y), (field.x - BORDER_WIDTH//2 - 1, field.y + field.height), BORDER_WIDTH )
         pygame.draw.line(WINDOW, (255, 255, 255), (field.x + field.width + BORDER_WIDTH//2 - 1 , field.y), (field.x + field.width + BORDER_WIDTH//2 - 1, field.y + field.height), BORDER_WIDTH )
@@ -180,8 +195,9 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
         draw_blocks(MATRIX.matrix, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = False, alpha = 1)
         draw_blocks(MATRIX.ghost_blocks, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend= True, alpha = 0.33)
         draw_blocks(MATRIX.piece, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = False, alpha = 1)
-        
-        print(MATRIX, end="\r", flush=True)                
+        # draw_blocks(MATRIX.t_spin_test_corners, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = False, alpha = 1)
+        # print(MATRIX, end="\r", flush=True) 
+              
         pygame.display.flip()
         pygame.time.Clock().tick(FPS)
         

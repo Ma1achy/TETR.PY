@@ -14,6 +14,9 @@ class Vec2():
     
     def __str__(self):
         return f"<Vec2 | x={self.x} y={self.y}>" #define how the vector is printed
+    
+    def __repr__(self):
+        return f"<Vec2 | x={self.x} y={self.y}>"
         
     def __truediv__(self, scalar): #define division by a scalar
         return Vec2(self.x/scalar , self.y/scalar) 
@@ -35,4 +38,3 @@ class Vec2():
     
     def distance(a, b): #define the distance between two vectors
         return np.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
-    
