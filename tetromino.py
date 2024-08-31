@@ -87,24 +87,26 @@ class Tetromino():
         if not self.collision(self.blocks, desired_position, matrix):
             self.position = desired_position
         
-    def collision(self, desired_piece_blocks, desired_position, matrix):
-    
-        # check if piece at desired position will overlap with a matrix block (non zero value)
-        # check if part of piece (non zero value) is outside the matrix
+    def collision(self, desired_piece_blocks:list, desired_position:Vec2, matrix:Matrix):
+        """
+        Check if the piece at the desired position will collide with the matrix bounds or other blocks
         
+        args:
+        desired_piece_blocks (list): The blocks of the piece at the desired position
+        desired_position (Vec2): The desired position of the piece
+        matrix (Matrix): The matrix object that contains the blocks that are already placed
+        
+        returns
+        (bool): True if the piece will collide, False otherwise
+        """
         for y, row in enumerate(desired_piece_blocks):
             for x, val in enumerate(row):
                 if val != 0: 
-                    # check x bounds
-                    if desired_position.x + x < 0 or desired_position.x + x >= matrix.WIDTH:
+                    if desired_position.x + x < 0 or desired_position.x + x >= matrix.WIDTH: # check x bounds
                         return True
-                    
-                    # check y bounds
-                    if desired_position.y + y <= 0 or desired_position.y + y >= matrix.HEIGHT:
+                    if desired_position.y + y <= 0 or desired_position.y + y >= matrix.HEIGHT: # check y bounds
                         return True
-                    
-                    # check if piece will overlap with an already placed block
-                    if matrix.matrix[desired_position.y + y][desired_position.x + x] != 0:
+                    if matrix.matrix[desired_position.y + y][desired_position.x + x] != 0: # check if piece will overlap with an already placed block
                         return True            
         
     def __rotate_cw(self):
