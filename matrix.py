@@ -1,13 +1,14 @@
 from tetromino import Tetromino
-
 class Matrix():
     def __init__(self, WIDTH:int, HEIGHT:int):
         
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
-        self.matrix = self.__init_matrix()
+        self.matrix = self.init_matrix() # blocks that are already placed
+        self.piece = self.init_matrix() 
+        self.ghost_blocks = self.init_matrix()
         
-    def __init_matrix(self):
+    def init_matrix(self):
         return [[0 for _ in range(self.WIDTH)] for _ in range(self.HEIGHT)]
     
     def __str__(self):
@@ -24,17 +25,31 @@ class Matrix():
         }
         rows = [
             "| " + " ".join(f"{color_map[val]}■\033[0m" if 1 <= val <= 7 else f"{color_map[val]}{val}\033[0m" if val != 0 else f"{color_map[0]}.\033[0m" for val in row) + " |"
-            for row in self.matrix[10:30]
+            for row in self.matrix[20:40]
         ]
         bottom_border = "=" * (self.WIDTH * 2 + 3)  # 2 chars per element + 2 spaces + 2 '|' + 1 space
         return "\n\n\n" + "\n".join(rows) + "\n" + bottom_border
     
-    def insert(self, tetromino:Tetromino):
+    def insert_piece_blocks(self, tetromino:Tetromino):
         for y, row in enumerate(tetromino.blocks):
-            for x, block in enumerate(row):
-                self.matrix[tetromino.position.y + y][tetromino.position.x + x] = block
+            for x, val in enumerate(row):
+                if val != 0:
+                    self.piece[tetromino.position.y + y][tetromino.position.x + x] = val
+    
+    def insert_ghost_blocks(self, tetromino:Tetromino):
+        for y, row in enumerate(tetromino.blocks):
+            for x, val in enumerate(row):
+                if val != 0:
+                    self.ghost_blocks[tetromino.ghost_position.y + y][tetromino.ghost_position.x + x] = val
+    
+    def place_piece(self, tetomino:Tetromino):
+        for y, row in enumerate(tetomino.blocks):
+            for x, val in enumerate(row):
+                if val != 0:
+                    self.matrix[tetomino.position.y + y][tetomino.position.x + x] = val
+    
+    def clear_piece(self, tetromino:Tetromino):
+        self.piece = self.init_matrix()
         
-matrix = Matrix(10, 30)
-tetromino = Tetromino('I', 0, 4, 18)
-matrix.insert(tetromino)
-print(matrix)
+   
+        
