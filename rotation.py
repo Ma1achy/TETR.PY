@@ -14,11 +14,11 @@ I_OFFSETS = ([
     ([Vec2(0, 1),  Vec2(0, 1),  Vec2(0, 1),  Vec2(0, -1), Vec2(0, 2)]),
 ])
 
-O_OFFSETS = ([ # technically in SRS O actually has non zero offsets here but they only exist because for some reason standard tetris doesn't make the O piece a 2x2 array so it has to be kicked every time it rotates???
+O_OFFSETS = ([ 
     [(Vec2(0, 0))],
-    [(Vec2(0, 0))],
-    [(Vec2(0, 0))],
-    [(Vec2(0, 0))],
+    [(Vec2(0, -1))],
+    [(Vec2(-1, -1))],
+    [(Vec2(-1, 0))],
 ])
 
 TSZLKJ_180_OFFSETS = ([
@@ -142,10 +142,11 @@ def pieces(piece:str):
                 (5, 5, 5),
                 (0, 0, 0)
             ],
-        'O': # easier to make O 2x2 and consider it seperately like I rather than make it 3x3 and have to kick it every time it rotates
+        'O': 
             [
-                (6, 6), 
-                (6, 6),
+                (0, 6, 6), 
+                (0, 6, 6),
+                (0, 0, 0)
             ],
         'I': 
             [
