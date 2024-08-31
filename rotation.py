@@ -104,10 +104,10 @@ def get_kick(rotation:str, piece:str, initial_state:int, desired_state:int, offs
         
 def pieces(piece:str):
     """
-    Get the piece blocks
+    Get the blocks for the given piece
     
     returns:
-    blocks (list): The piece blocks
+    blocks (list): The pieces blocks
     """
     blocks = {
         'T':
