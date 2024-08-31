@@ -1,4 +1,5 @@
 from tetromino import Tetromino
+import os
 class Matrix():
     def __init__(self, WIDTH:int, HEIGHT:int):
         
@@ -13,6 +14,8 @@ class Matrix():
     
     def __str__(self):
         
+        os.system('cls' if os.name == 'nt' else 'clear')
+        
         color_map = {
             0: "\033[30m",  # Black
             1: "\033[35m",  # Purple
@@ -23,32 +26,50 @@ class Matrix():
             6: "\033[93m",  # Yellow
             7: "\033[36m",  # Cyan
         }
+
+        # Create a copy of the matrix to include the current piece and ghost piece
+        display_matrix = [row[:] for row in self.matrix]
+
+        # Insert ghost piece into the display matrix
+        for y, row in enumerate(self.ghost_blocks):
+            for x, val in enumerate(row):
+                if val != 0:
+                    display_matrix[y][x] = -val  # Use negative value for ghost piece
+
+        # Insert current piece into the display matrix
+        for y, row in enumerate(self.piece):
+            for x, val in enumerate(row):
+                if val != 0:
+                    display_matrix[y][x] = val
+
+        # Generate the string representation
         rows = [
-            "| " + " ".join(f"{color_map[val]}■\033[0m" if 1 <= val <= 7 else f"{color_map[val]}{val}\033[0m" if val != 0 else f"{color_map[0]}.\033[0m" for val in row) + " |"
-            for row in self.matrix[20:40]
+            "| " + " ".join(
+                f"{color_map[abs(val)]}#\033[0m" if 1 <= val <= 7 else
+                f"{color_map[abs(val)]}.\033[0m" if val < 0 else
+                f"{color_map[0]}.\033[0m" for val in row
+            ) + " |"
+            for row in display_matrix[20:40]
         ]
         bottom_border = "=" * (self.WIDTH * 2 + 3)  # 2 chars per element + 2 spaces + 2 '|' + 1 space
-        return "\n\n\n" + "\n".join(rows) + "\n" + bottom_border
+        return "\n\n"+ "\n".join(rows) + "\n" + bottom_border
     
-    def insert_piece_blocks(self, tetromino:Tetromino):
-        for y, row in enumerate(tetromino.blocks):
+    def insert_blocks(self, blocks, position, target_matrix):
+        for y, row in enumerate(blocks):
             for x, val in enumerate(row):
                 if val != 0:
-                    self.piece[tetromino.position.y + y][tetromino.position.x + x] = val
+                    target_matrix[position.y + y][position.x + x] = val
+                    
+    def insert_piece_blocks(self, tetromino):
+        self.insert_blocks(tetromino.blocks, tetromino.position, self.piece)
+
+    def insert_ghost_blocks(self, tetromino):
+        self.insert_blocks(tetromino.blocks, tetromino.ghost_position, self.ghost_blocks)
+
+    def place_piece(self, tetromino):
+        self.insert_blocks(tetromino.blocks, tetromino.position, self.matrix)
     
-    def insert_ghost_blocks(self, tetromino:Tetromino):
-        for y, row in enumerate(tetromino.blocks):
-            for x, val in enumerate(row):
-                if val != 0:
-                    self.ghost_blocks[tetromino.ghost_position.y + y][tetromino.ghost_position.x + x] = val
-    
-    def place_piece(self, tetomino:Tetromino):
-        for y, row in enumerate(tetomino.blocks):
-            for x, val in enumerate(row):
-                if val != 0:
-                    self.matrix[tetomino.position.y + y][tetomino.position.x + x] = val
-    
-    def clear_piece(self, tetromino:Tetromino):
+    def clear_piece(self):
         self.piece = self.init_matrix()
         
    

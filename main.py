@@ -85,14 +85,14 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
                 if event.key == pygame.K_x:
                     
                     PIECE.ghost(MATRIX)
-                    MATRIX.clear_piece(PIECE)
+                    MATRIX.clear_piece()
                     PIECE.rotate('CW', MATRIX)
                     MATRIX.insert_piece_blocks(PIECE)
                     
                 if event.key == pygame.K_z:
                     
                     PIECE.ghost(MATRIX)
-                    MATRIX.clear_piece(PIECE)
+                    MATRIX.clear_piece()
                     PIECE.rotate('CCW', MATRIX)
                     MATRIX.insert_piece_blocks(PIECE)
                     
@@ -100,42 +100,42 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
                     
                     PIECE.ghost(MATRIX)
                     PIECE.ghost(MATRIX)
-                    MATRIX.clear_piece(PIECE) 
+                    MATRIX.clear_piece() 
                     PIECE.rotate('180', MATRIX)
                     MATRIX.insert_piece_blocks(PIECE)
                     
                 if event.key == pygame.K_LEFT:
                     
                     PIECE.ghost(MATRIX)   
-                    MATRIX.clear_piece(PIECE)
+                    MATRIX.clear_piece()
                     PIECE.move('LEFT', MATRIX)
                     MATRIX.insert_piece_blocks(PIECE)
                 
                 if  event.key == pygame.K_RIGHT:
                     
                     PIECE.ghost(MATRIX)
-                    MATRIX.clear_piece(PIECE)
+                    MATRIX.clear_piece()
                     PIECE.move('RIGHT', MATRIX)
                     MATRIX.insert_piece_blocks(PIECE)
                 
                 if event.key == pygame.K_UP:
                     
                     PIECE.ghost(MATRIX)
-                    MATRIX.clear_piece(PIECE)
+                    MATRIX.clear_piece()
                     PIECE.move('UP', MATRIX)
                     MATRIX.insert_piece_blocks(PIECE)
                          
                 if event.key == pygame.K_DOWN:
                     
                     PIECE.ghost(MATRIX)  
-                    MATRIX.clear_piece(PIECE)
+                    MATRIX.clear_piece()
                     PIECE.move('DOWN', MATRIX)
                     MATRIX.insert_piece_blocks(PIECE)
                 
                 if event.key == pygame.K_SPACE:
                     
                     PIECE.position = PIECE.ghost_position
-                    MATRIX.clear_piece(PIECE)
+                    MATRIX.clear_piece()
                     PIECE.place(MATRIX)
                     PIECE = Tetromino(seven_bag(bag), 0, 4, 18)
                     MATRIX.insert_piece_blocks(PIECE)
@@ -152,10 +152,11 @@ def main(WIDTH, HEIGHT, MATRIX_WIDTH, MATRIX_HEIGHT, GRID_SIZE, FPS):
         draw_blocks(MATRIX.matrix, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT)
         draw_blocks(MATRIX.ghost_blocks, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend=True)
         draw_blocks(MATRIX.piece, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT)
-                                
+        
+        print(MATRIX, end="\r", flush=True)                
         pygame.display.flip()
         pygame.time.Clock().tick(FPS)
-            
+        
     pygame.quit()
 
 if __name__ == "__main__":
