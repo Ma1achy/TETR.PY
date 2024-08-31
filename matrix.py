@@ -48,32 +48,28 @@ class Matrix():
         os.system('cls' if os.name == 'nt' else 'clear')
         
         color_map = {
-            0: "\033[30m",  # Black
-            1: "\033[35m",  # Purple
-            2: "\033[32m",  # Lime
-            3: "\033[31m",  # Red
-            4: "\033[33m",  # Orange
-            5: "\033[34m",  # Blue
-            6: "\033[93m",  # Yellow
-            7: "\033[36m",  # Cyan
+            0: "\033[30m",  # black
+            1: "\033[35m",  # purple
+            2: "\033[32m",  # lime
+            3: "\033[31m",  # red
+            4: "\033[33m",  # orange
+            5: "\033[34m",  # blue
+            6: "\033[93m",  # yellow
+            7: "\033[36m",  # cyan
         }
 
-        # Create a copy of the matrix to include the current piece and ghost piece
         display_matrix = [row[:] for row in self.matrix]
-
-        # Insert ghost piece into the display matrix
+        
         for y, row in enumerate(self.ghost_blocks):
             for x, val in enumerate(row):
                 if val != 0:
-                    display_matrix[y][x] = -val  # Use negative value for ghost piece
-
-        # Insert current piece into the display matrix
+                    display_matrix[y][x] = -val  # use negative value for ghost piece
+                    
         for y, row in enumerate(self.piece):
             for x, val in enumerate(row):
                 if val != 0:
                     display_matrix[y][x] = val
-
-        # Generate the string representation
+                    
         rows = [
             "| " + " ".join(
                 f"{color_map[abs(val)]}#\033[0m" if 1 <= val <= 7 else
