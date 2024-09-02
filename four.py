@@ -25,9 +25,6 @@ class Four():
         """
         The main game loop
         """
-        if self.current_tetromino is None:
-            self.__get_next_piece(hold = False)
-            
         actions = self.pygame_instance.before_loop_hook()
                
         self.render.render_frame(self)  
@@ -37,9 +34,13 @@ class Four():
         """
         Get the next state of the game
         """
-        
         self.__perform_actions(actions)
-        pass
+        
+        if self.current_tetromino is None:
+            self.__get_next_piece(hold = False)
+            
+        self.__clear_lines()
+        
     
     def __init_rng(self):
         """
@@ -59,6 +60,12 @@ class Four():
         """
         return Matrix(self.config.MATRIX_WIDTH, self.config.MATRIX_HEIGHT)
     
+    def __update_current_tetromino(self):
+        if self.current_tetromino is not None:
+            self.matrix.piece = self.matrix.empty_matrix()
+            self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
+            self.current_tetromino.ghost()
+        
     def __get_next_piece(self, hold):
         self.can_hold = True
         
@@ -92,13 +99,20 @@ class Four():
                 self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
             else:
                 print("Game Over")
-                self.pygame_instance.exited = True
+                #self.pygame_instance.exited = True
             
         self.__update_current_tetromino()
     
     def __check_spawn(self, spawning_tetromino):
         if not spawning_tetromino.collision(spawning_tetromino.blocks, spawning_tetromino.position):
             return True
+    
+    def __clear_lines(self):
+        """
+        Clear full lines from the matrix
+        """
+        cleared_lines = self.matrix.clear_lines()
+        print(cleared_lines)
         
     def __hard_drop(self):
         """
@@ -112,11 +126,6 @@ class Four():
     def __hold(self):
         if self.can_hold:
             self.__get_next_piece(hold = True)
-    
-    def __update_current_tetromino(self):
-        self.matrix.piece = self.matrix.empty_matrix()
-        self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
-        self.current_tetromino.ghost()
         
     def __perform_actions(self, actions):
         pass

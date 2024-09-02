@@ -52,7 +52,7 @@ class Matrix():
             self.matrix.insert(0, [0 for _ in range(self.WIDTH)])
         
         if len(full_lines) > 0:
-            print (len(full_lines))
+            return len(full_lines)
     
     def __str__(self):
         """

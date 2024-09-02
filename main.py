@@ -21,7 +21,6 @@ from tetromino import Tetromino
 # and perform it by a certain amount every frame (ARR)
 
 # - DAS AND ARR (FOR LEFT AND RIGHT MOVEMENT AND DOWN MOVEMENT)
-# - HOLD PIECE	
 # - PIECE SPAWNING (SPAWN ABOVE THE FIELD IN A BOX, SEE WIKI) 
 # - GAME OVER CONDITIONS
 # - GRAVITY
