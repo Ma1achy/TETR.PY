@@ -123,9 +123,21 @@ class Render():
     
     def __draw_queue_border(self):
         
-        m = self.pgconfig.GRID_SIZE * 2.75
-        c = -self.pgconfig.GRID_SIZE + 150 
-        queue_size = m * (self.config.QUEUE_LENGTH) + c 
+        match self.config.QUEUE_LENGTH:
+            case 1:
+                queue_size = self.pgconfig.GRID_SIZE * 4.5
+            case 2: 
+                queue_size = self.pgconfig.GRID_SIZE * 7.5
+            case 3:
+                queue_size = self.pgconfig.GRID_SIZE * 10.5
+            case 4:
+                queue_size = self.pgconfig.GRID_SIZE * 13.5
+            case 5:
+                queue_size = self.pgconfig.GRID_SIZE * 16.5
+            case 6:
+                queue_size = self.pgconfig.GRID_SIZE * 19.5
+            case _:
+                queue_size = self.pgconfig.GRID_SIZE * 19.5
         
         # increase the y length of the queue border based on the number of tetrominos in the queue
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue left border
