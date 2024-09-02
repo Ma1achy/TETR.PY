@@ -3,6 +3,7 @@ import pygame
 from pygame_config import PyGameConfig
 from config import Config
 from utils import lerpBlendRGBA, Font, get_tetromino_blocks
+import math
 class Render():
     def __init__(self, window:pygame.Surface):
         """
@@ -122,17 +123,21 @@ class Render():
     
     def __draw_queue_border(self):
         
-       
-        pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue bottom border
-                (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH + 6 * self.pgconfig.GRID_SIZE  + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 4 * self.pgconfig.GRID_SIZE),
-                (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 4 * self.pgconfig.GRID_SIZE),
-                self.pgconfig.BORDER_WIDTH)
+        m = self.pgconfig.GRID_SIZE * 2.75
+        c = -self.pgconfig.GRID_SIZE + 150 
+        queue_size = m * (self.config.QUEUE_LENGTH) + c 
         
-        pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue right border
-                        (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH + 6 * self.pgconfig.GRID_SIZE  + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 4 * self.pgconfig.GRID_SIZE + self.pgconfig.BORDER_WIDTH // 2),
-                        (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH + 6 * self.pgconfig.GRID_SIZE  + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y -  self.pgconfig.BORDER_WIDTH//self.pgconfig.GRID_SIZE),
+        # increase the y length of the queue border based on the number of tetrominos in the queue
+        pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue left border
+                        (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + 6 * self.pgconfig.GRID_SIZE + self.pgconfig.BORDER_WIDTH, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
+                        (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + 6 * self.pgconfig.GRID_SIZE + self.pgconfig.BORDER_WIDTH, self.pgconfig.MATRIX_SCREEN_CENTER_Y + queue_size - self.pgconfig.GRID_SIZE // 2 - 1),
                         self.pgconfig.BORDER_WIDTH)
         
+        pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue bottom border
+                (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH + 6 * self.pgconfig.GRID_SIZE  + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + queue_size - self.pgconfig.GRID_SIZE // 2 - 1),
+                (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + queue_size - self.pgconfig.GRID_SIZE // 2 - 1),
+                self.pgconfig.BORDER_WIDTH)
+
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue top border
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH + 6 * self.pgconfig.GRID_SIZE  + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
@@ -224,7 +229,6 @@ class Render():
         """
         Render the queue onto the window
         """
-        self.__draw_queue_border()
         queue_rect = self.__queue_rect(four.queue.length)
         pygame.draw.rect(self.four_surface, (0, 0, 0), queue_rect)
         for idx, tetromino in enumerate(four.queue.queue):
@@ -235,6 +239,7 @@ class Render():
             
             preview_rect = pygame.Rect(queue_rect.x, row_y, queue_rect.width, row_height)
             self.__render_tetromino_preview(tetromino, preview_rect)
+            self.__draw_queue_border()
        
     def __queue_rect(self, queue_length):
         """
@@ -262,12 +267,12 @@ class Render():
         """
         Render the hold onto the window
         """
-        self.__draw_hold_border()
         tetromino = four.held_tetromino    
         hold_rect = self.__hold_rect()
         pygame.draw.rect(self.four_surface, (0, 0, 0), hold_rect)
         if tetromino is not None:
             self.__render_tetromino_preview(tetromino, hold_rect)
+        self.__draw_hold_border()
     
     def __render_tetromino_preview(self, tetromino, rect):
         """
