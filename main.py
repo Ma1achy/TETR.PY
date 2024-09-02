@@ -1,7 +1,10 @@
 from pygame_instance import PyGameInstance
 from four import Four
 
+
 #TODO:
+
+# MAKE GAME LOOP AND RENDERING USE DELTA TIME INSTEAD OF FIXED TIME STEP
 
 # DAS and ARR can be implemented by checking if the action for (moving left/right or soft dropping (seperate das & arr)) was performed last frame,
 # and that it is being performed this frame, if so, increment a counter, if the counter reaches a certain value, perform the action again automatically (DAS)

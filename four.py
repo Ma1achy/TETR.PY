@@ -162,6 +162,13 @@ class Four():
                     else:
                         pass
                     
+                case Action.ROTATE_180:
+                    if self.current_tetromino is not None:
+                        self.current_tetromino.rotate('180')
+                        self.__update_current_tetromino()
+                    else:
+                        pass
+                    
                 case Action.HARD_DROP:
                     if self.current_tetromino is not None:
                         self.__hard_drop()

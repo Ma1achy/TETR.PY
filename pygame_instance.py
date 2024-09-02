@@ -33,6 +33,7 @@ class PyGameInstance():
         Initalise the game
         """
         pygame.init()
+        pygame.font.init()
         
     def __init_window(self):
         """
