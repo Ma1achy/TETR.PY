@@ -16,7 +16,7 @@ class Tetromino():
         self.position = self.get_origin(x, y)
         self.matrix = matrix
         
-        self.blocks = self.__get_tetromino_blocks()
+        self.blocks = self.get_tetromino_blocks()
         self.ghost_position = Vec2(self.position.x, self.position.y)
         self.on_floor = False
         
@@ -316,11 +316,14 @@ class Tetromino():
         if not self.collision(self.blocks, self.ghost_position):
             self.matrix.ghost = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
-    
-    def __get_tetromino_blocks(self):
+
+    def get_tetromino_blocks(self):
         """
         Get the blocks for the given tetromino.
         This is the 0th rotation state of the piece that SRS uses.
+        
+        args:
+        type (str): The type of tetromino
         
         returns:
         blocks (list): The pieces blocks

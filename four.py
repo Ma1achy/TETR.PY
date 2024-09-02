@@ -34,18 +34,19 @@ class Four():
         """
         Get the next state of the game
         """
-        self.__perform_actions(actions)
-        
-        if self.current_tetromino is None:
-            self.__get_next_piece(hold = False)
-        
-        if self.__is_row_17_empty():
-            self.__event_danger(False)
-        else:
-            self.__top_out_warn()
-            self.__event_danger(True)
+        if not self.game_over:
+            self.__perform_actions(actions)
             
-        self.__clear_lines()
+            if self.current_tetromino is None:
+                self.__get_next_piece(hold = False)
+            
+            if self.__is_row_17_empty():
+                self.__event_danger(False)
+            else:
+                self.__top_out_warn()
+                self.__event_danger(True)
+                
+            self.__clear_lines()
         
     def __init_rng(self):
         """
@@ -202,7 +203,7 @@ class Four():
         if self.game_over:
             return
         
-        next_piece = self.queue.see_next_piece()
+        next_piece = self.queue.view_queue(idx = 0)
         danger = Tetromino(next_piece, 0, 4, 18, self.matrix)
         
         self.matrix.danger = self.matrix.empty_matrix()
@@ -266,11 +267,11 @@ class Queue():
             
         return next_piece
     
-    def see_next_piece(self):
+    def view_queue(self, idx = 0):
         """
         See the next piece in the queue
         """
-        return self.queue[0]
+        return self.queue[idx]
 
 class RNG:
     def __init__(self, seed):

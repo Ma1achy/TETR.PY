@@ -36,3 +36,52 @@ class Font():
     def cr(self):
         font_path = os.path.join(self.base_path, 'cr.ttf')
         return pygame.font.Font(font_path, self.size)
+    
+def get_tetromino_blocks(type:str):
+    """
+    Get the blocks for the given tetromino to render previews.
+  
+    args:
+    type (str): The type of tetromino
+    
+    returns:
+    blocks (list): The pieces blocks
+    """
+    blocks = {
+        'T':
+            [
+                (0, 1, 0),
+                (1, 1, 1),
+            ],
+        'S': 
+            [
+                (0, 2, 2),
+                (2, 2, 0),
+            ],
+            
+        'Z':
+            [
+                (3, 3, 0),
+                (0, 3, 3),
+            ],
+        'L': 
+            [
+                (0, 0, 4),
+                (4, 4, 4),
+            ],
+        'J':
+            [
+                (5, 0, 0),
+                (5, 5, 5),
+            ],
+        'O': 
+            [
+                (6, 6), 
+                (6, 6),
+            ],
+        'I': 
+            [
+                (7, 7, 7, 7),
+            ] 
+    }
+    return blocks[type]
