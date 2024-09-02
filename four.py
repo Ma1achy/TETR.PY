@@ -25,11 +25,7 @@ class Four():
         The main game loop
         """
         actions = self.pygame_instance.before_loop_hook()
-        
-        for action in actions:
-            if actions[action]:
-                print(action)
-          
+               
         self.render.render_frame(self)  
         self.__get_next_state(actions)
         
