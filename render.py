@@ -1,86 +1,111 @@
 from matrix import Matrix
 import pygame
-
-COLOUR_MAP = {
-        0: (0, 0, 0),
-        1: (168, 34, 139), # T
-        2: (99, 177, 0), # S
-        3: (206, 0, 43), # Z
-        4: (219, 87, 0), # L
-        5: (38, 64, 202), # J
-        6: (221, 158, 0), # O
-        7: (51, 156, 218), # I
-        8: (105, 105, 105), # garbage
-        50: (255, 0, 0), # ghost
-        51: (0, 255, 0), # ghost
-        52: (0, 0, 255), # ghost
-        53: (255, 255, 255), # ghost 
-    }
-
-def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
-    """
-    linearly interpolate between two colours
-    
-    args:æ
-    base (triple): a RGB colour to blend with the transparent overlay colour
-    overlay (triple): a RGB colour to simulate the transparency of 
-    alpha (float): 0 - 1, to simulate transparency of overlay colour
-    
-    returns
-    (triple) a RGB colour
-    """
-    r1, g1, b1 = base
-    r2, g2, b2 = overlay
-
-    blend = lambda b, o: alpha * o + (1 - alpha) * b    # noqa: E731
-
-    return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
-
-def draw_grid(window:pygame, field:pygame, grid_size:int, field_height:int, matrix:Matrix):
-    grid_colour = lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.25)
-    
-    for idx in range(matrix.HEIGHT//2, matrix.HEIGHT + 1):
-        pygame.draw.line(window, grid_colour, (field.x, field.y + idx * grid_size - field_height), (field.x + matrix.WIDTH * grid_size, field.y + idx * grid_size - field_height))
-    for idx in range(matrix.WIDTH + 1):
-        pygame.draw.line(window, grid_colour, (field.x + idx * grid_size, field.y + field_height), (field.x + idx * grid_size, field.y + matrix.HEIGHT//2 * grid_size - field_height))
+from pygame_config import PyGameConfig
+from utils import lerpBlendRGBA
+class Render():
+    def __init__(self, window:pygame.Surface):
+        """
+        Render an instance of four onto a window
         
-def draw_blocks(matrix:Matrix, colour_map:dict, window:pygame, field:pygame, grid_size:int, field_height:int, blend:bool, alpha:float):
-    """
-    Draw the blocks in the matrix
-    
-    args:
-    matrix (Matrix): The matrix object that contains the blocks
-    colour_map (dict): A dictionary that maps the block values to RGB colours
-    window (pygame): The window to draw the blocks on
-    field (pygame): The field to draw the blocks on
-    grid_size (int): The size of the grid
-    field_height (int): The height of the field
-    blend (bool): Whether to blend the blocks
-    alpha (float): The alpha value to blend the blocks
-    """
-    for i, row in enumerate(matrix):
-        for j, value in enumerate(row):
-            if value != 0:
-                colour = colour_map[value]
-                if blend:
-                    colour = lerpBlendRGBA((0, 0, 0), colour, alpha)
-                pygame.draw.rect(window, colour, (field.x + j * grid_size, field.y + i * grid_size - field_height, grid_size, grid_size))
-                
-def render_matrix(WINDOW, WIDTH, HEIGHT, MATRIX, GRID_SIZE):
-    
-    FIELD_WIDTH = MATRIX.WIDTH * GRID_SIZE
-    FIELD_HEIGHT = MATRIX.HEIGHT // 2 * GRID_SIZE
-    BORDER_WIDTH = 10
+        self.window (pygame.Surface): the window to render the game onto
+        """
         
-    WINDOW.fill((0, 0, 0))
+        self.window = window
+        self.config = PyGameConfig
+        self.four_surface = self.__init_four_surface()
+        
+    def __init_four_surface(self):
+        """
+        Create the surface to render the matrix, border and blocks to which can be rendered elsewhere on the window
+        """
+        return pygame.surface.Surface((self.config.FOUR_INSTANCE_WIDTH, self.config.FOUR_INSTANCE_HEIGHT))
     
-    field = pygame.Rect((WIDTH - FIELD_WIDTH)//2, (HEIGHT - FIELD_HEIGHT)//2, FIELD_WIDTH, FIELD_HEIGHT)
+    def __get_four_coords_for_window_center(self):
+        """
+        Get the coordinates for the four surface to be centered in the window
+        """
+        return (self.config.WINDOW_WIDTH - self.config.FOUR_INSTANCE_WIDTH) // 2, (self.config.WINDOW_HEIGHT - self.config.FOUR_INSTANCE_HEIGHT) // 2
+
+    def render_frame(self, MATRIX:Matrix):
+        """
+        Render the frame
+        """
+        self.window.fill((0, 0, 0))
+        self.window.blit(self.four_surface, (self.__get_four_coords_for_window_center()))
+        self.__render_matrix(MATRIX)
+        self.__update_window()
     
-    draw_blocks(MATRIX.ghost_blocks, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = True, alpha = 0.33)
-    draw_grid(WINDOW, field, GRID_SIZE, FIELD_HEIGHT, MATRIX)
-    draw_blocks(MATRIX.matrix, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = False, alpha = 1)
-    draw_blocks(MATRIX.piece, COLOUR_MAP, WINDOW, field, GRID_SIZE, FIELD_HEIGHT, blend = False, alpha = 1)
-    
-    pygame.draw.line(WINDOW, (255, 255, 255), (field.x - BORDER_WIDTH//2 - 1, field.y), (field.x - BORDER_WIDTH//2 - 1, field.y + field.height), BORDER_WIDTH )
-    pygame.draw.line(WINDOW, (255, 255, 255), (field.x + field.width + BORDER_WIDTH//2 - 1 , field.y), (field.x + field.width + BORDER_WIDTH//2 - 1, field.y + field.height), BORDER_WIDTH )
-    pygame.draw.line(WINDOW, (255, 255, 255), (field.x - BORDER_WIDTH, field.y + field.height + BORDER_WIDTH//2 - 1), (field.x + field.width + BORDER_WIDTH - 1, field.y + field.height + BORDER_WIDTH//2 - 1), BORDER_WIDTH )
+    def __update_window(self):
+        """
+        Update the window
+        """
+        pygame.display.flip()
+              
+    def __draw_grid(self, matrix_surface_rect:pygame.Rect):
+        """
+        Draw the grid in the background of the matrix
+        """
+        grid_colour = lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.25)
+        
+        for idx in range(self.config.MATRIX_HEIGHT // 2, self.config.MATRIX_HEIGHT + 1):
+            pygame.draw.line(self.four_surface, grid_colour,
+                             (matrix_surface_rect.x, matrix_surface_rect.y + idx * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + self.config.MATRIX_WIDTH * self.config.GRID_SIZE, matrix_surface_rect.y + idx * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT)
+                             )
+            
+        for idx in range(self.config.MATRIX_WIDTH + 1):
+            pygame.draw.line(self.four_surface, grid_colour,
+                             (matrix_surface_rect.x + idx * self.config.GRID_SIZE, matrix_surface_rect.y + self.config.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + idx * self.config.GRID_SIZE, matrix_surface_rect.y + self.config.MATRIX_HEIGHT // 2 * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT)
+                             )
+            
+    def __draw_blocks(self, matrix:Matrix, matrix_surface_rect:pygame.Rect, transparent:bool, alpha:float):
+        """
+        Draw the blocks in the matrix
+        """
+        for i, row in enumerate(matrix):
+            for j, value in enumerate(row):
+                if value != 0:
+                    colour = self.config.COLOUR_MAP[value]
+                    if transparent:
+                        colour = lerpBlendRGBA((0, 0, 0), colour, alpha)
+                    pygame.draw.rect(self.four_surface, colour, 
+                                     (matrix_surface_rect.x + j * self.config.GRID_SIZE, matrix_surface_rect.y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT, self.config.GRID_SIZE, self.config.GRID_SIZE)
+                                     )
+
+    def __draw_border(self, matrix_rect:pygame.Rect):
+        """
+        Draw the border around the matrix
+        """
+        pygame.draw.line(self.four_surface, (255, 255, 255), 
+                 (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y), 
+                 (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height), 
+                 self.config.BORDER_WIDTH)
+
+        # Draw the right border line
+        pygame.draw.line(self.four_surface, (255, 255, 255), 
+                        (self.config.MATRIX_SCREEN_CENTER_X + matrix_rect.width + self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y), 
+                        (self.config.MATRIX_SCREEN_CENTER_X + matrix_rect.width + self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height), 
+                        self.config.BORDER_WIDTH)
+
+        # Draw the bottom border line
+        pygame.draw.line(self.four_surface, (255, 255, 255), 
+                        (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height + self.config.BORDER_WIDTH // 2 - 1), 
+                        (self.config.MATRIX_SCREEN_CENTER_X + matrix_rect.width + self.config.BORDER_WIDTH - 1, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height + self.config.BORDER_WIDTH // 2 - 1), 
+                        self.config.BORDER_WIDTH)
+        
+    def __render_matrix(self, MATRIX:Matrix):
+        """
+        Render the matrix onto the window
+        
+        args:
+        MATRIX (Matrix): The matrix object that contains the blocks
+        """
+        matrix_surface_rect = pygame.Rect(self.config.MATRIX_SCREEN_CENTER_X, self.config.MATRIX_SCREEN_CENTER_Y, self.config.MATRIX_SURFACE_WIDTH, self.config.MATRIX_SURFACE_HEIGHT)
+             
+        self.__draw_blocks(MATRIX.ghost_blocks, matrix_surface_rect, transparent = True, alpha = 0.33)
+        self.__draw_grid(matrix_surface_rect)
+        self.__draw_blocks(MATRIX.matrix, matrix_surface_rect, transparent = False, alpha = 1)
+        self.__draw_blocks(MATRIX.piece, matrix_surface_rect, transparent = False, alpha = 1)
+        
+        self.__draw_border(pygame.Rect(self.config.MATRIX_SCREEN_CENTER_X, self.config.MATRIX_SCREEN_CENTER_Y, self.config.MATRIX_SURFACE_WIDTH, self.config.MATRIX_SURFACE_HEIGHT)) 
