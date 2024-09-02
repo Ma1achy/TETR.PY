@@ -9,6 +9,7 @@ class PyGameConfig():
     FPS = 60
     
     COLOUR_MAP = {
+        -1: (255, 0, 0),
         0: (0, 0, 0), # empty
         1: (168, 34, 139), # T
         2: (99, 177, 0), # S

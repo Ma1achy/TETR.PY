@@ -42,7 +42,7 @@ class Tetromino():
         
         elif self.type == 'I':                 
             x -= 2
-            y -= 1
+            y -= 2
         
         return Vec2(x, y)
             

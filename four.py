@@ -19,13 +19,14 @@ class Four():
         
         self.held_tetromino = None 
         self.current_tetromino = None
+        self.game_over = False
+        self.danger = True
         
     def loop(self):
         """
         The main game loop
         """
         actions = self.pygame_instance.before_loop_hook()
-               
         self.render.render_frame(self)  
         self.__get_next_state(actions)
         
@@ -37,6 +38,12 @@ class Four():
         
         if self.current_tetromino is None:
             self.__get_next_piece(hold = False)
+        
+        if self.__is_row_17_empty():
+            self.__event_danger(False)
+        else:
+            self.__top_out_warn()
+            self.__event_danger(True)
             
         self.__clear_lines()
         
@@ -85,18 +92,14 @@ class Four():
         """
         Spawn a new tetromino
         """
-        spawning_tetromino = Tetromino(next_piece, 0, 4, 19, self.matrix)
+        spawning_tetromino = Tetromino(next_piece, 0, 4, 18, self.matrix)
         
         if self.__check_spawn(spawning_tetromino):
             self.current_tetromino = spawning_tetromino
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
         else:
-            spawning_tetromino = Tetromino(next_piece, 0, 4, 18, self.matrix)
-            if self.__check_spawn(spawning_tetromino):
-                self.current_tetromino = spawning_tetromino
-                self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
-            else:
-                print("Game Over")
+            self.game_over = True
+            print("Game Over")
             
         self.__update_current_tetromino()
     
@@ -176,7 +179,37 @@ class Four():
                     else:
                         pass
                     pass
-    
+    def __is_row_17_empty(self):
+        non_zero_idx = []
+        for idx in self.matrix.matrix[22]:
+            if idx != 0:
+                non_zero_idx.append(idx)
+                
+        if len(non_zero_idx) != 0:
+            return False
+        else:
+            return True
+                         
+    def __top_out_warn(self):
+        
+        if self.game_over:
+            return
+        
+        next_piece = self.queue.see_next_piece()
+        danger = Tetromino(next_piece, 0, 4, 18, self.matrix)
+        
+        self.matrix.danger = self.matrix.empty_matrix()
+        danger.blocks = [tuple(-1 if val != 0 else val for val in row) for row in danger.blocks]
+        self.matrix.insert_blocks(danger.blocks, danger.position, self.matrix.danger)
+        
+    def __event_danger(self, val):
+        if val:
+            self.render.danger = True
+            self.danger = True
+        else:
+            self.render.danger = False
+            self.danger = False
+
 class Queue():
     def __init__(self, rng, length = 5):
         """
@@ -225,6 +258,12 @@ class Queue():
             self.get_queue()
             
         return next_piece
+    
+    def see_next_piece(self):
+        """
+        See the next piece in the queue
+        """
+        return self.queue[0]
 
 class RNG:
     def __init__(self, seed):

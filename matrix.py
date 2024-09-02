@@ -14,6 +14,7 @@ class Matrix():
         self.matrix = self.empty_matrix() # blocks that are already placed
         self.piece = self.empty_matrix() 
         self.ghost = self.empty_matrix()
+        self.danger = self.empty_matrix()
         
     def empty_matrix(self):
         """

@@ -13,6 +13,7 @@ class Render():
         self.window = window
         self.config = PyGameConfig
         self.four_surface = self.__init_four_surface()
+        self.danger = False
         
     def __init_four_surface(self):
         """
@@ -37,6 +38,7 @@ class Render():
         self.window.fill((0, 0, 0))
         
         self.__render_matrix(four.matrix)
+            
         self.window.blit(self.four_surface, (self.__get_four_coords_for_window_center()))
         pygame.display.update()
               
@@ -47,7 +49,7 @@ class Render():
         args:
         matrix_surface_rect (pygame.Rect): the rectangle that the matrix is drawn in
         """
-        grid_colour = lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.25)
+        grid_colour = lerpBlendRGBA((0, 0, 0), self.__get_border_colour(), 0.25)
         
         for idx in range(self.config.MATRIX_HEIGHT // 2, self.config.MATRIX_HEIGHT + 1):
             pygame.draw.line(self.four_surface, grid_colour,
@@ -88,23 +90,57 @@ class Render():
         args:
         matrix_rect (pygame.Rect): the rectangle that the matrix is drawn in
         """
-        pygame.draw.line(self.four_surface, (255, 255, 255), 
+        pygame.draw.line(self.four_surface, self.__get_border_colour(), 
                  (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y), 
                  (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height), 
                  self.config.BORDER_WIDTH)
 
         # Draw the right border line
-        pygame.draw.line(self.four_surface, (255, 255, 255), 
+        pygame.draw.line(self.four_surface, self.__get_border_colour(), 
                         (self.config.MATRIX_SCREEN_CENTER_X + matrix_rect.width + self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y), 
                         (self.config.MATRIX_SCREEN_CENTER_X + matrix_rect.width + self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height), 
                         self.config.BORDER_WIDTH)
 
         # Draw the bottom border line
-        pygame.draw.line(self.four_surface, (255, 255, 255), 
+        pygame.draw.line(self.four_surface, self.__get_border_colour(), 
                         (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height + self.config.BORDER_WIDTH // 2 - 1), 
                         (self.config.MATRIX_SCREEN_CENTER_X + matrix_rect.width + self.config.BORDER_WIDTH - 1, self.config.MATRIX_SCREEN_CENTER_Y + matrix_rect.height + self.config.BORDER_WIDTH // 2 - 1), 
                         self.config.BORDER_WIDTH)
+    
+    def draw_danger_crosses(self, matrix: Matrix):
+        """
+        Draw crosses on the danger matrix
         
+        args:
+        matrix (Matrix): the matrix to draw the crosses on
+        """
+        offset = self.config.GRID_SIZE // 6  
+        for i, row in enumerate(matrix):
+            for j, value in enumerate(row):
+                if value == -1:
+                    start_x = self.config.MATRIX_SCREEN_CENTER_X + j * self.config.GRID_SIZE + offset
+                    start_y = self.config.MATRIX_SCREEN_CENTER_Y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT + offset
+                    end_x = self.config.MATRIX_SCREEN_CENTER_X + (j + 1) * self.config.GRID_SIZE - offset
+                    end_y = self.config.MATRIX_SCREEN_CENTER_Y + (i + 1) * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT - offset
+                    
+                    pygame.draw.line(self.four_surface, (255, 0, 0), 
+                                    (start_x, start_y), 
+                                    (end_x, end_y), 
+                                    5)
+                    pygame.draw.line(self.four_surface, (255, 0, 0), 
+                                    (end_x, start_y), 
+                                    (start_x, end_y), 
+                                    5)
+    
+    def __get_border_colour(self):
+        """
+        Get the colour of the border
+        """
+        if self.danger:
+            return (255, 0, 0)
+        else:
+            return (255, 255, 255)
+                          
     def __render_matrix(self, matrix:Matrix):
         """
         Render the matrix onto the window
@@ -119,4 +155,8 @@ class Render():
         self.__draw_blocks(matrix.matrix, matrix_surface_rect, transparent = False, alpha = 1)
         self.__draw_blocks(matrix.piece, matrix_surface_rect, transparent = False, alpha = 1)
         
+        if self.danger:
+            self.draw_danger_crosses(matrix.danger)
+        
         self.__draw_border(pygame.Rect(self.config.MATRIX_SCREEN_CENTER_X, self.config.MATRIX_SCREEN_CENTER_Y, self.config.MATRIX_SURFACE_WIDTH, self.config.MATRIX_SURFACE_HEIGHT)) 
+            
