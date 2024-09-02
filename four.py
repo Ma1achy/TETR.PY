@@ -1,14 +1,14 @@
-# from tetromino import Tetromino
+from tetromino import Tetromino
 from matrix import Matrix
 from config import Config
 from handling import Action
 
 class Four():
-    def __init__(self, config):
+    def __init__(self):
         """
         Create an instance of the game Four
         """
-        self.config = config
+        self.config = Config()
        
         self.rng = self.__init_rng()
         self.queue = self.__init_queue()
@@ -20,7 +20,8 @@ class Four():
         """
         The main game loop
         """
-        pass
+        self.__spawn_piece()
+        self.current_tetromino.ghost()
     
     def __init_rng(self):
         """
@@ -41,22 +42,39 @@ class Four():
         return Matrix(self.config.MATRIX_WIDTH, self.config.MATRIX_HEIGHT)
     
     def __spawn_piece(self):
-        pass
+        """
+        Spawn a new tetromino
+        """
+        # function as of now is like this for testing, need to instead try spawn a piece above the field in the piece spawning bounding box
+        # inside this box the piece will attempt to spawn such that it doesnt collide with any occupied cells. if it fails -> game over
+        self.current_tetromino = Tetromino(self.queue.get_next_piece(), 0, 4, 18, self.matrix)
+        self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
     
-    def __handle_actions(self, actions):
+    def __perform_actions(self, actions):
         for action in actions:
             match action:
                 case Action.MOVE_LEFT:
-                    self.current_tetromino.move('LEFT')
+                    if self.current_tetromino is not None: 
+                        self.current_tetromino.move('LEFT') 
+                    else: # buffer the action to be performed when a tetromino is spawned
+                        pass
                     
                 case Action.MOVE_RIGHT:
-                    self.current_tetromino.move('RIGHT')
-                    
+                    if self.current_tetromino is not None:
+                        self.current_tetromino.move('RIGHT')
+                    else:
+                        pass
                 case Action.ROTATE_CLOCKWISE:
-                    self.current_tetromino.rotate('CW')
+                    if self.current_tetromino is not None:
+                        self.current_tetromino.rotate('CW')
+                    else:
+                        pass
                     
                 case Action.ROTATE_COUNTERCLOCKWISE:
-                    self.current_tetromino.rotate('CCW')
+                    if self.current_tetromino is not None:
+                        self.current_tetromino.rotate('CCW')
+                    else:
+                        pass
                     
                 case Action.HARD_DROP:
                     pass
@@ -64,6 +82,10 @@ class Four():
                 case Action.SOFT_DROP:
                     self.current_tetromino.move('DOWN')
                 case Action.HOLD:
+                    if self.current_tetromino is not None:
+                        pass
+                    else:
+                        pass
                     pass
     
 class Queue():
@@ -137,12 +159,3 @@ class RNG:
             array[i], array[r] = array[r], array[i]
 
         return array
-
-four = Four(Config)
-# rng = RNG(seed = 0)
-# Q = Queue(rng, length = 5)
-
-# for i in range(100):
-#     next_piece = Q.get_next_piece()
-#     print(f'queue: {Q.queue}')
-#     print(f'next: {next_piece}')
