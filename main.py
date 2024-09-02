@@ -1,6 +1,5 @@
 from pygame_instance import PyGameInstance
 from four import Four
-from render import Render
 from tetromino import Tetromino
 
 #TODO:
