@@ -3,6 +3,7 @@ from matrix import Matrix
 from config import Config
 from render import Render
 from handling import Action
+from vec2 import Vec2
 
 class Four():
     def __init__(self, pygame_instance):
@@ -24,6 +25,9 @@ class Four():
         """
         The main game loop
         """
+        if self.current_tetromino is None:
+            self.__get_next_piece(hold = False)
+            
         actions = self.pygame_instance.before_loop_hook()
                
         self.render.render_frame(self)  
@@ -55,20 +59,59 @@ class Four():
         """
         return Matrix(self.config.MATRIX_WIDTH, self.config.MATRIX_HEIGHT)
     
-    def __spawn_piece(self):
+    def __get_next_piece(self, hold):
+        self.can_hold = True
+        
+        if hold is False:
+            next_piece = self.queue.get_next_piece()
+        else:
+            if self.held_tetromino is not None:
+                next_piece = self.held_tetromino
+                self.held_tetromino = self.current_tetromino.type
+                self.can_hold = False
+            else:
+                next_piece = self.queue.get_next_piece()
+                self.held_tetromino = self.current_tetromino.type
+                self.can_hold = False
+                
+        self.__spawn_piece(next_piece)
+            
+    def __spawn_piece(self, next_piece):
         """
         Spawn a new tetromino
         """
-        # function as of now is like this for testing, need to instead try spawn a piece above the field in the piece spawning bounding box
-        # inside this box the piece will attempt to spawn such that it doesnt collide with any occupied cells. if it fails -> game over
-        self.current_tetromino = Tetromino(self.queue.get_next_piece(), 0, 4, 18, self.matrix)
-        self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
+        spawning_tetromino = Tetromino(next_piece, 0, 4, 19, self.matrix)
+        
+        if self.__check_spawn(spawning_tetromino):
+            self.current_tetromino = spawning_tetromino
+            self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
+        else:
+            spawning_tetromino = Tetromino(next_piece, 0, 4, 18, self.matrix)
+            if self.__check_spawn(spawning_tetromino):
+                self.current_tetromino = spawning_tetromino
+                self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
+            else:
+                print("Game Over")
+                self.pygame_instance.exited = True
+            
+        self.__update_current_tetromino()
     
+    def __check_spawn(self, spawning_tetromino):
+        if not spawning_tetromino.collision(spawning_tetromino.blocks, spawning_tetromino.position):
+            return True
+        
     def __hard_drop(self):
-        pass
+        """
+        Hard drop the current tetromino
+        """
+        self.current_tetromino.position = self.current_tetromino.ghost_position
+        self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.matrix)
+        self.matrix.piece = self.matrix.empty_matrix()
+        self.current_tetromino = None
     
     def __hold(self):
-        pass
+        if self.can_hold:
+            self.__get_next_piece(hold = True)
     
     def __update_current_tetromino(self):
         self.matrix.piece = self.matrix.empty_matrix()
@@ -86,7 +129,7 @@ class Four():
                     if self.current_tetromino is not None: 
                         self.current_tetromino.move('LEFT') 
                         self.__update_current_tetromino()
-                    else: # buffer the action to be performed when a tetromino is spawned
+                    else: 
                         pass
                     
                 case Action.MOVE_RIGHT:

@@ -35,8 +35,6 @@ def main():
     
     pygame_instance = PyGameInstance()
     four = Four(pygame_instance)  
-    four.current_tetromino = Tetromino(four.queue.get_next_piece(), 0, 4, 18, four.matrix)
-    four.matrix.insert_blocks(four.current_tetromino.blocks, four.current_tetromino.position, four.matrix.piece)
     pygame_instance.run(four)
 
 if __name__ == "__main__":
