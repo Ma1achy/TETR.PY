@@ -1,5 +1,4 @@
 from config import Config
-
 class PyGameConfig():
 
     CAPTION = 'Four'

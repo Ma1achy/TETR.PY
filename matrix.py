@@ -11,11 +11,11 @@ class Matrix():
         """
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
-        self.matrix = self.init_matrix() # blocks that are already placed
-        self.piece = self.init_matrix() 
-        self.ghost_blocks = self.init_matrix()
+        self.matrix = self.empty_matrix() # blocks that are already placed
+        self.piece = self.empty_matrix() 
+        self.ghost = self.empty_matrix()
         
-    def init_matrix(self):
+    def empty_matrix(self):
         """
         Create a matrix filled with zeros	
         """
@@ -39,7 +39,7 @@ class Matrix():
         """
         Remove the piece from the matrix
         """
-        self.piece = self.init_matrix()
+        self.piece = self.empty_matrix()
         
     def clear_lines(self):
         """
@@ -73,7 +73,7 @@ class Matrix():
 
         display_matrix = [row[:] for row in self.matrix]
         
-        for y, row in enumerate(self.ghost_blocks):
+        for y, row in enumerate(self.ghost):
             for x, val in enumerate(row):
                 if val != 0:
                     display_matrix[y][x] = -val  # use negative value for ghost piece

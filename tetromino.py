@@ -314,8 +314,8 @@ class Tetromino():
         self.ghost_position.x = self.position.x 
           
         if not self.collision(self.blocks, self.ghost_position):
-            self.matrix.ghost_blocks = self.matrix.init_matrix()
-            self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost_blocks)
+            self.matrix.ghost = self.matrix.empty_matrix()
+            self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
     
     def __get_tetromino_blocks(self):
         """

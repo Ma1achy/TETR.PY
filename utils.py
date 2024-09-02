@@ -16,3 +16,4 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     blend = lambda b, o: alpha * o + (1 - alpha) * b    # noqa: E731
 
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
+

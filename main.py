@@ -1,6 +1,7 @@
 from pygame_instance import PyGameInstance
 from four import Four
 from render import Render
+from tetromino import Tetromino
 
 #TODO:
 
@@ -34,12 +35,10 @@ from render import Render
 def main():
     
     pygame_instance = PyGameInstance()
-    four = Four()
-    four.loop()
-    render = Render(pygame_instance.window)
-    
-    while True:
-        render.render_frame(four)
+    four = Four(pygame_instance)  
+    four.current_tetromino = Tetromino(four.queue.get_next_piece(), 0, 4, 18, four.matrix)
+    four.matrix.insert_blocks(four.current_tetromino.blocks, four.current_tetromino.position, four.matrix.piece)
+    pygame_instance.run(four)
 
 if __name__ == "__main__":
     main()

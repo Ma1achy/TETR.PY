@@ -1,5 +1,4 @@
 from matrix import Matrix
-from four import Four
 import pygame
 from pygame_config import PyGameConfig
 from utils import lerpBlendRGBA
@@ -27,23 +26,19 @@ class Render():
         """
         return (self.config.WINDOW_WIDTH - self.config.FOUR_INSTANCE_WIDTH) // 2, (self.config.WINDOW_HEIGHT - self.config.FOUR_INSTANCE_HEIGHT) // 2
 
-    def render_frame(self, four:Four):
+    def render_frame(self, four):
         """
         Render the frame of the Four Instance
         
         args:
         four (Four): the Four instance to render
         """
+        self.four_surface.fill((0, 0, 0))
         self.window.fill((0, 0, 0))
-        self.window.blit(self.four_surface, (self.__get_four_coords_for_window_center()))
+        
         self.__render_matrix(four.matrix)
-        self.__update_window()
-    
-    def __update_window(self):
-        """
-        Update the window
-        """
-        pygame.display.flip()
+        self.window.blit(self.four_surface, (self.__get_four_coords_for_window_center()))
+        pygame.display.update()
               
     def __draw_grid(self, matrix_surface_rect:pygame.Rect):
         """
@@ -118,8 +113,8 @@ class Render():
         MATRIX (Matrix): The matrix object that contains the blocks
         """
         matrix_surface_rect = pygame.Rect(self.config.MATRIX_SCREEN_CENTER_X, self.config.MATRIX_SCREEN_CENTER_Y, self.config.MATRIX_SURFACE_WIDTH, self.config.MATRIX_SURFACE_HEIGHT)
-             
-        self.__draw_blocks(matrix.ghost_blocks, matrix_surface_rect, transparent = True, alpha = 0.33)
+        
+        self.__draw_blocks(matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33)
         self.__draw_grid(matrix_surface_rect)
         self.__draw_blocks(matrix.matrix, matrix_surface_rect, transparent = False, alpha = 1)
         self.__draw_blocks(matrix.piece, matrix_surface_rect, transparent = False, alpha = 1)
