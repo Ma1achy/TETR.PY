@@ -40,7 +40,6 @@ class Four():
             
         self.__clear_lines()
         
-    
     def __init_rng(self):
         """
         Create a random number generator
