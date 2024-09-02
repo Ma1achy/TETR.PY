@@ -1,9 +1,5 @@
-from matrix import Matrix
 import pygame
 from pygame_config import PyGameConfig
-from config import Config
-from render import Render
-from tetromino import Tetromino
 
 # TODO: IMPLEMENT BASIC INPUT HANDLING AGAIN
 
@@ -49,15 +45,3 @@ class PyGameInstance():
                 pass
             case 'warning':
                 pass
-
-# testing 
-matrix = Matrix(Config.MATRIX_WIDTH, Config.MATRIX_HEIGHT)
-tetromino = Tetromino('T', 0, 4, 18, matrix)
-matrix.insert_blocks(tetromino.blocks, tetromino.position, matrix.piece)
-
-pygame_instance = PyGameInstance()
-render = Render(pygame_instance.window)
-
-while True:
-    render.render_frame(matrix)
-    tetromino.ghost()
