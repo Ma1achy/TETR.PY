@@ -125,7 +125,7 @@ class Render():
        
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue bottom border
                 (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH + 6 * self.pgconfig.GRID_SIZE  + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 4 * self.pgconfig.GRID_SIZE),
-                (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2 - 1 , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 4 * self.pgconfig.GRID_SIZE),
+                (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 4 * self.pgconfig.GRID_SIZE),
                 self.pgconfig.BORDER_WIDTH)
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue right border
@@ -135,7 +135,7 @@ class Render():
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue top border
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH + 6 * self.pgconfig.GRID_SIZE  + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
-                        (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2 - 1, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
+                        (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
                         self.pgconfig.GRID_SIZE)
     
         font = Font(self.pgconfig.GRID_SIZE).hun2()
