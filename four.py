@@ -3,7 +3,6 @@ from matrix import Matrix
 from config import Config
 from render import Render
 from handling import Action
-from vec2 import Vec2
 
 class Four():
     def __init__(self, pygame_instance):
