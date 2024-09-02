@@ -98,7 +98,6 @@ class Four():
                 self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
             else:
                 print("Game Over")
-                #self.pygame_instance.exited = True
             
         self.__update_current_tetromino()
     
@@ -111,7 +110,7 @@ class Four():
         Clear full lines from the matrix
         """
         cleared_lines = self.matrix.clear_lines()
-        print(cleared_lines)
+        # TODO: Implement scoring logic / t spin line clear detection
         
     def __hard_drop(self):
         """
