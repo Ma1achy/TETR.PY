@@ -138,8 +138,7 @@ class Render():
                 queue_size = self.pgconfig.GRID_SIZE * 19.5
             case _:
                 queue_size = self.pgconfig.GRID_SIZE * 19.5
-        
-        # increase the y length of the queue border based on the number of tetrominos in the queue
+      
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue left border
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + 6 * self.pgconfig.GRID_SIZE + self.pgconfig.BORDER_WIDTH, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + 6 * self.pgconfig.GRID_SIZE + self.pgconfig.BORDER_WIDTH, self.pgconfig.MATRIX_SCREEN_CENTER_Y + queue_size - self.pgconfig.GRID_SIZE // 2 - 1),
@@ -160,8 +159,6 @@ class Render():
         self.four_surface.blit(text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.GRID_SIZE * 10 + self.pgconfig.BORDER_WIDTH , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15))
              
     def __draw_hold_border(self):
-        
-        # ====== HOLD =======
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # hold left border
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X - 7 * self.pgconfig.GRID_SIZE - self.pgconfig.BORDER_WIDTH //2 - 1, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
