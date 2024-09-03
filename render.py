@@ -120,6 +120,12 @@ class Render():
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.BORDER_WIDTH // 2 - 1 - self.pgconfig.GRID_SIZE, self.pgconfig.MATRIX_SCREEN_CENTER_Y), 
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.BORDER_WIDTH // 2 - 1 - self.pgconfig.GRID_SIZE, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 1), 
                         self.pgconfig.BORDER_WIDTH)
+        
+        pygame.draw.line(self.four_surface, self.__get_border_colour(),  # matrix bottom border
+                        (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.BORDER_WIDTH - self.pgconfig.GRID_SIZE, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - self.pgconfig.GRID_SIZE * 8 + self.pgconfig.BORDER_WIDTH // 2 - 1) , 
+                        (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.BORDER_WIDTH , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - self.pgconfig.GRID_SIZE * 8 + self.pgconfig.BORDER_WIDTH // 2 - 1), 
+                        self.pgconfig.BORDER_WIDTH)
+        
     
     def __draw_queue_border(self):
         

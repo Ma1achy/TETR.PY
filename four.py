@@ -36,6 +36,7 @@ class Four():
         """
         if not self.game_over:
             self.__perform_actions(actions)
+            self.__update_current_tetromino()
             
             if self.current_tetromino is None:
                 self.__get_next_piece(hold = False)
@@ -98,6 +99,7 @@ class Four():
         if self.__check_spawn(spawning_tetromino):
             self.current_tetromino = spawning_tetromino
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
+            self.__update_current_tetromino()
         else:
             self.game_over = True
             print("Game Over")
