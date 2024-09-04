@@ -36,7 +36,44 @@ class Font():
     def cr(self):
         font_path = os.path.join(self.base_path, 'cr.ttf')
         return pygame.font.Font(font_path, self.size)
+
+def get_prefix(number, unit):
+    prefixes = [
+        (1e-24, "y"),  # yocto
+        (1e-21, "z"),  # zepto
+        (1e-18, "a"),  # atto
+        (1e-15, "f"),  # femto
+        (1e-12, "p"),  # pico
+        (1e-9, "n"),   # nano
+        (1e-6, "u"),   # micro
+        (1e-3, "m"),   # milli
+        (1, ""),       
+        (1e3, "k"),    # kilo
+        (1e6, "M"),    # mega
+        (1e9, "G"),    # giga
+        (1e12, "T"),   # tera
+        (1e15, "P"),   # peta
+        (1e18, "E"),   # exa
+        (1e21, "Z"),   # zetta
+        (1e24, "Y")    # yotta
+    ]
+
+    # get exponent of number
+    num_exp = int(f"{number:.0e}".split("e")[1])
+    # get decimal component of number
+    diffs = []
+        
+    # get prefix of number from exp by finding the closest prefix
+    for (value, prefix) in prefixes:
+        prefix_exp = int(f"{value:.0e}".split("e")[1])
+        diff = prefix_exp - num_exp
+        diffs.append((prefix, diff, value))
     
+    prefix, _, value = min(diffs, key = lambda x: (abs(x[1]), x[0]))
+    num = number / value
+    
+    return f"{num:.1f} {prefix}{unit}" 
+  
 def get_tetromino_blocks(type:str):
     """
     Get the blocks for the given tetromino to render previews.

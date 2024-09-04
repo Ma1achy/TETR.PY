@@ -19,18 +19,31 @@ class PyGameInstance():
         self.exited = False
         self.render = Render(self.window)
         
-        self.subframe_times = []
-        self.render_times = []
+        self.max_avg_len = 500
         
-        self.subframe_time = 0
+        self.tick_times = []
+        self.sf_idx = 0
+        self.worst_tick_time = 0
+        
+        self.render_times = []
+        self.r_idx = 0
+        self.worst_render_time = 0
+        
+        self.tick_time = 0
         self.render_time = 0
         
         self.FPS = []
         self.average_FPS = 0
+        self.fps_idx = 0
+        self.worst_fps = 0
+        
         self.TPS = []
         self.average_TPS = 0
+        self.tps_idx = 0
+        self.worst_tps = 0
         
         self.df = 0
+        self.worst_df = 0
         
         self.key_bindings = Handling.key_bindings
         
@@ -50,7 +63,6 @@ class PyGameInstance():
         Initalise the game
         """
         pygame.init()
-        pygame.font.init()
         
     def __init_window(self):
         """
@@ -71,12 +83,19 @@ class PyGameInstance():
         while not self.exited:
             
             if DEBUG:
+                self.__ignore_worst_counts_for_first_frames(four)
                 debug_dict = {
                     'FPS': self.average_FPS,
                     'TPS': self.average_TPS,
-                    'SIM_T': self.subframe_time,
+                    'SIM_T': self.tick_time,
                     'REN_T': self.render_time,
-                    'DF': self.df
+                    'DF': self.df,
+                    'TICKCOUNT': four.tick_counter,
+                    'WORST_SIM_T': self.worst_tick_time,
+                    'WORST_REN_T': self.worst_render_time,
+                    'WORST_FPS': self.worst_fps,
+                    'WORST_TPS': self.worst_tps,
+                    'WORST_DF': self.worst_df,
                 }
                 
             for event in pygame.event.get():
@@ -98,12 +117,13 @@ class PyGameInstance():
                 _ , self.dt = divmod(self.dt, self.update_interval)
                 self.df =  self.__calc_df(four)
                 
-            render_i = time.time()/1000
+            render_i = time.time()
             self.render.render_frame(four, debug_dict)
-            render_e = time.time()/1000
+            render_e = time.time()
+            
             self.__calc_render_time_avg(render_e - render_i)
             self.__calc_average_FPS()
-            
+
             if self.config.UNCAPPED_FPS:
                 self.clock.tick()
             else:
@@ -111,10 +131,10 @@ class PyGameInstance():
     
     def __do_subframe(self, four): 
         
-        sim_i = time.time()/1000
+        sim_i = time.time()
         four.loop()
-        sim_e = time.time()/1000
-        self.__calc_subframe_time_avg(sim_e - sim_i)
+        sim_e = time.time()
+        self.__calc_tick_time_avg(sim_e - sim_i)
         self.__calc_average_TPS(four)
                         
     def __get_actions(self):
@@ -223,45 +243,58 @@ class PyGameInstance():
         self.exited = True
         pygame.quit()
     
-    def __get_fps(self):
-        return self.clock.get_fps()
-    
-    def __get_tick_rate(self, four):
-        return four.game_clock.get_fps()
-    
-    def __calc_subframe_time_avg(self, time):
-        self.subframe_times.append(time)
+    def __calc_tick_time_avg(self, time):
+        self.tick_times.append(time)
+        if time >= self.worst_tick_time:
+            self.worst_tick_time = time
         
-        if len(self.subframe_times) > 60:
-            half = len(self.subframe_times) // 2
-            self.subframe_times = self.subframe_times[half:]
+        if self.sf_idx > self.max_avg_len:
+            self.sf_idx = 0
             
-        self.subframe_time = sum(self.subframe_times)/len(self.subframe_times)
+        if len(self.tick_times) > self.max_avg_len:
+            self.TPS.pop(self.sf_idx)
+            
+        self.tick_time = sum(self.tick_times)/len(self.tick_times)
         
     def __calc_render_time_avg(self, time):
         self.render_times.append(time)
+        if time >= self.worst_render_time:
+            self.worst_render_time = time
         
-        if len(self.render_times) > 60:
-            half = len(self.render_times) // 2
-            self.render_times = self.render_times[half:]
+        if self.r_idx > self.max_avg_len:
+            self.r_idx = 0
+        
+        if len(self.render_times) > self.max_avg_len:
+            self.render_times.pop(self.r_idx)
             
         self.render_time =  sum(self.render_times)/len(self.render_times)
         
     def __calc_average_TPS(self, four):
-        self.TPS.append(four.game_clock.get_fps())
+        TPS = four.game_clock.get_fps()
+        
+        self.TPS.append(TPS)
+        if TPS < self.worst_tps:
+            self.worst_tps = TPS
     
-        if len(self.TPS) > 60:
-            half = len(self.TPS) // 2
-            self.TPS = self.TPS[half:]
+        if self.tps_idx > self.max_avg_len:
+            self.tps_idx = 0
+        
+        if len(self.TPS) > self.max_avg_len:
+            self.TPS.pop(self.tps_idx)
         
         self.average_TPS = sum(self.TPS)/len(self.TPS)
     
     def __calc_average_FPS(self):
-        self.FPS.append(self.clock.get_fps())
+        FPS = self.clock.get_fps()
+        self.FPS.append(FPS)
+        if FPS < self.worst_fps:
+            self.worst_fps = FPS
        
-        if len(self.FPS) > 60:
-            half = len(self.FPS) // 2
-            self.FPS = self.FPS[half:]
+        if self.fps_idx > self.max_avg_len:
+            self.fps_idx = 0
+        
+        if len(self.FPS) > self.max_avg_len:
+            self.FPS.pop(self.fps_idx)
         
         self.average_FPS = sum(self.FPS)/len(self.FPS)
         
@@ -275,7 +308,18 @@ class PyGameInstance():
         if df < 0:
             return 0
         
+        if df > self.worst_df:
+            self.worst_df = df
+        
         return df
+    
+    def __ignore_worst_counts_for_first_frames(self, four):
+        if four.tick_counter < self.config.TPS * 16:
+            self.worst_tick_time = 0
+            self.worst_render_time = 0
+            self.worst_fps = self.config.FPS
+            self.worst_tps = self.config.TPS
+            self.worst_df = 0
     
         
 def main():

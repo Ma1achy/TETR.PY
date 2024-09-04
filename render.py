@@ -2,7 +2,7 @@ from matrix import Matrix
 import pygame
 from pygame_config import PyGameConfig
 from config import Config
-from utils import lerpBlendRGBA, Font, get_tetromino_blocks
+from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix
 import math
 class Render():
     def __init__(self, window:pygame.Surface):
@@ -11,13 +11,20 @@ class Render():
         
         self.window (pygame.Surface): the window to render the game onto
         """
+        self.surfaces = []
         
+        pygame.font.init()
         self.window = window
         self.pgconfig = PyGameConfig
         self.config = Config()
         self.four_surface = self.__init_four_surface()
         self.danger = False
-           
+        
+        # fonts
+        self.hun2_big = Font(self.pgconfig.GRID_SIZE).hun2()
+        self.hun2_small = Font(self.pgconfig.GRID_SIZE//2).hun2()
+        self.pfw_small = Font(self.pgconfig.GRID_SIZE//2).pfw()
+        
     def __init_four_surface(self):
         """
         Create the surface to render the matrix, border and blocks to which can be rendered elsewhere on the window
@@ -31,6 +38,7 @@ class Render():
         args:
         four (Four): the Four instance to render
         """
+        self.surfaces = []
         self.danger = four.danger
         self.four_surface.fill((0, 0, 0))
         self.window.fill((0, 0, 0))
@@ -39,7 +47,10 @@ class Render():
         self.__render_hold(four)
         self.__render_queue(four)
             
-        self.window.blit(self.four_surface, (self.__get_four_coords_for_window_center()))
+        for surface, coords in self.surfaces:
+            self.four_surface.blit(surface, coords)
+        
+        self.window.blit(self.four_surface, self.__get_four_coords_for_window_center())
         
         if debug is not None:
             self.__draw_debug(debug)
@@ -164,10 +175,9 @@ class Render():
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
                         self.pgconfig.GRID_SIZE)
     
-        font = Font(self.pgconfig.GRID_SIZE).hun2()
-        text_surface = font.render('NEXT', True, (0, 0, 0))
-        self.four_surface.blit(text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.GRID_SIZE * 10 + self.pgconfig.BORDER_WIDTH , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15))
-             
+        next_text_surface = self.hun2_big.render('NEXT', True, (0, 0, 0))
+        self.surfaces.append((next_text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.GRID_SIZE * 10 + self.pgconfig.BORDER_WIDTH , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15))) 
+        
     def __draw_hold_border(self):
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # hold left border
@@ -186,9 +196,8 @@ class Render():
             self.pgconfig.GRID_SIZE)
         
             
-        font = Font(self.pgconfig.GRID_SIZE).hun2()
-        text_surface = font.render('HOLD', True, (0, 0, 0))
-        self.four_surface.blit(text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.GRID_SIZE * 7, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15))
+        hold_text_surface = self.hun2_big.render('HOLD', True, (0, 0, 0))
+        self.surfaces.append((hold_text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.GRID_SIZE * 7, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15)))
         
     def draw_danger_crosses(self, matrix: Matrix):
         """
@@ -317,63 +326,62 @@ class Render():
                                     )
     
     def __draw_debug(self, debug):
-        FPS = debug['FPS']
-        TPS = debug['TPS']
-        SIM_T = debug['SIM_T']
-        REN_T = debug['REN_T']
-        DF = debug['DF']
-        
-        if FPS is None:
-            FPS = 0
-        if TPS is None:
-            TPS = 0
-        if SIM_T is None:
-            SIM_T = 0
-        if REN_T is None:
-            REN_T = 0
-        if DF is None:
-            DF = 0
-        
-        if TPS < self.pgconfig.TPS * 0.95:
+       
+        if debug['TPS'] < self.pgconfig.TPS * 0.95:
             tps_colour = (255, 0, 0)
         else:
             tps_colour = (0, 255, 0)
             
-        if FPS < self.pgconfig.FPS * 0.95:
+        if debug['FPS'] < self.pgconfig.FPS * 0.95:
             fps_colour = (255, 255, 0)
-        elif FPS < self.pgconfig.FPS * 0.5:
+        elif debug['FPS'] < self.pgconfig.FPS * 0.5:
             fps_colour = (255, 0, 0)
         elif self.pgconfig.UNCAPPED_FPS:
             fps_colour = (0, 255, 255)
         else: 
             fps_colour = (0, 255, 0)
-        
-        # draw FPS and TPS in the top left corner
-        font = Font(self.pgconfig.GRID_SIZE).hun2()
+      
         if self.pgconfig.UNCAPPED_FPS:
-            text_surface = font.render(f'FPS: {int(FPS)} (UNCAPPED)', True, fps_colour)
+            text_surface_fps = self.hun2_big.render(f'FPS: {int(debug['FPS'])} (UNCAPPED)', True, fps_colour)
         else:
-            text_surface = font.render(f'FPS: {int(FPS)}', True, fps_colour)
+            text_surface_fps = self.hun2_big.render(f'FPS: {int(debug['FPS'])}', True, fps_colour)
             
-        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE//2))
+        text_surface_worst_fps = self.pfw_small.render(f'{int(debug["WORST_FPS"])} worst', True, fps_colour)
         
-        font = Font(self.pgconfig.GRID_SIZE//2).pfw()
-        text_surface = font.render(f'Render: {REN_T/1E-6:.2g} ns (avg)', True, fps_colour)
-        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE*1.5))
+        text_surface_render_time = self.hun2_small.render(f'Render Time: {get_prefix(debug["REN_T"], 's')}', True, fps_colour)
+        
+        text_surface_worst_render_time = self.pfw_small.render(f'{get_prefix(debug["WORST_REN_T"], 's')} worst', True, fps_colour)
          
-        font = Font(self.pgconfig.GRID_SIZE).hun2()
-        text_surface = font.render(f'TPS: {int(TPS)}', True, tps_colour)
-        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 2.5))
+        text_surface_tps = self.hun2_big.render(f'TPS: {int(debug['TPS'])}', True, tps_colour)
         
-        font = Font(self.pgconfig.GRID_SIZE//2).pfw()
-        text_surface = font.render(f'Subframe: {SIM_T/1E-6:.2g} ns (avg)', True, tps_colour)
-        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 3.5))
+        text_surface_worst_tps = self.pfw_small.render(f'{int(debug["WORST_TPS"])} worst', True, tps_colour)
         
-        text_surface = font.render(f'df: {debug["DF"]}', True, tps_colour)
-        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 4))
+        text_surface_subframe_time = self.hun2_small.render(f'Execution Time: {get_prefix(debug["SIM_T"], 's')}', True, tps_colour)
         
+        text_surface_worst_subframe_time = self.pfw_small.render(f'{get_prefix(debug["WORST_SIM_T"], 's')} worst', True, tps_colour)
+    
+        text_surface_df = self.hun2_small.render(f'df: {debug["DF"]}', True, tps_colour)
+
+        text_surface_worst_df = self.pfw_small.render(f'{debug["WORST_DF"]} worst', True, tps_colour)
         
+        text_surface_subframe_count = self.hun2_small.render(f'Tick: {debug["TICKCOUNT"]}', True, tps_colour)
+
+        debug_surfaces = [
+            (text_surface_fps, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE // 2)),
+            (text_surface_worst_fps, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 1.5)),
+            (text_surface_render_time, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 2)),
+            (text_surface_worst_render_time, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 2.5)),
+            (text_surface_tps, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 3.5)),
+            (text_surface_worst_tps, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 4.5)),
+            (text_surface_subframe_time, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 5)),
+            (text_surface_worst_subframe_time, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 5.5)),
+            (text_surface_df, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 6)),
+            (text_surface_worst_df, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 6.5)),
+            (text_surface_subframe_count, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 7)),
+        ]
         
+        for surface, coords in debug_surfaces:
+            self.window.blit(surface, coords)
         
        
    

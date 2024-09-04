@@ -25,6 +25,7 @@ class Four():
         self.game_over = False
         self.danger = True
         self.game_clock = pygame.time.Clock()
+        self.tick_counter = 0
         
     def loop(self):
         """
@@ -36,6 +37,7 @@ class Four():
         actions = self.pygame_instance.before_loop_hook()
         self.__get_next_state(actions)
         self.game_clock.tick()
+        self.tick_counter += 1
         
     def __get_next_state(self, actions):
         """
