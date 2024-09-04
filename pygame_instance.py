@@ -328,6 +328,7 @@ class PyGameInstance():
             }
         else:
             self.debug_dict = None
+            
 def main():
     
     pygame_instance = PyGameInstance()
