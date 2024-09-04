@@ -366,7 +366,7 @@ class Render():
         self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 2.5))
         
         font = Font(self.pgconfig.GRID_SIZE//2).pfw()
-        text_surface = font.render(f'SubFrame: {SIM_T/1E-6:.2g} ns (avg)', True, tps_colour)
+        text_surface = font.render(f'Subframe: {SIM_T/1E-6:.2g} ns (avg)', True, tps_colour)
         self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 3.5))
         
         text_surface = font.render(f'df: {debug["DF"]}', True, tps_colour)
