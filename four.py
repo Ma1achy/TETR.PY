@@ -3,15 +3,18 @@ from matrix import Matrix
 from config import Config
 from render import Render
 from handling import Action
+import pygame
 
 class Four():
     def __init__(self, pygame_instance):
         """
         Create an instance of the game Four
+        
+        args:
+        pygame_instance (PyGameInstance): The pygame instance to use
         """
         self.pygame_instance = pygame_instance
         self.config = Config()
-        self.render = Render(self.pygame_instance.window)
        
         self.rng = self.__init_rng()
         self.queue = self.__init_queue()
@@ -21,14 +24,18 @@ class Four():
         self.current_tetromino = None
         self.game_over = False
         self.danger = True
+        self.game_clock = pygame.time.Clock()
         
     def loop(self):
         """
         The main game loop
+        
+        args:
+        dt (float): The time since the last frame
         """
         actions = self.pygame_instance.before_loop_hook()
-        self.render.render_frame(self)  
         self.__get_next_state(actions)
+        self.game_clock.tick()
         
     def __get_next_state(self, actions):
         """
@@ -214,10 +221,8 @@ class Four():
         
     def __event_danger(self, val):
         if val:
-            self.render.danger = True
             self.danger = True
         else:
-            self.render.danger = False
             self.danger = False
 
 class Queue():

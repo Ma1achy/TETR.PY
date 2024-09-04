@@ -23,7 +23,7 @@ def main():
     
     pygame_instance = PyGameInstance()
     four = Four(pygame_instance)  
-    pygame_instance.run(four)
+    pygame_instance.main_loop(four)
 
 if __name__ == "__main__":
     main()

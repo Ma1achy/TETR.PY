@@ -29,8 +29,8 @@ class Font():
         font_path = os.path.join(self.base_path, 'hun2.ttf')
         return pygame.font.Font(font_path, self.size)
     
-    def hun1(self):
-        font_path = os.path.join(self.base_path, 'hun1.ttf')
+    def pfw(self):
+        font_path = os.path.join(self.base_path, 'pfw.ttf')
         return pygame.font.Font(font_path, self.size)
     
     def cr(self):

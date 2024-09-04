@@ -24,29 +24,33 @@ class Render():
         """
         return pygame.surface.Surface((self.pgconfig.FOUR_INSTANCE_WIDTH, self.pgconfig.FOUR_INSTANCE_HEIGHT))
     
-    def __get_four_coords_for_window_center(self):
-        """
-        Get the coordinates for the four surface to be centered in the window
-        """
-        return (self.pgconfig.WINDOW_WIDTH - self.pgconfig.FOUR_INSTANCE_WIDTH) // 2, (self.pgconfig.WINDOW_HEIGHT - self.pgconfig.FOUR_INSTANCE_HEIGHT) // 2
-
-    def render_frame(self, four):
+    def render_frame(self, four, debug = None):
         """
         Render the frame of the Four Instance
         
         args:
         four (Four): the Four instance to render
         """
+        self.danger = four.danger
         self.four_surface.fill((0, 0, 0))
         self.window.fill((0, 0, 0))
         
         self.__render_matrix(four)
         self.__render_hold(four)
         self.__render_queue(four)
-        
+            
         self.window.blit(self.four_surface, (self.__get_four_coords_for_window_center()))
         
+        if debug is not None:
+            self.__draw_debug(debug)
+            
         pygame.display.update()
+        
+    def __get_four_coords_for_window_center(self):
+        """
+        Get the coordinates for the four surface to be centered in the window
+        """
+        return (self.pgconfig.WINDOW_WIDTH - self.pgconfig.FOUR_INSTANCE_WIDTH) // 2, (self.pgconfig.WINDOW_HEIGHT - self.pgconfig.FOUR_INSTANCE_HEIGHT) // 2
               
     def __draw_grid(self, matrix_surface_rect:pygame.Rect):
         """
@@ -311,7 +315,64 @@ class Render():
                     pygame.draw.rect(self.four_surface, colour, 
                                     (rect.x + offset_x + j * self.pgconfig.GRID_SIZE, rect.y + offset_y + i * self.pgconfig.GRID_SIZE, self.pgconfig.GRID_SIZE, self.pgconfig.GRID_SIZE)
                                     )
-
+    
+    def __draw_debug(self, debug):
+        FPS = debug['FPS']
+        TPS = debug['TPS']
+        SIM_T = debug['SIM_T']
+        REN_T = debug['REN_T']
+        DF = debug['DF']
+        
+        if FPS is None:
+            FPS = 0
+        if TPS is None:
+            TPS = 0
+        if SIM_T is None:
+            SIM_T = 0
+        if REN_T is None:
+            REN_T = 0
+        if DF is None:
+            DF = 0
+        
+        if TPS < self.pgconfig.TPS * 0.95:
+            tps_colour = (255, 0, 0)
+        else:
+            tps_colour = (0, 255, 0)
+            
+        if FPS < self.pgconfig.FPS * 0.95:
+            fps_colour = (255, 255, 0)
+        elif FPS < self.pgconfig.FPS * 0.5:
+            fps_colour = (255, 0, 0)
+        elif self.pgconfig.UNCAPPED_FPS:
+            fps_colour = (0, 255, 255)
+        else: 
+            fps_colour = (0, 255, 0)
+        
+        # draw FPS and TPS in the top left corner
+        font = Font(self.pgconfig.GRID_SIZE).hun2()
+        if self.pgconfig.UNCAPPED_FPS:
+            text_surface = font.render(f'FPS: {int(FPS)} (UNCAPPED)', True, fps_colour)
+        else:
+            text_surface = font.render(f'FPS: {int(FPS)}', True, fps_colour)
+            
+        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE//2))
+        
+        font = Font(self.pgconfig.GRID_SIZE//2).pfw()
+        text_surface = font.render(f'Render: {REN_T/1E-6:.2g} ns (avg)', True, fps_colour)
+        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE*1.5))
+         
+        font = Font(self.pgconfig.GRID_SIZE).hun2()
+        text_surface = font.render(f'TPS: {int(TPS)}', True, tps_colour)
+        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 2.5))
+        
+        font = Font(self.pgconfig.GRID_SIZE//2).pfw()
+        text_surface = font.render(f'SubFrame: {SIM_T/1E-6:.2g} ns (avg)', True, tps_colour)
+        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 3.5))
+        
+        text_surface = font.render(f'df: {debug["DF"]}', True, tps_colour)
+        self.window.blit(text_surface, (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 4))
+        
+        
         
         
        
