@@ -3,21 +3,23 @@ from pygame_config import PyGameConfig
 from handling import Action, Handling, GetEmptyActions
 from four import Four
 from render import Render
-import time, math
+import time, asyncio
 
 # TODO: IMPLEMENT BASIC INPUT HANDLING AGAIN
 
 class PyGameInstance():
     def __init__(self):
         
+        
         self.config = PyGameConfig
+        self.update_interval = 1000/self.config.TPS
+        
         self.window = self.__init_window()
-        self.actions = GetEmptyActions()
+        self.render = Render(self.window)
+        
         self.clock = pygame.time.Clock()
         self.dt = 0
-        self.update_interval = 1000/self.config.TPS
         self.exited = False
-        self.render = Render(self.window)
         
         self.debug = True
         self.max_avg_len = 500
@@ -46,6 +48,7 @@ class PyGameInstance():
         self.df = 0
         self.worst_df = 0
         
+        self.actions = GetEmptyActions()
         self.key_bindings = Handling.key_bindings
         
         self.key_states = {
@@ -59,11 +62,12 @@ class PyGameInstance():
             self.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
         }
         
-    def __initialise(self):
+    def __initialise(self, four):
         """
         Initalise the game
         """
         pygame.init()
+        self.debug_dict = self.__get_debug_info(four)
         
     def __init_window(self):
         """
@@ -72,45 +76,60 @@ class PyGameInstance():
         pygame.display.set_caption(self.config.CAPTION)
         return pygame.display.set_mode((self.config.WINDOW_WIDTH, self.config.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF)
     
+    def __exit(self):
+        """
+        Exit the game
+        """
+        self.exited = True
+        pygame.quit()
+        
     def before_loop_hook(self):
         self.__get_actions() # has to be before the key states are forwarded or toggled actions will not be detected (can't belive this took 2 hours to figure out)
         self.__forward_key_states() 
         return self.actions
     
-    def run(self, four, DEBUG = True):
-        
-        self.__initialise()
-        
+    async def run(self, four):
+        self.__initialise(four)
+        # create async tasks for game tick and rendering
+        await asyncio.gather(
+            self.__handle_events(),
+            self.__handle_game_tick(four),
+            self.__handle_render(four)
+        )
+
+    async def __handle_events(self):
         while not self.exited:
-            
-            self.__get_debug_info(four)
-                
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.__exit()
-                
                 elif event.type == pygame.KEYDOWN:
                     self.__on_key_press(event.key)
-                
                 elif event.type == pygame.KEYUP:
                     self.__on_key_release(event.key)
-                
-            self.dt += self.clock.get_time()
-        
+            # Yield control back to the event loop
+            await asyncio.sleep(0)
+
+    async def __handle_game_tick(self, four):
+        while not self.exited:
             if self.dt > self.update_interval:
-                
                 self.__do_tick(four)
-                
-                _ , self.dt = divmod(self.dt, self.update_interval)
-                self.df =  self.__calc_df(four)
-                
+                _, self.dt = divmod(self.dt, self.update_interval)
+                self.df = self.__calc_df(four)
+            # Yield control to allow other coroutines to run
+            await asyncio.sleep(0)
+
+    async def __handle_render(self, four):
+        while not self.exited:
             self.__do_render(four)
+            self.__get_debug_info(four)
+            self.dt += self.clock.get_time()
 
             if self.config.UNCAPPED_FPS:
                 self.clock.tick()
             else:
                 self.clock.tick(self.config.FPS)
-    
+            await asyncio.sleep(0)
+                            
     def __do_tick(self, four): 
         
         sim_i = time.time()
@@ -125,7 +144,7 @@ class PyGameInstance():
         render_e = time.time()
         self.__calc_render_time_avg(render_e - render_i)
         self.__calc_average_FPS()
-                        
+                      
     def __get_actions(self):
         self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
         
@@ -329,11 +348,10 @@ class PyGameInstance():
         else:
             self.debug_dict = None
             
-def main():
-    
+async def main():
     pygame_instance = PyGameInstance()
-    four = Four(pygame_instance)  
-    pygame_instance.run(four)
+    four = Four(pygame_instance)
+    await pygame_instance.run(four)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
