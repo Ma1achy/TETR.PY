@@ -33,7 +33,7 @@ class PyGameConfig():
         7: (51, 156, 218), # I
         8: (105, 105, 105), # garbage
     }
-
+    
     # Rendering constants
     GRID_SIZE = FOUR_INSTANCE_WIDTH // 25
     MATRIX_WIDTH = Config.MATRIX_WIDTH
