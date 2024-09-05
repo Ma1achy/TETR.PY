@@ -12,8 +12,8 @@ class PyGameConfig():
     FOUR_INSTANCE_WIDTH, FOUR_INSTANCE_HEIGHT = 800, 900
     BORDER_WIDTH = 4
     
-    UNCAPPED_FPS = True
-    FPS = 144
+    UNCAPPED_FPS = False
+    FPS = 60
     TPS = 128 # Subframes per second
 
     ARR = 33 # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)

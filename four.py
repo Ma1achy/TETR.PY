@@ -1,6 +1,7 @@
 from tetromino import Tetromino
 from matrix import Matrix
 from config import Config
+from pygame_config import PyGameConfig
 from render import Render
 from handling import Action
 import pygame
@@ -15,6 +16,7 @@ class Four():
         """
         self.pygame_instance = pygame_instance
         self.config = Config()
+        self.pgconfig = PyGameConfig() 
        
         self.rng = self.__init_rng()
         self.queue = self.__init_queue()
@@ -23,7 +25,7 @@ class Four():
         self.held_tetromino = None 
         self.current_tetromino = None
         self.game_over = False
-        self.danger = True
+        self.danger = False
         self.game_clock = pygame.time.Clock()
         self.tick_counter = 0
         
@@ -38,6 +40,12 @@ class Four():
         self.__get_next_state(actions)
         self.game_clock.tick()
         self.tick_counter += 1
+    
+    def forward_state(self):
+        """
+        Forward the state of the game to allow for async rendering.
+        """
+        return StateSnapshot(self)
         
     def __get_next_state(self, actions):
         """
@@ -304,3 +312,22 @@ class RNG:
             array[i], array[r] = array[r], array[i]
 
         return array
+    
+class StateSnapshot:
+    def __init__(self, four_instance):
+        """
+        Initialize the state snapshot with the relevant game state.
+        
+        Args:
+            four_instance (Four): The instance of the game from which to copy the state.
+        """
+        self.current_tetromino = four_instance.current_tetromino
+        self.matrix = four_instance.matrix
+        self.queue = four_instance.queue
+        self.held_tetromino = four_instance.held_tetromino
+        self.game_over = four_instance.game_over
+        self.danger = four_instance.danger
+        
+        self.game_clock = four_instance.game_clock
+        self.tick_counter = four_instance.tick_counter
+    

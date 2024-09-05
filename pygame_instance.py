@@ -18,6 +18,8 @@ class PyGameInstance():
         self.render = Render(self.window)
         
         self.clock = pygame.time.Clock()
+        self.tps_clock = pygame.time.Clock()
+        
         self.dt = 0
         self.exited = False
         
@@ -62,12 +64,17 @@ class PyGameInstance():
             self.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
         }
         
+        self.state_snapshot = None
+        self.next_frame_time = 0
+        self.next_tick_time = 0
+        
     def __initialise(self, four):
         """
         Initalise the game
         """
+        self.state_snapshot = four.forward_state()
         pygame.init()
-        self.debug_dict = self.__get_debug_info(four)
+        self.debug_dict = self.__get_debug_info()
         
     def __init_window(self):
         """
@@ -90,11 +97,10 @@ class PyGameInstance():
     
     async def run(self, four):
         self.__initialise(four)
-        # create async tasks for game tick and rendering
         await asyncio.gather(
             self.__handle_events(),
-            self.__handle_game_tick(four),
-            self.__handle_render(four)
+            self.__game_loop(four),
+            self.__render_loop(),
         )
 
     async def __handle_events(self):
@@ -106,42 +112,47 @@ class PyGameInstance():
                     self.__on_key_press(event.key)
                 elif event.type == pygame.KEYUP:
                     self.__on_key_release(event.key)
-            # Yield control back to the event loop
+           
             await asyncio.sleep(0)
-
-    async def __handle_game_tick(self, four):
+    
+    async def __game_loop(self, four):
         while not self.exited:
-            if self.dt > self.update_interval:
+            current_time = pygame.time.get_ticks()
+
+            if current_time >= self.next_tick_time:
                 self.__do_tick(four)
-                _, self.dt = divmod(self.dt, self.update_interval)
-                self.df = self.__calc_df(four)
-            # Yield control to allow other coroutines to run
+                self.next_tick_time += self.update_interval
+
             await asyncio.sleep(0)
 
-    async def __handle_render(self, four):
+    async def __render_loop(self):
         while not self.exited:
-            self.__do_render(four)
-            self.__get_debug_info(four)
-            self.dt += self.clock.get_time()
+            current_time = pygame.time.get_ticks()
 
-            if self.config.UNCAPPED_FPS:
-                self.clock.tick()
-            else:
-                self.clock.tick(self.config.FPS)
+            if current_time >= self.next_frame_time:
+                self.__do_render()
+                self.next_frame_time += 1000/self.config.FPS
+
             await asyncio.sleep(0)
-                            
-    def __do_tick(self, four): 
-        
+            
+    def __do_tick(self, four):
         sim_i = time.time()
+        
+        self.df = self.__calc_df(four)
         four.loop()
+        self.state_snapshot = four.forward_state()
+        
         sim_e = time.time()
         self.__calc_tick_time_avg(sim_e - sim_i)
         self.__calc_average_TPS(four)
-        
-    def __do_render(self, four):
+
+    def __do_render(self):
         render_i = time.time()
-        self.render.render_frame(four, self.debug_dict)
+        self.__get_debug_info()
+        self.render.render_frame(self.state_snapshot, self.debug_dict)
         render_e = time.time()
+        
+        self.clock.tick()
         self.__calc_render_time_avg(render_e - render_i)
         self.__calc_average_FPS()
                       
@@ -279,6 +290,8 @@ class PyGameInstance():
         
     def __calc_average_TPS(self, four):
         TPS = four.game_clock.get_fps()
+        if TPS == float('inf') or TPS == float('-inf'):
+            TPS = 0
         
         self.TPS.append(TPS)
         if TPS < self.worst_tps:
@@ -308,6 +321,9 @@ class PyGameInstance():
         
     def __calc_df(self, four):
         TPS = four.game_clock.get_fps()
+        if TPS == float('inf') or TPS == float('-inf'):
+            TPS = 0
+        
         if int(TPS) > self.config.FPS:
             return 0
         
@@ -321,24 +337,24 @@ class PyGameInstance():
         
         return df
     
-    def __ignore_worst_counts_for_first_frames(self, four):
-        if four.tick_counter < self.config.TPS * 16:
+    def __ignore_worst_counts_for_first_frames(self):
+        if self.state_snapshot.tick_counter < self.config.TPS * 16:
             self.worst_tick_time = 0
             self.worst_render_time = 0
             self.worst_fps = self.config.FPS
             self.worst_tps = self.config.TPS
             self.worst_df = 0
     
-    def __get_debug_info(self, four):
+    def __get_debug_info(self):
         if self.debug:
-            self.__ignore_worst_counts_for_first_frames(four)
+            self.__ignore_worst_counts_for_first_frames()
             self.debug_dict = {
                 'FPS': self.average_FPS,
                 'TPS': self.average_TPS,
                 'SIM_T': self.tick_time,
                 'REN_T': self.render_time,
                 'DF': self.df,
-                'TICKCOUNT': four.tick_counter,
+                'TICKCOUNT': self.state_snapshot.tick_counter,
                 'WORST_SIM_T': self.worst_tick_time,
                 'WORST_REN_T': self.worst_render_time,
                 'WORST_FPS': self.worst_fps,

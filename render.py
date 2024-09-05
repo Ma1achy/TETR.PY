@@ -24,7 +24,7 @@ class Render():
         self.hun2_big = Font(self.pgconfig.GRID_SIZE).hun2()
         self.hun2_small = Font(self.pgconfig.GRID_SIZE//2).hun2()
         self.pfw_small = Font(self.pgconfig.GRID_SIZE//2).pfw()
-        
+            
     def __init_four_surface(self):
         """
         Create the surface to render the matrix, border and blocks to which can be rendered elsewhere on the window
