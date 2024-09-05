@@ -165,7 +165,7 @@ class PyGameInstance():
         self.state_snapshot = four.forward_state()
         
         sim_e = time.time()
-        self.tick_time = sim_e - sim_i
+        self.tick_time_raw = sim_e - sim_i
         
     def __do_render(self):
         render_i = time.time()
