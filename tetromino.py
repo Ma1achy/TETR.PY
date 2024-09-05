@@ -1,6 +1,18 @@
 from vec2 import Vec2
 from rotation import TSZLJ_OFFSETS, I_OFFSETS, O_OFFSETS, TSZLKJ_180_OFFSETS, I_180_OFFSETS
 from matrix import Matrix
+
+# probably want to change how pieces are defined, copying the SRS internal states is probably not ideal
+# O can just be a 2x2 matrix, I and be a 1x4 matrix, the rest can be 3x2 matrices.
+# rotations will then just have to be calculated about the "pivot"/origin of the piece, which remains in the same position (unless a kick is applied)
+
+# Movement will also need to be changed to allow for DAS and ARR along with input buffering from the asynchronous input system
+# rather than the actions being passed directly from the pygame instance to here, they should be passed to a handling object that will
+# maintains a buffer of fixed length and decides when to apply the actions to the piece based on their time stamps and the tick time stamps
+# actions that are too old compared to future or current ticks outside a threshold will be discarded
+# if the tick rate drops (delta tick increases) you can expand the threshold to allow for more input buffering up to a certain point
+# if the tick rate increases (delta tick decreases) you can reduce the threshold to reduce input buffering to make it less sticky
+# das and arr can also be implemented there
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix):
         """
