@@ -12,7 +12,7 @@ class PyGameConfig():
     FOUR_INSTANCE_WIDTH, FOUR_INSTANCE_HEIGHT = 800, 900
     BORDER_WIDTH = 4
     
-    UNCAPPED_FPS = True
+    UNCAPPED_FPS = False
     FPS = 144
     TPS = 128 # Subframes per second
 
