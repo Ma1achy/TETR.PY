@@ -2,7 +2,6 @@ from tetromino import Tetromino
 from matrix import Matrix
 from config import Config
 from pygame_config import PyGameConfig
-from render import Render
 from handling import Action
 import pygame
 
@@ -36,8 +35,10 @@ class Four():
         args:
         dt (float): The time since the last frame
         """
-        actions = self.pygame_instance.before_loop_hook()
-        self.__get_next_state(actions)
+        action_buffer = self.pygame_instance.handling.before_loop_hook()
+        print(action_buffer)
+       # self.__get_next_state(actions)
+        
         self.game_clock.tick()
         self.tick_counter += 1
     
