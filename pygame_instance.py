@@ -1,25 +1,24 @@
 import pygame
 from pygame_config import PyGameConfig
-from handling import Action, Handling, GetEmptyActions
+from handling import Handling
 from four import Four
 from render import Render
 import time, asyncio
 
-# TODO: IMPLEMENT BASIC INPUT HANDLING AGAIN
-
 class PyGameInstance():
     def __init__(self, show_all_debug:bool = False, show_render_debug:bool = False, show_tick_debug:bool = False):
-        
         
         self.config = PyGameConfig
         self.update_interval = 1000/self.config.TPS
         
         self.window = self.__init_window()
         self.render = Render(self.window)
+        self.handling = Handling(self.config)
         
         self.clock = pygame.time.Clock()
-        self.tps_clock = pygame.time.Clock()
+        self.current_time = 0
         
+        self.next_frame_time = 0
         self.dt = 0
         self.exited = False
         
@@ -67,24 +66,10 @@ class PyGameInstance():
         self.dfs = []
         self.df_idx = 0
         self.average_df = 0
-        self.df = 0
+        self.delta_tick = 0
         self.worst_df = 0
         self.best_df = 0
-             
-        self.actions = GetEmptyActions()
-        self.key_bindings = Handling.key_bindings
-        
-        self.key_states = {
-            self.key_bindings[Action.MOVE_LEFT]:                     {'current': False, 'previous': False},
-            self.key_bindings[Action.MOVE_RIGHT]:                    {'current': False, 'previous': False},
-            self.key_bindings[Action.ROTATE_CLOCKWISE]:              {'current': False, 'previous': False},
-            self.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]:       {'current': False, 'previous': False},
-            self.key_bindings[Action.ROTATE_180]:                    {'current': False, 'previous': False},
-            self.key_bindings[Action.HARD_DROP]:                     {'current': False, 'previous': False},
-            self.key_bindings[Action.SOFT_DROP]:                     {'current': False, 'previous': False},
-            self.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
-        }
-        
+                     
         self.state_snapshot = None
         self.next_tick_time = 0
         
@@ -110,12 +95,13 @@ class PyGameInstance():
         pygame.quit()
         
     def before_loop_hook(self):
-        self.__get_actions() # has to be before the key states are forwarded or toggled actions will not be detected (can't belive this took 2 hours to figure out)
-        self.__forward_key_states() 
+        self.handling.__get_actions() # has to be before the key states are forwarded or toggled actions will not be detected (can't belive this took 2 hours to figure out)
+        self.handling.__forward_key_states() 
         return self.actions
     
     async def run(self, four):
         self.__initialise(four)
+        
         await asyncio.gather(
             self.__handle_events(),
             self.__game_loop(four),
@@ -125,33 +111,34 @@ class PyGameInstance():
 
     async def __handle_events(self):
         while not self.exited:
+            self.handling.current_time = self.current_time
+            self.handling.delta_tick = self.delta_tick
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.__exit()
                 elif event.type == pygame.KEYDOWN:
-                    self.__on_key_press(event.key)
+                    self.handling.on_key_press(event.key)
                 elif event.type == pygame.KEYUP:
-                    self.__on_key_release(event.key)
-           
+                    self.handling.on_key_release(event.key)
+
             await asyncio.sleep(0)
     
     async def __game_loop(self, four):
         while not self.exited:
-            current_time = pygame.time.get_ticks()
+            self.current_time = pygame.time.get_ticks()
 
-            if current_time >= self.next_tick_time:
+            if self.current_time >= self.next_tick_time:
                 self.__do_tick(four)
                 self.next_tick_time += self.update_interval
-
+            
             await asyncio.sleep(0)
 
     async def __render_loop(self):
         while not self.exited:
-            current_time = pygame.time.get_ticks()
-
             if self.config.UNCAPPED_FPS:
                 self.__do_render()
-            elif current_time >= self.next_frame_time and not self.config.UNCAPPED_FPS:
+            elif self.current_time >= self.next_frame_time and not self.config.UNCAPPED_FPS:
                 self.__do_render()
                 self.next_frame_time += 1000/self.config.FPS
 
@@ -160,7 +147,7 @@ class PyGameInstance():
     def __do_tick(self, four):
         sim_i = time.time()
         
-        self.df = self.__calc_df()
+        self.delta_tick = self.__calc_df()
         four.loop()
         self.state_snapshot = four.forward_state()
         
@@ -175,77 +162,6 @@ class PyGameInstance():
         render_e = time.time()
         self.render_time_raw = render_e - render_i
         self.clock.tick()
-       
-                      
-    def __get_actions(self):
-        self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
-        
-        self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
-        
-        self.__test_actions(Action.ROTATE_CLOCKWISE, self.__is_action_toggled)
-        
-        self.__test_actions(Action.ROTATE_COUNTERCLOCKWISE, self.__is_action_toggled)
-        
-        self.__test_actions(Action.ROTATE_180, self.__is_action_toggled)
-        
-        self.__test_actions(Action.HARD_DROP, self.__is_action_toggled)
-        
-        self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
-        
-        self.__test_actions(Action.HOLD, self.__is_action_toggled)
-            
-    def __forward_key_states(self):
-        for k in self.key_states:
-            self.key_states[k]['previous'] = self.key_states[k]['current']
-      
-    def __is_action_toggled(self, action:Action):      
-        return self.key_states[self.key_bindings[action]]['current'] and not self.key_states[self.key_bindings[action]]['previous']
-    
-    def __is_action_down(self, action:Action):
-        return self.key_states[self.key_bindings[action]]['current']
-    
-    def __test_actions(self, action, check):
-        
-        if check(action):
-            self.actions[action] = True
-        else:
-            self.actions[action] = False
-        
-    def __get_key_info(self, key):
-        
-        try:
-            k = key.char
-            
-        except AttributeError:
-            k = key
-        
-        return k
-                           
-    def __on_key_press(self, key):
-        
-        keyinfo = self.__get_key_info(key)
-        
-        try:
-            KeyEntry = self.key_states[keyinfo]
-            if KeyEntry:
-                KeyEntry['previous'] = KeyEntry['current']
-                KeyEntry['current'] = True
-             
-        except KeyError:
-            return
-    
-    def __on_key_release(self, key):
-        
-        keyinfo = self.__get_key_info(key)
-        
-        try:
-            KeyEntry = self.key_states[keyinfo]
-            if KeyEntry:
-                KeyEntry['previous'] = KeyEntry['current']
-                KeyEntry['current'] = False
-             
-        except KeyError:
-            return  
            
     def play_sound(self, sound:str):
         match sound:
@@ -356,7 +272,7 @@ class PyGameInstance():
         if self.TPS == float('inf') or self.TPS == float('-inf'):
             self.TPS = 0
         
-        self.df = int(self.config.TPS - self.TPS)
+        self.delta_tick = int(self.config.TPS - self.TPS)
         
         if self.df_idx >= self.max_avg_len - 1:
             self.df_idx = 0
@@ -364,7 +280,7 @@ class PyGameInstance():
         if len(self.dfs) >= self.max_avg_len - 1:
             self.dfs.pop(self.df_idx)
             
-        self.dfs.append(self.df)
+        self.dfs.append(self.delta_tick)
         self.average_df = sum(self.dfs)/len(self.dfs)
         
         self.worst_df = max(self.dfs)
@@ -391,7 +307,7 @@ class PyGameInstance():
                         'REN_T': self.render_time_avg,
                         'REN_T_RAW': self.render_time_raw,
                         'DF': self.average_df,
-                        'DF_RAW': self.df,
+                        'DF_RAW': self.delta_tick,
                         'TICKCOUNT': self.state_snapshot.tick_counter,
                         'WORST_SIM_T': self.worst_tick_time,
                         'WORST_REN_T': self.worst_render_time,
@@ -438,7 +354,7 @@ class PyGameInstance():
                     'BEST_SIM_T': self.best_tick_time,
                     
                     'DF': self.average_df,
-                    'DF_RAW': self.df,
+                    'DF_RAW': self.delta_tick,
                     'WORST_DF': self.worst_df,
                     'BEST_DF': self.best_df,
                     
