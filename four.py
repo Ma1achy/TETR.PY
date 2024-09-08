@@ -20,13 +20,16 @@ class Four():
         self.rng = self.__init_rng()
         self.queue = self.__init_queue()
         self.matrix = self.__init_matrix()
-        
+                
         self.held_tetromino = None 
         self.current_tetromino = None
         self.game_over = False
         self.danger = False
+        
         self.game_clock = pygame.time.Clock()
         self.tick_counter = 0
+        self.time = 0
+        self.update_interval = 1/self.pgconfig.TPS
         
     def loop(self):
         """
@@ -35,25 +38,34 @@ class Four():
         args:
         dt (float): The time since the last frame
         """
+        self.time = pygame.time.get_ticks()
+        self.actions = []
         action_buffer = self.pygame_instance.handling.before_loop_hook()
-        print(action_buffer)
-       # self.__get_next_state(actions)
+        self.handle_acitons(action_buffer)
+        self.__get_next_state()
         
         self.game_clock.tick()
         self.tick_counter += 1
     
+    def handle_acitons(self, action_buffer):
+        
+        for ac in action_buffer:
+            
+            if ac['timestamp'] < self.time - (self.pygame_instance.handling.buffer_threshold / self.pgconfig.TPS):
+                self.actions.append(ac['action'])
+            
     def forward_state(self):
         """
         Forward the state of the game to allow for async rendering.
         """
         return StateSnapshot(self)
         
-    def __get_next_state(self, actions):
+    def __get_next_state(self):
         """
         Get the next state of the game
         """
         if not self.game_over:
-            self.__perform_actions(actions)
+            self.__perform_actions()
             self.__update_current_tetromino()
             
             if self.current_tetromino is None:
@@ -148,11 +160,9 @@ class Four():
         if self.can_hold:
             self.__get_next_piece(hold = True)
         
-    def __perform_actions(self, actions):
+    def __perform_actions(self):
         pass
-        for action, is_action in actions.items():
-            if not is_action:
-                continue
+        for action in self.actions:
             
             match action:
                 case Action.MOVE_LEFT:

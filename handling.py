@@ -21,9 +21,9 @@ class Handling():
             Action.MOVE_RIGHT:                  pygame.K_RIGHT,
             Action.ROTATE_CLOCKWISE:            pygame.K_x,
             Action.ROTATE_COUNTERCLOCKWISE:     pygame.K_z,
-            Action.ROTATE_180:                  pygame.K_UP,
-            Action.HARD_DROP:                   pygame.K_SPACE,
-            Action.SOFT_DROP:                   pygame.K_DOWN,
+            Action.ROTATE_180:                  pygame.K_SPACE,
+            Action.HARD_DROP:                   pygame.K_DOWN,
+            Action.SOFT_DROP:                   pygame.K_UP,
             Action.HOLD:                        pygame.K_c
         }
         
@@ -51,7 +51,7 @@ class Handling():
         self.current_time = 0
         self.delta_tick = 0
         
-        self.buffer_threshold = 5 # ticks (1 tick = 1/128th of a second)
+        self.buffer_threshold = 3 # ticks (1 tick = 1/128th of a second)
         self.actions_buffer = [] 
         
         self.DAS_counter = 0
@@ -100,7 +100,7 @@ class Handling():
         for k in self.key_states:
             self.key_states[k]['previous'] = self.key_states[k]['current']
     
-    def __is_action_toggled(self, action:Action):      
+    def __is_action_toggled(self, action:Action):  
         return self.key_states[self.key_bindings[action]]['current'] and not self.key_states[self.key_bindings[action]]['previous']
     
     def __is_action_down(self, action:Action):
@@ -112,7 +112,6 @@ class Handling():
             self.actions[action]['state'] = True
             self.actions[action]['timestamp'] = self.current_time
             
-                        
         else:
             self.actions[action]['state'] =  False,
             self.actions[action]['timestamp'] = self.current_time
@@ -159,7 +158,11 @@ class Handling():
         for action in self.actions:
             if self.actions[action]['state'] == True:
                 self.actions_buffer.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-        
+                
         for action in self.actions_buffer: # remove actions from buffer if they are older than the buffer threshold
-            if self.current_time - action['timestamp'] > self.buffer_threshold/self.pgconfig.TPS:
-                self.actions_buffer.remove(action)
+                if self.current_time - action['timestamp'] > self.buffer_threshold / self.pgconfig.TPS:
+                    self.actions_buffer.remove(action)     
+                    
+                
+        
+                

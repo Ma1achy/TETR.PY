@@ -8,7 +8,7 @@ import time, asyncio
 class PyGameInstance():
     def __init__(self, show_all_debug:bool = False, show_render_debug:bool = False, show_tick_debug:bool = False):
         
-        self.config = PyGameConfig
+        self.config = PyGameConfig()
         self.update_interval = 1000/self.config.TPS
         
         self.window = self.__init_window()

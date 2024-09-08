@@ -15,7 +15,7 @@ class Render():
         
         pygame.font.init()
         self.window = window
-        self.pgconfig = PyGameConfig
+        self.pgconfig = PyGameConfig()
         self.config = Config()
         self.four_surface = self.__init_four_surface()
         self.danger = False
