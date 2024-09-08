@@ -136,7 +136,7 @@ class Render():
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.BORDER_WIDTH // 2 - 1 - self.pgconfig.GRID_SIZE, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - 1), 
                         self.pgconfig.BORDER_WIDTH)
         
-        pygame.draw.line(self.four_surface, self.__get_border_colour(),  # matrix bottom border
+        pygame.draw.line(self.four_surface, self.__get_border_colour(),  
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.BORDER_WIDTH - self.pgconfig.GRID_SIZE, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - self.pgconfig.GRID_SIZE * 8 + self.pgconfig.BORDER_WIDTH // 2 - 1) , 
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.BORDER_WIDTH , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.MATRIX_SURFACE_HEIGHT - self.pgconfig.GRID_SIZE * 8 + self.pgconfig.BORDER_WIDTH // 2 - 1), 
                         self.pgconfig.BORDER_WIDTH)
@@ -175,8 +175,8 @@ class Render():
                         (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.MATRIX_SURFACE_WIDTH + self.pgconfig.BORDER_WIDTH // 2, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE // 2 - 1),
                         self.pgconfig.GRID_SIZE)
     
-        next_text_surface = self.hun2_big.render('NEXT', True, (0, 0, 0))
-        self.surfaces.append((next_text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.GRID_SIZE * 10 + self.pgconfig.BORDER_WIDTH , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15))) 
+        text_surface = self.hun2_big.render('NEXT', True, (0, 0, 0))
+        self.surfaces.append((text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X + self.pgconfig.GRID_SIZE * 10 + self.pgconfig.BORDER_WIDTH , self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15))) 
         
     def __draw_hold_border(self):
         
@@ -196,8 +196,8 @@ class Render():
             self.pgconfig.GRID_SIZE)
         
             
-        hold_text_surface = self.hun2_big.render('HOLD', True, (0, 0, 0))
-        self.surfaces.append((hold_text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.GRID_SIZE * 7, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15)))
+        text_surface = self.hun2_big.render('HOLD', True, (0, 0, 0))
+        self.surfaces.append((text_surface, (self.pgconfig.MATRIX_SCREEN_CENTER_X - self.pgconfig.GRID_SIZE * 7, self.pgconfig.MATRIX_SCREEN_CENTER_Y + self.pgconfig.GRID_SIZE * 0.15)))
         
     def draw_danger_crosses(self, matrix: Matrix):
         """
