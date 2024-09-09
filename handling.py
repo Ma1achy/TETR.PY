@@ -31,7 +31,10 @@ class Handling():
             'ARR' :33,          # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
             'DAS' :167,         # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
             'DCD' :0,           # DAS Cut Delay: If none-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rorating a piece (ms)
-            'SDF' :6            # Soft Drop Facor: The factor the soft dropping scales the current gravity by
+            'SDF' :6,           # Soft Drop Facor: The factor the soft dropping scales the current gravity by
+            'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
+            'DASCancel': False, # Cancel Das When Changing Directions: If true, the DAS counter will reset if the opposite direction is pressed
+            'PrefSD': True,     # Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
         }
         
         self.actions = self.GetEmptyActions()
@@ -51,7 +54,7 @@ class Handling():
         self.current_time = 0
         self.delta_tick = 0
         
-        self.buffer_threshold = 3 # ticks (1 tick = 1/128th of a second)
+        self.buffer_threshold = 1 # ticks (1 tick = 1/128th of a second)
         self.actions_buffer = [] 
         
         self.DAS_counter = 0
@@ -158,10 +161,11 @@ class Handling():
         for action in self.actions:
             if self.actions[action]['state'] == True:
                 self.actions_buffer.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-                
-        for action in self.actions_buffer: # remove actions from buffer if they are older than the buffer threshold
-                if self.current_time - action['timestamp'] > self.buffer_threshold / self.pgconfig.TPS:
-                    self.actions_buffer.remove(action)     
+    
+    # TODO: DAS AND ARR LOGIC
+    # IF LEFT OR RIGHT IS HELD, INCREMENT DAS COUNTER UNTIL CHARGED THEN DO ARR COUNTER
+    # IF DAS IS CHARGED INCREMENT ARR COUNTER
+    
                     
                 
         

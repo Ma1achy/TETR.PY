@@ -40,19 +40,28 @@ class Four():
         """
         self.time = pygame.time.get_ticks()
         self.actions = []
-        action_buffer = self.pygame_instance.handling.before_loop_hook()
-        self.handle_acitons(action_buffer)
+        self.pygame_instance.handling.before_loop_hook()
+        
+        self.__action_consumer()
         self.__get_next_state()
         
         self.game_clock.tick()
         self.tick_counter += 1
-    
-    def handle_acitons(self, action_buffer):
+                
+    def __action_consumer(self):
         
-        for ac in action_buffer:
-            
-            if ac['timestamp'] < self.time - (self.pygame_instance.handling.buffer_threshold / self.pgconfig.TPS):
+        for ac in self.pygame_instance.handling.actions_buffer:
+            # TODO: add logic to prevent multiple actions of the same type in the same tick (range of timestamps)
+            # logic to prevent harddropping while rotation/movement active and to perform it at the end of the tick
+            # need to compare actions from the previous tick(s) to the current tick
+            if ac['timestamp'] < self.time - (1 / self.pgconfig.TPS): # perform actions in queue from between the last tick and the current tick
+        
                 self.actions.append(ac['action'])
+                self.pygame_instance.handling.actions_buffer.remove(ac) # consume action
+            
+            # remove actions from buffer if they are older than the buffer threshold
+            elif self.time - ac['timestamp'] > self.pygame_instance.handling.buffer_threshold / self.pgconfig.TPS:
+                self.pygame_instance.handling.actions_buffer.remove(ac)
             
     def forward_state(self):
         """
