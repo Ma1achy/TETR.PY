@@ -1,5 +1,6 @@
 from enum import Enum, auto
 import pygame as pygame
+from collections import deque
 
 class Action(Enum):
     MOVE_LEFT = auto()
@@ -54,8 +55,8 @@ class Handling():
         self.current_time = 0
         self.delta_tick = 0
         
-        self.buffer_threshold = 1 # ticks (1 tick = 1/128th of a second)
-        self.actions_buffer = [] 
+        self.buffer_threshold = 100
+        self.actions_buffer = deque()
         
         self.DAS_counter = 0
         self.ARR_counter = 0
@@ -161,6 +162,12 @@ class Handling():
         for action in self.actions:
             if self.actions[action]['state'] == True:
                 self.actions_buffer.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+                
+   
+    def consume_action(self):
+        if self.actions_buffer:
+            return self.actions_buffer.popleft()  
+        return None
     
     # TODO: DAS AND ARR LOGIC
     # IF LEFT OR RIGHT IS HELD, INCREMENT DAS COUNTER UNTIL CHARGED THEN DO ARR COUNTER

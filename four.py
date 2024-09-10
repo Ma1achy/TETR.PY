@@ -42,27 +42,38 @@ class Four():
         self.actions = []
         self.pygame_instance.handling.before_loop_hook()
         
-        self.__action_consumer()
+        self.__action_dequeuer()
         self.__get_next_state()
         
         self.game_clock.tick()
         self.tick_counter += 1
                 
-    def __action_consumer(self):
+    def __action_dequeuer(self):
         
-        for ac in self.pygame_instance.handling.actions_buffer:
-            # TODO: add logic to prevent multiple actions of the same type in the same tick (range of timestamps)
-            # logic to prevent harddropping while rotation/movement active and to perform it at the end of the tick
-            # need to compare actions from the previous tick(s) to the current tick
-            if ac['timestamp'] < self.time - (1 / self.pgconfig.TPS): # perform actions in queue from between the last tick and the current tick
+        actions_this_tick = []
+        late_actions = []
         
-                self.actions.append(ac['action'])
-                self.pygame_instance.handling.actions_buffer.remove(ac) # consume action
+        if self.game_clock.get_fps() != 0:
+            tick_duration= 1000/ self.game_clock.get_fps() # ms per tick
             
-            # remove actions from buffer if they are older than the buffer threshold
-            elif self.time - ac['timestamp'] > self.pygame_instance.handling.buffer_threshold / self.pgconfig.TPS:
-                self.pygame_instance.handling.actions_buffer.remove(ac)
+        for ac in list(self.pygame_instance.handling.actions_buffer):
+           
+            relative_tick = int((ac['timestamp'] - pygame.time.get_ticks()) / tick_duration)
             
+            if relative_tick == 0:
+                actions_this_tick.append(ac['action'])
+                self.pygame_instance.handling.consume_action()
+                
+            elif relative_tick < 0 and abs(relative_tick) <= self.pygame_instance.handling.buffer_threshold:
+                late_actions.append(ac['action'])
+                self.pygame_instance.handling.consume_action()
+                
+        self.actions = late_actions + actions_this_tick
+                
+    # add logic to prevent multiple actions of the same type in the same tick (range of timestamps)
+    # logic to prevent harddropping while rotation/movement active and to perform it at the end of the tick
+    # need to compare actions from the previous tick(s) to the current tick
+          
     def forward_state(self):
         """
         Forward the state of the game to allow for async rendering.
