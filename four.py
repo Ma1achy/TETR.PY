@@ -71,7 +71,6 @@ class Four():
         self.actions = late_actions + actions_this_tick
                 
     # add logic to prevent multiple actions of the same type in the same tick (range of timestamps)
-    # logic to prevent harddropping while rotation/movement active and to perform it at the end of the tick
     # need to compare actions from the previous tick(s) to the current tick
           
     def forward_state(self):
