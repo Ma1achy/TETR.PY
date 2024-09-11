@@ -39,7 +39,7 @@ class Four():
         dt (float): The time since the last frame
         """
         self.time = pygame.time.get_ticks()
-        self.actions = []
+        self.actions_this_tick = []
         self.pygame_instance.handling.before_loop_hook()
         
         self.__action_dequeuer()
@@ -53,12 +53,12 @@ class Four():
         if self.game_clock.get_fps() != 0:
             tick_duration= 1000/ self.game_clock.get_fps() # ms per tick
             
-        for ac in list(self.pygame_instance.handling.actions_buffer):
+        for action_dict in list(self.pygame_instance.handling.actions_buffer):
            
-            relative_tick = int((ac['timestamp'] - pygame.time.get_ticks()) / tick_duration)
+            relative_tick = int((action_dict['timestamp'] - pygame.time.get_ticks()) / tick_duration)
                  
             if relative_tick <= 0 and abs(relative_tick) <= self.pygame_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
-                self.actions.append(ac['action'])
+                self.actions_this_tick.append(action_dict)
                 self.pygame_instance.handling.consume_action()
                          
     # add logic to prevent multiple actions of the same type in the same tick (range of timestamps)
@@ -171,10 +171,10 @@ class Four():
             self.__get_next_piece(hold = True)
         
     def __perform_actions(self):
-        pass
-        for action in self.actions:
+        
+        for action_dict in self.actions_this_tick:
             
-            match action:
+            match action_dict['action']:
                 case Action.MOVE_LEFT:
                     if self.current_tetromino is not None: 
                         self.current_tetromino.move('LEFT') 
@@ -200,20 +200,15 @@ class Four():
                     if self.current_tetromino is not None:
                         self.current_tetromino.rotate('CCW')
                         self.__update_current_tetromino()
-                    else:
-                        pass
                     
                 case Action.ROTATE_180:
                     if self.current_tetromino is not None:
                         self.current_tetromino.rotate('180')
                         self.__update_current_tetromino()
-                    else:
-                        pass
                     
                 case Action.HARD_DROP:
                     if self.current_tetromino is not None:
                         self.__hard_drop()
-                    pass
                     
                 case Action.SOFT_DROP:
                     if self.current_tetromino is not None:
@@ -223,10 +218,7 @@ class Four():
                 case Action.HOLD:
                     if self.current_tetromino is not None:
                         self.__hold()
-                        pass
-                    else:
-                        pass
-                    pass
+                
     def __is_row_17_empty(self):
         non_zero_idx = []
         for idx in self.matrix.matrix[22]:
