@@ -55,7 +55,7 @@ class Handling():
         self.current_time = 0
         self.delta_tick = 0
         
-        self.buffer_threshold = 100
+        self.buffer_threshold = 128 # tick range where old actions are still considered valid
         self.actions_buffer = deque()
         
         self.DAS_counter = 0

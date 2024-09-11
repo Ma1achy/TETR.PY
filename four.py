@@ -49,27 +49,18 @@ class Four():
         self.tick_counter += 1
                 
     def __action_dequeuer(self):
-        
-        actions_this_tick = []
-        late_actions = []
-        
+           
         if self.game_clock.get_fps() != 0:
             tick_duration= 1000/ self.game_clock.get_fps() # ms per tick
             
         for ac in list(self.pygame_instance.handling.actions_buffer):
            
             relative_tick = int((ac['timestamp'] - pygame.time.get_ticks()) / tick_duration)
-            
-            if relative_tick == 0:
-                actions_this_tick.append(ac['action'])
+                 
+            if relative_tick <= 0 and abs(relative_tick) <= self.pygame_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
+                self.actions.append(ac['action'])
                 self.pygame_instance.handling.consume_action()
-                
-            elif relative_tick < 0 and abs(relative_tick) <= self.pygame_instance.handling.buffer_threshold:
-                late_actions.append(ac['action'])
-                self.pygame_instance.handling.consume_action()
-                
-        self.actions = late_actions + actions_this_tick
-                
+                         
     # add logic to prevent multiple actions of the same type in the same tick (range of timestamps)
     # need to compare actions from the previous tick(s) to the current tick
           
