@@ -3,13 +3,13 @@ from pygame_config import PyGameConfig
 from handling import Handling
 from four import Four
 from render import Render
-import time, asyncio
+import time
+import asyncio
 
 class PyGameInstance():
     def __init__(self, show_all_debug:bool = False, show_render_debug:bool = False, show_tick_debug:bool = False):
         
         self.config = PyGameConfig()
-        self.update_interval = 1000/self.config.TPS
         
         self.window = self.__init_window()
         self.render = Render(self.window)
@@ -117,8 +117,10 @@ class PyGameInstance():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.__exit()
+                    
                 elif event.type == pygame.KEYDOWN:
                     self.handling.on_key_press(event.key)
+                    
                 elif event.type == pygame.KEYUP:
                     self.handling.on_key_release(event.key)
 
@@ -130,7 +132,7 @@ class PyGameInstance():
 
             if self.current_time >= self.next_tick_time:
                 self.__do_tick(four)
-                self.next_tick_time += self.update_interval
+                self.next_tick_time += 1000/self.config.TPS
             
             await asyncio.sleep(0)
 
