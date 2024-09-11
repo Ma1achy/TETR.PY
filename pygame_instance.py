@@ -138,8 +138,10 @@ class PyGameInstance():
 
     async def __render_loop(self):
         while not self.exited:
+            
             if self.config.UNCAPPED_FPS:
                 self.__do_render()
+                
             elif self.current_time >= self.next_frame_time and not self.config.UNCAPPED_FPS:
                 self.__do_render()
                 self.next_frame_time += 1000/self.config.FPS
