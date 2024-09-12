@@ -430,7 +430,7 @@ class PyGameInstance():
             await asyncio.sleep(0)
 
 class Clock:
-    def __init__(self, max_entries=10):
+    def __init__(self, max_entries = 128):
         self.max_entries = max_entries
         self.times = deque(maxlen = max_entries)
         self.last_time = time.perf_counter()
