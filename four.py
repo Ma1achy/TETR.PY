@@ -107,12 +107,22 @@ class Four():
         return Matrix(self.config.MATRIX_WIDTH, self.config.MATRIX_HEIGHT)
     
     def __update_current_tetromino(self):
+        """
+        Update the current tetromino in the matrix
+        """
+        
         if self.current_tetromino is not None:
             self.matrix.piece = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
             self.current_tetromino.ghost()
         
     def __get_next_piece(self, hold):
+        """
+        Get the next piece from the queue and spawn it
+        
+        args:
+        hold (bool): Whether to hold the current piece
+        """
         self.can_hold = True
         
         if hold is False:
@@ -132,6 +142,9 @@ class Four():
     def __spawn_piece(self, next_piece):
         """
         Spawn a new tetromino
+        
+        args:
+        next_piece (str): The type of the next tetromino
         """
         spawning_tetromino = Tetromino(next_piece, 0, 4, 18, self.matrix)
         
@@ -146,6 +159,9 @@ class Four():
         self.__update_current_tetromino()
     
     def __check_spawn(self, spawning_tetromino):
+        """
+        Check if the tetromino can spawn in the matrix
+        """
         if not spawning_tetromino.collision(spawning_tetromino.blocks, spawning_tetromino.position):
             return True
     
@@ -166,6 +182,9 @@ class Four():
         self.current_tetromino = None
     
     def __hold(self):
+        """
+        Hold the current tetromino
+        """
         if self.can_hold:
             self.__get_next_piece(hold = True)
         
@@ -219,6 +238,9 @@ class Four():
                         self.__hold()
                 
     def __is_row_17_empty(self):
+        """
+        Test if the 17th row is empty for top out warning
+        """
         non_zero_idx = []
         for idx in self.matrix.matrix[22]:
             if idx != 0:
@@ -230,6 +252,9 @@ class Four():
             return True
                          
     def __top_out_warn(self):
+        """
+        Activate the top out warning
+        """
         
         if self.game_over:
             return
@@ -242,6 +267,9 @@ class Four():
         self.matrix.insert_blocks(danger.blocks, danger.position, self.matrix.danger)
         
     def __event_danger(self, val):
+        """
+        Toggle the danger flag
+        """
         if val:
             self.danger = True
         else:
