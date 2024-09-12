@@ -8,12 +8,9 @@ import asyncio
 from collections import deque 
 
 class PyGameInstance():
-    def __init__(self, DEBUG:bool = False):
+    def __init__(self):
         """"
         Create an instance of pygame to run the game
-        
-        args:
-        (bool) DEBUG: whether to show the debug menu
         """
         
         self.config = PyGameConfig()
@@ -30,10 +27,12 @@ class PyGameInstance():
         self.next_frame_time = 0
         self.dt = 0
         self.exited = False
+        self.state_snapshot = None
+        self.next_tick_time = 0
         
-        self.show_all_debug = DEBUG
+        self.DEBUG = False
         
-        self.debug_dict = True
+        self.debug_dict = None
         self.max_avg_len = 500
         
         self.tick_times = []
@@ -69,9 +68,22 @@ class PyGameInstance():
         self.delta_tick = 0
         self.worst_df = 0
         self.best_df = 0
-                     
-        self.state_snapshot = None
-        self.next_tick_time = 0
+        
+        self.POLLING_RATEs = []
+        self.POLLING_RATE = 0
+        self.polling_idx = 0
+        self.average_polling = 0
+        self.worst_polling = 0
+        self.best_polling = 0
+        
+        self.POLLING_TIMES = []
+        self.POLLING_T = 0
+        self.polling_t_idx = 0
+        self.average_polling_t = 0
+        self.worst_polling_t = 0
+        self.best_polling_t = 0
+        
+        self.next_polling_time = 0
         
         self.start_times = {
             'handle_events': 0,
@@ -161,7 +173,6 @@ class PyGameInstance():
         
         try:
             await coro
-            
         finally:
             monitor_task.cancel()  
 
@@ -170,19 +181,31 @@ class PyGameInstance():
         Handle pygame key events and pass them to the handling object, updates at an uncapped rate
         """
         while not self.exited:
-            self.handling_clock.tick()
-            self.handling.current_time = self.elapsed_times["handle_events"]
-            self.handling.delta_tick = self.delta_tick
-            
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.__exit()
-                    
-                elif event.type == pygame.KEYDOWN:
-                    self.handling.on_key_press(event.key)
-                    
-                elif event.type == pygame.KEYUP:
-                    self.handling.on_key_release(event.key)
+            if self.elapsed_times["handle_events"] >= self.next_polling_time:
+                
+                self.handling_clock.tick()
+                self.handling.current_time = self.elapsed_times["handle_events"]
+                self.handling.delta_tick = self.delta_tick
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.__exit()
+                        
+                    elif event.type == pygame.KEYDOWN:
+                        self.handling.on_key_press(event.key)
+                        
+                        if event.key == pygame.K_F3:
+                            self.__show_debug_menu()
+                            
+                        if event.key == pygame.K_ESCAPE:
+                            self.__exit()
+                        
+                    elif event.type == pygame.KEYUP:
+                        self.handling.on_key_release(event.key)
+ 
+                self.next_polling_time += 1 / self.config.POLLING_RATE
+                
+                self.__get_polling_rate()
             
             await asyncio.sleep(0)
     
@@ -261,6 +284,12 @@ class PyGameInstance():
         Update the stored FPS value
         """
         self.FPS = self.render_clock.get_fps()
+        
+    def __get_polling_rate(self):
+        """
+        Update the stored polling rate value
+        """
+        self.POLLING_RATE = self.handling_clock.get_fps()
 
     def __calc_exe_time_avg(self):
         """
@@ -365,18 +394,62 @@ class PyGameInstance():
         
         self.df_idx += 1
         
+    def __calc_average_polling(self):
+        """
+        For debug menu, calculate the average polling rate
+        """
+        if self.polling_idx >= self.max_avg_len:
+            self.polling_idx = 0
+            
+        if len(self.POLLING_RATEs) >= self.max_avg_len:
+            self.POLLING_RATEs.pop(self.polling_idx)
+            
+        self.POLLING_RATEs.append(self.POLLING_RATE)
         
+        self.polling_idx += 1
+        self.average_polling = sum(self.POLLING_RATEs)/len(self.POLLING_RATEs)
+        
+        self.worst_polling = min(self.POLLING_RATEs)
+        self.best_polling = max(self.POLLING_RATEs)
+    
+    def __calc_average_polling_t(self):
+        """
+        For debug menu, calculate the average polling time
+        """
+        if self.polling_t_idx >= self.max_avg_len:
+            self.polling_t_idx = 0
+            
+        if len(self.POLLING_TIMES) >= self.max_avg_len:
+            self.POLLING_TIMES.pop(self.polling_t_idx)
+            
+        self.POLLING_TIMES.append(self.iter_times["handle_events"])
+        
+        self.polling_t_idx += 1
+        self.average_polling_t = sum(self.POLLING_TIMES)/len(self.POLLING_TIMES)
+        
+        self.worst_polling_t = max(self.POLLING_TIMES)
+        self.best_polling_t = min(self.POLLING_TIMES)
+    
+    def __show_debug_menu(self):
+        """
+        Show the debug menu
+        """
+        self.DEBUG = not self.DEBUG
+    
     async def __get_debug_info(self):
         """
         Fetch the debug information for the debug menu
         """
         while not self.exited:
-            if self.show_all_debug:
+            if self.DEBUG:
                     self.__calc_average_FPS()
                     self.__calc_render_time_avg()
                     
                     self.__calc_average_TPS()
                     self.__calc_exe_time_avg()
+                    
+                    self.__calc_average_polling()
+                    self.__calc_average_polling_t()
                     
                     self.debug_dict = {
                         # fps debug
@@ -412,9 +485,18 @@ class PyGameInstance():
                         # tick counter
                         'TICKCOUNT': self.state_snapshot.tick_counter,
 
-                        'POLLING_RATE': self.handling_clock.get_fps(),
+                        'POLLING_RATE': self.average_polling,
+                        'POLLING_RATE_RAW': self.POLLING_RATE,
+                        'BEST_POLLING_RATE': self.best_polling,
+                        'WORST_POLLING_RATE': self.worst_polling,
                         
+                        'POLLING_T': self.average_polling_t,
+                        'POLLING_T_RAW': self.iter_times["handle_events"],
+                        'BEST_POLLING_T': self.best_polling_t,
+                        'WORST_POLLING_T': self.worst_polling_t,
                     }
+            else:
+                self.debug_dict = None
         
             await asyncio.sleep(0)
 class Clock:
@@ -454,7 +536,7 @@ class Clock:
         return self.fps
             
 async def main():
-    pygame_instance = PyGameInstance(DEBUG = True)
+    pygame_instance = PyGameInstance()
     four = Four(pygame_instance)
     await pygame_instance.run(four)
 

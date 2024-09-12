@@ -375,6 +375,12 @@ class Render():
         # handling debug information
         
         debug_surfaces.append((self.hun2_big.render(f'POLL: {int(debug_dict["POLLING_RATE"])}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 8)))
+        
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_POLLING_RATE"])} | best: {int(debug_dict["BEST_POLLING_RATE"])} | current: {int(debug_dict["POLLING_RATE_RAW"])}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 9)))
+        
+        debug_surfaces.append((self.hun2_small.render(f'Polling Time: {get_prefix(debug_dict["POLLING_T"], "s")}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 9.5)))
+        
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 10)))
 
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)
