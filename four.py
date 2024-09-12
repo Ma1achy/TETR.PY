@@ -28,8 +28,6 @@ class Four():
         
         self.game_clock = pygame.time.Clock()
         self.tick_counter = 0
-        self.time = 0
-        self.update_interval = 1/self.pgconfig.TPS
         
     def loop(self):
         """
@@ -38,7 +36,6 @@ class Four():
         args:
         dt (float): The time since the last frame
         """
-        self.time = pygame.time.get_ticks()
         self.actions_this_tick = []
         self.pygame_instance.handling.before_loop_hook()
         
@@ -55,7 +52,7 @@ class Four():
             
         for action_dict in list(self.pygame_instance.handling.actions_buffer):
            
-            relative_tick = int((action_dict['timestamp'] - pygame.time.get_ticks()) / tick_duration)
+            relative_tick = int((action_dict['timestamp'] - self.pygame_instance.current_time) / tick_duration)
                  
             if relative_tick <= 0 and abs(relative_tick) <= self.pygame_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)

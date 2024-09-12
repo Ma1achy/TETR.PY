@@ -60,9 +60,7 @@ class Handling():
         
         self.DAS_counter = 0
         self.ARR_counter = 0
-        
-        self.clock = pygame.time.Clock()
-            
+
     def GetEmptyActions(self):
         return {
             Action.MOVE_LEFT:                   {'state': False, 'timestamp': 0}, 
