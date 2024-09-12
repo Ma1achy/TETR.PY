@@ -69,7 +69,7 @@ class Handling():
         
         self.DAS_counter = 0
         self.ARR_counter = 0
-
+        
     def GetEmptyActions(self):
         """
         Return an empty actions dictionary

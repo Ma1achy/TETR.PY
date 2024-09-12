@@ -24,6 +24,7 @@ class Render():
         self.hun2_big = Font(self.pgconfig.GRID_SIZE).hun2()
         self.hun2_small = Font(self.pgconfig.GRID_SIZE//2).hun2()
         self.pfw_small = Font(self.pgconfig.GRID_SIZE//2).pfw()
+        self.action_ui = Font(self.pgconfig.GRID_SIZE).action_ui()
             
     def __init_four_surface(self):
         """
@@ -382,10 +383,36 @@ class Render():
         
         debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 10)))
 
+        # key states
+        
+        left_colour = (255, 255, 255) if debug_dict['KEY_LEFT'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        right_colour = (255, 255, 255) if debug_dict['KEY_RIGHT'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.3)
+        softdrop_colour = (255, 255, 255) if debug_dict['KEY_SOFT_DROP'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        ccw_colour = (255, 255, 255) if debug_dict['KEY_COUNTERCLOCKWISE'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        cw_colour = (255, 255, 255) if debug_dict['KEY_CLOCKWISE'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        colour_180 = (255, 255, 255) if debug_dict['KEY_180'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        harddrop_colour = (255, 255, 255) if debug_dict['KEY_HARD_DROP'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        hold_colour = (255, 255, 255) if debug_dict['KEY_HOLD'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        
+        debug_surfaces.append((self.action_ui.render('B', True, left_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 11)))
+        
+        debug_surfaces.append((self.action_ui.render('A', True, right_colour), (self.pgconfig.GRID_SIZE *2 , self.pgconfig.GRID_SIZE * 11)))
+        
+        debug_surfaces.append((self.action_ui.render('C', True, softdrop_colour), (self.pgconfig.GRID_SIZE * 3.5, self.pgconfig.GRID_SIZE * 11)))
+        
+        debug_surfaces.append((self.action_ui.render('G', True, harddrop_colour), (self.pgconfig.GRID_SIZE * 5, self.pgconfig.GRID_SIZE * 11)))
+        
+        debug_surfaces.append((self.action_ui.render('E', True, ccw_colour), (self.pgconfig.GRID_SIZE * 6.5, self.pgconfig.GRID_SIZE * 11)))
+        
+        debug_surfaces.append((self.action_ui.render('D', True, cw_colour), (self.pgconfig.GRID_SIZE * 8, self.pgconfig.GRID_SIZE * 11)))
+        
+        debug_surfaces.append((self.action_ui.render('F', True, colour_180), (self.pgconfig.GRID_SIZE * 9.5, self.pgconfig.GRID_SIZE * 11)))
+        
+        debug_surfaces.append((self.action_ui.render('H', True, hold_colour), (self.pgconfig.GRID_SIZE * 11, self.pgconfig.GRID_SIZE * 11)))
+        
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)
     
-       
-   
+ 
         
             

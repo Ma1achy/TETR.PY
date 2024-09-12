@@ -6,6 +6,7 @@ from render import Render
 import time
 import asyncio
 from collections import deque 
+from handling import Action
 
 class PyGameInstance():
     def __init__(self):
@@ -84,6 +85,8 @@ class PyGameInstance():
         self.best_polling_t = 0
         
         self.next_polling_time = 0
+        
+        
         
         self.start_times = {
             'handle_events': 0,
@@ -494,6 +497,15 @@ class PyGameInstance():
                         'POLLING_T_RAW': self.iter_times["handle_events"],
                         'BEST_POLLING_T': self.best_polling_t,
                         'WORST_POLLING_T': self.worst_polling_t,
+                        
+                        'KEY_LEFT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_LEFT]]['current'],
+                        'KEY_RIGHT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_RIGHT]]['current'],
+                        'KEY_CLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_CLOCKWISE]]['current'],
+                        'KEY_COUNTERCLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]]['current'],
+                        'KEY_180': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_180]]['current'],
+                        'KEY_HARD_DROP' : self.handling.key_states[self.handling.key_bindings[Action.HARD_DROP]]['current'],
+                        'KEY_SOFT_DROP': self.handling.key_states[self.handling.key_bindings[Action.SOFT_DROP]]['current'],
+                        'KEY_HOLD': self.handling.key_states[self.handling.key_bindings[Action.HOLD]]['current'],
                     }
             else:
                 self.debug_dict = None
