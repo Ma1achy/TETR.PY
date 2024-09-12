@@ -3,6 +3,9 @@ import pygame as pygame
 from collections import deque
 
 class Action(Enum):
+    """
+    Actions that can be performed
+    """
     MOVE_LEFT = auto()
     MOVE_RIGHT = auto()
     ROTATE_CLOCKWISE = auto()
@@ -14,6 +17,12 @@ class Action(Enum):
 
 class Handling():
     def __init__(self, pgconfig):
+        """
+        Handle the key inputs and provide the actions to the game loop in a queue.
+        
+        args:	
+        pgconfig (PyGameConfig): The pygame configuration
+        """
         
         self.pgconfig = pgconfig
         
@@ -56,12 +65,15 @@ class Handling():
         self.delta_tick = 0
         
         self.buffer_threshold = 128 # tick range where old actions are still considered valid
-        self.actions_buffer = deque()
+        self.action_queue = deque()
         
         self.DAS_counter = 0
         self.ARR_counter = 0
 
     def GetEmptyActions(self):
+        """
+        Return an empty actions dictionary
+        """
         return {
             Action.MOVE_LEFT:                   {'state': False, 'timestamp': 0}, 
             Action.MOVE_RIGHT:                  {'state': False, 'timestamp': 0},
@@ -74,11 +86,17 @@ class Handling():
         }
     
     def before_loop_hook(self):
+        """
+        Hook that is called within the game loop before the tick is executed to obtain the current action states to be used in the game loop
+        """
         self.__get_actions() # has to be before the key states are forwarded or toggled actions will not be detected (can't belive this took 2 hours to figure out)
         self.__forward_key_states()     
-        return self.actions_buffer
+        return self.action_queue
     
     def __get_actions(self):
+        """
+        Get the actions from the key states and add them to the action buffer
+        """
     
         self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
         
@@ -99,16 +117,28 @@ class Handling():
         self.get_action_buffer() # add actions to buffer
         
     def __forward_key_states(self):
+        """
+        Forward the key states for comaprison in the future (allows for toggle/hold detection)
+        """
         for k in self.key_states:
             self.key_states[k]['previous'] = self.key_states[k]['current']
     
-    def __is_action_toggled(self, action:Action):  
+    def __is_action_toggled(self, action:Action):
+        """
+        Test if the action is toggled (pressed and released)
+        """
         return self.key_states[self.key_bindings[action]]['current'] and not self.key_states[self.key_bindings[action]]['previous']
     
     def __is_action_down(self, action:Action):
+        """
+        Test if the action is down (pressed)
+        """
         return self.key_states[self.key_bindings[action]]['current']
     
     def __test_actions(self, action, check):
+        """
+        Perform the state tests on an action and update the action state
+        """
         
         if check(action):
             self.actions[action]['state'] = True
@@ -120,6 +150,9 @@ class Handling():
             
             
     def __get_key_info(self, key):
+        """
+        Get the key info from the key object
+        """
         
         try:
             k = key.char
@@ -130,6 +163,11 @@ class Handling():
         return k
                            
     def on_key_press(self, key):
+        """
+        Handle the key press event
+        
+        key (pygame.key): The key object
+        """
         
         keyinfo = self.__get_key_info(key)
         
@@ -143,6 +181,12 @@ class Handling():
             return
     
     def on_key_release(self, key):
+        """
+        Handle the key release event
+        
+        args:
+        key (pygame.key): The key object
+        """
         
         keyinfo = self.__get_key_info(key)
         
@@ -156,15 +200,21 @@ class Handling():
             return  
         
     def get_action_buffer(self):
+        """
+        Get the actions that are currently active and add them to the queue
+        """
         
         for action in self.actions:
-            if self.actions[action]['state'] == True:
-                self.actions_buffer.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+            if self.actions[action]['state'] == True: # has to have equality operator for some reason??????????????? if self.actions[action]['state']: has different behavior (u insta die on tick 0) even though it is the same boolean comparison???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+                self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
                 
    
     def consume_action(self):
-        if self.actions_buffer:
-            return self.actions_buffer.popleft()  
+        """
+        Consume the action from the queue
+        """
+        if self.action_queue:
+            return self.action_queue.popleft()  
         return None
     
     # TODO: DAS AND ARR LOGIC

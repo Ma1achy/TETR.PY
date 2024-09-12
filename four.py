@@ -50,7 +50,7 @@ class Four():
         else:
             tick_duration = 1000/ self.pgconfig.TPS
             
-        for action_dict in list(self.pygame_instance.handling.actions_buffer):
+        for action_dict in list(self.pygame_instance.handling.action_queue):
            
             relative_tick = int((action_dict['timestamp'] - self.pygame_instance.current_time) / tick_duration)
                  
