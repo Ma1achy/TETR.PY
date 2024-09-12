@@ -9,6 +9,14 @@ from collections import deque
 
 class PyGameInstance():
     def __init__(self, show_all_debug:bool = False, show_render_debug:bool = False, show_tick_debug:bool = False):
+        """"
+        Create an instance of pygame to run the game
+        
+        args:
+        (bool) show_all_debug: show all debug information
+        (bool) show_render_debug: show only render debug information
+        (bool) show_tick_debug: show only tick debug information
+        """
         
         self.config = PyGameConfig()
         
