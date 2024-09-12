@@ -26,7 +26,6 @@ class Four():
         self.game_over = False
         self.danger = False
         
-        self.game_clock = pygame.time.Clock()
         self.tick_counter = 0
         
     def loop(self):
@@ -42,13 +41,14 @@ class Four():
         self.__action_dequeuer()
         self.__get_next_state()
         
-        self.game_clock.tick()
         self.tick_counter += 1
                 
     def __action_dequeuer(self):
            
-        if self.game_clock.get_fps() != 0:
-            tick_duration= 1000/ self.game_clock.get_fps() # ms per tick
+        if self.pygame_instance.TPS != 0:
+            tick_duration = 1000 / self.pygame_instance.TPS # ms per tick
+        else:
+            tick_duration = 1000/ self.pgconfig.TPS
             
         for action_dict in list(self.pygame_instance.handling.actions_buffer):
            
@@ -337,7 +337,5 @@ class StateSnapshot:
         self.held_tetromino = four_instance.held_tetromino
         self.game_over = four_instance.game_over
         self.danger = four_instance.danger
-        
-        self.game_clock = four_instance.game_clock
         self.tick_counter = four_instance.tick_counter
     

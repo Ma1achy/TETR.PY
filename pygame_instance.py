@@ -5,7 +5,8 @@ from four import Four
 from render import Render
 import time
 import asyncio
-
+import numpy as np
+from collections import deque 
 class PyGameInstance():
     def __init__(self, show_all_debug:bool = False, show_render_debug:bool = False, show_tick_debug:bool = False):
         
@@ -15,7 +16,8 @@ class PyGameInstance():
         self.render = Render(self.window)
         self.handling = Handling(self.config)
         
-        self.clock = pygame.time.Clock()
+        self.render_clock = CustomClock()
+        self.game_clock = CustomClock()
         self.current_time = 0
         
         self.next_frame_time = 0
@@ -50,14 +52,14 @@ class PyGameInstance():
         self.render_time_raw = 0
         
         self.FPSs = []
-        self.FPS = 0
+        self.FPS = self.config.FPS
         self.average_FPS = 0
         self.fps_idx = 0
         self.worst_fps = 0
         self.best_fps = 0
         
         self.TPSs = []
-        self.TPS = 0
+        self.TPS = self.config.TPS
         self.average_TPS = 0
         self.tps_idx = 0
         self.worst_tps = 0
@@ -73,11 +75,33 @@ class PyGameInstance():
         self.state_snapshot = None
         self.next_tick_time = 0
         
+        self.start_times = {
+            'handle_events': 0,
+            'game_loop': 0,
+            'get_debug_info': 0,
+            'render_loop': 0
+        }
+        
+        self.elapsed_times = {
+            'handle_events': 0,
+            'game_loop': 0,
+            'get_debug_info': 0,
+            'render_loop': 0
+        }
+        
+        self.iter_times = {
+            'handle_events': 1,
+            'game_loop': 1,
+            'get_debug_info': 1,
+            'render_loop': 1
+        }
+        
     def __initialise(self, four):
         """
         Initalise the game
         """
         self.state_snapshot = four.forward_state()
+        self.start_time = time.perf_counter()
         pygame.init()
         
     def __init_window(self):
@@ -99,15 +123,48 @@ class PyGameInstance():
         self.handling.__forward_key_states() 
         return self.actions
     
+    # async def run(self, four):
+    #     self.__initialise(four)
+        
+    #     await asyncio.gather(
+    #         self.__handle_events(),
+    #         self.__game_loop(four),
+    #         self.__get_debug_info(),
+    #         self.__render_loop(),
+    #     )
+    
     async def run(self, four):
         self.__initialise(four)
         
         await asyncio.gather(
-            self.__handle_events(),
-            self.__game_loop(four),
-            self.__get_debug_info(),
-            self.__render_loop(),
+            self.__monitor_task("handle_events", self.__handle_events()),
+            self.__monitor_task("game_loop", self.__game_loop(four)),
+            self.__monitor_task("get_debug_info", self.__get_debug_info()),
+            self.__monitor_task("render_loop", self.__render_loop()),
         )
+
+    async def __monitor_task(self, name, coro):
+        
+        self.start_times[name] = time.perf_counter()
+        
+        async def monitor():
+            while True:
+                
+                iter_start = time.perf_counter()
+                self.elapsed_times[name] = time.perf_counter() - self.start_times[name]
+                #print(f"Task {name} has been running for {self.elapsed_times[name]:.2f} seconds, iteration time: {self.iter_times.get(name, 0):.2e}")
+                
+                self.iter_times[name] = time.perf_counter() - iter_start
+                
+                await asyncio.sleep(0) 
+        
+        monitor_task = asyncio.create_task(monitor())
+        
+        try:
+            await coro
+            
+        finally:
+            monitor_task.cancel()  
 
     async def __handle_events(self):
         while not self.exited:
@@ -128,11 +185,15 @@ class PyGameInstance():
     
     async def __game_loop(self, four):
         while not self.exited:
-            self.current_time = pygame.time.get_ticks()
-
+         
+            self.current_time = self.elapsed_times["game_loop"]
+            
             if self.current_time >= self.next_tick_time:
+                
                 self.__do_tick(four)
-                self.next_tick_time += 1000/self.config.TPS
+                self.next_tick_time += 1/self.config.TPS
+            
+            self.__get_tps()
             
             await asyncio.sleep(0)
 
@@ -140,32 +201,28 @@ class PyGameInstance():
         while not self.exited:
             
             if self.config.UNCAPPED_FPS:
+                
                 self.__do_render()
                 
             elif self.current_time >= self.next_frame_time and not self.config.UNCAPPED_FPS:
                 self.__do_render()
-                self.next_frame_time += 1000/self.config.FPS
-
+                self.next_frame_time += 1/self.config.FPS
+        
+            self.__get_fps()
+            
             await asyncio.sleep(0)
             
     def __do_tick(self, four):
-        sim_i = time.time()
-        
+      
         self.delta_tick = self.__calc_df()
         four.loop()
         self.state_snapshot = four.forward_state()
-        
-        sim_e = time.time()
-        self.tick_time_raw = sim_e - sim_i
-        
+        self.game_clock.tick()
+    
     def __do_render(self):
-        render_i = time.time()
         
         self.render.render_frame(self.state_snapshot, self.show_render_debug, self.show_tick_debug, self.debug_dict)
-        
-        render_e = time.time()
-        self.render_time_raw = render_e - render_i
-        self.clock.tick()
+        self.render_clock.tick()
            
     def play_sound(self, sound:str):
         match sound:
@@ -202,7 +259,13 @@ class PyGameInstance():
         """
         self.exited = True
         pygame.quit()
+        
+    def __get_tps(self):
+        self.TPS = self.game_clock.get_fps()
     
+    def __get_fps(self):
+        self.FPS = self.render_clock.get_fps()
+
     def __calc_exe_time_avg(self):
         
         if self.exe_idx >= self.max_avg_len:
@@ -211,7 +274,7 @@ class PyGameInstance():
         if len(self.tick_times) >= self.max_avg_len:
             self.tick_times.pop(self.exe_idx)
              
-        self.tick_times.append(self.tick_time_raw)
+        self.tick_times.append(self.iter_times["game_loop"])
             
         self.best_tick_time = min(self.tick_times)
         self.worst_tick_time = max(self.tick_times)
@@ -227,7 +290,7 @@ class PyGameInstance():
         if len(self.render_times) >= self.max_avg_len:
             self.render_times.pop(self.r_idx)
             
-        self.render_times.append(self.render_time_raw )
+        self.render_times.append(self.iter_times["render_loop"])
             
         self.best_render_time = min(self.render_times)
         self.worst_render_time = max(self.render_times)
@@ -236,7 +299,7 @@ class PyGameInstance():
         self.render_time_avg =  sum(self.render_times)/len(self.render_times)
         
     def __calc_average_TPS(self):
-        self.TPS = self.state_snapshot.game_clock.get_fps()
+        
         if self.TPS == float('inf') or self.TPS == float('-inf'):
             self.TPS = 0
 
@@ -256,8 +319,7 @@ class PyGameInstance():
         self.average_TPS = sum(self.TPSs) / len(self.TPSs)
         
     def __calc_average_FPS(self):
-        self.FPS = self.clock.get_fps()
-
+    
         if self.fps_idx >= self.max_avg_len:
             self.fps_idx = 0
             
@@ -307,9 +369,9 @@ class PyGameInstance():
                         'TPS_RAW': self.TPS,
                         'FPS_RAW': self.FPS,
                         'SIM_T': self.tick_time,
-                        'SIM_T_RAW': self.tick_time_raw,
+                        'SIM_T_RAW': self.iter_times["game_loop"],
                         'REN_T': self.render_time_avg,
-                        'REN_T_RAW': self.render_time_raw,
+                        'REN_T_RAW': self.iter_times["render_loop"],
                         'DF': self.average_df,
                         'DF_RAW': self.delta_tick,
                         'TICKCOUNT': self.state_snapshot.tick_counter,
@@ -366,7 +428,32 @@ class PyGameInstance():
                 }
         
             await asyncio.sleep(0)
-                  
+
+class CustomClock:
+    def __init__(self, max_entries=10):
+        self.max_entries = max_entries
+        self.times = deque(maxlen = max_entries)
+        self.last_time = time.perf_counter()
+        self.fps = 0
+
+    def tick(self):
+        current_time = time.perf_counter()
+        delta_time = current_time - self.last_time
+        self.last_time = current_time
+        
+        self.times.append(delta_time)
+        
+        if len(self.times) > 1:
+            average_time = sum(self.times) / len(self.times)
+            self.fps = 1 / average_time
+        else:
+            self.fps = 0  
+    
+    def get_fps(self):
+        return self.fps
+        
+       
+             
 async def main():
     pygame_instance = PyGameInstance(show_all_debug = True, show_render_debug = False, show_tick_debug = False)
     four = Four(pygame_instance)
