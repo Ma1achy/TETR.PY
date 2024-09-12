@@ -3,7 +3,7 @@ import pygame
 from pygame_config import PyGameConfig
 from config import Config
 from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix
-import math
+
 class Render():
     def __init__(self, window:pygame.Surface):
         """
