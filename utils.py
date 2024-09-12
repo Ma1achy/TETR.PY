@@ -41,7 +41,7 @@ class Font():
         font_path = os.path.join(self.base_path, 'action-icons.ttf')
         return pygame.font.Font(font_path, self.size)
 
-def get_prefix(number, unit):
+def get_prefix(number, unit, precision = 1):
     prefixes = [
         (1e-24, "y"),  # yocto
         (1e-21, "z"),  # zepto
@@ -76,7 +76,7 @@ def get_prefix(number, unit):
     prefix, _, value = min(diffs, key = lambda x: (abs(x[1]), x[0]))
     num = number / value
     
-    return f"{num:.1f} {prefix}{unit}" 
+    return f"{num:.{precision}f} {prefix}{unit}" 
   
 def get_tetromino_blocks(type:str):
     """
