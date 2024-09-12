@@ -25,7 +25,17 @@ class Handling():
         """
         
         self.pgconfig = pgconfig
+        self.current_time = 0
+        self.delta_tick = 0
         
+        self.buffer_threshold = 128 # tick range where old actions are still considered valid
+        self.action_queue = deque()
+        
+        self.DAS_counter = 0
+        self.ARR_counter = 0
+        
+        self.prev_time = 0
+    
         self.key_bindings = {
             Action.MOVE_LEFT:                   pygame.K_LEFT,
             Action.MOVE_RIGHT:                  pygame.K_RIGHT,
@@ -60,15 +70,6 @@ class Handling():
             self.key_bindings[Action.SOFT_DROP]:                     {'current': False, 'previous': False},
             self.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
         }
-        
-        self.current_time = 0
-        self.delta_tick = 0
-        
-        self.buffer_threshold = 128 # tick range where old actions are still considered valid
-        self.action_queue = deque()
-        
-        self.DAS_counter = 0
-        self.ARR_counter = 0
         
     def GetEmptyActions(self):
         """
@@ -115,6 +116,12 @@ class Handling():
         self.__test_actions(Action.HOLD, self.__is_action_toggled)
         
         self.get_action_buffer() # add actions to buffer
+    
+        self.__DAS()
+        
+        self.__ARR()
+        
+        self.prev_time = self.current_time
         
     def __forward_key_states(self):
         """
@@ -203,7 +210,7 @@ class Handling():
         """
         Get the actions that are currently active and add them to the queue
         """
-        
+     
         for action in self.actions:
             if self.actions[action]['state'] is True:
                 self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
@@ -215,7 +222,53 @@ class Handling():
         if self.action_queue:
             return self.action_queue.popleft()  
         return None
+            
+    def __DAS(self):
     
+        if self.handling_settings['DASCancel']:
+            self.__DAS_cancel(self)
+            
+        if self.DAS_counter >= self.handling_settings['DAS'] / 1000:
+            self.DAS_counter = self.handling_settings['DAS'] / 1000
+        
+        if self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']:
+            self.DAS_counter += self.current_time - self.prev_time
+            return True
+            
+        elif self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']:
+            self.DAS_counter += self.current_time - self.prev_time
+            return True
+        
+        elif not self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current']:
+            self.DAS_counter = 0
+            self.ARR_counter = 0
+            return False
+        
+        elif not self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current']:
+            self.DAS_counter = 0
+            self.ARR_counter = 0
+            return False
+          
+    def __DAS_cancel(self):
+       # cancel DAS if opposite direction is pressed
+            
+        if self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']:
+            self.DAS_counter = 0
+            self.ARR_counter = 0
+            
+        elif self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current']:
+            self.DAS_counter = 0
+            self.ARR_counter = 0
+            
+    def __ARR(self):
+        
+        if self.DAS_counter >= self.handling_settings['DAS'] / 1000:
+            self.ARR_counter += self.current_time - self.prev_time
+           
+        if self.ARR_counter >= self.handling_settings['ARR'] / 1000:
+            self.ARR_counter = 0
+            return False
+                
     # TODO: DAS AND ARR LOGIC
     # IF LEFT OR RIGHT IS HELD, INCREMENT DAS COUNTER UNTIL CHARGED THEN DO ARR COUNTER
     # IF DAS IS CHARGED INCREMENT ARR COUNTER

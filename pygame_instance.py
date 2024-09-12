@@ -87,8 +87,6 @@ class PyGameInstance():
         
         self.next_polling_time = 0
         
-        
-        
         self.start_times = {
             'handle_events': 0,
             'game_loop': 0,
@@ -499,6 +497,19 @@ class PyGameInstance():
                         'POLLING_T_RAW': self.iter_times["handle_events"],
                         'BEST_POLLING_T': self.best_polling_t,
                         'WORST_POLLING_T': self.worst_polling_t,
+                        
+                        'DAS_COUNTER': self.handling.DAS_counter,
+                        'DAS': self.handling.handling_settings['DAS'],
+                        
+                        'ARR_COUNTER': self.handling.ARR_counter,
+                        'ARR': self.handling.handling_settings['ARR'],
+                        
+                        'DCD': self.handling.handling_settings['DCD'],
+                        'SDF': self.handling.handling_settings['SDF'],
+                        
+                        'DAS_CANCEL': self.handling.handling_settings['DASCancel'],
+                        'PREVHD': self.handling.handling_settings['PrevAccHD'],
+                        'PREFSD': self.handling.handling_settings['PrefSD'],
                     }
             else:
                 self.debug_dict = None
