@@ -38,7 +38,7 @@ class Font():
         return pygame.font.Font(font_path, self.size)
     
     def action_ui(self):
-        font_path = os.path.join(self.base_path, 'action_ui.ttf')
+        font_path = os.path.join(self.base_path, 'action-icons.ttf')
         return pygame.font.Font(font_path, self.size)
 
 def get_prefix(number, unit):

@@ -32,7 +32,7 @@ class Render():
         """
         return pygame.surface.Surface((self.pgconfig.FOUR_INSTANCE_WIDTH, self.pgconfig.FOUR_INSTANCE_HEIGHT))
     
-    def render_frame(self, four, debug_dict):
+    def render_frame(self, four, key_dict, debug_dict):
         """
         Render the frame of the Four Instance
         
@@ -55,6 +55,9 @@ class Render():
         
         if debug_dict:
             self.__draw_debug(debug_dict)
+        
+        if key_dict:
+            self.__draw_key_states(key_dict)
             
         pygame.display.update()
         
@@ -375,44 +378,50 @@ class Render():
         
         # handling debug information
         
-        debug_surfaces.append((self.hun2_big.render(f'POLL: {int(debug_dict["POLLING_RATE"])}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 8)))
+        if debug_dict['POLLING_RATE'] < self.pgconfig.POLLING_RATE * 0.95:
+            poll_colour = (255, 0, 0)
+        else:
+            poll_colour = (0, 255, 0)
         
-        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_POLLING_RATE"])} | best: {int(debug_dict["BEST_POLLING_RATE"])} | current: {int(debug_dict["POLLING_RATE_RAW"])}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 9)))
+        debug_surfaces.append((self.hun2_big.render(f'POLL: {int(debug_dict["POLLING_RATE"])}', True, poll_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 8)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Polling Time: {get_prefix(debug_dict["POLLING_T"], "s")}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 9.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_POLLING_RATE"])} | best: {int(debug_dict["BEST_POLLING_RATE"])} | current: {int(debug_dict["POLLING_RATE_RAW"])}', True, poll_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 9)))
         
-        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 10)))
+        debug_surfaces.append((self.hun2_small.render(f'Polling Time: {get_prefix(debug_dict["POLLING_T"], "s")}', True, poll_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 9.5)))
+        
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, poll_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 10)))
 
-        # key states
-        
-        left_colour = (255, 255, 255) if debug_dict['KEY_LEFT'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        right_colour = (255, 255, 255) if debug_dict['KEY_RIGHT'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.3)
-        softdrop_colour = (255, 255, 255) if debug_dict['KEY_SOFT_DROP'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        ccw_colour = (255, 255, 255) if debug_dict['KEY_COUNTERCLOCKWISE'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        cw_colour = (255, 255, 255) if debug_dict['KEY_CLOCKWISE'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        colour_180 = (255, 255, 255) if debug_dict['KEY_180'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        harddrop_colour = (255, 255, 255) if debug_dict['KEY_HARD_DROP'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        hold_colour = (255, 255, 255) if debug_dict['KEY_HOLD'] else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        
-        debug_surfaces.append((self.action_ui.render('B', True, left_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 11)))
-        
-        debug_surfaces.append((self.action_ui.render('A', True, right_colour), (self.pgconfig.GRID_SIZE *2 , self.pgconfig.GRID_SIZE * 11)))
-        
-        debug_surfaces.append((self.action_ui.render('C', True, softdrop_colour), (self.pgconfig.GRID_SIZE * 3.5, self.pgconfig.GRID_SIZE * 11)))
-        
-        debug_surfaces.append((self.action_ui.render('G', True, harddrop_colour), (self.pgconfig.GRID_SIZE * 5, self.pgconfig.GRID_SIZE * 11)))
-        
-        debug_surfaces.append((self.action_ui.render('E', True, ccw_colour), (self.pgconfig.GRID_SIZE * 6.5, self.pgconfig.GRID_SIZE * 11)))
-        
-        debug_surfaces.append((self.action_ui.render('D', True, cw_colour), (self.pgconfig.GRID_SIZE * 8, self.pgconfig.GRID_SIZE * 11)))
-        
-        debug_surfaces.append((self.action_ui.render('F', True, colour_180), (self.pgconfig.GRID_SIZE * 9.5, self.pgconfig.GRID_SIZE * 11)))
-        
-        debug_surfaces.append((self.action_ui.render('H', True, hold_colour), (self.pgconfig.GRID_SIZE * 11, self.pgconfig.GRID_SIZE * 11)))
-        
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)
     
  
+    def __draw_key_states(self, key_dict):
+        key_surfaces = []
         
-            
+        left_colour = (255, 255, 255)       if key_dict['KEY_LEFT']               else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        right_colour = (255, 255, 255)      if key_dict['KEY_RIGHT']              else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.3)
+        softdrop_colour = (255, 255, 255)   if key_dict['KEY_SOFT_DROP']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        ccw_colour = (255, 255, 255)        if key_dict['KEY_COUNTERCLOCKWISE']   else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        cw_colour = (255, 255, 255)         if key_dict['KEY_CLOCKWISE']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        colour_180 = (255, 255, 255)        if key_dict['KEY_180']                else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        harddrop_colour = (255, 255, 255)   if key_dict['KEY_HARD_DROP']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        hold_colour = (255, 255, 255)       if key_dict['KEY_HOLD']               else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        
+        key_surfaces.append((self.action_ui.render('B', True, left_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 26.5)))
+
+        key_surfaces.append((self.action_ui.render('A', True, right_colour), (self.pgconfig.GRID_SIZE *2 , self.pgconfig.GRID_SIZE * 26.5)))
+
+        key_surfaces.append((self.action_ui.render('C', True, softdrop_colour), (self.pgconfig.GRID_SIZE * 3.5, self.pgconfig.GRID_SIZE * 26.5)))
+
+        key_surfaces.append((self.action_ui.render('G', True, harddrop_colour), (self.pgconfig.GRID_SIZE * 5, self.pgconfig.GRID_SIZE * 26.5)))
+
+        key_surfaces.append((self.action_ui.render('E', True, ccw_colour), (self.pgconfig.GRID_SIZE * 6.5, self.pgconfig.GRID_SIZE * 26.5)))
+
+        key_surfaces.append((self.action_ui.render('D', True, cw_colour), (self.pgconfig.GRID_SIZE * 8, self.pgconfig.GRID_SIZE * 26.5)))
+
+        key_surfaces.append((self.action_ui.render('F', True, colour_180), (self.pgconfig.GRID_SIZE * 9.5, self.pgconfig.GRID_SIZE * 26.5)))
+
+        key_surfaces.append((self.action_ui.render('H', True, hold_colour), (self.pgconfig.GRID_SIZE * 11, self.pgconfig.GRID_SIZE * 26.5))) 
+        
+        for surface, coords in key_surfaces:
+            self.window.blit(surface, coords)

@@ -34,6 +34,7 @@ class PyGameInstance():
         self.DEBUG = False
         
         self.debug_dict = None
+        self.key_dict = None
         self.max_avg_len = 500
         
         self.tick_times = []
@@ -266,7 +267,8 @@ class PyGameInstance():
         """
         Render a single frame of the game
         """
-        self.render.render_frame(self.state_snapshot, self.debug_dict)
+        self.__get_key_dict()
+        self.render.render_frame(self.state_snapshot, self.key_dict, self.debug_dict)
         self.render_clock.tick()
                
     def __exit(self):
@@ -497,20 +499,23 @@ class PyGameInstance():
                         'POLLING_T_RAW': self.iter_times["handle_events"],
                         'BEST_POLLING_T': self.best_polling_t,
                         'WORST_POLLING_T': self.worst_polling_t,
-                        
-                        'KEY_LEFT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_LEFT]]['current'],
-                        'KEY_RIGHT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_RIGHT]]['current'],
-                        'KEY_CLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_CLOCKWISE]]['current'],
-                        'KEY_COUNTERCLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]]['current'],
-                        'KEY_180': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_180]]['current'],
-                        'KEY_HARD_DROP' : self.handling.key_states[self.handling.key_bindings[Action.HARD_DROP]]['current'],
-                        'KEY_SOFT_DROP': self.handling.key_states[self.handling.key_bindings[Action.SOFT_DROP]]['current'],
-                        'KEY_HOLD': self.handling.key_states[self.handling.key_bindings[Action.HOLD]]['current'],
                     }
             else:
                 self.debug_dict = None
         
             await asyncio.sleep(0)
+        
+    def __get_key_dict(self):
+        self.key_dict = {
+            'KEY_LEFT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_LEFT]]['current'],
+            'KEY_RIGHT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_RIGHT]]['current'],
+            'KEY_CLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_CLOCKWISE]]['current'],
+            'KEY_COUNTERCLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]]['current'],
+            'KEY_180': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_180]]['current'],
+            'KEY_HARD_DROP' : self.handling.key_states[self.handling.key_bindings[Action.HARD_DROP]]['current'],
+            'KEY_SOFT_DROP': self.handling.key_states[self.handling.key_bindings[Action.SOFT_DROP]]['current'],
+            'KEY_HOLD': self.handling.key_states[self.handling.key_bindings[Action.HOLD]]['current'],
+        }
 class Clock:
     def __init__(self, max_entries = 128):
         """
