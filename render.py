@@ -31,7 +31,7 @@ class Render():
         """
         return pygame.surface.Surface((self.pgconfig.FOUR_INSTANCE_WIDTH, self.pgconfig.FOUR_INSTANCE_HEIGHT))
     
-    def render_frame(self, four, show_render_debug,show_tick_debug, debug_dict):
+    def render_frame(self, four, debug_dict):
         """
         Render the frame of the Four Instance
         
@@ -52,8 +52,8 @@ class Render():
         
         self.window.blit(self.four_surface, self.__get_four_coords_for_window_center())
         
-        if show_render_debug or show_tick_debug:
-            self.__draw_debug(show_render_debug,show_tick_debug, debug_dict)
+        if debug_dict:
+            self.__draw_debug(debug_dict)
             
         pygame.display.update()
         
@@ -325,59 +325,60 @@ class Render():
                                     (rect.x + offset_x + j * self.pgconfig.GRID_SIZE, rect.y + offset_y + i * self.pgconfig.GRID_SIZE, self.pgconfig.GRID_SIZE, self.pgconfig.GRID_SIZE)
                                     )
     
-    def __draw_debug(self, show_render_debug,show_tick_debug, debug_dict):
-        
+    def __draw_debug(self, debug_dict):
         debug_surfaces = []
-        
-        if show_render_debug:
-            
-            if debug_dict['FPS'] < self.pgconfig.FPS * 0.95:
-                fps_colour = (255, 255, 0)
-            elif debug_dict['FPS'] < self.pgconfig.FPS * 0.5:
-                fps_colour = (255, 0, 0)
-            elif self.pgconfig.UNCAPPED_FPS:
-                fps_colour = (0, 255, 255)
-            else: 
-                fps_colour = (0, 255, 0)
-                
-            if self.pgconfig.UNCAPPED_FPS:
-                debug_surfaces.append((self.hun2_big.render(f'FPS: {int(debug_dict['FPS'])} (UNCAPPED)', True, fps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE // 2)))
-            else:
-                debug_surfaces.append((self.hun2_big.render(f'FPS: {int(debug_dict['FPS'])}', True, fps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE // 2)))
-            
-            debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_FPS"])} | best: {int(debug_dict["BEST_FPS"])} | current: {int(debug_dict['FPS_RAW'])}', True, fps_colour),  (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 1.5)))
-        
-            debug_surfaces.append((self.hun2_small.render(f'Render Time: {get_prefix(debug_dict["REN_T"], 's')}', True, fps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 2)))
-            
-            debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_REN_T"], 's')} | best: {get_prefix(debug_dict["BEST_REN_T"], 's')} | current: {get_prefix(debug_dict["REN_T_RAW"], 's')}', True, fps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 2.5)))
-                  
-        if show_tick_debug:
-            
-            if debug_dict['DF_RAW'] is None:
-                debug_dict['DF_RAW'] = 0
-            
-            if debug_dict['TPS'] < self.pgconfig.TPS * 0.95:
-                tps_colour = (255, 0, 0)
-            else:
-                tps_colour = (0, 255, 0)
-                
-            debug_surfaces.append((self.hun2_big.render(f'TPS: {int(debug_dict['TPS'])}', True, tps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 3.5)))
-            
-            debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_TPS"])} | best: {int(debug_dict["BEST_TPS"])} | current: {int(debug_dict['TPS_RAW'])}', True, tps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 4.5)))
-            
-            debug_surfaces.append((self.hun2_small.render(f'Execution Time: {get_prefix(debug_dict["SIM_T"], 's')}', True, tps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 5)))
-            
-            debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_SIM_T"], 's')} | best: {get_prefix(debug_dict["BEST_SIM_T"], 's')} | current: {get_prefix(debug_dict["SIM_T_RAW"], 's')}', True, tps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 5.5)))
-        
-            debug_surfaces.append((self.hun2_small.render(f'df: {debug_dict["DF"]:.2f}', True, tps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 6)))
 
-            debug_surfaces.append((self.pfw_small.render(f'worst: {debug_dict["WORST_DF"]} | best: {debug_dict["BEST_DF"]} | current: {int(debug_dict["DF_RAW"])}', True, tps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 6.5)))
-            
-            debug_surfaces.append((self.hun2_small.render(f'Tick: {debug_dict["TICKCOUNT"]}', True, tps_colour), (self.pgconfig.GRID_SIZE//2, self.pgconfig.GRID_SIZE * 7)))
+        if debug_dict['FPS'] < self.pgconfig.FPS * 0.95:
+            fps_colour = (255, 255, 0)
+        elif debug_dict['FPS'] < self.pgconfig.FPS * 0.5:
+            fps_colour = (255, 0, 0)
+        elif self.pgconfig.UNCAPPED_FPS:
+            fps_colour = (0, 255, 255)
+        else:
+            fps_colour = (0, 255, 0)
+
+        # FPS debug information
+        fps_text = f'FPS: {int(debug_dict["FPS"])}'
+        if self.pgconfig.UNCAPPED_FPS:
+            fps_text += ' (UNCAPPED)'
+        debug_surfaces.append((self.hun2_big.render(fps_text, True, fps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE // 2)))
+
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_FPS"])} | best: {int(debug_dict["BEST_FPS"])} | current: {int(debug_dict["FPS_RAW"])}', True, fps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 1.5)))
+
+        debug_surfaces.append((self.hun2_small.render(f'Render Time: {get_prefix(debug_dict["REN_T"], "s")}', True, fps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 2)))
+
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_REN_T"], "s")} | best: {get_prefix(debug_dict["BEST_REN_T"], "s")} | current: {get_prefix(debug_dict["REN_T_RAW"], "s")}', True, fps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 2.5)))
+
+        if debug_dict['DF_RAW'] is None:
+            debug_dict['DF_RAW'] = 0
+
+        if debug_dict['TPS'] < self.pgconfig.TPS * 0.95:
+            tps_colour = (255, 0, 0)
+        else:
+            tps_colour = (0, 255, 0)
+
+        # TPS debug information
+        debug_surfaces.append((self.hun2_big.render(f'TPS: {int(debug_dict["TPS"])}', True, tps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 3.5)))
+
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_TPS"])} | best: {int(debug_dict["BEST_TPS"])} | current: {int(debug_dict["TPS_RAW"])}', True, tps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 4.5)))
+
+        debug_surfaces.append((self.hun2_small.render(f'Execution Time: {get_prefix(debug_dict["SIM_T"], "s")}', True, tps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 5)))
+
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_SIM_T"], "s")} | best: {get_prefix(debug_dict["BEST_SIM_T"], "s")} | current: {get_prefix(debug_dict["SIM_T_RAW"], "s")}', True, tps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 5.5)))
+
+        debug_surfaces.append((self.hun2_small.render(f'df: {debug_dict["DF"]:.2f}', True, tps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 6)))
+
+        debug_surfaces.append((self.pfw_small.render(f'worst: {debug_dict["WORST_DF"]} | best: {debug_dict["BEST_DF"]} | current: {int(debug_dict["DF_RAW"])}', True, tps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 6.5)))
+
+        debug_surfaces.append((self.hun2_small.render(f'Tick: {debug_dict["TICKCOUNT"]}', True, tps_colour), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 7)))
+        
+        # handling debug information
+        
+        debug_surfaces.append((self.hun2_big.render(f'POLL: {int(debug_dict["POLLING_RATE"])}', True, (255, 255, 255)), (self.pgconfig.GRID_SIZE // 2, self.pgconfig.GRID_SIZE * 8)))
 
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)
-        
+    
        
    
         

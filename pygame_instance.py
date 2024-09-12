@@ -8,14 +8,12 @@ import asyncio
 from collections import deque 
 
 class PyGameInstance():
-    def __init__(self, show_all_debug:bool = False, show_render_debug:bool = False, show_tick_debug:bool = False):
+    def __init__(self, DEBUG:bool = False):
         """"
         Create an instance of pygame to run the game
         
         args:
-        (bool) show_all_debug: show all debug information
-        (bool) show_render_debug: show only render debug information
-        (bool) show_tick_debug: show only tick debug information
+        (bool) DEBUG: whether to show the debug menu
         """
         
         self.config = PyGameConfig()
@@ -26,20 +24,14 @@ class PyGameInstance():
         
         self.render_clock = Clock()
         self.game_clock = Clock()
+        self.handling_clock = Clock()
         self.current_time = 0
         
         self.next_frame_time = 0
         self.dt = 0
         self.exited = False
         
-        self.show_all_debug = show_all_debug
-        
-        if show_all_debug:
-            self.show_render_debug = True
-            self.show_tick_debug = True
-        else:
-            self.show_render_debug = show_render_debug
-            self.show_tick_debug = show_tick_debug
+        self.show_all_debug = DEBUG
         
         self.debug_dict = True
         self.max_avg_len = 500
@@ -178,6 +170,7 @@ class PyGameInstance():
         Handle pygame key events and pass them to the handling object, updates at an uncapped rate
         """
         while not self.exited:
+            self.handling_clock.tick()
             self.handling.current_time = self.elapsed_times["handle_events"]
             self.handling.delta_tick = self.delta_tick
             
@@ -190,7 +183,7 @@ class PyGameInstance():
                     
                 elif event.type == pygame.KEYUP:
                     self.handling.on_key_release(event.key)
-
+            
             await asyncio.sleep(0)
     
     async def __game_loop(self, four):
@@ -247,7 +240,7 @@ class PyGameInstance():
         """
         Render a single frame of the game
         """
-        self.render.render_frame(self.state_snapshot, self.show_render_debug, self.show_tick_debug, self.debug_dict)
+        self.render.render_frame(self.state_snapshot, self.debug_dict)
         self.render_clock.tick()
                
     def __exit(self):
@@ -372,6 +365,7 @@ class PyGameInstance():
         
         self.df_idx += 1
         
+        
     async def __get_debug_info(self):
         """
         Fetch the debug information for the debug menu
@@ -385,71 +379,44 @@ class PyGameInstance():
                     self.__calc_exe_time_avg()
                     
                     self.debug_dict = {
+                        # fps debug
                         'FPS': self.average_FPS,
-                        'TPS': self.average_TPS,
-                        'TPS_RAW': self.TPS,
                         'FPS_RAW': self.FPS,
-                        'SIM_T': self.tick_time,
-                        'SIM_T_RAW': self.iter_times["game_loop"],
+                        'BEST_FPS': self.best_fps,
+                        'WORST_FPS': self.worst_fps,
+                        
+                        # render time debug
                         'REN_T': self.render_time_avg,
                         'REN_T_RAW': self.iter_times["render_loop"],
+                        'BEST_REN_T': self.best_render_time,
+                        'WORST_REN_T': self.worst_render_time,
+                        
+                        # tps debug
+                        'TPS': self.average_TPS,
+                        'TPS_RAW': self.TPS,
+                        'BEST_TPS': self.best_tps,
+                        'WORST_TPS': self.worst_tps,
+                        
+                        # tick time debug
+                        'SIM_T': self.tick_time,
+                        'SIM_T_RAW': self.iter_times["game_loop"],
+                        'BEST_SIM_T': self.best_tick_time,
+                        'WORST_SIM_T': self.worst_tick_time,
+                        
+                        # delta frame debug
                         'DF': self.average_df,
                         'DF_RAW': self.delta_tick,
-                        'TICKCOUNT': self.state_snapshot.tick_counter,
-                        'WORST_SIM_T': self.worst_tick_time,
-                        'WORST_REN_T': self.worst_render_time,
-                        'WORST_FPS': self.worst_fps,
-                        'WORST_TPS': self.worst_tps,
+                        'BEST_DF': self.best_df,
                         'WORST_DF': self.worst_df,
-                        'BEST_SIM_T': self.best_tick_time,
-                        'BEST_REN_T': self.best_render_time,
-                        'BEST_FPS': self.best_fps,
-                        'BEST_TPS': self.best_tps,
-                        'BEST_DF': self.best_df
+                        
+                        # tick counter
+                        'TICKCOUNT': self.state_snapshot.tick_counter,
+
+                        'POLLING_RATE': self.handling_clock.get_fps(),
+                        
                     }
-                    
-            elif self.show_render_debug and not self.show_all_debug and not self.show_tick_debug:
-                self.__calc_average_FPS()
-                self.__calc_render_time_avg()
-                
-                self.debug_dict = {
-                    'FPS': self.average_FPS,
-                    'FPS_RAW': self.FPS,
-                    'WORST_FPS': self.worst_fps,
-                    'BEST_FPS': self.best_fps,
-                    
-                    'REN_T': self.render_time_avg,
-                    'REN_T_RAW': self.render_time_raw,
-                    
-                    'WORST_REN_T': self.worst_render_time,
-                    'BEST_REN_T': self.best_render_time
-                }
-                
-            elif self.show_tick_debug and not self.show_all_debug and not self.show_render_debug:
-                self.__calc_average_TPS()
-                self.__calc_exe_time_avg()
-                
-                self.debug_dict = {
-                    'TPS': self.average_TPS,
-                    'TPS_RAW': self.TPS,
-                    'WORST_TPS': self.worst_tps,
-                    'BEST_TPS': self.worst_tps,
-                    
-                    'SIM_T': self.tick_time,
-                    'SIM_T_RAW': self.tick_time_raw,
-                    'WORST_SIM_T': self.worst_tick_time,
-                    'BEST_SIM_T': self.best_tick_time,
-                    
-                    'DF': self.average_df,
-                    'DF_RAW': self.delta_tick,
-                    'WORST_DF': self.worst_df,
-                    'BEST_DF': self.best_df,
-                    
-                    'TICKCOUNT': self.state_snapshot.tick_counter
-                }
         
             await asyncio.sleep(0)
-
 class Clock:
     def __init__(self, max_entries = 128):
         """
@@ -487,7 +454,7 @@ class Clock:
         return self.fps
             
 async def main():
-    pygame_instance = PyGameInstance(show_all_debug = True, show_render_debug = False, show_tick_debug = False)
+    pygame_instance = PyGameInstance(DEBUG = True)
     four = Four(pygame_instance)
     await pygame_instance.run(four)
 
