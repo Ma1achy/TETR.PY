@@ -3,7 +3,6 @@ from matrix import Matrix
 from config import Config
 from pygame_config import PyGameConfig
 from handling import Action
-import pygame
 
 class Four():
     def __init__(self, pygame_instance):
@@ -44,6 +43,9 @@ class Four():
         self.tick_counter += 1
                 
     def __action_dequeuer(self):
+        """
+        Consume the actions from the action queue to be performed in the current tick
+        """
            
         if self.pygame_instance.TPS != 0:
             tick_duration = 1000 / self.pygame_instance.TPS # ms per tick
