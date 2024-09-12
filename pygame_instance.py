@@ -438,10 +438,9 @@ class Clock:
 
     def tick(self):
         current_time = time.perf_counter()
-        delta_time = current_time - self.last_time
+        dt = current_time - self.last_time
         self.last_time = current_time
-        
-        self.times.append(delta_time)
+        self.times.append(dt)
         
         if len(self.times) > 1:
             average_time = sum(self.times) / len(self.times)
