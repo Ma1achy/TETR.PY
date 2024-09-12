@@ -16,8 +16,8 @@ class PyGameInstance():
         self.render = Render(self.window)
         self.handling = Handling(self.config)
         
-        self.render_clock = CustomClock()
-        self.game_clock = CustomClock()
+        self.render_clock = Clock()
+        self.game_clock = Clock()
         self.current_time = 0
         
         self.next_frame_time = 0
@@ -429,7 +429,7 @@ class PyGameInstance():
         
             await asyncio.sleep(0)
 
-class CustomClock:
+class Clock:
     def __init__(self, max_entries=10):
         self.max_entries = max_entries
         self.times = deque(maxlen = max_entries)
@@ -451,9 +451,7 @@ class CustomClock:
     
     def get_fps(self):
         return self.fps
-        
-       
-             
+            
 async def main():
     pygame_instance = PyGameInstance(show_all_debug = True, show_render_debug = False, show_tick_debug = False)
     four = Four(pygame_instance)
