@@ -1,6 +1,6 @@
-from vec2 import Vec2
-from rotation import TSZLJ_OFFSETS, I_OFFSETS, O_OFFSETS, TSZLKJ_180_OFFSETS, I_180_OFFSETS
+from utils import Vec2
 from matrix import Matrix
+from handling import Action
 
 # probably want to change how pieces are defined, copying the SRS internal states is probably not ideal
 # O can just be a 2x2 matrix, I and be a 1x4 matrix, the rest can be 3x2 matrices.
@@ -48,51 +48,61 @@ class Tetromino():
            y -= 1
         
         elif self.type == 'I':                 
-            x -= 2
-            y -= 2
+            x -= 1
+            y -= 1
         
         return Vec2(x, y)
             
-    def rotate(self, direction:str):
+    def rotate(self, action, kick_table:dict):
         """
         Rotate the piece in the given direction
         
-        direction (str): The direction to rotate the piece in: ['CW', 'CCW', '180']
+        args:
+        action (Action): The action to perform
+        kick_table (dict): The kick table to use for the piece
         """
-        if direction == 'CW':     
-            desired_state = (self.state + 1) % 4
-            rotated_piece = self.__rotate_cw()
         
-        elif direction == 'CCW': 
-            desired_state = (self.state - 1) % 4
-            rotated_piece = self.__rotate_ccw()
+        kick_table = self.__get_piece_kick_table(kick_table)
+            
+        match action:
+            case Action.ROTATE_CLOCKWISE:    
+                desired_state = (self.state + 1) % 4
+                rotated_piece = self.__rotate_cw()
+        
+            case Action.ROTATE_COUNTERCLOCKWISE:
+                desired_state = (self.state - 1) % 4
+                rotated_piece = self.__rotate_ccw()
 
-        elif direction == '180':
-            desired_state = (self.state + 2) % 4
-            rotated_piece = self.__rotate_180()
+            case Action.ROTATE_180:
+                desired_state = (self.state + 2) % 4
+                rotated_piece = self.__rotate_180()
         
-        self.__SRS(direction, rotated_piece, desired_state, offset = 0)
+        self.__SRS(rotated_piece, desired_state, kick_table, offset = 0)
         
-    def move(self, direction:str):
+    def move(self, action):
         """
         Move the piece in the given direction
         
         args:
-        direction (str): The direction to move the piece in: ['LEFT', 'RIGHT', 'UP' 'DOWN']
+        action (Action): The action to perform
         """
-        if direction == 'LEFT':
-            desired_position = Vec2(self.position.x - 1, self.position.y)
+        match action:
+            case Action.MOVE_LEFT:
+                vector = Vec2(-1, 0)
+            
+            case Action.MOVE_RIGHT:
+                vector = Vec2(1, 0)
+            
+            case Action.SOFT_DROP: # TEMP NEED TO INSTEAD MAKE SOFT_DROP CHANGE GRAVITY BY A FACTOR
+                vector = Vec2(0, 1)
+                
+            case _:
+                vector = Vec2(0, 0)
+                raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
+            
+        desired_position = vector + self.position
         
-        elif direction == 'RIGHT':
-            desired_position = Vec2(self.position.x + 1, self.position.y)
-
-        elif direction == 'UP':
-            desired_position = Vec2(self.position.x, self.position.y - 1)
-            
-        elif direction == 'DOWN':
-            desired_position = Vec2(self.position.x, self.position.y + 1)
-            
-        if not self.collision(self.blocks, desired_position):
+        if not self.collision(self.blocks, desired_position): # validate movement
             self.position = desired_position
         
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
@@ -134,18 +144,31 @@ class Tetromino():
         Rotate the piece 180 degrees
         """
         return [row[::-1] for row in reversed(self.blocks)]
-                       
-    def __SRS(self, rotation:str, rotated_piece:list, desired_state:int, offset:int):
+    
+    def __get_piece_kick_table(self, kick_table):
+        match self.type:
+            case 'T' | 'S' | 'Z' | 'L' | 'J':
+                kick_table = kick_table['TSZLJ_KICKS']
+                
+            case 'I':
+                kick_table = kick_table['I_KICKS']
+                
+            case 'O':
+                kick_table = kick_table['O_KICKS']
+                
+        return kick_table
+               
+    def __SRS(self, rotated_piece:list, desired_state:int, kick_table, offset:int):
         """
         Apply the Super Rotation System to the piece by recursively applying kick translations to the piece
         until a valid rotation is found or no more offsets are available
         
-        rotation (str): Rotation direction ['CW', 'CCW', '180']
         rotated_piece (list): The rotated piece
         desired_state (int): Desired rotation state of the piece [0, 1, 2, 3]
+        kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
         offset (int): Offset order to use when calculating the kick translation
         """
-        kick = self.get_kick(rotation, self.type, desired_state, offset)
+        kick = self.get_kick(kick_table, self.type, desired_state, offset)
         
         if kick is None: # no more offsets to try => rotation is invalid
             return
@@ -153,7 +176,7 @@ class Tetromino():
         kick = Vec2(kick.x, -kick.y) # have to invert y as top left of the matrix is (0, 0)
          
         if self.collision(rotated_piece, self.position + kick): 
-            self.__SRS(rotation, rotated_piece, desired_state, offset + 1)
+            self.__SRS(rotated_piece, desired_state, kick_table, offset + 1)
         else:
             if self.type == 'T':
                 self.__Is_T_Spin(offset, desired_state, kick)
@@ -162,13 +185,13 @@ class Tetromino():
             self.blocks = rotated_piece
             self.position += kick
     
-    def get_kick(self, rotation:str, piece:str, desired_state:int, offset_order:int):
+    def get_kick(self, kick_table, piece:str, desired_state:int, offset_order:int):
         """
         Get the kick translation to apply to the piece
         kick = initial_state_offset - desired_state_offset
         
         args:
-        rotation (str): Rotation direction: ['CW', 'CCW', '180']
+        kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
         piece (str): Type of the piece: ['T', 'S', 'Z', 'L', 'J', 'I', 'O']
         initial_state (int): Initial rotation state of the piece: [0, 1, 2, 3]
         desired_state (int): Desired rotation state of the piece: [0, 1, 2, 3]
@@ -177,57 +200,17 @@ class Tetromino():
         returns:
         kick (Vec2): The kick translation to apply to the piece
         """
-        if rotation in ['CW', 'CCW']:
-            if piece in ['T', 'S', 'Z', 'L', 'J']:
-                
-                if offset_order > len(TSZLJ_OFFSETS[0]) - 1:
-                    return None
-                else:
-                    desired_state_offset = TSZLJ_OFFSETS[desired_state][offset_order]
-                    initial_state_offset = TSZLJ_OFFSETS[self.state][offset_order]
-                
-            elif piece == 'O':
-                
-                if offset_order > len(O_OFFSETS[0]) - 1:
-                    return None
-                else:
-                    desired_state_offset = O_OFFSETS[desired_state][offset_order]
-                    initial_state_offset = O_OFFSETS[self.state][offset_order]
-                
-            elif piece == 'I':
-                
-                if offset_order > len(I_OFFSETS[0]) - 1:
-                    return None
-                else:
-                    desired_state_offset = I_OFFSETS[desired_state][offset_order]
-                    initial_state_offset = I_OFFSETS[self.state][offset_order]
-                
-        elif rotation == '180':
-            if piece in ['T', 'S', 'Z', 'L', 'J']:
-                
-                if offset_order > len(TSZLKJ_180_OFFSETS[0]) - 1:
-                    return None
-                else:
-                    desired_state_offset = TSZLKJ_180_OFFSETS[desired_state][offset_order]
-                    initial_state_offset = TSZLKJ_180_OFFSETS[self.state][offset_order]
-                
-            elif piece == 'O':
-                
-                if offset_order > len(O_OFFSETS[0]) - 1:
-                    return None
-                else:
-                    desired_state_offset = O_OFFSETS[desired_state][offset_order]
-                    initial_state_offset = O_OFFSETS[self.state][offset_order]
-                
-            elif piece == 'I':
-                
-                if offset_order > len(I_180_OFFSETS[0]) - 1:
-                    return None
-                else:
-                    desired_state_offset = I_180_OFFSETS[desired_state][offset_order]
-                    initial_state_offset = I_180_OFFSETS[self.state][offset_order]
-                    
-        return initial_state_offset - desired_state_offset
+        
+        if offset_order > len(kick_table[f'{self.state}->{desired_state}']) - 1:
+            return None
+        else:
+            return kick_table[f'{self.state}->{desired_state}'][offset_order]
+        
+    def __is_spin(self, desired_state:int, kick:Vec2):
+        """
+        check if the rotation is a spin: this is when the piece rotates into an position where it is then immobile
+        """
+        pass
             
     def __Is_T_Spin(self, offset:int, desired_state:int, kick:Vec2):
         """
@@ -369,17 +352,15 @@ class Tetromino():
                 ],
             'O': 
                 [
-                    (0, 6, 6), 
-                    (0, 6, 6),
-                    (0, 0, 0)
+                    (6, 6), 
+                    (6, 6),
                 ],
             'I': 
                 [
-                    (0, 0, 0, 0, 0),
-                    (0, 0, 0, 0, 0),
-                    (0, 7, 7, 7, 7),
-                    (0, 0, 0, 0, 0),
-                    (0, 0, 0, 0, 0)
+                    (0, 0, 0, 0),
+                    (7, 7, 7, 7),
+                    (0, 0, 0, 0),
+                    (0, 0, 0, 0)
                 ] 
         }
         return blocks[self.type]

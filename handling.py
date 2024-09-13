@@ -226,7 +226,7 @@ class Handling():
     def __DAS(self):
     
         if self.handling_settings['DASCancel']:
-            self.__DAS_cancel(self)
+            self.__DAS_cancel()
             
         if self.DAS_counter >= self.handling_settings['DAS'] / 1000:
             self.DAS_counter = self.handling_settings['DAS'] / 1000

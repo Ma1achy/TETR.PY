@@ -3,9 +3,10 @@ from matrix import Matrix
 from config import Config
 from pygame_config import PyGameConfig
 from handling import Action
+from rotation import RotationSystem
 
 class Four():
-    def __init__(self, pygame_instance):
+    def __init__(self, pygame_instance, rotation_system = 'SRS'):
         """
         Create an instance of the game Four
         
@@ -16,6 +17,8 @@ class Four():
         self.config = Config()
         self.pgconfig = PyGameConfig() 
        
+        self.rotation_system = RotationSystem(rotation_system)
+        self.kick_table = self.rotation_system.kick_table
         self.rng = self.__init_rng()
         self.queue = self.__init_queue()
         self.matrix = self.__init_matrix()
@@ -59,10 +62,7 @@ class Four():
             if relative_tick <= 0 and abs(relative_tick) <= self.pygame_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
                 self.pygame_instance.handling.consume_action()
-                         
-    # add logic to prevent multiple actions of the same type in the same tick (range of timestamps)
-    # need to compare actions from the previous tick(s) to the current tick
-          
+                                
     def forward_state(self):
         """
         Forward the state of the game to allow for async rendering.
@@ -191,46 +191,47 @@ class Four():
     def __perform_actions(self):
         
         for action_dict in self.actions_this_tick:
+            action = action_dict['action'] 
             
-            match action_dict['action']:
+            match action:
                 case Action.MOVE_LEFT:
                     if self.current_tetromino is not None: 
-                        self.current_tetromino.move('LEFT') 
+                        self.current_tetromino.move(action) 
                         self.__update_current_tetromino()
                     else: 
                         pass
                     
                 case Action.MOVE_RIGHT:
                     if self.current_tetromino is not None:
-                        self.current_tetromino.move('RIGHT')
+                        self.current_tetromino.move(action)
                         self.__update_current_tetromino()
                     else:
                         pass
                     
                 case Action.ROTATE_CLOCKWISE:
                     if self.current_tetromino is not None:
-                        self.current_tetromino.rotate('CW')
+                        self.current_tetromino.rotate(action, self.kick_table['90'])
                         self.__update_current_tetromino()
                     else:
                         pass
                     
                 case Action.ROTATE_COUNTERCLOCKWISE:
                     if self.current_tetromino is not None:
-                        self.current_tetromino.rotate('CCW')
+                        self.current_tetromino.rotate(action, self.kick_table['90'])
                         self.__update_current_tetromino()
                     
                 case Action.ROTATE_180:
                     if self.current_tetromino is not None:
-                        self.current_tetromino.rotate('180')
+                        self.current_tetromino.rotate(action, self.kick_table['180'])
                         self.__update_current_tetromino()
                     
                 case Action.HARD_DROP:
                     if self.current_tetromino is not None:
                         self.__hard_drop()
                     
-                case Action.SOFT_DROP:
+                case Action.SOFT_DROP:  # TEMP NEED TO INSTEAD MAKE SOFT_DROP CHANGE GRAVITY BY A FACTOR
                     if self.current_tetromino is not None:
-                        self.current_tetromino.move('DOWN')
+                        self.current_tetromino.move(action)
                         self.__update_current_tetromino()
                         
                 case Action.HOLD:
