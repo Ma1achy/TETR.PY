@@ -6,8 +6,8 @@ from handling import Action
 # O can just be a 2x2 matrix, I and be a 1x4 matrix, the rest can be 3x2 matrices.
 # rotations will then just have to be calculated about the "pivot"/origin of the piece, which remains in the same position (unless a kick is applied)
 
-# need to redo piece movement logic and rotation logic
-# need to redo SRS kick calculations
+# need to redo piece movement logic
+
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix):
         """
@@ -42,14 +42,18 @@ class Tetromino():
         x (int): x position of the piece
         y (int): y position of the piece
         """
-        
-        if self.type in ['S', 'Z', 'J', 'L', 'T', 'O']:  
-           x -= 1                                       
-           y -= 1
-        
-        elif self.type == 'I':                 
-            x -= 1
-            y -= 1
+        match self.type:
+            case 'S' | 'Z' | 'J' | 'L' | 'T': 
+                x -= 1                                       
+                y -= 1
+            
+            case 'I':                 
+                x -= 1
+                y -= 1
+                
+            case 'O':
+                x -= 0
+                y -= 0
         
         return Vec2(x, y)
             
@@ -176,10 +180,13 @@ class Tetromino():
         kick = Vec2(kick.x, -kick.y) # have to invert y as top left of the matrix is (0, 0)
          
         if self.collision(rotated_piece, self.position + kick): 
-            self.__SRS(rotated_piece, desired_state, kick_table, offset + 1)
+            self.__SRS(rotated_piece, desired_state, kick_table, offset + 1) 
         else:
             if self.type == 'T':
                 self.__Is_T_Spin(offset, desired_state, kick)
+                
+            else: # all other pieces use immobility test for spin detection
+                self.__is_spin(rotated_piece, kick)
                 
             self.state = desired_state
             self.blocks = rotated_piece
@@ -206,11 +213,12 @@ class Tetromino():
         else:
             return kick_table[f'{self.state}->{desired_state}'][offset_order]
         
-    def __is_spin(self, desired_state:int, kick:Vec2):
+    def __is_spin(self, rotated_piece:int, kick:Vec2):
         """
         check if the rotation is a spin: this is when the piece rotates into an position where it is then immobile
         """
-        pass
+        if self.collision(rotated_piece, self.position + kick + Vec2(1, 0)) and self.collision(rotated_piece, self.position + kick + Vec2(-1, 0)) and self.collision(rotated_piece, self.position + kick+ Vec2(0, 1)) and self.collision(rotated_piece, self.position + kick + Vec2(0, -1)):
+            return True
             
     def __Is_T_Spin(self, offset:int, desired_state:int, kick:Vec2):
         """
@@ -231,7 +239,7 @@ class Tetromino():
         args:
         offset (int): Offset order to use when calculating the kick translation
         desired_state (int): Desired rotation state of the piece [0, 1, 2, 3]
-        kick (Vec2): The kick translation to apply       
+        kick (Vec2): The kick translation to apply  
         """
         corner_pairs = {
             0: [Vec2(0, 0), Vec2(2, 0)],
@@ -279,7 +287,7 @@ class Tetromino():
         """
         filled_corners = []
         
-        for idx, corner in enumerate(corners):
+        for _, corner in enumerate(corners):
             
             corner_pos = self.position + kick + corner
             
@@ -360,7 +368,7 @@ class Tetromino():
                     (0, 0, 0, 0),
                     (7, 7, 7, 7),
                     (0, 0, 0, 0),
-                    (0, 0, 0, 0)
+                    (0, 0, 0, 0),
                 ] 
         }
         return blocks[self.type]
