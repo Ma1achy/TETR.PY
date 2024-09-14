@@ -214,7 +214,7 @@ class Handling():
             if self.actions[action]['state'] is True:
                 if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
                     
-                    # only add the action once is DAS is not done to allow for tapping
+                    # only add the action once if DAS is not done to allow for tapping
                     if not self.done_one_move:
                         self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
                         self.done_one_move = True
