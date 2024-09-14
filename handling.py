@@ -232,7 +232,7 @@ class Handling():
             self.done_one_move = True
             
         if self.do_ARR:
-            if self.handling_settings['ARR'] == 0:
+            if self.handling_settings['ARR'] == 0: # arr of 0 gives instant movement to the sides (inf repeat)
                 self.__instant_movement(action)
             else:
                 self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
