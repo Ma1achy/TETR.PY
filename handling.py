@@ -213,15 +213,8 @@ class Handling():
         
         for action in self.actions:
             if self.actions[action]['state'] is True:
-                if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT: # Perform DAS and ARR for left/right movement actions
-                    
-                    if not self.done_one_move: # only add the action once if DAS is not done to allow for tapping
-                        self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-                        self.done_one_move = True
-                        
-                    if self.do_ARR:
-                        self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-                        self.__reset_ARR() 
+                if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
+                    self.__do_DAS_ARR(action)
                 else:
                     self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))       
                     
@@ -232,6 +225,22 @@ class Handling():
         if self.action_queue:
             return self.action_queue.popleft()  
         return None
+    
+    def __do_DAS_ARR(self, action):
+        if not self.done_one_move: # only add the action once if DAS is not done to allow for tapping
+            self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+            self.done_one_move = True
+            
+        if self.do_ARR:
+            if self.handling_settings['ARR'] == 0:
+                self.__instant_movement(action)
+            else:
+                self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+                self.__reset_ARR() 
+
+    def __instant_movement(self, action):
+        for _ in range(0, self.pgconfig.MATRIX_WIDTH):
+            self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
             
     def __DAS(self):
         """
@@ -247,8 +256,8 @@ class Handling():
             
             if self.DAS_timer >= self.handling_settings['DAS'] / 1000 :
                 self.DAS_timer = self.handling_settings['DAS'] / 1000
-                self.__ARR() # perform ARR once DAS is charged
-            
+                self.__ARR()
+                
         else: # reset DAS/ARR if key is released
             self.DAS_timer = 0
             self.done_one_move = False
@@ -267,13 +276,13 @@ class Handling():
         If the DAS timer is charged, the ARR timer will be incremented until it reaches the ARR threshold (ms).
         Once charged, the action will be performed and the ARR timer will be reset.
         """
-        if self.DAS_timer >= self.handling_settings['DAS'] /1000:
+        if self.ARR_timer >= self.handling_settings['ARR'] /1000:
+            self.ARR_timer = 0
+            self.do_ARR = True
+            
+        elif self.DAS_timer >= self.handling_settings['DAS'] /1000:
             self.ARR_timer += self.current_time - self.prev_time
             
-            if self.ARR_timer >= self.handling_settings['ARR'] /1000:
-                self.ARR_timer = 0
-                self.do_ARR = True
-
     def __reset_ARR(self):
         """
         Reset ARR
