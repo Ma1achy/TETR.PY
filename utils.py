@@ -17,7 +17,7 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     r1, g1, b1 = base
     r2, g2, b2 = overlay
 
-    blend = lambda b, o: alpha * o + (1 - alpha) * b    # noqa: E731
+    blend = lambda b, o: alpha * o + (1 - alpha) * b # noqa: E731
 
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
@@ -65,7 +65,7 @@ def get_prefix(number, unit, precision = 1):
 
     # get exponent of number
     num_exp = int(f"{number:.0e}".split("e")[1])
-    # get decimal component of number
+    
     diffs = []
         
     # get prefix of number from exp by finding the closest prefix
@@ -75,7 +75,7 @@ def get_prefix(number, unit, precision = 1):
         diffs.append((prefix, diff, value))
     
     prefix, _, value = min(diffs, key = lambda x: (abs(x[1]), x[0]))
-    num = number / value
+    num = number / value # get the number in the new prefix
     
     return f"{num:.{precision}f} {prefix}{unit}" 
   
@@ -141,28 +141,28 @@ class Vec2():
         self.y = y
     
     def __str__(self):
-        return f"<Vec2 | x={self.x} y={self.y}>" #define how the vector is printed
+        return f"<Vec2 | x={self.x} y={self.y}>" 
     
     def __repr__(self):
         return f"<Vec2 | x={self.x} y={self.y}>"
         
-    def __truediv__(self, scalar): #define division by a scalar
+    def __truediv__(self, scalar): 
         return Vec2(self.x/scalar , self.y/scalar) 
     
-    def __add__(self, vec): #define vector addition
+    def __add__(self, vec): 
         return Vec2(self.x + vec.x , self.y + vec.y)
     
-    def __sub__(self, vec): #define subtraction between vectors
+    def __sub__(self, vec): 
         return Vec2((self.x - vec.x) , (self.y - vec.y))
     
-    def magnitude(self): #define the magnitude of a vector
+    def magnitude(self): 
         return np.sqrt(self.x**2 + self.y**2)
     
-    def normalise(a): #normalise a vector
+    def normalise(a): 
         return a / a.magnitude()
     
-    def __mul__(self, scalar): #define multipication by a scalar
+    def __mul__(self, scalar):
         return Vec2(self.x * scalar, self.y * scalar)
     
-    def distance(a, b): #define the distance between two vectors
+    def distance(a, b): 
         return np.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
