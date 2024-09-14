@@ -29,6 +29,7 @@ class PyGameInstance():
         self.exited = False
         self.state_snapshot = None
         self.next_tick_time = 0
+        self.last_tick_time = 0 
         
         self.DEBUG = False
         
@@ -222,9 +223,14 @@ class PyGameInstance():
             
             if self.current_time >= self.next_tick_time:
                 
-                self.__do_tick(four)
+                # TODO: if tick delta time is greater than normal 1 / TPS, do extra ticks to catch up. if it is more than a threshold (couple seconds), skip the ticks
+                # catch up ticks (google it lol)
+                # record when last tick was executed, take difference between current time and last tick time, divide by 1/TPS, do that many ticks
+              
+                self.__do_tick(four) 
+               
                 self.next_tick_time += 1/self.config.TPS
-            
+                
             self.__get_tps()
             
             await asyncio.sleep(0)

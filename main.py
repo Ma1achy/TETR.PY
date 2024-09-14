@@ -11,7 +11,7 @@ from four import Four
 
 # - Implement Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
 
-# - LOCK DELAY MECHANICS & LOCKING (yes game logic but need this for SDF and PrevAccHD)
+# - LOCK DELAY MECHANICS & LOCKING (yes game logic but need this for PrevAccHD)
 
 # - Implement Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
 
@@ -29,4 +29,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

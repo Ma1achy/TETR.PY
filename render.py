@@ -2,7 +2,7 @@ from matrix import Matrix
 import pygame
 from pygame_config import PyGameConfig
 from config import Config
-from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix
+from utils import lerpBlendRGBA, Font, tetromino_previews, get_prefix
 
 class Render():
     def __init__(self, window:pygame.Surface):
@@ -314,7 +314,7 @@ class Render():
         tetromino (list): the type of tetromino to render
         rect (pygame.Rect): the rectangle to draw the tetromino in
         """
-        tetromino = get_tetromino_blocks(tetromino)
+        tetromino = tetromino_previews(tetromino)
         tetromino_height = len(tetromino) * self.pgconfig.GRID_SIZE
         tetromino_width = len(tetromino[0]) * self.pgconfig.GRID_SIZE
 

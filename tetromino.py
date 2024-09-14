@@ -5,6 +5,7 @@ from handling import Action
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix):
         """
+        args:
         Type (str): Type of the piece: ['T', 'S', 'Z', 'L', 'J', 'I', 'O'] 
         State (int): Rotation state of the piece: [0, 1, 2, 3]
         x (int): x position of the piece
@@ -47,7 +48,7 @@ class Tetromino():
                 
             case 'O':
                 x -= 0
-                y -= 0
+                y -= 1
         
         return Vec2(x, y)
             
@@ -166,7 +167,7 @@ class Tetromino():
         kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
         offset (int): Offset order to use when calculating the kick translation
         """
-        kick = self.get_kick(kick_table, self.type, desired_state, offset)
+        kick = self.get_kick(kick_table, desired_state, offset)
         
         if kick is None: # no more offsets to try => rotation is invalid
             return
@@ -186,14 +187,13 @@ class Tetromino():
             self.blocks = rotated_piece
             self.position += kick
     
-    def get_kick(self, kick_table, piece:str, desired_state:int, offset_order:int):
+    def get_kick(self, kick_table, desired_state:int, offset_order:int):
         """
         Get the kick translation to apply to the piece
         kick = initial_state_offset - desired_state_offset
         
         args:
         kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
-        piece (str): Type of the piece: ['T', 'S', 'Z', 'L', 'J', 'I', 'O']
         initial_state (int): Initial rotation state of the piece: [0, 1, 2, 3]
         desired_state (int): Desired rotation state of the piece: [0, 1, 2, 3]
         offset_order (int): Offset order to use 

@@ -79,7 +79,7 @@ def get_prefix(number, unit, precision = 1):
     
     return f"{num:.{precision}f} {prefix}{unit}" 
   
-def get_tetromino_blocks(type:str):
+def tetromino_previews(type:str):
     """
     Get the blocks for the given tetromino to render previews.
   
