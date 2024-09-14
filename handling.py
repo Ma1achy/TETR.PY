@@ -2,6 +2,8 @@ from enum import Enum, auto
 import pygame as pygame
 from collections import deque
 
+# TODO:
+# - Implement key priority for left/right movement, i.e if right is held and ten left is pressed, the left action should be prioritized (most recent action)
 class Action(Enum):
     """
     Actions that can be performed
@@ -153,8 +155,7 @@ class Handling():
         else:
             self.actions[action]['state'] =  False,
             self.actions[action]['timestamp'] = self.current_time
-            
-            
+                 
     def __get_key_info(self, key):
         """
         Get the key info from the key object
