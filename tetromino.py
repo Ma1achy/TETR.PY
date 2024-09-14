@@ -2,12 +2,6 @@ from utils import Vec2
 from matrix import Matrix
 from handling import Action
 
-# probably want to change how pieces are defined, copying the SRS internal states is probably not ideal
-# O can just be a 2x2 matrix, I and be a 1x4 matrix, the rest can be 3x2 matrices.
-# rotations will then just have to be calculated about the "pivot"/origin of the piece, which remains in the same position (unless a kick is applied)
-
-# need to redo piece movement logic
-
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix):
         """
