@@ -194,32 +194,16 @@ class Four():
             action = action_dict['action'] 
             
             match action:
-                case Action.MOVE_LEFT:
+                case Action.MOVE_LEFT | Action.MOVE_RIGHT:
                     if self.current_tetromino is not None: 
                         self.current_tetromino.move(action) 
                         self.__update_current_tetromino()
-                    else: 
-                        pass
                     
-                case Action.MOVE_RIGHT:
-                    if self.current_tetromino is not None:
-                        self.current_tetromino.move(action)
-                        self.__update_current_tetromino()
-                    else:
-                        pass
-                    
-                case Action.ROTATE_CLOCKWISE:
+                case Action.ROTATE_CLOCKWISE | Action.ROTATE_COUNTERCLOCKWISE:
                     if self.current_tetromino is not None:
                         self.current_tetromino.rotate(action, self.kick_table['90'])
                         self.__update_current_tetromino()
-                    else:
-                        pass
-                    
-                case Action.ROTATE_COUNTERCLOCKWISE:
-                    if self.current_tetromino is not None:
-                        self.current_tetromino.rotate(action, self.kick_table['90'])
-                        self.__update_current_tetromino()
-                    
+                
                 case Action.ROTATE_180:
                     if self.current_tetromino is not None:
                         self.current_tetromino.rotate(action, self.kick_table['180'])

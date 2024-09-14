@@ -187,8 +187,7 @@ class PyGameInstance():
                 
                 self.handling_clock.tick()
                 self.handling.current_time = self.elapsed_times["handle_events"]
-                self.handling.delta_tick = self.delta_tick
-                
+              
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.__exit()

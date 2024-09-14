@@ -26,11 +26,13 @@ class Handling():
         
         self.pgconfig = pgconfig
         self.current_time = 0
+        self.dt = 0
         self.delta_tick = 0
         
         self.buffer_threshold = 128 # tick range where old actions are still considered valid
         self.action_queue = deque()
         
+        self.done_one_move = False
         self.DAS_counter = 0
         self.ARR_counter = 0
         
@@ -48,8 +50,8 @@ class Handling():
         }
         
         self.handling_settings = {
-            'ARR' :33,          # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
-            'DAS' :167,         # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
+            'ARR' :0,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
+            'DAS' :70,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
             'DCD' :0,           # DAS Cut Delay: If none-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rorating a piece (ms)
             'SDF' :6,           # Soft Drop Facor: The factor the soft dropping scales the current gravity by
             'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
@@ -98,7 +100,6 @@ class Handling():
         """
         Get the actions from the key states and add them to the action buffer
         """
-    
         self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
         
         self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
@@ -115,11 +116,9 @@ class Handling():
         
         self.__test_actions(Action.HOLD, self.__is_action_toggled)
         
-        self.get_action_buffer() # add actions to buffer
-    
-        self.__DAS()
+        self.__Increment_DAS()
         
-        self.__ARR()
+        self.get_action_buffer() # add actions to buffer
         
         self.prev_time = self.current_time
         
@@ -208,13 +207,24 @@ class Handling():
         
     def get_action_buffer(self):
         """
-        Get the actions that are currently active and add them to the queue
+        Get the actions that are currently active and add them to the queue.
         """
-     
+        
         for action in self.actions:
             if self.actions[action]['state'] is True:
-                self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-                
+                if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
+                    
+                    # only add the action once is DAS is not done to allow for tapping
+                    if not self.done_one_move:
+                        self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+                        self.done_one_move = True
+                        
+                    if self.do_ARR:
+                        self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+                        self.__reset_ARR() 
+                else:
+                    self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))       
+                    
     def consume_action(self):
         """
         Consume the action from the queue
@@ -223,55 +233,44 @@ class Handling():
             return self.action_queue.popleft()  
         return None
             
-    def __DAS(self):
-    
+    def __Increment_DAS(self):
+
         if self.handling_settings['DASCancel']:
             self.__DAS_cancel()
-            
-        if self.DAS_counter >= self.handling_settings['DAS'] / 1000:
-            self.DAS_counter = self.handling_settings['DAS'] / 1000
-        
-        if self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']:
+    
+        if (self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']) or (self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']):
             self.DAS_counter += self.current_time - self.prev_time
-            return True
             
-        elif self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']:
-            self.DAS_counter += self.current_time - self.prev_time
-            return True
-        
-        elif not self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current']:
+            if self.DAS_counter >= self.handling_settings['DAS'] / 1000 :
+                self.DAS_counter = self.handling_settings['DAS'] / 1000
+                self.__Increment_ARR()
+            
+        else:
             self.DAS_counter = 0
             self.ARR_counter = 0
-            return False
-        
-        elif not self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current']:
-            self.DAS_counter = 0
-            self.ARR_counter = 0
-            return False
-          
+            self.do_ARR = False
+            self.done_one_move = False
+
     def __DAS_cancel(self):
-       # cancel DAS if opposite direction is pressed
-            
-        if self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']:
+
+        if (self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']) or (self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']):
             self.DAS_counter = 0
             self.ARR_counter = 0
-            
-        elif self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current']:
-            self.DAS_counter = 0
-            self.ARR_counter = 0
-            
-    def __ARR(self):
         
-        if self.DAS_counter >= self.handling_settings['DAS'] / 1000:
+    def __Increment_ARR(self):     
+        if self.DAS_counter >= self.handling_settings['DAS'] /1000:
             self.ARR_counter += self.current_time - self.prev_time
-           
-        if self.ARR_counter >= self.handling_settings['ARR'] / 1000:
-            self.ARR_counter = 0
-            return False
-                
-    # TODO: DAS AND ARR LOGIC
-    # IF LEFT OR RIGHT IS HELD, INCREMENT DAS COUNTER UNTIL CHARGED THEN DO ARR COUNTER
-    # IF DAS IS CHARGED INCREMENT ARR COUNTER
+            
+            if self.ARR_counter >= self.handling_settings['ARR'] /1000:
+                self.ARR_counter = 0
+                self.do_ARR = True
+    
+    def __reset_ARR(self):
+        self.do_ARR = False
+        self.ARR_counter = 0
+
+    
+    
     
                     
                 
