@@ -33,8 +33,8 @@ class Handling():
         self.action_queue = deque()
         
         self.done_one_move = False
-        self.DAS_counter = 0
-        self.ARR_counter = 0
+        self.DAS_timer = 0
+        self.ARR_timer = 0
         
         self.prev_time = 0
     
@@ -55,7 +55,7 @@ class Handling():
             'DCD' :0,           # DAS Cut Delay: If none-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rorating a piece (ms)
             'SDF' :6,           # Soft Drop Facor: The factor the soft dropping scales the current gravity by
             'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
-            'DASCancel': False, # Cancel Das When Changing Directions: If true, the DAS counter will reset if the opposite direction is pressed
+            'DASCancel': False, # Cancel DAS When Changing Directions: If true, the DAS timer will reset if the opposite direction is pressed
             'PrefSD': True,     # Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
         }
         
@@ -116,7 +116,7 @@ class Handling():
         
         self.__test_actions(Action.HOLD, self.__is_action_toggled)
         
-        self.__Increment_DAS()
+        self.__DAS()
         
         self.get_action_buffer() # add actions to buffer
         
@@ -233,41 +233,53 @@ class Handling():
             return self.action_queue.popleft()  
         return None
             
-    def __Increment_DAS(self):
+    def __DAS(self):
+        """
+        If the Left/Right movement keys are held down, the DAS timer will be incremented until it reaches the DAS threshold (ms). 
+        Once charged, the ARR will be performed at the set rate (ms).
+        """
 
         if self.handling_settings['DASCancel']:
             self.__DAS_cancel()
     
         if (self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']) or (self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']):
-            self.DAS_counter += self.current_time - self.prev_time
+            self.DAS_timer += self.current_time - self.prev_time
             
-            if self.DAS_counter >= self.handling_settings['DAS'] / 1000 :
-                self.DAS_counter = self.handling_settings['DAS'] / 1000
-                self.__Increment_ARR()
+            if self.DAS_timer >= self.handling_settings['DAS'] / 1000 :
+                self.DAS_timer = self.handling_settings['DAS'] / 1000
+                self.__ARR() # perform ARR once DAS is charged
             
-        else:
-            self.DAS_counter = 0
-            self.ARR_counter = 0
-            self.do_ARR = False
+        else: # reset DAS/ARR if key is released
+            self.DAS_timer = 0
             self.done_one_move = False
+            self.__reset_ARR()
 
     def __DAS_cancel(self):
-
+        """
+        Cancel DAS When Changing Directions: The DAS timer will reset if the opposite direction is pressed
+        """
         if (self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']) or (self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']):
-            self.DAS_counter = 0
-            self.ARR_counter = 0
+            self.DAS_timer = 0
+            self.ARR_timer = 0
         
-    def __Increment_ARR(self):     
-        if self.DAS_counter >= self.handling_settings['DAS'] /1000:
-            self.ARR_counter += self.current_time - self.prev_time
+    def __ARR(self):
+        """
+        If the DAS timer is charged, the ARR timer will be incremented until it reaches the ARR threshold (ms).
+        Once charged, the action will be performed and the ARR timer will be reset.
+        """
+        if self.DAS_timer >= self.handling_settings['DAS'] /1000:
+            self.ARR_timer += self.current_time - self.prev_time
             
-            if self.ARR_counter >= self.handling_settings['ARR'] /1000:
-                self.ARR_counter = 0
+            if self.ARR_timer >= self.handling_settings['ARR'] /1000:
+                self.ARR_timer = 0
                 self.do_ARR = True
-    
+
     def __reset_ARR(self):
+        """
+        Reset ARR
+        """
         self.do_ARR = False
-        self.ARR_counter = 0
+        self.ARR_timer = 0
 
     
     
