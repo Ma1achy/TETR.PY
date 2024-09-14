@@ -3,6 +3,7 @@ from pygame_instance import PyGameInstance
 from four import Four
 
 #TODO:
+# - Implement key priority for left/right movement, i.e if right is held and ten left is pressed, the left action should be prioritized (most recent action)
 # - GAME OVER CONDITIONS
 # - GRAVITY
 # - LOCK DELAY
