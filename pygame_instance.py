@@ -20,16 +20,23 @@ class PyGameInstance():
         self.handling = Handling(self.config)
         
         self.render_clock = Clock()
-        self.game_clock = Clock()
-        self.handling_clock = Clock()
-        self.current_time = 0
         
-        self.next_frame_time = 0
-        self.dt = 0
+        self.current_time = 0
+        self.last_tick_time = 0
+        self.delta_time = 0
+        self.time_per_tick = 1 / self.config.TPS
+        self.do_first_tick = True
+        self.tick_counter = 0
+        self.tick_counter_last_cleared = 0
+        
+        self.current_frame_time = 0
+        self.last_frame_time = 0
+        self.delta_frame_time = 0
+        self.frame_time = 1 / self.config.FPS
+        self.draw_first_frame = True
+         
         self.exited = False
         self.state_snapshot = None
-        self.next_tick_time = 0
-        self.last_tick_time = 0 
         
         self.DEBUG = False
         
@@ -183,32 +190,44 @@ class PyGameInstance():
         Handle pygame key events and pass them to the handling object, updates at an uncapped rate
         """
         while not self.exited:
-            if self.elapsed_times["handle_events"] >= self.next_polling_time:
                 
-                self.handling_clock.tick()
                 self.handling.current_time = self.elapsed_times["handle_events"]
+                self.handling.delta_time += (self.handling.current_time - self.handling.last_tick_time) / self.handling.polling_tick_time
+                self.handling.last_tick_time = self.handling.current_time
               
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        self.__exit()
-                        
-                    elif event.type == pygame.KEYDOWN:
-                        self.handling.on_key_press(event.key)
-                        
-                        if event.key == pygame.K_F3:
-                            self.__show_debug_menu()
-                            
-                        if event.key == pygame.K_ESCAPE:
-                            self.__exit()
-                        
-                    elif event.type == pygame.KEYUP:
-                        self.handling.on_key_release(event.key)
- 
-                self.next_polling_time += 1 / self.config.POLLING_RATE
+                if self.handling.do_first_tick:
+                    self.__handle_key_events()
+                    self.handling.do_first_tick = False
+
+                while self.handling.delta_time >= 1:
+                    self.__handle_key_events()
+                    self.handling.delta_time -= 1
                 
-                self.__get_polling_rate()
+                if self.handling.current_time > self.handling.poll_counter_last_cleared + 1:
+                    self.__get_polling_rate()
+                    self.handling.poll_tick_counter = 0
+                    self.handling.poll_counter_last_cleared += 1
             
-            await asyncio.sleep(0)
+                await asyncio.sleep(0)
+    
+    def __handle_key_events(self):
+        self.handling.poll_tick_counter += 1
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.__exit()
+                
+            elif event.type == pygame.KEYDOWN:
+                self.handling.on_key_press(event.key)
+                
+                if event.key == pygame.K_F3:
+                    self.__show_debug_menu()
+                    
+                if event.key == pygame.K_ESCAPE:
+                    self.__exit()
+                
+            elif event.type == pygame.KEYUP:
+                self.handling.on_key_release(event.key)
     
     async def __game_loop(self, four):
         """
@@ -220,18 +239,21 @@ class PyGameInstance():
         while not self.exited:
          
             self.current_time = self.elapsed_times["game_loop"]
+            self.delta_time += (self.current_time - self.last_tick_time) / self.time_per_tick
+            self.last_tick_time = self.current_time
+             
+            if self.do_first_tick:
+                self.__do_tick(four)
+                self.do_first_tick = False
             
-            if self.current_time >= self.next_tick_time:
+            while self.delta_time >= 1:
+                self.__do_tick(four)
+                self.delta_time -= 1
                 
-                # TODO: if tick delta time is greater than normal 1 / TPS, do extra ticks to catch up. if it is more than a threshold (couple seconds), skip the ticks
-                # catch up ticks (google it lol)
-                # record when last tick was executed, take difference between current time and last tick time, divide by 1/TPS, do that many ticks
-              
-                self.__do_tick(four) 
-               
-                self.next_tick_time += 1/self.config.TPS
-                
-            self.__get_tps()
+            if self.current_time > self.tick_counter_last_cleared + 1:
+                self.__get_tps()
+                self.tick_counter = 0
+                self.tick_counter_last_cleared += 1
             
             await asyncio.sleep(0)
 
@@ -245,10 +267,19 @@ class PyGameInstance():
                 
                 self.__do_render()
                 
-            elif self.current_time >= self.next_frame_time and not self.config.UNCAPPED_FPS:
-                self.__do_render()
-                self.next_frame_time += 1/self.config.FPS
-        
+            else:
+                self.current_frame_time = self.elapsed_times["render_loop"]
+                self.delta_frame_time += (self.current_frame_time - self.last_frame_time) / self.frame_time
+                self.last_frame_time = self.current_frame_time
+                
+                if self.draw_first_frame:
+                    self.__do_render()
+                    self.draw_first_frame = False
+                
+                if self.delta_frame_time >= 1:
+                    self.__do_render()
+                    self.delta_frame_time -= 1
+         
             self.__get_fps()
             
             await asyncio.sleep(0)
@@ -263,7 +294,7 @@ class PyGameInstance():
         self.delta_tick = self.__calc_df()
         four.loop()
         self.state_snapshot = four.forward_state()
-        self.game_clock.tick()
+        self.tick_counter += 1
     
     def __do_render(self):
         """
@@ -284,7 +315,7 @@ class PyGameInstance():
         """
         Update the stored TPS value
         """
-        self.TPS = self.game_clock.get_fps()
+        self.TPS = self.tick_counter
     
     def __get_fps(self):
         """
@@ -296,7 +327,7 @@ class PyGameInstance():
         """
         Update the stored polling rate value
         """
-        self.POLLING_RATE = self.handling_clock.get_fps()
+        self.POLLING_RATE = self.handling.poll_tick_counter
 
     def __calc_exe_time_avg(self):
         """
@@ -490,7 +521,7 @@ class PyGameInstance():
                         'WORST_DF': self.worst_df,
                         
                         # tick counter
-                        'TICKCOUNT': self.state_snapshot.tick_counter,
+                        'TICKCOUNT': self.tick_counter,
 
                         'POLLING_RATE': self.average_polling,
                         'POLLING_RATE_RAW': self.POLLING_RATE,
@@ -532,7 +563,7 @@ class PyGameInstance():
             'KEY_HOLD': self.handling.key_states[self.handling.key_bindings[Action.HOLD]]['current'],
         }
 class Clock:
-    def __init__(self, max_entries = 128):
+    def __init__(self, max_entries = 10):
         """
         Custom clock object as pygames inbuilt clock is trash for timing microsecond processes (has a resolution of 10ms????)
         Instead use clock with highest resolution possible (time.perf_counter) and calculate the FPS from the average time between ticks
@@ -545,15 +576,16 @@ class Clock:
         self.times = deque(maxlen = max_entries)
         self.last_time = time.perf_counter()
         self.fps = 0
+        self.dt = 0
 
     def tick(self):
         """
         Tick the clock once, and calculate the average time between ticks to calculate the FPS
         """
         current_time = time.perf_counter()
-        dt = current_time - self.last_time
+        self.dt = current_time - self.last_time
         self.last_time = current_time
-        self.times.append(dt)
+        self.times.append(self.dt)
         
         if len(self.times) > 1:
             average_time = sum(self.times) / len(self.times)
@@ -566,3 +598,12 @@ class Clock:
         Return the FPS of the clock
         """
         return self.fps    
+    
+    def get_time(self):
+        return time.perf_counter()
+    
+    def get_dt(self):
+        """
+        Return the delta time of the clock
+        """
+        return self.dt

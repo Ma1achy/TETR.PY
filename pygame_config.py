@@ -11,7 +11,7 @@ class PyGameConfig():
         self.UNCAPPED_FPS = False
         self.FPS = 144
         self.TPS = 256 # Subframes per second
-        self.POLLING_RATE = 3000
+        self.POLLING_RATE = 1000
     
         self.COLOUR_MAP = {
             -1: (255, 0, 0),

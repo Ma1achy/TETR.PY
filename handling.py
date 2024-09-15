@@ -27,9 +27,13 @@ class Handling():
         """
         
         self.pgconfig = pgconfig
+        self.polling_tick_time = 1 / self.pgconfig.POLLING_RATE
         self.current_time = 0
-        self.dt = 0
-        self.delta_tick = 0
+        self.delta_time = 0
+        self.last_tick_time = 0
+        self.do_first_tick = True
+        self.poll_tick_counter = 0
+        self.poll_counter_last_cleared = 0
         
         self.buffer_threshold = 128 # tick range where old actions are still considered valid
         self.action_queue = deque()

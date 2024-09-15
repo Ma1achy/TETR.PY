@@ -19,6 +19,7 @@ class Render():
         self.config = Config()
         self.four_surface = self.__init_four_surface()
         self.danger = False
+        self.game_over = False
         
         # fonts
         self.hun2_big = Font(self.pgconfig.GRID_SIZE).hun2()
@@ -41,6 +42,7 @@ class Render():
         """
         self.surfaces = []
         self.danger = four.danger
+        self.game_over = four.game_over
         self.four_surface.fill((0, 0, 0))
         self.window.fill((0, 0, 0))
         
@@ -101,7 +103,10 @@ class Render():
         for i, row in enumerate(matrix):
             for j, value in enumerate(row):
                 if value != 0:
-                    colour = self.pgconfig.COLOUR_MAP[value]
+                    if self.game_over:
+                        colour = self.pgconfig.COLOUR_MAP[8]
+                    else:
+                        colour = self.pgconfig.COLOUR_MAP[value]
                     if transparent:
                         colour = lerpBlendRGBA((0, 0, 0), colour, alpha)
                     pygame.draw.rect(self.four_surface, colour, 
