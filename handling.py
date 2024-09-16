@@ -129,7 +129,7 @@ class Handling():
         
         self.prev_time = self.current_time
     
-    def __get_key_state(self, action: Action, current: bool):
+    def __getKeyState(self, action: Action, current: bool):
         return self.key_states[self.key_bindings[action]]["current" if current else "previous"]
        
     def __forward_key_states(self):
@@ -162,7 +162,7 @@ class Handling():
         """
         If right is held and then left is pressed, the left action should be prioritized (most recent action)
         """
-        if self.__get_key_state(Action.MOVE_LEFT, True) and self.__get_key_state(Action.MOVE_RIGHT, True):
+        if self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_RIGHT, True):
             if self.handling_settings['PrioriDir']:
                 if self.current_direction is Action.MOVE_LEFT:
                     self.__set_action_state(Action.MOVE_RIGHT, True)
@@ -173,11 +173,11 @@ class Handling():
             else:
                 self.__set_action_state(action, False) # if left and right are pressed at the same time, no action is performed
             
-        elif self.__get_key_state(Action.MOVE_LEFT, True):
+        elif self.__getKeyState(Action.MOVE_LEFT, True):
             self.current_direction = action
             self.__set_action_state(Action.MOVE_LEFT, True)
             
-        elif self.__get_key_state(Action.MOVE_RIGHT, True):
+        elif self.__getKeyState(Action.MOVE_RIGHT, True):
             self.current_direction = action
             self.__set_action_state(Action.MOVE_RIGHT, True) 
   
@@ -287,8 +287,8 @@ class Handling():
 
         if self.handling_settings['DASCancel']:
             self.__DAS_cancel()
-    
-        if (self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']) or (self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']):
+        
+        if self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_LEFT, False) or (self.__getKeyState(Action.MOVE_RIGHT, True) and self.__getKeyState(Action.MOVE_RIGHT, False)):
             self.DAS_timer += self.current_time - self.prev_time
             
             if self.DAS_timer >= self.handling_settings['DAS'] / 1000 :
@@ -304,7 +304,7 @@ class Handling():
         """
         Cancel DAS When Changing Directions: The DAS timer will reset if the opposite direction is pressed
         """
-        if (self.key_states[self.key_bindings[Action.MOVE_LEFT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['previous']) or (self.key_states[self.key_bindings[Action.MOVE_RIGHT]]['current'] and self.key_states[self.key_bindings[Action.MOVE_LEFT]]['previous']):
+        if (self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_RIGHT, False)) or (self.__getKeyState(Action.MOVE_RIGHT, True) and self.__getKeyState(Action.MOVE_LEFT, False)):
             self.DAS_timer = 0
             self.ARR_timer = 0
         
@@ -326,7 +326,4 @@ class Handling():
         """
         self.do_ARR = False
         self.ARR_timer = 0
-
-    
-#TODO: key priority for left/right movement, i.e if right is held and ten left is pressed, the left action should be prioritized or vice versa (most recent action)
       
