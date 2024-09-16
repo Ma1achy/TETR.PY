@@ -35,6 +35,7 @@ class Handling():
         self.do_first_tick = True
         self.poll_tick_counter = 0
         self.poll_counter_last_cleared = 0
+        self.current_direction = None
         
         self.buffer_threshold = 128 # tick range where old actions are still considered valid
         self.action_queue = deque()
@@ -64,6 +65,7 @@ class Handling():
             'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
             'DASCancel': False, # Cancel DAS When Changing Directions: If true, the DAS timer will reset if the opposite direction is pressed
             'PrefSD': True,     # Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
+            'PrioriDir': True   # Prioritise the Most Recent Direction: when True if both the left and right keys are held the more recent key to be held will be prioritized, if False no movement will be performed
         }
         
         
@@ -106,7 +108,7 @@ class Handling():
         Get the actions from the key states and add them to the action buffer
         """
         self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
-        
+            
         self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
         
         self.__test_actions(Action.ROTATE_CLOCKWISE, self.__is_action_toggled)
@@ -126,7 +128,10 @@ class Handling():
         self.get_action_buffer() # add actions to buffer
         
         self.prev_time = self.current_time
-        
+    
+    def __get_key_state(self, action: Action, current: bool):
+        return self.key_states[self.key_bindings[action]]["current" if current else "previous"]
+       
     def __forward_key_states(self):
         """
         Forward the key states for comaprison in the future (allows for toggle/hold detection)
@@ -146,19 +151,48 @@ class Handling():
         """
         return self.key_states[self.key_bindings[action]]['current']
     
+    def __set_action_state(self, action, state):
+        """
+        Set the action state
+        """
+        self.actions[action]['state'] = state
+        self.actions[action]['timestamp'] = self.current_time
+        
+    def __LeftRightMovementPriority(self, action):
+        """
+        If right is held and then left is pressed, the left action should be prioritized (most recent action)
+        """
+        if self.__get_key_state(Action.MOVE_LEFT, True) and self.__get_key_state(Action.MOVE_RIGHT, True):
+            if self.handling_settings['PrioriDir']:
+                if self.current_direction is Action.MOVE_LEFT:
+                    self.__set_action_state(Action.MOVE_RIGHT, True)
+                    self.__set_action_state(Action.MOVE_LEFT, False)
+                else:
+                    self.__set_action_state(Action.MOVE_LEFT, True)
+                    self.__set_action_state(Action.MOVE_RIGHT, False)
+            else:
+                self.__set_action_state(action, False) # if left and right are pressed at the same time, no action is performed
+            
+        elif self.__get_key_state(Action.MOVE_LEFT, True):
+            self.current_direction = action
+            self.__set_action_state(Action.MOVE_LEFT, True)
+            
+        elif self.__get_key_state(Action.MOVE_RIGHT, True):
+            self.current_direction = action
+            self.__set_action_state(Action.MOVE_RIGHT, True) 
+  
     def __test_actions(self, action, check):
         """
         Perform the state tests on an action and update the action state
         """
-        
         if check(action):
-            self.actions[action]['state'] = True
-            self.actions[action]['timestamp'] = self.current_time
-            
+            if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
+                self.__LeftRightMovementPriority(action)
+            else:
+                self.__set_action_state(action, True)  
         else:
-            self.actions[action]['state'] =  False,
-            self.actions[action]['timestamp'] = self.current_time
-                 
+            self.__set_action_state(action, False)
+                   
     def __get_key_info(self, key):
         """
         Get the key info from the key object
@@ -294,9 +328,5 @@ class Handling():
         self.ARR_timer = 0
 
     
-    
-    
-                    
-                
-        
-                
+#TODO: key priority for left/right movement, i.e if right is held and ten left is pressed, the left action should be prioritized or vice versa (most recent action)
+      
