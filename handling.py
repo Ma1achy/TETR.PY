@@ -29,6 +29,7 @@ class Handling():
         self.pgconfig = pgconfig
         self.polling_tick_time = 1 / self.pgconfig.POLLING_RATE
         self.current_time = 0
+        self.prev_time = 0
         self.delta_time = 0
         self.last_tick_time = 0
         self.do_first_tick = True
@@ -42,8 +43,8 @@ class Handling():
         self.DAS_timer = 0
         self.ARR_timer = 0
         
-        self.prev_time = 0
-    
+        self.actions = self.GetEmptyActions()
+        
         self.key_bindings = {
             Action.MOVE_LEFT:                   pygame.K_LEFT,
             Action.MOVE_RIGHT:                  pygame.K_RIGHT,
@@ -65,8 +66,6 @@ class Handling():
             'PrefSD': True,     # Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
         }
         
-        self.actions = self.GetEmptyActions()
-        self.key_bindings = self.key_bindings
         
         self.key_states = {
             self.key_bindings[Action.MOVE_LEFT]:                     {'current': False, 'previous': False},
