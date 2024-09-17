@@ -1,5 +1,5 @@
 import asyncio
-from pygame_instance import PyGameInstance
+from core import Core
 from four import Four
 
 #TODO:
@@ -22,9 +22,9 @@ from four import Four
 # - GAME OVER CONDITIONS
 
 async def main():
-    pygame_instance = PyGameInstance()
-    four = Four(pygame_instance)
-    await pygame_instance.run(four)
+    game_instance = Core()
+    four = Four(game_instance)
+    await game_instance.run(four)
 
 if __name__ == "__main__":
     asyncio.run(main())

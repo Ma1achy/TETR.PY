@@ -3,11 +3,20 @@ from  utils import Vec2
 class Matrix():
     def __init__(self, WIDTH:int, HEIGHT:int):
         """
-        Create a matrix that represents the game field
+        Represents the game matrix (or board) where the tetrominoes are placed and interact.
+        
+        Manages the state of the game matrix, including the static blocks, active piece, and the ghost piece.
         
         args:
-        WIDTH (int): The width of the matrix
-        HEIGHT (int): The height of the matrix
+            WIDTH (int): The width of the matrix
+            HEIGHT (int): The height of the matrix
+            
+        methods:
+            empty_matrix(): Create a matrix filled with zeros
+            insert_blocks(blocks, position, target_matrix): Insert the piece blocks into the target matrix
+            clear_piece(): Remove the piece from the matrix
+            clear_lines(): Remove full lines from the matrix
+            __str__(): String representation of the matrix
         """
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
@@ -27,9 +36,9 @@ class Matrix():
         Insert the piece blocks into the target matrix
         
         args:
-        blocks (list): The piece blocks
-        position (Vec2): The position of the piece
-        target_matrix (list): The matrix to insert the piece blocks into
+            blocks (list): The piece blocks
+            position (Vec2): The position of the piece
+            target_matrix (list): The matrix to insert the piece blocks into
         """
         for y, row in enumerate(blocks):
             for x, val in enumerate(row):

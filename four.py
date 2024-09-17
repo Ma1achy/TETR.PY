@@ -1,7 +1,6 @@
 from tetromino import Tetromino
 from matrix import Matrix
 from config import Config
-from pygame_config import PyGameConfig
 from handling import Action
 from rotation import RotationSystem
 
@@ -11,11 +10,15 @@ class Four():
         Create an instance of the game Four
         
         args:
-        pygame_instance (PyGameInstance): The pygame instance to use
+            pygame_instance (PyGameInstance): The pygame instance to use
+            rotation_system (str): The rotation system to use
+            
+        methods:
+            loop(): The main game loop
+            forward_state(): Forward the state of the game to allow for async rendering
         """
         self.pygame_instance = pygame_instance
-        self.config = Config()
-        self.pgconfig = PyGameConfig() 
+        self.config = Config() 
        
         self.rotation_system = RotationSystem(rotation_system)
         self.kick_table = self.rotation_system.kick_table
@@ -33,9 +36,6 @@ class Four():
     def loop(self):
         """
         The main game loop
-        
-        args:
-        dt (float): The time since the last frame
         """
         self.actions_this_tick = []
         self.pygame_instance.handling.before_loop_hook()
@@ -53,7 +53,7 @@ class Four():
         if self.pygame_instance.TPS != 0:
             tick_duration = 1000 / self.pygame_instance.TPS # ms per tick
         else:
-            tick_duration = 1000/ self.pgconfig.TPS
+            tick_duration = 1000/ self.config.TPS
             
         for action_dict in list(self.pygame_instance.handling.action_queue):
            
@@ -116,12 +116,12 @@ class Four():
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
             self.current_tetromino.ghost()
         
-    def __get_next_piece(self, hold):
+    def __get_next_piece(self, hold:bool):
         """
         Get the next piece from the queue and spawn it
         
         args:
-        hold (bool): Whether to hold the current piece
+            hold (bool): Whether to hold the current piece
         """
         self.can_hold = True
         
@@ -139,12 +139,12 @@ class Four():
                 
         self.__spawn_piece(next_piece)
             
-    def __spawn_piece(self, next_piece):
+    def __spawn_piece(self, next_piece:str):
         """
         Spawn a new tetromino
         
         args:
-        next_piece (str): The type of the next tetromino
+            next_piece (str): The type of the next tetromino
         """
         spawning_tetromino = Tetromino(next_piece, 0, 4, 18, self.matrix)
         
@@ -251,9 +251,12 @@ class Four():
         danger.blocks = [tuple(-1 if val != 0 else val for val in row) for row in danger.blocks]
         self.matrix.insert_blocks(danger.blocks, danger.position, self.matrix.danger)
         
-    def __event_danger(self, val):
+    def __event_danger(self, val:bool):
         """
         Toggle the danger flag
+        
+        args:
+            val (bool): The value to set the danger flag to
         """
         if val:
             self.danger = True
@@ -266,8 +269,14 @@ class Queue():
         Queue of next tetrominos
         
         args:
-        seed (int): The seed to use for the random number generator
-        length (int): The length of the queue
+            rng (RNG): The random number generator to use
+            length (int): The length of the queue
+            
+        methods:
+            get_bag(): Create a bag of tetrominos
+            get_queue(): Get the queue of tetrominos
+            get_next_piece(): Get the next piece from the queue
+            view_queue(): See a piece in the queue at a specific index
         """
         self.rng = rng
         self.length = length
@@ -280,7 +289,7 @@ class Queue():
         Create a bag of seven tetrominos
         
         args:
-        bag (list): The bag to fill with tetrominos
+            bag (list): The bag to fill with tetrominos
         """
         bag = ['I', 'O', 'T', 'S', 'Z', 'J', 'L']
         self.rng.shuffle_array(bag)
@@ -313,6 +322,8 @@ class Queue():
         """
         See the next piece in the queue
         """
+        if idx >= len(self.queue) - 1:
+            return self.queue[-1]
         return self.queue[idx]
 
 class RNG:

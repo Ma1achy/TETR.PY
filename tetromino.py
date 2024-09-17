@@ -5,20 +5,24 @@ from handling import Action
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix):
         """
+        Create the active Tetromino in the game of Four.
+        
+        Handles the movement, rotation, and collision detection of the active Tetromino piece. 
+  
         args:
-        Type (str): Type of the piece: ['T', 'S', 'Z', 'L', 'J', 'I', 'O'] 
-        State (int): Rotation state of the piece: [0, 1, 2, 3]
-        x (int): x position of the piece
-        y (int): y position of the piece
-        matrix (Matrix): The matrix object that contains the blocks that are already placed
+            Type (str): Type of the piece: ['T', 'S', 'Z', 'L', 'J', 'I', 'O'] 
+            State (int): Rotation state of the piece: [0, 1, 2, 3]
+            x (int): x position of the piece
+            y (int): y position of the piece
+            matrix (Matrix): The matrix object that contains the blocks that are already placed
         """
         
         self.type = type
         self.state = state
-        self.position = self.get_origin(x, y)
+        self.position = self.__get_origin(x, y)
         self.matrix = matrix
         
-        self.blocks = self.get_tetromino_blocks()
+        self.blocks = self.__get_tetromino_blocks()
         self.ghost_position = Vec2(self.position.x, self.position.y)
         self.on_floor = False
         
@@ -30,12 +34,13 @@ class Tetromino():
         elif self.state == 3:
             self.blocks = self.__rotate_ccw()
     
-    def get_origin(self, x:int, y:int):
+    def __get_origin(self, x:int, y:int):
         """
         Get the origin of the piece
         
-        x (int): x position of the piece
-        y (int): y position of the piece
+        args:
+            x (int): x position of the piece
+            y (int): y position of the piece
         """
         match self.type:
             case 'S' | 'Z' | 'J' | 'L' | 'T': 
@@ -52,13 +57,13 @@ class Tetromino():
         
         return Vec2(x, y)
             
-    def rotate(self, action, kick_table:dict):
+    def rotate(self, action:Action, kick_table:dict):
         """
         Rotate the piece in the given direction
         
         args:
-        action (Action): The action to perform
-        kick_table (dict): The kick table to use for the piece
+            action (Action): The action to perform
+            kick_table (dict): The kick table to use for the piece
         """
         
         kick_table = self.__get_piece_kick_table(kick_table)
@@ -76,14 +81,14 @@ class Tetromino():
                 desired_state = (self.state + 2) % 4
                 rotated_piece = self.__rotate_180()
         
-        self.__SRS(rotated_piece, desired_state, kick_table, offset = 0)
+        self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset = 0)
         
-    def move(self, action):
+    def move(self, action:Action):
         """
         Move the piece in the given direction
         
         args:
-        action (Action): The action to perform
+            action (Action): The action to perform
         """
         match action:
             case Action.MOVE_LEFT:
@@ -109,12 +114,12 @@ class Tetromino():
         Check if the piece at the desired position will collide with the matrix bounds or other blocks
         
         args:
-        desired_piece_blocks (list): The blocks of the piece at the desired position
-        desired_position (Vec2): The desired position of the piece
-        matrix (Matrix): The matrix object that contains the blocks that are already placed
+            desired_piece_blocks (list): The blocks of the piece at the desired position
+            desired_position (Vec2): The desired position of the piece
+            matrix (Matrix): The matrix object that contains the blocks that are already placed
         
         returns
-        (bool): True if the piece will collide, False otherwise
+            (bool): True if the piece will collide, False otherwise
         """
         for y, row in enumerate(desired_piece_blocks):
             for x, val in enumerate(row):
@@ -157,17 +162,21 @@ class Tetromino():
                 
         return kick_table
                
-    def __SRS(self, rotated_piece:list, desired_state:int, kick_table, offset:int):
+    def __do_kick_tests(self, rotated_piece:list, desired_state:int, kick_table, offset:int):
         """
-        Apply the Super Rotation System to the piece by recursively applying kick translations to the piece
-        until a valid rotation is found or no more offsets are available
+        Find a valid rotation of the piece by recursively applying kick translations to it
+        until a valid rotation is found or no more offsets are available (rotation is invalid).
         
-        rotated_piece (list): The rotated piece
-        desired_state (int): Desired rotation state of the piece [0, 1, 2, 3]
-        kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
-        offset (int): Offset order to use when calculating the kick translation
+        args:
+            rotated_piece (list): The rotated piece
+            desired_state (int): Desired rotation state of the piece [0, 1, 2, 3]
+            kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
+            offset (int): The kick translation to try from the kick table
+            
+        returns:
+            (None): if the rotation is invalid
         """
-        kick = self.get_kick(kick_table, desired_state, offset)
+        kick = self.__get_kick(kick_table, desired_state, offset)
         
         if kick is None: # no more offsets to try => rotation is invalid
             return
@@ -175,7 +184,7 @@ class Tetromino():
         kick = Vec2(kick.x, -kick.y) # have to invert y as top left of the matrix is (0, 0)
          
         if self.collision(rotated_piece, self.position + kick): 
-            self.__SRS(rotated_piece, desired_state, kick_table, offset + 1) 
+            self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset + 1) 
         else:
             if self.type == 'T':
                 self.__Is_T_Spin(offset, desired_state, kick)
@@ -187,29 +196,35 @@ class Tetromino():
             self.blocks = rotated_piece
             self.position += kick
     
-    def get_kick(self, kick_table, desired_state:int, offset_order:int):
+    def __get_kick(self, kick_table, desired_state:int, offset:int):
         """
-        Get the kick translation to apply to the piece
-        kick = initial_state_offset - desired_state_offset
-        
+        Get the kick translation to apply to the piece for the given offset_order
+     
         args:
-        kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
-        initial_state (int): Initial rotation state of the piece: [0, 1, 2, 3]
-        desired_state (int): Desired rotation state of the piece: [0, 1, 2, 3]
-        offset_order (int): Offset order to use 
+            kick_table (dict): The kick table containing the kicks to apply to the piece for the given rotation type
+            initial_state (int): Initial rotation state of the piece: [0, 1, 2, 3]
+            desired_state (int): Desired rotation state of the piece: [0, 1, 2, 3]
+            offset (int): The kick translation to try from the kick table
         
         returns:
-        kick (Vec2): The kick translation to apply to the piece
+            kick (Vec2): The kick translation to apply to the piece
         """
         
-        if offset_order > len(kick_table[f'{self.state}->{desired_state}']) - 1:
+        if offset > len(kick_table[f'{self.state}->{desired_state}']) - 1:
             return None
         else:
-            return kick_table[f'{self.state}->{desired_state}'][offset_order]
+            return kick_table[f'{self.state}->{desired_state}'][offset]
         
     def __is_spin(self, rotated_piece:int, kick:Vec2):
         """
         check if the rotation is a spin: this is when the piece rotates into an position where it is then immobile
+        
+        args:
+            rotated_piece (list): The rotated piece
+            kick (Vec2): The kick translation to apply
+            
+        returns:
+            (bool): True if the piece is immobile, False otherwise
         """
         if self.collision(rotated_piece, self.position + kick + Vec2(1, 0)) and self.collision(rotated_piece, self.position + kick + Vec2(-1, 0)) and self.collision(rotated_piece, self.position + kick+ Vec2(0, 1)) and self.collision(rotated_piece, self.position + kick + Vec2(0, -1)):
             return True
@@ -231,9 +246,9 @@ class Tetromino():
                 If the last kick translation was used when rotating from 2 to 1, it is a full T-spin despite not meeting the above conditions.  
         
         args:
-        offset (int): Offset order to use when calculating the kick translation
-        desired_state (int): Desired rotation state of the piece [0, 1, 2, 3]
-        kick (Vec2): The kick translation to apply  
+            offset (int): The kick translation to try from the kick table
+            desired_state (int): Desired rotation state of the piece [0, 1, 2, 3]
+            kick (Vec2): The kick translation to apply  
         """
         corner_pairs = {
             0: [Vec2(0, 0), Vec2(2, 0)],
@@ -273,11 +288,11 @@ class Tetromino():
         Test if the corners of the pieces bounding box are occupied
         
         args:
-        corners (list): The corners of the piece bounding box
-        kick (Vec2): The kick translation to apply
+            corners (list): The corners of the piece bounding box
+            kick (Vec2): The kick translation to apply
         
         returns:
-        filled_corners (list): The corners that are occupied
+            filled_corners (list): The corners that are occupied
         """
         filled_corners = []
         
@@ -309,16 +324,16 @@ class Tetromino():
             self.matrix.ghost = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
 
-    def get_tetromino_blocks(self):
+    def __get_tetromino_blocks(self):
         """
         Get the blocks for the given tetromino.
         This is the 0th rotation state of the piece that SRS uses.
         
         args:
-        type (str): The type of tetromino
+            type (str): The type of tetromino
         
         returns:
-        blocks (list): The pieces blocks
+            blocks (list): The pieces blocks
         """
         blocks = {
             'T':

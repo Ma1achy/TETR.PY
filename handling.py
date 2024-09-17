@@ -23,11 +23,17 @@ class Handling():
         Handle the key inputs and provide the actions to the game loop in a queue.
         
         args:	
-        pgconfig (PyGameConfig): The pygame configuration
+            pgconfig (PyGameConfig): The pygame configuration
+        
+        methods:
+            before_loop_hook(key): Hook that is called within the game loop before the tick is executed to obtain the current action states to be used in the game loop
+            on_key_press(key): Handle the key press event
+            on_key_release(key): Handle the key release event
+            consume_action(): Consume the oldset action in the queue
         """
         
-        self.pgconfig = pgconfig
-        self.polling_tick_time = 1 / self.pgconfig.POLLING_RATE
+        self.config = pgconfig
+        self.polling_tick_time = 1 / self.config.POLLING_RATE
         self.current_time = 0
         self.prev_time = 0
         self.delta_time = 0
@@ -44,7 +50,7 @@ class Handling():
         self.DAS_timer = 0
         self.ARR_timer = 0
         
-        self.actions = self.GetEmptyActions()
+        self.actions = self.__GetEmptyActions()
         
         self.key_bindings = {
             Action.MOVE_LEFT:                   pygame.K_LEFT,
@@ -80,7 +86,7 @@ class Handling():
             self.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
         }
         
-    def GetEmptyActions(self):
+    def __GetEmptyActions(self):
         """
         Return an empty actions dictionary
         """
@@ -125,7 +131,7 @@ class Handling():
         
         self.__DAS()
         
-        self.get_action_buffer() # add actions to buffer
+        self.__get_action_buffer() # add actions to buffer
         
         self.prev_time = self.current_time
     
@@ -142,18 +148,28 @@ class Handling():
     def __is_action_toggled(self, action:Action):
         """
         Test if the action is toggled (pressed and released)
+        
+        args:
+            action (Action): The action to be performed
         """
         return self.key_states[self.key_bindings[action]]['current'] and not self.key_states[self.key_bindings[action]]['previous']
     
     def __is_action_down(self, action:Action):
         """
         Test if the action is down (pressed)
+        
+        args:
+            action (Action): The action to be performed
         """
         return self.key_states[self.key_bindings[action]]['current']
     
-    def __set_action_state(self, action, state):
+    def __set_action_state(self, action:Action, state:bool):
         """
         Set the action state
+        
+        args:
+            action (Action): The action to be performed
+            state (bool): The state of the action
         """
         self.actions[action]['state'] = state
         self.actions[action]['timestamp'] = self.current_time
@@ -164,10 +180,10 @@ class Handling():
         or no movement will be performed if the relevant setting is False.
         
         args:
-        action (Action): The action to be performed
+            action (Action): The action to be performed
         """
         if self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_RIGHT, True):
-            if self.handling_settings['PrioriDir']:
+            if self.handling_settings['PrioriDir']: # if the setting is true, the most recent key will be prioritised
                 if self.current_direction is Action.MOVE_LEFT:
                     self.__set_action_state(Action.MOVE_RIGHT, True)
                     self.__set_action_state(Action.MOVE_LEFT, False)
@@ -190,8 +206,8 @@ class Handling():
         Perform the state tests on an action and update the action state
         
         args:
-        action (Action): The action to be performed
-        check (callable): The function to be called to check the action state
+            action (Action): The action to be performed
+            check (callable): The function to be called to check the action state
         """
         if check(action):
             if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
@@ -201,9 +217,12 @@ class Handling():
         else:
             self.__set_action_state(action, False)
                    
-    def __get_key_info(self, key):
+    def __get_key_info(self, key:pygame.key):
         """
         Get the key info from the key object
+        
+        args:
+            key (pygame.key): The key object
         """
         
         try:
@@ -214,11 +233,12 @@ class Handling():
         
         return k
                            
-    def on_key_press(self, key):
+    def on_key_press(self, key:pygame.key):
         """
         Handle the key press event
         
-        key (pygame.key): The key object
+        args:
+            key (pygame.key): The key object
         """
         
         keyinfo = self.__get_key_info(key)
@@ -232,12 +252,12 @@ class Handling():
         except KeyError:
             return
     
-    def on_key_release(self, key):
+    def on_key_release(self, key:pygame.key):
         """
         Handle the key release event
         
         args:
-        key (pygame.key): The key object
+            key (pygame.key): The key object
         """
         
         keyinfo = self.__get_key_info(key)
@@ -251,7 +271,7 @@ class Handling():
         except KeyError:
             return  
         
-    def get_action_buffer(self):
+    def __get_action_buffer(self):
         """
         Get the actions that are currently active and add them to the queue.
         """
@@ -265,13 +285,19 @@ class Handling():
                     
     def consume_action(self):
         """
-        Consume the action from the queue
+        Consume the oldset action from the queue
         """
         if self.action_queue:
             return self.action_queue.popleft()  
         return None
     
-    def __do_DAS_ARR(self, action):
+    def __do_DAS_ARR(self, action:Action):
+        """
+        Perform the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR)
+        
+        args:
+            action (Action): The action to be performed
+        """
         if not self.done_one_move: # only add the action once if DAS is not done to allow for tapping
             self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
             self.done_one_move = True
@@ -283,8 +309,11 @@ class Handling():
                 self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
                 self.__reset_ARR() 
 
-    def __instant_movement(self, action):
-        for _ in range(0, self.pgconfig.MATRIX_WIDTH):
+    def __instant_movement(self, action:Action):
+        """
+        Instantly move the tetromino to the left or right without any delay (ARR = 0)
+        """
+        for _ in range(0, self.config.MATRIX_WIDTH):
             self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
             
     def __DAS(self):
@@ -292,7 +321,6 @@ class Handling():
         If the Left/Right movement keys are held down, the DAS timer will be incremented until it reaches the DAS threshold (ms). 
         Once charged, the ARR will be performed at the set rate (ms).
         """
-
         if self.handling_settings['DASCancel']:
             self.__DAS_cancel()
         
@@ -330,7 +358,7 @@ class Handling():
             
     def __reset_ARR(self):
         """
-        Reset ARR
+        Reset ARR once the action has been performed
         """
         self.do_ARR = False
         self.ARR_timer = 0

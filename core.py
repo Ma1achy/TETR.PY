@@ -1,5 +1,5 @@
 import pygame
-from pygame_config import PyGameConfig
+from config import Config
 from handling import Handling
 from render import Render
 import time
@@ -7,13 +7,15 @@ import asyncio
 from collections import deque 
 from handling import Action
 
-class PyGameInstance():
+class Core():
     def __init__(self):
-        """"
-        Create an instance of pygame to run the game
         """
+        Manage the game loop, key events, and rendering of the game
         
-        self.config = PyGameConfig()
+        methods:
+            run(four): Run the instance of four
+        """
+        self.config = Config()
         
         self.window = self.__init_window()
         self.render = Render(self.window)
@@ -147,7 +149,6 @@ class PyGameInstance():
         args:
         (Four) four: the instance of the game
         """
-        
         self.__initialise(four)
         
         await asyncio.gather(
