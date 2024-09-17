@@ -69,8 +69,8 @@ class Handling():
         }
         
         self.handling_settings = {
-            'ARR' :1000,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
-            'DAS' :1000,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
+            'ARR' :33,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
+            'DAS' :167,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
             'DCD' :0,           # DAS Cut Delay: If none-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rorating a piece (ms)
             'SDF' :6,           # Soft Drop Facor: The factor the soft dropping scales the current gravity by
             'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
