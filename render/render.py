@@ -408,23 +408,23 @@ class Render():
         debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, poll_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 10)))
 
 
-        if debug_dict['DAS_COUNTER'] * 1000 < debug_dict['DAS']:
+        if debug_dict['DAS_COUNTER'] < debug_dict['DAS']:
             das_colour = (255, 255, 255)
         else:
             das_colour = (0, 255, 0)
 
-        debug_surfaces.append((self.hun2_big.render(f'DAS: {int(debug_dict["DAS_COUNTER"]*1000)} ms', True, das_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 11)))
+        debug_surfaces.append((self.hun2_big.render(f'DAS: {int(debug_dict["DAS_COUNTER"])} ms', True, das_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 11)))
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["DAS"]} ms', True, das_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 12)))
         
         debug_surfaces.append((self.pfw_small.render(f'DCD: {debug_dict["DCD"]} | DAS Cancel: {debug_dict["DAS_CANCEL"]}', True, das_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 12.5)))
         
-        if debug_dict['ARR_COUNTER'] * 1000 < debug_dict['ARR']:
+        if debug_dict['ARR_COUNTER'] < debug_dict['ARR']:
             arr_colour = (255, 255, 255)
         else:
             arr_colour = (0, 255, 0)
         
-        debug_surfaces.append((self.hun2_big.render(f'ARR: {int(debug_dict["ARR_COUNTER"]*1000)} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 13.5)))
+        debug_surfaces.append((self.hun2_big.render(f'ARR: {int(debug_dict["ARR_COUNTER"])} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 13.5)))
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 14.5)))
         

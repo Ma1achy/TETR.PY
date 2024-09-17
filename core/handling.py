@@ -46,9 +46,14 @@ class Handling():
         self.buffer_threshold = 128 # tick range where old actions are still considered valid
         self.action_queue = deque()
         
-        self.done_one_move = False
-        self.DAS_timer = 0
-        self.ARR_timer = 0
+        self.DAS_counter = 0
+        self.das_remainder = 0
+        
+        self.DAS_charged = False
+        self.ARR_counter = 0
+        self.do_movement = False 
+        self.arr_remainder = 0
+        self.instant_movement = False
         
         self.actions = self.__GetEmptyActions()
         
@@ -64,8 +69,8 @@ class Handling():
         }
         
         self.handling_settings = {
-            'ARR' :33,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
-            'DAS' :167,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
+            'ARR' :1000,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
+            'DAS' :1000,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
             'DCD' :0,           # DAS Cut Delay: If none-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rorating a piece (ms)
             'SDF' :6,           # Soft Drop Facor: The factor the soft dropping scales the current gravity by
             'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
@@ -134,10 +139,7 @@ class Handling():
         self.__get_action_buffer() # add actions to buffer
         
         self.prev_time = self.current_time
-    
-    def __getKeyState(self, action: Action, current: bool):
-        return self.key_states[self.key_bindings[action]]["current" if current else "previous"]
-       
+           
     def __forward_key_states(self):
         """
         Forward the key states for comaprison in the future (allows for toggle/hold detection)
@@ -160,6 +162,8 @@ class Handling():
         
         args:
             action (Action): The action to be performed
+        returns:
+            bool: True if the action is down, False otherwise
         """
         return self.key_states[self.key_bindings[action]]['current']
     
@@ -182,7 +186,7 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        if self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_RIGHT, True):
+        if self.__is_action_down(Action.MOVE_LEFT) and self.__is_action_down(Action.MOVE_RIGHT) :
             if self.handling_settings['PrioriDir']: # if the setting is true, the most recent key will be prioritised
                 if self.current_direction is Action.MOVE_LEFT:
                     self.__set_action_state(Action.MOVE_RIGHT, True)
@@ -193,14 +197,14 @@ class Handling():
             else:
                 self.__set_action_state(action, False) # if left and right are pressed at the same time, no action is performed
             
-        elif self.__getKeyState(Action.MOVE_LEFT, True):
+        elif self.__is_action_down(Action.MOVE_LEFT):
             self.current_direction = action
             self.__set_action_state(Action.MOVE_LEFT, True)
             
-        elif self.__getKeyState(Action.MOVE_RIGHT, True):
+        elif self.__is_action_down(Action.MOVE_RIGHT):
             self.current_direction = action
             self.__set_action_state(Action.MOVE_RIGHT, True) 
-  
+      
     def __test_actions(self, action:Action, check:callable):
         """
         Perform the state tests on an action and update the action state
@@ -281,8 +285,8 @@ class Handling():
                 if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
                     self.__do_DAS_ARR(action)
                 else:
-                    self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))       
-                    
+                    self.__queue_action(action)
+                                 
     def consume_action(self):
         """
         Consume the oldset action from the queue
@@ -291,27 +295,36 @@ class Handling():
             return self.action_queue.popleft()  
         return None
     
+    def __queue_action(self, action:Action):
+        """
+        Add an action to the queue
+        
+        args:
+            action (Action): The action to add to the queue
+        """
+        self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+        
     def __do_DAS_ARR(self, action:Action):
         """
         Perform the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR)
         
         args:
             action (Action): The action to be performed
-        """
-        if not self.done_one_move: # only add the action once if DAS is not done to allow for tapping
-            self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-            self.done_one_move = True
+        """	
+        if self.do_movement:
+            self.do_movement = False
+            self.__queue_action(action)
             
-        if self.do_ARR:
-            if self.handling_settings['ARR'] == 0: # arr of 0 gives instant movement to the sides (inf repeat)
-                self.__instant_movement(action)
-            else:
-                self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-                self.__reset_ARR() 
-
+        if self.instant_movement: # handle ARR of 0 separately
+            self.instant_movement = False
+            self.__instant_movement(action)      
+             
     def __instant_movement(self, action:Action):
         """
         Instantly move the tetromino to the left or right without any delay (ARR = 0)
+        
+        args:
+            action (Action): The action to be performed
         """
         for _ in range(0, self.config.MATRIX_WIDTH):
             self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
@@ -324,42 +337,56 @@ class Handling():
         if self.handling_settings['DASCancel']:
             self.__DAS_cancel()
         
-        if self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_LEFT, False) or (self.__getKeyState(Action.MOVE_RIGHT, True) and self.__getKeyState(Action.MOVE_RIGHT, False)):
-            self.DAS_timer += self.current_time - self.prev_time
-            
-            if self.DAS_timer >= self.handling_settings['DAS'] / 1000 :
-                self.DAS_timer = self.handling_settings['DAS'] / 1000
+        if self.__is_action_down(Action.MOVE_LEFT) or self.__is_action_down(Action.MOVE_RIGHT):
+           
+            if self.DAS_counter % self.handling_settings['DAS'] == 0 or self.DAS_counter >= self.handling_settings['DAS']:
                 self.__ARR()
+                     
+            if self.DAS_counter >= self.handling_settings['DAS']:
+                self.DAS_counter = self.handling_settings['DAS']
                 
-        else: # reset DAS/ARR if key is released
-            self.DAS_timer = 0
-            self.done_one_move = False
-            self.__reset_ARR()
+            else:
+                q, r = divmod((self.current_time - self.prev_time) + self.das_remainder, self.polling_tick_time)
+                self.das_remainder = r
+                self.DAS_counter += int(q)
+               
+        else: # reset DAS & ARR if key is released
+            self.__reset_DAS_ARR()
 
     def __DAS_cancel(self):
         """
         Cancel DAS When Changing Directions: The DAS timer will reset if the opposite direction is pressed
         """
-        if (self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_RIGHT, False)) or (self.__getKeyState(Action.MOVE_RIGHT, True) and self.__getKeyState(Action.MOVE_LEFT, False)):
-            self.DAS_timer = 0
-            self.ARR_timer = 0
+        if self.__is_action_down(Action.MOVE_LEFT) and self.__is_action_down(Action.MOVE_RIGHT):
+            self.__reset_DAS_ARR()
         
     def __ARR(self):
         """
         If the DAS timer is charged, the ARR timer will be incremented until it reaches the ARR threshold (ms).
         Once charged, the action will be performed and the ARR timer will be reset.
-        """
-        if self.ARR_timer >= self.handling_settings['ARR'] /1000:
-            self.ARR_timer = 0
-            self.do_ARR = True
+        """ 
+        if self.handling_settings['ARR'] == 0: # to avoid modulo by zero
+            self.do_movement = True
+            if self.DAS_counter >= self.handling_settings['DAS']:
+                self.instant_movement = True # when ARR = 0, the movement is instant (no delay since inf repeat rate)
+        else:
+            if self.ARR_counter % self.handling_settings['ARR'] == 0 or self.ARR_counter >= self.handling_settings['ARR']:
+                self.do_movement = True  
+                self.ARR_counter = 0
             
-        elif self.DAS_timer >= self.handling_settings['DAS'] /1000:
-            self.ARR_timer += self.current_time - self.prev_time
-            
-    def __reset_ARR(self):
+            if self.DAS_counter >= self.handling_settings['DAS']:
+                q, r = divmod((self.current_time - self.prev_time) + self.arr_remainder, self.polling_tick_time)
+                self.arr_remainder = r  
+                self.ARR_counter += int(q)
+                
+    def __reset_DAS_ARR(self):
         """
-        Reset ARR once the action has been performed
+        Reset DAS once the action has been performed
         """
-        self.do_ARR = False
-        self.ARR_timer = 0
-      
+        self.DAS_counter = 0
+        self.done_inital_ARR_movement = False
+        self.done_one_move = False
+        self.DAS_charged = False
+        self.instant_movement = False
+        self.ARR_counter = 0
+    

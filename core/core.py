@@ -534,10 +534,10 @@ class Core():
                         'BEST_POLLING_T': self.best_polling_t,
                         'WORST_POLLING_T': self.worst_polling_t,
                         
-                        'DAS_COUNTER': self.handling.DAS_timer,
+                        'DAS_COUNTER': self.handling.DAS_counter,
                         'DAS': self.handling.handling_settings['DAS'],
                         
-                        'ARR_COUNTER': self.handling.ARR_timer,
+                        'ARR_COUNTER': self.handling.ARR_counter,
                         'ARR': self.handling.handling_settings['ARR'],
                         
                         'DCD': self.handling.handling_settings['DCD'],
