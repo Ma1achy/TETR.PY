@@ -18,12 +18,12 @@ class Action(Enum):
     HOLD = auto()
 
 class Handling():
-    def __init__(self, pgconfig):
+    def __init__(self, config):
         """
         Handle the key inputs and provide the actions to the game loop in a queue.
         
         args:	
-            pgconfig (PyGameConfig): The pygame configuration
+            config (Config): The game configuration
         
         methods:
             before_loop_hook(key): Hook that is called within the game loop before the tick is executed to obtain the current action states to be used in the game loop
@@ -32,7 +32,7 @@ class Handling():
             consume_action(): Consume the oldset action in the queue
         """
         
-        self.config = pgconfig
+        self.config = config
         self.polling_tick_time = 1 / self.config.POLLING_RATE
         self.current_time = 0
         self.prev_time = 0

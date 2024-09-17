@@ -5,19 +5,19 @@ from core.handling import Action
 from instance.rotation import RotationSystem
 
 class Four():
-    def __init__(self, pygame_instance, rotation_system = 'SRS'):
+    def __init__(self, core_instance, rotation_system = 'SRS'):
         """
         Create an instance of the game Four
         
         args:
-            pygame_instance (PyGameInstance): The pygame instance to use
+            core (Core): The core instance of the game
             rotation_system (str): The rotation system to use
             
         methods:
             loop(): The main game loop
             forward_state(): Forward the state of the game to allow for async rendering
         """
-        self.pygame_instance = pygame_instance
+        self.core_instance = core_instance
         self.config = Config() 
        
         self.rotation_system = RotationSystem(rotation_system)
@@ -38,7 +38,7 @@ class Four():
         The main game loop
         """
         self.actions_this_tick = []
-        self.pygame_instance.handling.before_loop_hook()
+        self.core_instance.handling.before_loop_hook()
         
         self.__action_dequeuer()
         self.__get_next_state()
@@ -50,18 +50,18 @@ class Four():
         Consume the actions from the action queue to be performed in the current tick
         """
            
-        if self.pygame_instance.TPS != 0:
-            tick_duration = 1000 / self.pygame_instance.TPS # ms per tick
+        if self.core_instance.TPS != 0:
+            tick_duration = 1000 / self.core_instance.TPS # ms per tick
         else:
             tick_duration = 1000/ self.config.TPS
             
-        for action_dict in list(self.pygame_instance.handling.action_queue):
+        for action_dict in list(self.core_instance.handling.action_queue):
            
-            relative_tick = int((action_dict['timestamp'] - self.pygame_instance.current_time) / tick_duration)
+            relative_tick = int((action_dict['timestamp'] - self.core_instance.current_time) / tick_duration)
                  
-            if relative_tick <= 0 and abs(relative_tick) <= self.pygame_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
+            if relative_tick <= 0 and abs(relative_tick) <= self.core_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
-                self.pygame_instance.handling.consume_action()
+                self.core_instance.handling.consume_action()
                                 
     def forward_state(self):
         """
