@@ -121,15 +121,16 @@ class Tetromino():
         returns
             (bool): True if the piece will collide, False otherwise
         """
-        for y, row in enumerate(desired_piece_blocks):
-            for x, val in enumerate(row):
-                if val != 0: 
-                    if desired_position.x + x < 0 or desired_position.x + x >= self.matrix.WIDTH: # check x bounds
-                        return True
-                    if desired_position.y + y <= 0 or desired_position.y + y >= self.matrix.HEIGHT: # check y bounds
-                        return True
-                    if self.matrix.matrix[desired_position.y + y][desired_position.x + x] != 0: # check if piece will overlap with an already placed block
-                        return True            
+        if any (
+            val != 0 and (
+                desired_position.x + x < 0 or desired_position.x + x >= self.matrix.WIDTH or 
+                desired_position.y + y <= 0 or desired_position.y + y >= self.matrix.HEIGHT or 
+                self.matrix.matrix[desired_position.y + y][desired_position.x + x] != 0
+            )
+            for y, row in enumerate(desired_piece_blocks)
+            for x, val in enumerate(row)
+        ):
+            return True         
         
     def __rotate_cw(self):
         """
@@ -294,20 +295,17 @@ class Tetromino():
         returns:
             filled_corners (list): The corners that are occupied
         """
-        filled_corners = []
-        
-        for _, corner in enumerate(corners):
-            
-            corner_pos = self.position + kick + corner
-            
-            if corner_pos.x < 0 or corner_pos.x >= self.matrix.WIDTH or corner_pos.y < 0 or corner_pos.y >= self.matrix.HEIGHT:
-                filled_corners.append(corner)
-            else:
-                if self.matrix.matrix[corner_pos.y][corner_pos.x] != 0:
-                    filled_corners.append(corner)
-                                        
-        return filled_corners     
-       
+        return [
+            corner for _, corner in enumerate(corners)
+            if (
+                (corner_pos := self.position + kick + corner).x < 0 or 
+                corner_pos.x >= self.matrix.WIDTH or 
+                corner_pos.y < 0 or 
+                corner_pos.y >= self.matrix.HEIGHT or 
+                self.matrix.matrix[corner_pos.y][corner_pos.x] != 0
+            )
+        ]
+                                    
     def ghost(self):
         """
         Create a ghost piece that shows where the piece will land

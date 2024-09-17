@@ -41,11 +41,14 @@ class Matrix():
             position (Vec2): The position of the piece
             target_matrix (list): The matrix to insert the piece blocks into
         """
-        for y, row in enumerate(blocks):
-            for x, val in enumerate(row):
-                if val != 0:
-                    target_matrix[position.y + y][position.x + x] = val
-                    
+        [
+            target_matrix[position.y + y].__setitem__(position.x + x, val)
+            
+            for y, row in enumerate(blocks)
+            for x, val in enumerate(row)
+            if val != 0
+        ]
+        
     def clear_piece(self):
         """
         Remove the piece from the matrix
@@ -58,10 +61,8 @@ class Matrix():
         """
         full_lines = [row for row in self.matrix if all(val != 0 for val in row)]
         
-        for row in full_lines:
-            self.matrix.remove(row)
-            self.matrix.insert(0, [0 for _ in range(self.WIDTH)])
-        
+        [self.matrix.insert(0, [0 for _ in range(self.WIDTH)]) for row in full_lines if self.matrix.remove(row) is None]
+
         if len(full_lines) > 0:
             return len(full_lines)
     
@@ -83,16 +84,22 @@ class Matrix():
         }
 
         display_matrix = [row[:] for row in self.matrix]
-        
-        for y, row in enumerate(self.ghost):
-            for x, val in enumerate(row):
-                if val != 0:
-                    display_matrix[y][x] = -val  # use negative value for ghost piece
+            
+        [
+            display_matrix[y].__setitem__(x, -val)
+            
+            for y, row in enumerate(self.piece)
+            for x, val in enumerate(row)
+            if val != 0
+        ]
                     
-        for y, row in enumerate(self.piece):
-            for x, val in enumerate(row):
-                if val != 0:
-                    display_matrix[y][x] = val
+        [
+            display_matrix[y].__setitem__(x, val)
+            
+            for y, row in enumerate(self.ghost)
+            for x, val in enumerate(row)
+            if val != 0
+        ]
                     
         rows = [
             "| " + " ".join(
