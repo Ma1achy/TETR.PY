@@ -4,7 +4,6 @@ from four import Four
 
 #TODO:
 # === Handling ===
-# - Implement key priority for left/right movement, i.e if right is held and ten left is pressed, the left action should be prioritized (most recent action)
 
 # - Implement GRAVITY
 # - Soft Drop Facor: The factor the soft dropping scales the current gravity by

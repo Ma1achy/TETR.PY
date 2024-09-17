@@ -58,14 +58,14 @@ class Handling():
         }
         
         self.handling_settings = {
-            'ARR' :0,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
-            'DAS' :70,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
+            'ARR' :33,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
+            'DAS' :167,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
             'DCD' :0,           # DAS Cut Delay: If none-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rorating a piece (ms)
             'SDF' :6,           # Soft Drop Facor: The factor the soft dropping scales the current gravity by
             'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
             'DASCancel': False, # Cancel DAS When Changing Directions: If true, the DAS timer will reset if the opposite direction is pressed
             'PrefSD': True,     # Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
-            'PrioriDir': True   # Prioritise the Most Recent Direction: when True if both the left and right keys are held the more recent key to be held will be prioritized, if False no movement will be performed
+            'PrioriDir': True   # Prioritise the Most Recent Direction: when True if both the left and right keys are held the more recent key to be held will be prioritised, if False no movement will be performed
         }
         
         
@@ -158,9 +158,13 @@ class Handling():
         self.actions[action]['state'] = state
         self.actions[action]['timestamp'] = self.current_time
         
-    def __LeftRightMovementPriority(self, action):
+    def __LeftRightMovementPriority(self, action:Action):
         """
-        If right is held and then left is pressed, the left action should be prioritized (most recent action)
+        Prioritise the Most Recent Direction: when both the left and right keys are held the more recent key to be held will be prioritised
+        or no movement will be performed if the relevant setting is False.
+        
+        args:
+        action (Action): The action to be performed
         """
         if self.__getKeyState(Action.MOVE_LEFT, True) and self.__getKeyState(Action.MOVE_RIGHT, True):
             if self.handling_settings['PrioriDir']:
@@ -181,9 +185,13 @@ class Handling():
             self.current_direction = action
             self.__set_action_state(Action.MOVE_RIGHT, True) 
   
-    def __test_actions(self, action, check):
+    def __test_actions(self, action:Action, check:callable):
         """
         Perform the state tests on an action and update the action state
+        
+        args:
+        action (Action): The action to be performed
+        check (callable): The function to be called to check the action state
         """
         if check(action):
             if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
