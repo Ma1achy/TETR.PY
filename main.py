@@ -21,6 +21,8 @@ from instance.four import Four
 # - LEVELS
 # - GAME OVER CONDITIONS
 
+# redo render code it is a 3 course itallian meal rn
+
 async def main():
     game_instance = Core()
     four = Four(game_instance, rotation_system = 'SRS')
