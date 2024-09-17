@@ -1,4 +1,5 @@
 from utils import Vec2
+
 class RotationSystem():
     def __init__(self, type):
         """

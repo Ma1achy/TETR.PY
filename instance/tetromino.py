@@ -1,6 +1,6 @@
 from utils import Vec2
-from matrix import Matrix
-from handling import Action
+from instance.matrix import Matrix
+from core.handling import Action
 
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix):

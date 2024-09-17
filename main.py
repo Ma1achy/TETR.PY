@@ -1,6 +1,6 @@
 import asyncio
-from core import Core
-from four import Four
+from core.core import Core
+from instance.four import Four
 
 #TODO:
 # === Handling ===

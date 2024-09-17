@@ -1,5 +1,6 @@
 import os
 from  utils import Vec2
+
 class Matrix():
     def __init__(self, WIDTH:int, HEIGHT:int):
         """

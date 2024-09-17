@@ -1,11 +1,11 @@
 import pygame
 from config import Config
-from handling import Handling
-from render import Render
+from core.handling import Handling
+from render.render import Render
 import time
 import asyncio
 from collections import deque 
-from handling import Action
+from core.handling import Action
 
 class Core():
     def __init__(self):

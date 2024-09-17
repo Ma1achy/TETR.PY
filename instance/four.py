@@ -1,8 +1,8 @@
-from tetromino import Tetromino
-from matrix import Matrix
+from instance.tetromino import Tetromino
+from instance.matrix import Matrix
 from config import Config
-from handling import Action
-from rotation import RotationSystem
+from core.handling import Action
+from instance.rotation import RotationSystem
 
 class Four():
     def __init__(self, pygame_instance, rotation_system = 'SRS'):

@@ -6,13 +6,13 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     """
     linearly interpolate between two colours
     
-    args:æ
-    base (triple): a RGB colour to blend with the transparent overlay colour
-    overlay (triple): a RGB colour to simulate the transparency of 
-    alpha (float): 0 - 1, to simulate transparency of overlay colour
+    args:
+        base (triple): a RGB colour to blend with the transparent overlay colour
+        overlay (triple): a RGB colour to simulate the transparency of 
+        alpha (float): 0 - 1, to simulate transparency of overlay colour
     
     returns
-    (triple) a RGB colour
+        (triple) a RGB colour
     """
     r1, g1, b1 = base
     r2, g2, b2 = overlay
@@ -22,9 +22,15 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
 class Font():
-    def __init__(self, size: int = 20):
+    def __init__(self, size:int = 20):
+        """
+        Fonts used in the game
+        
+        args:
+            size (int): The size of the font
+        """
         self.size = size
-        self.base_path = os.path.join(os.path.dirname(__file__), 'font')
+        self.base_path = os.path.join(os.path.dirname(__file__), 'render/font')
     
     def hun2(self):
         font_path = os.path.join(self.base_path, 'hun2.ttf')
@@ -42,7 +48,15 @@ class Font():
         font_path = os.path.join(self.base_path, 'action-icons.ttf')
         return pygame.font.Font(font_path, self.size)
 
-def get_prefix(number, unit, precision = 1):
+def get_prefix(number:float, unit:str, precision:int = 1):
+    """
+    Get the number in scientific notation with the correct prefix
+    
+    args:
+        number (float): The number to convert
+        unit (str): The unit of the number
+        precision (int): The number of decimal places to round to
+    """
     prefixes = [
         (1e-24, "y"),  # yocto
         (1e-21, "z"),  # zepto
@@ -84,10 +98,10 @@ def tetromino_previews(type:str):
     Get the blocks for the given tetromino to render previews.
   
     args:
-    type (str): The type of tetromino
+        type (str): The type of tetromino
     
     returns:
-    blocks (list): The pieces blocks
+        blocks (list): The pieces blocks
     """
     blocks = {
         'T':
@@ -134,8 +148,8 @@ class Vec2():
         Construct a 2D vector (x , y)
         
         args:
-        x (float): the x component of the vector
-        y (float): the y component of the vector
+            x (float): the x component of the vector
+            y (float): the y component of the vector
         """
         self.x = x
         self.y = y

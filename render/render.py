@@ -1,4 +1,4 @@
-from matrix import Matrix
+from instance.matrix import Matrix
 import pygame
 from config import Config
 from utils import lerpBlendRGBA, Font, tetromino_previews, get_prefix
