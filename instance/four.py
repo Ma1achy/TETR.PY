@@ -27,23 +27,24 @@ class Four():
         self.rng = self.__init_rng()
         self.queue = self.__init_queue()
         self.matrix = self.__init_matrix()
-                
-        self.held_tetromino = None 
-        self.current_tetromino = None
-        self.game_over = False
-        self.danger = False
         
         self.current_time = 0
         self.previous_time = 0
-
+            
+        self.held_tetromino = None 
+        self.current_tetromino = None
+        self.on_floor = False
+        
+        self.gravity = 1/60
+        self.G_units_in_ticks = 0
+        self.gravity_counter = 0
+        self.move_down = False
+        
         self.soft_dropping = True
         self.soft_drop_factor = 1
-        self.gravity_counter = 0
-        self.gravity = 1/60
-        self.move_down = False
-        self.G_units_in_ticks = 0
-        
-        self.on_floor = False
+    
+        self.danger = False
+        self.game_over = False
         
     def loop(self, current_time, previous_time):
         """
