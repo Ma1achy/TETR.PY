@@ -42,9 +42,13 @@ class Four():
         
         self.soft_dropping = True
         self.soft_drop_factor = 1
-    
+
         self.danger = False
         self.game_over = False
+        
+        self.lock_delay_counter = 0
+        self.max_moves_before_lock = 0
+        self.can_hold = True
         
     def loop(self, current_time, previous_time):
         """
@@ -129,10 +133,14 @@ class Four():
         """
         
         if self.current_tetromino is not None:
+            self.current_tetromino.increment_lock_delay_counter()
             self.matrix.piece = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
             self.current_tetromino.ghost()
+            
             self.on_floor = self.current_tetromino.is_on_floor()
+            self.lock_delay_counter = self.current_tetromino.lock_delay_counter
+            self.max_moves_before_lock = self.current_tetromino.max_moves_before_lock
         
     def __get_next_piece(self, hold:bool):
         """
@@ -173,7 +181,7 @@ class Four():
         else:
             self.game_over = True
             print("Game Over")
-            
+        
         self.__update_current_tetromino()
     
     def __check_spawn(self, spawning_tetromino):
@@ -194,7 +202,7 @@ class Four():
         """
         Hard drop the current tetromino
         """
-        self.current_tetromino.position = self.current_tetromino.ghost_position
+        self.__move_to_floor()
         self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.matrix)
         self.matrix.piece = self.matrix.empty_matrix()
         self.current_tetromino = None
@@ -221,12 +229,12 @@ class Four():
                     if self.current_tetromino is not None:
                         self.current_tetromino.rotate(action, self.kick_table['90'])
                         self.__update_current_tetromino()
-                
+                        
                 case Action.ROTATE_180:
                     if self.current_tetromino is not None:
                         self.current_tetromino.rotate(action, self.kick_table['180'])
                         self.__update_current_tetromino()
-                    
+                        
                 case Action.HARD_DROP:
                     if self.current_tetromino is not None:
                         self.__hard_drop()
@@ -240,7 +248,7 @@ class Four():
                 case Action.HOLD:
                     if self.current_tetromino is not None:
                         self.__hold()
-                
+                        
     def __is_row_17_empty(self):
         """
         Test if the 17th row is empty for top out warning
@@ -332,8 +340,7 @@ class Four():
         for ac in self.actions_this_tick:
             if Action.SOFT_DROP not in ac.values():
                 self.gravity_counter = 0
-                break
-                
+                break  
 class Queue():
     def __init__(self, rng, length = 5):
         """
@@ -441,3 +448,6 @@ class StateSnapshot:
         self.G_units_in_ticks = four_instance.G_units_in_ticks
         self.on_floor = four_instance.on_floor
         self.soft_drop_factor = four_instance.soft_drop_factor
+        
+        self.lock_delay_counter = four_instance.lock_delay_counter
+        self.max_moves_before_lock = four_instance.max_moves_before_lock

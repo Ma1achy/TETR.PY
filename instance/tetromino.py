@@ -24,6 +24,8 @@ class Tetromino():
         
         self.blocks = self.__get_tetromino_blocks()
         self.ghost_position = Vec2(self.position.x, self.position.y)
+        self.lock_delay_counter = 0
+        self.max_moves_before_lock = 15
         
         # default state is 0, but this is allows for pre-rotation
         if self.state == 1:
@@ -104,6 +106,8 @@ class Tetromino():
         
         if not self.collision(self.blocks, desired_position): # validate movement
             self.position = desired_position
+            
+            self.lock_delay_reset()
         
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
         """
@@ -194,7 +198,10 @@ class Tetromino():
             self.state = desired_state
             self.blocks = rotated_piece
             self.position += kick
-    
+            
+            if self.is_on_floor():
+                self.lock_delay_reset()
+                
     def __get_kick(self, kick_table, desired_state:int, offset:int):
         """
         Get the kick translation to apply to the piece for the given offset_order
@@ -320,7 +327,7 @@ class Tetromino():
         Check if the piece is on the floor
         """
         return self.collision(self.blocks, self.position + Vec2(0, 1))
-                                    
+                  
     def ghost(self):
         """
         Create a ghost piece that shows where the piece will land
@@ -336,6 +343,15 @@ class Tetromino():
         if not self.collision(self.blocks, self.ghost_position):
             self.matrix.ghost = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
+            
+    def lock_delay_reset(self):
+        if self.max_moves_before_lock != 0:
+            self.lock_delay_counter = 0
+            self.max_moves_before_lock -= 1
+        
+    def increment_lock_delay_counter(self):
+        if self.is_on_floor():
+            self.lock_delay_counter += 1
 
     def __get_tetromino_blocks(self):
         """
