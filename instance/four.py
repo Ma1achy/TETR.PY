@@ -287,6 +287,7 @@ class Four():
         
         args:
             G (int): The gravity value in blocks per fractions of 1/60th of a second, i.e 1G = 1 block per 1/60th of a second
+            soft_drop_factor (int): The factor to scale the gravity by when soft dropping
         """
         if self.soft_dropping:
             self.__reset_gravity_after_soft_drop()
