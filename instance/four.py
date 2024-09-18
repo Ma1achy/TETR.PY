@@ -4,7 +4,7 @@ from config import Config
 from core.handling import Action
 from instance.rotation import RotationSystem
 from utils import Vec2
-import math
+
 class Four():
     def __init__(self, core_instance, rotation_system = 'SRS'):
         """
