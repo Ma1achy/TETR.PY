@@ -315,12 +315,10 @@ class Tetromino():
         """
         Attempt to move the piece downwards
         """
-        desired_position = self.position + Vec2(0, 1)
-        
-        if self.collision(self.blocks, desired_position):
-            self.on_floor = True
+        if self.collision(self.blocks, self.position + Vec2(0, 1)):
+            return
         else:
-            self.position = desired_position
+            self.position = self.position + Vec2(0, 1)
     
     def is_on_floor(self):
         """

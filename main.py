@@ -4,6 +4,7 @@ from instance.four import Four
 
 #TODO:
 # === Handling ===
+# lock delay and locking half implemented (need to double check)
 
 # - Implement Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
 

@@ -62,6 +62,8 @@ class Render():
         self.soft_drop_factor = four.soft_drop_factor
         self.lock_delay_counter = four.lock_delay_counter
         self.max_moves_before_lock = four.max_moves_before_lock
+        self.lock_delay = four.lock_delay
+        self.lock_delay_in_ticks = four.lock_delay_in_ticks
         
         self.four_surface.fill((0, 0, 0))
         self.window.fill((0, 0, 0))
@@ -447,11 +449,11 @@ class Render():
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 14.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 15.5)))
+        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]} | On Floor: {self.on_floor}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 15.5)))
         
         debug_surfaces.append((self.pfw_small.render(f'Gravity: {self.gravity:.2f} G ({int(self.G_units_in_ticks)} ticks) | Multi: {self.soft_drop_factor} | Counter: {self.gravity_counter}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16)))
     
-        debug_surfaces.append((self.pfw_small.render(f'On Floor: {self.on_floor} | Lock Delay: | Counter: {self.lock_delay_counter} | Resets Left: {self.max_moves_before_lock}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16.5)))
+        debug_surfaces.append((self.pfw_small.render(f'Lock Delay: {self.lock_delay} ({int(self.lock_delay_in_ticks)} ticks) | Counter: {self.lock_delay_counter} | Resets Left: {self.max_moves_before_lock}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16.5)))
         
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)

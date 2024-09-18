@@ -46,6 +46,8 @@ class Four():
         self.danger = False
         self.game_over = False
         
+        self.lock_delay = 90
+        self.lock_delay_in_ticks = 0
         self.lock_delay_counter = 0
         self.max_moves_before_lock = 0
         self.can_hold = True
@@ -133,7 +135,6 @@ class Four():
         """
         
         if self.current_tetromino is not None:
-            self.current_tetromino.increment_lock_delay_counter()
             self.matrix.piece = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
             self.current_tetromino.ghost()
@@ -141,6 +142,8 @@ class Four():
             self.on_floor = self.current_tetromino.is_on_floor()
             self.lock_delay_counter = self.current_tetromino.lock_delay_counter
             self.max_moves_before_lock = self.current_tetromino.max_moves_before_lock
+            self.current_tetromino.increment_lock_delay_counter()
+            self.__auto_lock()
         
     def __get_next_piece(self, hold:bool):
         """
@@ -203,9 +206,7 @@ class Four():
         Hard drop the current tetromino
         """
         self.__move_to_floor()
-        self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.matrix)
-        self.matrix.piece = self.matrix.empty_matrix()
-        self.current_tetromino = None
+        self.__lock()
     
     def __hold(self):
         """
@@ -213,7 +214,16 @@ class Four():
         """
         if self.can_hold:
             self.__get_next_piece(hold = True)
-        
+    
+    def __lock(self):
+        """
+        Lock the current tetromino
+        """
+        if self.current_tetromino is not None:
+            self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.matrix)
+            self.matrix.piece = self.matrix.empty_matrix()
+            self.current_tetromino = None
+            
     def __perform_actions(self):
         
         for action_dict in self.actions_this_tick:
@@ -242,7 +252,7 @@ class Four():
                 case Action.SOFT_DROP:  
                     if self.current_tetromino is not None:
                         self.soft_dropping = True
-                        self.soft_drop_factor = self.config.HANDLING_SETTINGS['SDF']
+                        self.soft_drop_factor = self.config.HANDLING_SETTINGS['SDF']     
                         self.__update_current_tetromino()
                         
                 case Action.HOLD:
@@ -299,7 +309,7 @@ class Four():
         """
         if self.soft_dropping:
             self.__reset_gravity_after_soft_drop()
-        
+            
         if soft_drop_factor == 'inf':
             self.__move_to_floor()
                 
@@ -317,7 +327,7 @@ class Four():
                 self.__gravity_tick()
             else:
                 self.gravity_counter += 1
-        
+            
     def __gravity_tick(self):
         """
         Gravity tick
@@ -341,6 +351,21 @@ class Four():
             if Action.SOFT_DROP not in ac.values():
                 self.gravity_counter = 0
                 break  
+    
+    def __auto_lock(self):
+        """
+        Automatically lock the current tetromino
+        """
+        # convert from frames in 1/60th of a second to ticks 1/self.config.TPS of a second
+        self.lock_delay_in_ticks = self.lock_delay/60 * self.config.TPS
+        
+        if self.current_tetromino is None:
+            return
+        
+        if self.current_tetromino.is_on_floor() and self.current_tetromino.lock_delay_counter >= self.lock_delay_in_ticks:
+            self.__lock()
+        elif not self.current_tetromino.is_on_floor(): # reset the lock delay counter if the piece is not on the floor
+            self.current_tetromino.lock_delay_counter = 0
 class Queue():
     def __init__(self, rng, length = 5):
         """
@@ -451,3 +476,5 @@ class StateSnapshot:
         
         self.lock_delay_counter = four_instance.lock_delay_counter
         self.max_moves_before_lock = four_instance.max_moves_before_lock
+        self.lock_delay = four_instance.lock_delay
+        self.lock_delay_in_ticks = four_instance.lock_delay_in_ticks
