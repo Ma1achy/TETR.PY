@@ -282,6 +282,7 @@ class Four():
             G (int): The gravity value in blocks per fractions of 1/60th of a second, i.e 1G = 1 block per 1/60th of a second
         """
         if G == 0 or self.current_tetromino is None or self.current_tetromino.is_on_floor():
+            self.gravity_counter = 0
             return
         
         elif G == 20:
