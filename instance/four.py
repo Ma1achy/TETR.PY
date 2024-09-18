@@ -4,7 +4,7 @@ from config import Config
 from core.handling import Action
 from instance.rotation import RotationSystem
 from utils import Vec2
-
+import math
 class Four():
     def __init__(self, core_instance, rotation_system = 'SRS'):
         """
@@ -38,8 +38,10 @@ class Four():
 
         self.soft_drop_factor = 1
         self.gravity_counter = 0
-        self.gravity = 0.0167
+        self.gravity = 1/60
         self.move_down = False
+        self.G_units_in_ticks = 0
+        self.on_floor = False
         
     def loop(self, current_time, previous_time):
         """
@@ -50,6 +52,7 @@ class Four():
         """
         self.current_time = current_time
         self.previous_time = previous_time
+        self.soft_drop_factor = 1
         self.actions_this_tick = []
         self.core_instance.handling.before_loop_hook()
         
@@ -86,7 +89,7 @@ class Four():
         """
         if not self.game_over:
             self.__perform_actions()
-            self.__do_gravity(G = self.gravity * self.soft_drop_factor)
+            self.__do_gravity(self.gravity, self.soft_drop_factor)
             self.__update_current_tetromino()
             self.__clear_lines()
             
@@ -126,6 +129,7 @@ class Four():
             self.matrix.piece = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
             self.current_tetromino.ghost()
+            self.on_floor = self.current_tetromino.is_on_floor()
         
     def __get_next_piece(self, hold:bool):
         """
@@ -224,9 +228,9 @@ class Four():
                     if self.current_tetromino is not None:
                         self.__hard_drop()
                     
-                case Action.SOFT_DROP:  # TEMP NEED TO INSTEAD MAKE SOFT_DROP CHANGE GRAVITY BY A FACTOR
+                case Action.SOFT_DROP:  
                     if self.current_tetromino is not None:
-                        
+                        self.soft_drop_factor = self.config.HANDLING_SETTINGS['SDF']
                         self.__update_current_tetromino()
                         
                 case Action.HOLD:
@@ -251,7 +255,6 @@ class Four():
         """
         Activate the top out warning
         """
-        
         if self.game_over:
             return
         
@@ -274,27 +277,27 @@ class Four():
         else:
             self.danger = False
             
-    def __do_gravity(self, G):
+    def __do_gravity(self, G, soft_drop_factor = 1):
         """
         Perform gravity
         
         args:
             G (int): The gravity value in blocks per fractions of 1/60th of a second, i.e 1G = 1 block per 1/60th of a second
         """
+        if soft_drop_factor == 'inf':
+            self.__move_to_floor()
+                
         if G == 0 or self.current_tetromino is None or self.current_tetromino.is_on_floor():
             self.gravity_counter = 0
             return
         
         elif G == 20:
-            for _ in range(self.config.MATRIX_HEIGHT - self.spawn_pos.y): # teleport to floor
-                self.current_tetromino.attempt_to_move_downwards()
-                if self.current_tetromino.is_on_floor():
-                    break
+            self.__move_to_floor()
         else:
-            # convert G from units of 1/60 seconds to units of ticks
-            G_units_in_ticks = self.config.TPS/(G * 60)
+            # convert G from units blocks per 1/60 seconds to units blocks per no. of ticks 
+            self.G_units_in_ticks = self.config.TPS/((G * soft_drop_factor) * 60)
             
-            if self.gravity_counter >= int(G_units_in_ticks):
+            if self.gravity_counter >= int(self.G_units_in_ticks):
                 self.__gravity_tick()
             else:
                 self.gravity_counter += 1
@@ -305,6 +308,13 @@ class Four():
         """
         self.current_tetromino.attempt_to_move_downwards()
         self.gravity_counter = 0
+        
+    def __move_to_floor(self):
+        """
+        Move the current tetromino to the floor
+        """
+        while not self.current_tetromino.is_on_floor():
+            self.current_tetromino.attempt_to_move_downwards()
         
 class Queue():
     def __init__(self, rng, length = 5):
@@ -406,4 +416,10 @@ class StateSnapshot:
         self.held_tetromino = four_instance.held_tetromino
         self.game_over = four_instance.game_over
         self.danger = four_instance.danger
-    
+        
+        self.gravity = four_instance.gravity
+        self.gravity_counter = four_instance.gravity_counter
+        self.soft_drop_factor = four_instance.soft_drop_factor
+        self.G_units_in_ticks = four_instance.G_units_in_ticks
+        self.on_floor = four_instance.on_floor
+        self.soft_drop_factor = four_instance.soft_drop_factor

@@ -5,8 +5,6 @@ from instance.four import Four
 #TODO:
 # === Handling ===
 
-# - Soft Drop Facor: The factor the soft dropping scales the current gravity by
-
 # - Implement Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
 
 # - LOCK DELAY MECHANICS & LOCKING (yes game logic but need this for PrevAccHD)

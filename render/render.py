@@ -17,8 +17,15 @@ class Render():
         self.window = window
         self.config = Config()
         self.four_surface = self.__init_four_surface()
+        
         self.danger = False
         self.game_over = False
+        self.gravity = 0
+        self.gravity_counter = 0
+        self.soft_drop_factor = 1
+        self.G_units_in_ticks = 0
+        self.on_floor = False
+        self.soft_drop_factor = 1
         
         # fonts
         self.hun2_big = Font(self.config.GRID_SIZE).hun2()
@@ -42,8 +49,16 @@ class Render():
             debug_dict (dict): the dictionary of debug information
         """
         self.surfaces = []
+        
         self.danger = four.danger
         self.game_over = four.game_over
+        self.gravity = four.gravity
+        self.gravity_counter = four.gravity_counter
+        self.soft_drop_factor = four.soft_drop_factor
+        self.G_units_in_ticks = four.G_units_in_ticks
+        self.on_floor = four.on_floor
+        self.soft_drop_factor = four.soft_drop_factor
+        
         self.four_surface.fill((0, 0, 0))
         self.window.fill((0, 0, 0))
         
@@ -429,6 +444,10 @@ class Render():
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 14.5)))
         
         debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 15)))
+        
+        debug_surfaces.append((self.hun2_small.render(f'Gravity: {self.gravity:.2f} G ({int(self.G_units_in_ticks)}) ticks | SDF: {self.soft_drop_factor}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16)))
+        
+        debug_surfaces.append((self.pfw_small.render(f'Counter: {self.gravity_counter} | On Floor: {self.on_floor}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16.5)))
         
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)

@@ -68,17 +68,7 @@ class Handling():
             Action.HOLD:                        pygame.K_c
         }
         
-        self.handling_settings = {
-            'ARR' :33,           # Auto repeat rate: The speed at which tetrominoes move when holding down the movement keys (ms)
-            'DAS' :167,          # Delayed Auto Shift: The time between the inital key press and the automatic repeat movement (ms)
-            'DCD' :0,           # DAS Cut Delay: If none-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rorating a piece (ms)
-            'SDF' :6,           # Soft Drop Facor: The factor the soft dropping scales the current gravity by
-            'PrevAccHD': True,  # Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
-            'DASCancel': False, # Cancel DAS When Changing Directions: If true, the DAS timer will reset if the opposite direction is pressed
-            'PrefSD': True,     # Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
-            'PrioriDir': True   # Prioritise the Most Recent Direction: when True if both the left and right keys are held the more recent key to be held will be prioritised, if False no movement will be performed
-        }
-        
+        self.handling_settings = self.config.HANDLING_SETTINGS
         
         self.key_states = {
             self.key_bindings[Action.MOVE_LEFT]:                     {'current': False, 'previous': False},

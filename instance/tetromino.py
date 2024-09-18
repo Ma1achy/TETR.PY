@@ -127,6 +127,8 @@ class Tetromino():
             for x, val in enumerate(row)
         ):
             return True         
+        else:
+            return False
         
     def __rotate_cw(self):
         """
