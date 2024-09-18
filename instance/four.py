@@ -37,6 +37,7 @@ class Four():
         self.previous_time = 0
 
         self.soft_drop_factor = 1
+        self.gravity_counter = 0
         self.gravity = 0.0167
         self.move_down = False
         
@@ -296,7 +297,6 @@ class Four():
                 self.__gravity_tick()
             else:
                 self.gravity_counter += 1
-                print(f"G_units_in_ticks: {G_units_in_ticks} Gravity Counter: {self.gravity_counter}")
         
     def __gravity_tick(self):
         """
