@@ -443,9 +443,9 @@ class Render():
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 14.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 15)))
+        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 15.5)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Gravity: {self.gravity:.2f} G ({int(self.G_units_in_ticks)}) ticks | SDF: {self.soft_drop_factor}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16)))
+        debug_surfaces.append((self.hun2_small.render(f'Gravity: {self.gravity:.2f} G ({int(self.G_units_in_ticks)}) ticks | Multi: {self.soft_drop_factor}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16)))
         
         debug_surfaces.append((self.pfw_small.render(f'Counter: {self.gravity_counter} | On Floor: {self.on_floor}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16.5)))
         

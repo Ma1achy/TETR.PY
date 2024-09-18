@@ -232,6 +232,7 @@ class Four():
                     
                 case Action.SOFT_DROP:  
                     if self.current_tetromino is not None:
+                        self.soft_dropping = True
                         self.soft_drop_factor = self.config.HANDLING_SETTINGS['SDF']
                         self.__update_current_tetromino()
                         
@@ -286,7 +287,8 @@ class Four():
         args:
             G (int): The gravity value in blocks per fractions of 1/60th of a second, i.e 1G = 1 block per 1/60th of a second
         """
-        self.__reset_gravity_after_soft_drop()
+        if self.soft_dropping:
+            self.__reset_gravity_after_soft_drop()
         
         if soft_drop_factor == 'inf':
             self.__move_to_floor()
@@ -324,6 +326,7 @@ class Four():
         """
         Reset the gravity counter after a soft drop so there is no extra time left on the gravity counter
         """
+        self.soft_dropping = False
         for ac in self.actions_this_tick:
             if Action.SOFT_DROP not in ac.values():
                 self.gravity_counter = 0
