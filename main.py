@@ -4,11 +4,7 @@ from instance.four import Four
 
 #TODO:
 # === Handling ===
-# lock delay and locking half implemented (need to double check)
-
 # - Implement Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
-
-# - LOCK DELAY MECHANICS & LOCKING (yes game logic but need this for PrevAccHD)
 
 # - Implement Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
 

@@ -112,7 +112,7 @@ class Render():
                              (matrix_surface_rect.x + idx * self.config.GRID_SIZE, matrix_surface_rect.y + self.config.MATRIX_HEIGHT // 2 * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT)
                              )
             
-    def __draw_blocks(self, matrix:Matrix, matrix_surface_rect:pygame.Rect, transparent:bool, alpha:float):
+    def __draw_blocks(self, matrix:Matrix, matrix_surface_rect:pygame.Rect, transparent:bool, alpha:float, blend_colour:tuple = (0, 0, 0)):
         """
         Draw the blocks in the matrix
         
@@ -130,7 +130,7 @@ class Render():
                     else:
                         colour = self.config.COLOUR_MAP[value]
                     if transparent:
-                        colour = lerpBlendRGBA((0, 0, 0), colour, alpha)
+                        colour = lerpBlendRGBA(blend_colour, colour, alpha)
                     pygame.draw.rect(self.four_surface, colour, 
                                      (matrix_surface_rect.x + j * self.config.GRID_SIZE, matrix_surface_rect.y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT, self.config.GRID_SIZE, self.config.GRID_SIZE)
                                      )
@@ -268,10 +268,11 @@ class Render():
         """
         matrix_surface_rect = pygame.Rect(self.config.MATRIX_SCREEN_CENTER_X, self.config.MATRIX_SCREEN_CENTER_Y, self.config.MATRIX_SURFACE_WIDTH, self.config.MATRIX_SURFACE_HEIGHT)
         
-        self.__draw_blocks(four.matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33)
+        self.__draw_blocks(four.matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33, blend_colour=(0, 0, 0))
         self.__draw_grid(matrix_surface_rect)
-        self.__draw_blocks(four.matrix.matrix, matrix_surface_rect, transparent = False, alpha = 1)
-        self.__draw_blocks(four.matrix.piece, matrix_surface_rect, transparent = False, alpha = 1)
+        self.__draw_blocks(four.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0))
+        self.__draw_blocks(four.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255))
+        self.__draw_blocks(four.matrix.place_animation, matrix_surface_rect, transparent = True, alpha = 0.5, blend_colour=(255, 255, 255))
         
         if self.danger:
             self.draw_danger_crosses(four.matrix.danger)
@@ -494,3 +495,5 @@ class Render():
         
         for surface, coords in key_surfaces:
             self.window.blit(surface, coords)
+            
+    

@@ -106,8 +106,10 @@ class Tetromino():
         
         if not self.collision(self.blocks, desired_position): # validate movement
             self.position = desired_position
-            
-            self.lock_delay_reset()
+            if not self.is_on_floor():
+                self.lock_delay_counter = 0
+            else:
+                self.lock_delay_reset()
         
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
         """
