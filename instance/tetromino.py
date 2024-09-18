@@ -24,7 +24,6 @@ class Tetromino():
         
         self.blocks = self.__get_tetromino_blocks()
         self.ghost_position = Vec2(self.position.x, self.position.y)
-        self.on_floor = False
         
         # default state is 0, but this is allows for pre-rotation
         if self.state == 1:
@@ -96,10 +95,7 @@ class Tetromino():
             
             case Action.MOVE_RIGHT:
                 vector = Vec2(1, 0)
-            
-            case Action.SOFT_DROP: # TEMP NEED TO INSTEAD MAKE SOFT_DROP CHANGE GRAVITY BY A FACTOR
-                vector = Vec2(0, 1)
-                
+    
             case _:
                 vector = Vec2(0, 0)
                 raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
@@ -305,6 +301,23 @@ class Tetromino():
                 self.matrix.matrix[corner_pos.y][corner_pos.x] != 0
             )
         ]
+     
+    def attempt_to_move_downwards(self):
+        """
+        Attempt to move the piece downwards
+        """
+        desired_position = self.position + Vec2(0, 1)
+        
+        if self.collision(self.blocks, desired_position):
+            self.on_floor = True
+        else:
+            self.position = desired_position
+    
+    def is_on_floor(self):
+        """
+        Check if the piece is on the floor
+        """
+        return self.collision(self.blocks, self.position + Vec2(0, 1))
                                     
     def ghost(self):
         """

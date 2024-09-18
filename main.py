@@ -5,7 +5,6 @@ from instance.four import Four
 #TODO:
 # === Handling ===
 
-# - Implement GRAVITY
 # - Soft Drop Facor: The factor the soft dropping scales the current gravity by
 
 # - Implement Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement
@@ -15,7 +14,7 @@ from instance.four import Four
 # - Implement Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
 
 #  === game logic ===
-# - PERFECT CLEAR DETECTION
+# - PERFECT CLEAR DETECTIONx
 # - COMBO DETECTION
 # - SCORING
 # - LEVELS

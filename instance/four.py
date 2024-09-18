@@ -3,6 +3,7 @@ from instance.matrix import Matrix
 from config import Config
 from core.handling import Action
 from instance.rotation import RotationSystem
+from utils import Vec2
 
 class Four():
     def __init__(self, core_instance, rotation_system = 'SRS'):
@@ -19,6 +20,7 @@ class Four():
         """
         self.core_instance = core_instance
         self.config = Config() 
+        self.spawn_pos = Vec2(4, 18)
        
         self.rotation_system = RotationSystem(rotation_system)
         self.kick_table = self.rotation_system.kick_table
@@ -31,20 +33,28 @@ class Four():
         self.game_over = False
         self.danger = False
         
-        self.tick_counter = 0
+        self.current_time = 0
+        self.previous_time = 0
+
+        self.soft_drop_factor = 1
+        self.gravity = 0.0167
+        self.move_down = False
         
-    def loop(self):
+    def loop(self, current_time, previous_time):
         """
         The main game loop
+        
+        args:
+            current_time (int): The current time in seconds
         """
+        self.current_time = current_time
+        self.previous_time = previous_time
         self.actions_this_tick = []
         self.core_instance.handling.before_loop_hook()
         
         self.__action_dequeuer()
         self.__get_next_state()
-        
-        self.tick_counter += 1
-                
+           
     def __action_dequeuer(self):
         """
         Consume the actions from the action queue to be performed in the current tick
@@ -62,7 +72,7 @@ class Four():
             if relative_tick <= 0 and abs(relative_tick) <= self.core_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
                 self.core_instance.handling.consume_action()
-                                
+        
     def forward_state(self):
         """
         Forward the state of the game to allow for async rendering.
@@ -75,7 +85,9 @@ class Four():
         """
         if not self.game_over:
             self.__perform_actions()
+            self.__do_gravity(G = self.gravity * self.soft_drop_factor)
             self.__update_current_tetromino()
+            self.__clear_lines()
             
             if self.current_tetromino is None:
                 self.__get_next_piece(hold = False)
@@ -86,8 +98,6 @@ class Four():
                 self.__top_out_warn()
                 self.__event_danger(True)
                 
-            self.__clear_lines()
-        
     def __init_rng(self):
         """
         Create a random number generator
@@ -146,7 +156,7 @@ class Four():
         args:
             next_piece (str): The type of the next tetromino
         """
-        spawning_tetromino = Tetromino(next_piece, 0, 4, 18, self.matrix)
+        spawning_tetromino = Tetromino(next_piece, 0, self.spawn_pos.x, self.spawn_pos.y, self.matrix)
         
         if self.__check_spawn(spawning_tetromino):
             self.current_tetromino = spawning_tetromino
@@ -215,7 +225,7 @@ class Four():
                     
                 case Action.SOFT_DROP:  # TEMP NEED TO INSTEAD MAKE SOFT_DROP CHANGE GRAVITY BY A FACTOR
                     if self.current_tetromino is not None:
-                        self.current_tetromino.move(action)
+                        
                         self.__update_current_tetromino()
                         
                 case Action.HOLD:
@@ -262,7 +272,39 @@ class Four():
             self.danger = True
         else:
             self.danger = False
-
+            
+    def __do_gravity(self, G):
+        """
+        Perform gravity
+        
+        args:
+            G (int): The gravity value in blocks per fractions of 1/60th of a second, i.e 1G = 1 block per 1/60th of a second
+        """
+        if G == 0 or self.current_tetromino is None or self.current_tetromino.is_on_floor():
+            return
+        
+        elif G == 20:
+            for _ in range(self.config.MATRIX_HEIGHT - self.spawn_pos.y): # teleport to floor
+                self.current_tetromino.attempt_to_move_downwards()
+                if self.current_tetromino.is_on_floor():
+                    break
+        else:
+            # convert G from units of 1/60 seconds to units of ticks
+            G_units_in_ticks = self.config.TPS/(G * 60)
+            
+            if self.gravity_counter >= int(G_units_in_ticks):
+                self.__gravity_tick()
+            else:
+                self.gravity_counter += 1
+                print(f"G_units_in_ticks: {G_units_in_ticks} Gravity Counter: {self.gravity_counter}")
+        
+    def __gravity_tick(self):
+        """
+        Gravity tick
+        """
+        self.current_tetromino.attempt_to_move_downwards()
+        self.gravity_counter = 0
+        
 class Queue():
     def __init__(self, rng, length = 5):
         """
@@ -363,5 +405,4 @@ class StateSnapshot:
         self.held_tetromino = four_instance.held_tetromino
         self.game_over = four_instance.game_over
         self.danger = four_instance.danger
-        self.tick_counter = four_instance.tick_counter
     

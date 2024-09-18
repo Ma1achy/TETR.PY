@@ -293,7 +293,7 @@ class Core():
         (Four) four: the instance of the game
         """
         self.delta_tick = self.__calc_df()
-        four.loop()
+        four.loop(self.current_time, self.last_frame_time)
         self.state_snapshot = four.forward_state()
         self.tick_counter += 1
     
