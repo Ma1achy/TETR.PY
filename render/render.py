@@ -17,6 +17,8 @@ class Render():
         self.window = window
         self.config = Config()
         self.four_surface = self.__init_four_surface()
+        self.rim_light_line_width = self.config.GRID_SIZE // 5
+        self.rim_alpha = 0.70
         
         self.danger = False
         self.game_over = False
@@ -112,7 +114,7 @@ class Render():
                              (matrix_surface_rect.x + idx * self.config.GRID_SIZE, matrix_surface_rect.y + self.config.MATRIX_HEIGHT // 2 * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT)
                              )
             
-    def __draw_blocks(self, matrix:Matrix, matrix_surface_rect:pygame.Rect, transparent:bool, alpha:float, blend_colour:tuple = (0, 0, 0)):
+    def __draw_blocks(self, matrix:Matrix, matrix_surface_rect:pygame.Rect, transparent:bool, alpha:float, blend_colour:tuple = (0, 0, 0), draw_rim:bool = True):
         """
         Draw the blocks in the matrix
         
@@ -134,6 +136,11 @@ class Render():
                     pygame.draw.rect(self.four_surface, colour, 
                                      (matrix_surface_rect.x + j * self.config.GRID_SIZE, matrix_surface_rect.y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT, self.config.GRID_SIZE, self.config.GRID_SIZE)
                                      )
+
+                    if i == 0 or matrix[i - 1][j] == 0 and draw_rim:
+                        start_x = matrix_surface_rect.x + j * self.config.GRID_SIZE
+                        start_y = matrix_surface_rect.y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT
+                        self.draw_rim_light(self.four_surface, colour, start_x, start_y, self.config.GRID_SIZE, self.rim_light_line_width, self.rim_alpha)
 
     def __draw_matrix_border(self):
         """
@@ -268,11 +275,11 @@ class Render():
         """
         matrix_surface_rect = pygame.Rect(self.config.MATRIX_SCREEN_CENTER_X, self.config.MATRIX_SCREEN_CENTER_Y, self.config.MATRIX_SURFACE_WIDTH, self.config.MATRIX_SURFACE_HEIGHT)
         
-        self.__draw_blocks(four.matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33, blend_colour=(0, 0, 0))
+        self.__draw_blocks(four.matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33, blend_colour=(0, 0, 0), draw_rim = False)
         self.__draw_grid(matrix_surface_rect)
-        self.__draw_blocks(four.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0))
-        self.__draw_blocks(four.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255))
-        self.__draw_blocks(four.matrix.place_animation, matrix_surface_rect, transparent = True, alpha = 0.5, blend_colour=(255, 255, 255))
+        self.__draw_blocks(four.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0), draw_rim = True)
+        self.__draw_blocks(four.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255), draw_rim = True)
+        self.__draw_blocks(four.matrix.place_animation, matrix_surface_rect, transparent = True, alpha = 0.5, blend_colour=(255, 255, 255), draw_rim = False)
         
         if self.danger:
             self.draw_danger_crosses(four.matrix.danger)
@@ -360,6 +367,28 @@ class Render():
                     pygame.draw.rect(self.four_surface, colour, 
                                     (rect.x + offset_x + j * self.config.GRID_SIZE, rect.y + offset_y + i * self.config.GRID_SIZE, self.config.GRID_SIZE, self.config.GRID_SIZE)
                                     )
+                
+                    if i == 0 or tetromino[i - 1][j] == 0:
+                        start_x = rect.x + offset_x + j * self.config.GRID_SIZE
+                        start_y = rect.y + offset_y + i * self.config.GRID_SIZE
+                        self.draw_rim_light(self.four_surface, colour, start_x, start_y, self.config.GRID_SIZE, self.rim_light_line_width, self.rim_alpha)
+
+    def draw_rim_light(self, surface, colour, start_x, start_y, grid_size, line_width, alpha):
+        """
+        Draw a top line on the given surface.
+        
+        Args:
+            surface (pygame.Surface): The surface to draw on.
+            colour (tuple): The colour of the line.
+            start_x (int): The starting x-coordinate.
+            start_y (int): The starting y-coordinate.
+            grid_size (int): The size of the grid.
+            line_width (int): The width of the line.
+            alpha (float): The alpha value for blending.
+        """
+        start_pos = (start_x, start_y + line_width // 2 - 1)
+        end_pos = (start_x + grid_size - 1, start_pos[1])
+        pygame.draw.line(surface, lerpBlendRGBA((255, 255, 255), colour, alpha=alpha), start_pos, end_pos, line_width)
     
     def __draw_debug(self, debug_dict):
         """
