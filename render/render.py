@@ -279,7 +279,6 @@ class Render():
         self.__draw_grid(matrix_surface_rect)
         self.__draw_blocks(four.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0), draw_rim = True)
         self.__draw_blocks(four.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255), draw_rim = True)
-        self.__draw_blocks(four.matrix.place_animation, matrix_surface_rect, transparent = True, alpha = 0.5, blend_colour=(255, 255, 255), draw_rim = False)
         
         if self.danger:
             self.draw_danger_crosses(four.matrix.danger)

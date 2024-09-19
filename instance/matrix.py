@@ -25,9 +25,7 @@ class Matrix():
         self.piece = self.empty_matrix() 
         self.ghost = self.empty_matrix()
         self.danger = self.empty_matrix()
-        self.place_animation = self.empty_matrix()
-        self.line_clear_animation = self.empty_matrix()
-        
+
     def empty_matrix(self):
         """
         Create a matrix filled with zeros	

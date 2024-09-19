@@ -52,9 +52,6 @@ class Four():
         self.max_moves_before_lock = 0
         self.can_hold = True
         
-        self.place_animation_counter = 0
-        self.placement_animation_length = 15
-        
     def loop(self, current_time, previous_time):
         """
         The main game loop
@@ -100,7 +97,6 @@ class Four():
         Get the next state of the game
         """
         if not self.game_over:
-            self.__do_placement_animation()
             self.__perform_actions()
             self.__do_gravity(self.gravity, self.soft_drop_factor)
             self.__update_current_tetromino()
@@ -225,8 +221,6 @@ class Four():
         """
         if self.current_tetromino is not None:
             self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.matrix)
-            self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.place_animation)
-            self.__do_placement_animation()
             self.matrix.piece = self.matrix.empty_matrix()
             self.current_tetromino = None
             
@@ -373,18 +367,7 @@ class Four():
             
         elif not self.current_tetromino.is_on_floor(): # reset the lock delay counter if the piece is not on the floor
             self.current_tetromino.lock_delay_counter = 0
-            
-    def __do_placement_animation(self): # TEMP
-        """
-        Perform the placement animation
-        """
-        placement_animation_length = self.placement_animation_length/self.config.FPS * self.config.TPS
-         
-        if self.place_animation_counter < placement_animation_length:
-            self.place_animation_counter += 1
-        else:
-            self.place_animation_counter = 0
-            self.matrix.place_animation = self.matrix.empty_matrix()
+        
 class Queue():
     def __init__(self, rng, length = 5):
         """
