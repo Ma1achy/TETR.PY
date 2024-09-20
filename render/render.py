@@ -54,6 +54,7 @@ class Render():
         """
         self.surfaces = []
         
+        self.draw_rimlight = False
         self.danger = four.danger
         self.game_over = four.game_over
         self.gravity = four.gravity
@@ -137,7 +138,7 @@ class Render():
                                      (matrix_surface_rect.x + j * self.config.GRID_SIZE, matrix_surface_rect.y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT, self.config.GRID_SIZE, self.config.GRID_SIZE)
                                      )
 
-                    if i == 0 or matrix[i - 1][j] == 0 and draw_rim:
+                    if i == 0 or matrix[i - 1][j] == 0 and draw_rim and self.draw_rimlight:
                         start_x = matrix_surface_rect.x + j * self.config.GRID_SIZE
                         start_y = matrix_surface_rect.y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT
                         self.draw_rim_light(self.four_surface, colour, start_x, start_y, self.config.GRID_SIZE, self.rim_light_line_width, self.rim_alpha)
@@ -367,7 +368,7 @@ class Render():
                                     (rect.x + offset_x + j * self.config.GRID_SIZE, rect.y + offset_y + i * self.config.GRID_SIZE, self.config.GRID_SIZE, self.config.GRID_SIZE)
                                     )
                 
-                    if i == 0 or tetromino[i - 1][j] == 0:
+                    if (i == 0 or tetromino[i - 1][j] == 0) and self.draw_rimlight:
                         start_x = rect.x + offset_x + j * self.config.GRID_SIZE
                         start_y = rect.y + offset_y + i * self.config.GRID_SIZE
                         self.draw_rim_light(self.four_surface, colour, start_x, start_y, self.config.GRID_SIZE, self.rim_light_line_width, self.rim_alpha)
