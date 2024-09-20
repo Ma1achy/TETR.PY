@@ -225,7 +225,7 @@ class Four():
             self.current_tetromino = None
             
     def __perform_actions(self):
-        
+    
         for action_dict in self.actions_this_tick:
             action = action_dict['action'] 
             

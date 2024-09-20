@@ -326,7 +326,7 @@ class Handling():
         """
         if self.handling_settings['DASCancel']:
             self.__DAS_cancel()
-        
+      
         if self.__is_action_down(Action.MOVE_LEFT) or self.__is_action_down(Action.MOVE_RIGHT):
            
             if self.DAS_counter % self.handling_settings['DAS'] == 0 or self.DAS_counter >= self.handling_settings['DAS']:
