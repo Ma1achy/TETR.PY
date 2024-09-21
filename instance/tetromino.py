@@ -19,11 +19,13 @@ class Tetromino():
         
         self.type = type
         self.state = state
+        self.blocks = self.__get_tetromino_blocks()
         self.position = self.__get_origin(x, y)
+        self.pivot = self.__get_pivot()
+        
+        self.ghost_position = Vec2(self.position.x, self.position.y)
         self.matrix = matrix
         
-        self.blocks = self.__get_tetromino_blocks()
-        self.ghost_position = Vec2(self.position.x, self.position.y)
         self.lock_delay_counter = 0
         self.max_moves_before_lock = 15
         
@@ -57,6 +59,12 @@ class Tetromino():
                 y -= 1
         
         return Vec2(x, y)
+    
+    def __get_pivot(self):
+        """
+        Get the geometric center of the piece
+        """
+        return Vec2(len(self.blocks) / 2, len(self.blocks) / 2)
             
     def rotate(self, action:Action, kick_table:dict):
         """

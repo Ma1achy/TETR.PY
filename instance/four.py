@@ -1,12 +1,13 @@
 from instance.tetromino import Tetromino
 from instance.matrix import Matrix
-from config import Config
+from config import StructConfig
 from core.handling import Action
 from instance.rotation import RotationSystem
-from utils import Vec2
+from core.state.struct_gameinstance import StructGameInstance
+from core.state.struct_flags import StructFlags 
 
 class Four():
-    def __init__(self, core_instance, rotation_system = 'SRS'):
+    def __init__(self, core_instance, Config: StructConfig, GameInstanceStruct: StructGameInstance, Flags: StructFlags , rotation_system: str = 'SRS'):
         """
         Create an instance of the game Four
         
@@ -19,49 +20,21 @@ class Four():
             forward_state(): Forward the state of the game to allow for async rendering
         """
         self.core_instance = core_instance
-        self.config = Config() 
-        self.spawn_pos = Vec2(4, 18)
-       
+        self.Config = Config
+        self.GameInstanceStruct = GameInstanceStruct
+        self.Flags = Flags
+        
         self.rotation_system = RotationSystem(rotation_system)
         self.kick_table = self.rotation_system.kick_table
         self.rng = self.__init_rng()
         self.queue = self.__init_queue()
         self.matrix = self.__init_matrix()
         
-        self.current_time = 0
-        self.previous_time = 0
-            
-        self.held_tetromino = None 
-        self.current_tetromino = None
-        self.on_floor = False
-        
-        self.gravity = 1/60
-        self.G_units_in_ticks = 0
-        self.gravity_counter = 0
-        self.move_down = False
-        
-        self.soft_dropping = True
-        self.soft_drop_factor = 1
-
-        self.danger = False
-        self.game_over = False
-        
-        self.lock_delay = 30
-        self.lock_delay_in_ticks = 0
-        self.lock_delay_counter = 0
-        self.max_moves_before_lock = 0
-        self.can_hold = True
-        
-    def loop(self, current_time, previous_time):
+    def loop(self):
         """
         The main game loop
-        
-        args:
-            current_time (int): The current time in seconds
         """
-        self.current_time = current_time
-        self.previous_time = previous_time
-        self.soft_drop_factor = 1
+        self.GameInstanceStruct.soft_drop_factor = 1
         self.actions_this_tick = []
         self.core_instance.handling.before_loop_hook()
         
@@ -76,11 +49,11 @@ class Four():
         if self.core_instance.TPS != 0:
             tick_duration = 1000 / self.core_instance.TPS # ms per tick
         else:
-            tick_duration = 1000/ self.config.TPS
+            tick_duration = 1000/ self.Config.TPS
             
         for action_dict in list(self.core_instance.handling.action_queue):
            
-            relative_tick = int((action_dict['timestamp'] - self.core_instance.current_time) / tick_duration)
+            relative_tick = int((action_dict['timestamp'] - self.core_instance.StructTiming.current_time) / tick_duration)
                  
             if relative_tick <= 0 and abs(relative_tick) <= self.core_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
@@ -96,13 +69,13 @@ class Four():
         """
         Get the next state of the game
         """
-        if not self.game_over:
+        if not self.Flags.game_over:
             self.__perform_actions()
-            self.__do_gravity(self.gravity, self.soft_drop_factor)
+            self.__do_gravity(self.GameInstanceStruct.gravity, self.GameInstanceStruct.soft_drop_factor)
             self.__update_current_tetromino()
             self.__clear_lines()
             
-            if self.current_tetromino is None:
+            if self.GameInstanceStruct.current_tetromino is None:
                 self.__get_next_piece(hold = False)
             
             if self.__is_row_17_empty():
@@ -115,34 +88,34 @@ class Four():
         """
         Create a random number generator
         """
-        return RNG(self.config.SEED)
+        return RNG(self.Config.SEED)
     
     def __init_queue(self):
         """
         Create a queue of tetrominos
         """
-        return Queue(self.rng, self.config.QUEUE_LENGTH)
+        return Queue(self.rng, self.Config.QUEUE_LENGTH)
     
     def __init_matrix(self):
         """
         Create the game field
         """
-        return Matrix(self.config.MATRIX_WIDTH, self.config.MATRIX_HEIGHT)
+        return Matrix(self.Config.MATRIX_WIDTH, self.Config.MATRIX_HEIGHT)
     
     def __update_current_tetromino(self):
         """
         Update the current tetromino in the matrix
         """
         
-        if self.current_tetromino is not None:
+        if self.GameInstanceStruct.current_tetromino is not None:
             self.matrix.piece = self.matrix.empty_matrix()
-            self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
-            self.current_tetromino.ghost()
+            self.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.matrix.piece)
+            self.GameInstanceStruct.current_tetromino.ghost()
             
-            self.on_floor = self.current_tetromino.is_on_floor()
-            self.lock_delay_counter = self.current_tetromino.lock_delay_counter
-            self.max_moves_before_lock = self.current_tetromino.max_moves_before_lock
-            self.current_tetromino.increment_lock_delay_counter()
+            self.GameInstanceStruct.on_floor = self.GameInstanceStruct.current_tetromino.is_on_floor()
+            self.GameInstanceStruct.lock_delay_counter = self.GameInstanceStruct.current_tetromino.lock_delay_counter
+            self.GameInstanceStruct.max_moves_before_lock = self.GameInstanceStruct.current_tetromino.max_moves_before_lock
+            self.GameInstanceStruct.current_tetromino.increment_lock_delay_counter()
             self.__auto_lock()
         
     def __get_next_piece(self, hold:bool):
@@ -152,19 +125,19 @@ class Four():
         args:
             hold (bool): Whether to hold the current piece
         """
-        self.can_hold = True
+        self.GameInstanceStruct.can_hold = True
         
         if hold is False:
             next_piece = self.queue.get_next_piece()
         else:
-            if self.held_tetromino is not None:
-                next_piece = self.held_tetromino
-                self.held_tetromino = self.current_tetromino.type
-                self.can_hold = False
+            if self.GameInstanceStruct.held_tetromino is not None:
+                next_piece = self.GameInstanceStruct.held_tetromino
+                self.GameInstanceStruct.held_tetromino = self.GameInstanceStruct.current_tetromino.type
+                self.GameInstanceStruct.can_hold = False
             else:
                 next_piece = self.queue.get_next_piece()
-                self.held_tetromino = self.current_tetromino.type
-                self.can_hold = False
+                self.GameInstanceStruct.held_tetromino = self.GameInstanceStruct.current_tetromino.type
+                self.GameInstanceStruct.can_hold = False
                 
         self.__spawn_piece(next_piece)
             
@@ -175,14 +148,14 @@ class Four():
         args:
             next_piece (str): The type of the next tetromino
         """
-        spawning_tetromino = Tetromino(next_piece, 0, self.spawn_pos.x, self.spawn_pos.y, self.matrix)
+        spawning_tetromino = Tetromino(next_piece, 0, self.GameInstanceStruct.spawn_pos.x, self.GameInstanceStruct.spawn_pos.y, self.matrix)
         
         if self.__check_spawn(spawning_tetromino):
-            self.current_tetromino = spawning_tetromino
-            self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.piece)
+            self.GameInstanceStruct.current_tetromino = spawning_tetromino
+            self.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.matrix.piece)
             self.__update_current_tetromino()
         else:
-            self.game_over = True
+            self.Flags.game_over = True
             print("Game Over")
         
         self.__update_current_tetromino()
@@ -212,17 +185,17 @@ class Four():
         """
         Hold the current tetromino
         """
-        if self.can_hold:
+        if self.GameInstanceStruct.can_hold:
             self.__get_next_piece(hold = True)
     
     def __lock(self):
         """
         Lock the current tetromino
         """
-        if self.current_tetromino is not None:
-            self.matrix.insert_blocks(self.current_tetromino.blocks, self.current_tetromino.position, self.matrix.matrix)
+        if self.GameInstanceStruct.current_tetromino is not None:
+            self.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.matrix.matrix)
             self.matrix.piece = self.matrix.empty_matrix()
-            self.current_tetromino = None
+            self.GameInstanceStruct.current_tetromino = None
             
     def __perform_actions(self):
     
@@ -231,32 +204,32 @@ class Four():
             
             match action:
                 case Action.MOVE_LEFT | Action.MOVE_RIGHT:
-                    if self.current_tetromino is not None: 
-                        self.current_tetromino.move(action) 
+                    if self.GameInstanceStruct.current_tetromino is not None: 
+                        self.GameInstanceStruct.current_tetromino.move(action) 
                         self.__update_current_tetromino()
                     
                 case Action.ROTATE_CLOCKWISE | Action.ROTATE_COUNTERCLOCKWISE:
-                    if self.current_tetromino is not None:
-                        self.current_tetromino.rotate(action, self.kick_table['90'])
+                    if self.GameInstanceStruct.current_tetromino is not None:
+                        self.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['90'])
                         self.__update_current_tetromino()
                         
                 case Action.ROTATE_180:
-                    if self.current_tetromino is not None:
-                        self.current_tetromino.rotate(action, self.kick_table['180'])
+                    if self.GameInstanceStruct.current_tetromino is not None:
+                        self.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['180'])
                         self.__update_current_tetromino()
                         
                 case Action.HARD_DROP:
-                    if self.current_tetromino is not None:
+                    if self.GameInstanceStruct.current_tetromino is not None:
                         self.__hard_drop()
                     
                 case Action.SOFT_DROP:  
-                    if self.current_tetromino is not None:
-                        self.soft_dropping = True
-                        self.soft_drop_factor = self.config.HANDLING_SETTINGS['SDF']     
+                    if self.GameInstanceStruct.current_tetromino is not None:
+                        self.GameInstanceStruct.soft_dropping = True
+                        self.GameInstanceStruct.soft_drop_factor = self.Config.HANDLING_SETTINGS['SDF']     
                         self.__update_current_tetromino()
                         
                 case Action.HOLD:
-                    if self.current_tetromino is not None:
+                    if self.GameInstanceStruct.current_tetromino is not None:
                         self.__hold()
                         
     def __is_row_17_empty(self):
@@ -277,7 +250,7 @@ class Four():
         """
         Activate the top out warning
         """
-        if self.game_over:
+        if self.Flags.game_over:
             return
         
         next_piece = self.queue.view_queue(idx = 0)
@@ -295,9 +268,9 @@ class Four():
             val (bool): The value to set the danger flag to
         """
         if val:
-            self.danger = True
+            self.Flags.danger = True
         else:
-            self.danger = False
+            self.Flags.danger = False
             
     def __do_gravity(self, G, soft_drop_factor = 1):
         """
@@ -307,49 +280,54 @@ class Four():
             G (int): The gravity value in blocks per fractions of 1/60th of a second, i.e 1G = 1 block per 1/60th of a second
             soft_drop_factor (int): The factor to scale the gravity by when soft dropping
         """
-        if self.soft_dropping:
-            self.__reset_gravity_after_soft_drop()
-            
-        if soft_drop_factor == 'inf':
-            self.__move_to_floor()
-                
-        if G == 0 or self.current_tetromino is None or self.current_tetromino.is_on_floor():
-            self.gravity_counter = 0
+        if self.GameInstanceStruct.current_tetromino is None or self.GameInstanceStruct.current_tetromino.is_on_floor():
+            self.GameInstanceStruct.gravity_counter = 0
             return
         
-        elif G == 20:
-            self.__move_to_floor()
-        else:
-            # convert G from units blocks per 1/60 seconds to units blocks per no. of ticks 
-            self.G_units_in_ticks = self.config.TPS/((G * soft_drop_factor) * 60)
+        if self.GameInstanceStruct.soft_dropping:
+            self.__reset_gravity_after_soft_drop()
             
-            if self.gravity_counter >= int(self.G_units_in_ticks):
+        if soft_drop_factor == 'inf' or G == 20: # instant gravity
+            self.__move_to_floor()
+            return
+        
+        elif G == 0 and soft_drop_factor == 1: # do not pefrom gravity
+            self.GameInstanceStruct.G_units_in_ticks = 'inf'
+            return
+        else:
+            if G == 0 and soft_drop_factor != 1: # if G = 0 and soft dropping do gravity a level 1 speed
+                G = 1/60
+                
+            # convert G from units blocks per 1/60 seconds to units blocks per no. of ticks 
+            self.GameInstanceStruct.G_units_in_ticks = int(self.Config.TPS/((G * soft_drop_factor) * 60))
+            
+            if self.GameInstanceStruct.gravity_counter >= self.GameInstanceStruct.G_units_in_ticks:
                 self.__gravity_tick()
             else:
-                self.gravity_counter += 1
+                self.GameInstanceStruct.gravity_counter += 1
             
     def __gravity_tick(self):
         """
         Gravity tick
         """
-        self.current_tetromino.attempt_to_move_downwards()
-        self.gravity_counter = 0
+        self.GameInstanceStruct.current_tetromino.attempt_to_move_downwards()
+        self.GameInstanceStruct.gravity_counter = 0
         
     def __move_to_floor(self):
         """
         Move the current tetromino to the floor
         """
-        while not self.current_tetromino.is_on_floor():
-            self.current_tetromino.attempt_to_move_downwards()
+        while not self.GameInstanceStruct.current_tetromino.is_on_floor():
+            self.GameInstanceStruct.current_tetromino.attempt_to_move_downwards()
             
     def __reset_gravity_after_soft_drop(self):
         """
         Reset the gravity counter after a soft drop so there is no extra time left on the gravity counter
         """
-        self.soft_dropping = False
+        self.GameInstanceStruct.soft_dropping = False
         for ac in self.actions_this_tick:
             if Action.SOFT_DROP not in ac.values():
-                self.gravity_counter = 0
+                self.GameInstanceStruct.gravity_counter = 0
                 break  
     
     def __auto_lock(self):
@@ -357,16 +335,16 @@ class Four():
         Automatically lock the current tetromino
         """
         # convert from frames in 1/60th of a second to ticks 1/self.config.TPS of a second
-        self.lock_delay_in_ticks = self.lock_delay/60 * self.config.TPS
+        self.GameInstanceStruct.lock_delay_in_ticks = self.GameInstanceStruct.lock_delay/60 * self.Config.TPS
         
-        if self.current_tetromino is None:
+        if self.GameInstanceStruct.current_tetromino is None:
             return
         
-        if self.current_tetromino.is_on_floor() and self.current_tetromino.lock_delay_counter >= self.lock_delay_in_ticks:
+        if self.GameInstanceStruct.current_tetromino.is_on_floor() and self.GameInstanceStruct.current_tetromino.lock_delay_counter >= self.GameInstanceStruct.lock_delay_in_ticks:
             self.__lock()
             
-        elif not self.current_tetromino.is_on_floor(): # reset the lock delay counter if the piece is not on the floor
-            self.current_tetromino.lock_delay_counter = 0
+        elif not self.GameInstanceStruct.current_tetromino.is_on_floor(): # reset the lock delay counter if the piece is not on the floor
+            self.GameInstanceStruct.current_tetromino.lock_delay_counter = 0
         
 class Queue():
     def __init__(self, rng, length = 5):
@@ -462,21 +440,21 @@ class StateSnapshot:
         Args:
             four_instance (Four): The instance of the game from which to copy the state.
         """
-        self.current_tetromino = four_instance.current_tetromino
+        self.current_tetromino = four_instance.GameInstanceStruct.current_tetromino
         self.matrix = four_instance.matrix
         self.queue = four_instance.queue
-        self.held_tetromino = four_instance.held_tetromino
-        self.game_over = four_instance.game_over
-        self.danger = four_instance.danger
+        self.held_tetromino = four_instance.GameInstanceStruct.held_tetromino
+        self.game_over = four_instance.Flags.game_over
+        self.danger = four_instance.Flags.danger
         
-        self.gravity = four_instance.gravity
-        self.gravity_counter = four_instance.gravity_counter
-        self.soft_drop_factor = four_instance.soft_drop_factor
-        self.G_units_in_ticks = four_instance.G_units_in_ticks
-        self.on_floor = four_instance.on_floor
-        self.soft_drop_factor = four_instance.soft_drop_factor
+        self.gravity = four_instance.GameInstanceStruct.gravity
+        self.gravity_counter = four_instance.GameInstanceStruct.gravity_counter
+        self.soft_drop_factor = four_instance.GameInstanceStruct.soft_drop_factor
+        self.G_units_in_ticks = four_instance.GameInstanceStruct.G_units_in_ticks
+        self.on_floor = four_instance.GameInstanceStruct.on_floor
+        self.soft_drop_factor = four_instance.GameInstanceStruct.soft_drop_factor
         
-        self.lock_delay_counter = four_instance.lock_delay_counter
-        self.max_moves_before_lock = four_instance.max_moves_before_lock
-        self.lock_delay = four_instance.lock_delay
-        self.lock_delay_in_ticks = four_instance.lock_delay_in_ticks
+        self.lock_delay_counter = four_instance.GameInstanceStruct.lock_delay_counter
+        self.max_moves_before_lock = four_instance.GameInstanceStruct.max_moves_before_lock
+        self.lock_delay = four_instance.GameInstanceStruct.lock_delay
+        self.lock_delay_in_ticks = four_instance.GameInstanceStruct.lock_delay_in_ticks

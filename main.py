@@ -4,6 +4,12 @@ from instance.four import Four
 
 #TODO:
 
+# FIX: lock delay reset mechanics (currently is half right): 
+# - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
+# - If 15 resets are reached, the piece locks instantly on contact with the floor
+# - The move resets are replenished if the piece falls below its lowest position (given by the y coord of the center of rotation of the piece)
+# - Each ARR move counts as a reset (this is a bit weird when using 0 ARR but makes sense)
+
 # - Implement Flag system to simplify passing around information about the game state cause its getting a bit messy
 
 # - Implement Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
@@ -20,7 +26,7 @@ from instance.four import Four
 
 async def main():
     game_instance = Core()
-    four = Four(game_instance, rotation_system = 'SRS')
+    four = Four(game_instance,  game_instance.Config,  game_instance.GameInstanceStruct, game_instance.Flags, rotation_system = 'SRS')
     await game_instance.run(four)
 
 if __name__ == "__main__":
