@@ -55,7 +55,7 @@ class Four():
            
             relative_tick = int((action_dict['timestamp'] - self.core_instance.StructTiming.current_time) / tick_duration)
                  
-            if relative_tick <= 0 and abs(relative_tick) <= self.core_instance.handling.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
+            if relative_tick <= 0 and abs(relative_tick) <= self.core_instance.HandlingStruct.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
                 self.core_instance.handling.consume_action()
         

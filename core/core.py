@@ -10,6 +10,8 @@ from core.state.struct_debug import StructDebug
 from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_flags import StructFlags
+from core.state.struct_handling import StructHandling
+
 class Core():
     def __init__(self):
         """
@@ -22,12 +24,13 @@ class Core():
         self.StructTiming = StructTiming()
         self.StructDebug = StructDebug()
         self.GameInstanceStruct = StructGameInstance()
+        self.HandlingStruct = StructHandling()
         self.Flags = StructFlags()
-        self.render_clock = Clock()
         
+        self.render_clock = Clock()
         self.window = self.__init_window()
         self.render = Render(self.window, self.StructDebug)
-        self.handling = Handling(self.Config)
+        self.handling = Handling(self.Config, self.HandlingStruct)
         
         self.TPS = self.Config.TPS
         self.FPS = self.Config.FPS
@@ -112,27 +115,27 @@ class Core():
         """
         while not self.exited:
                 
-                self.handling.current_time = self.StructTiming.elapsed_times["handle_events"]
-                self.handling.delta_time += (self.handling.current_time - self.handling.last_tick_time) / self.handling.polling_tick_time
-                self.handling.last_tick_time = self.handling.current_time
+                self.HandlingStruct.current_time = self.StructTiming.elapsed_times["handle_events"]
+                self.HandlingStruct.delta_time += (self.handling.HandlingStruct.current_time - self.handling.HandlingStruct.last_tick_time) / self.handling.polling_tick_time
+                self.HandlingStruct.last_tick_time = self.handling.HandlingStruct.current_time
               
-                if self.handling.do_first_tick:
+                if self.HandlingStruct.do_first_tick:
                     self.__handle_key_events()
-                    self.handling.do_first_tick = False
+                    self.HandlingStruct.do_first_tick = False
 
-                while self.handling.delta_time >= 1:
+                while self.HandlingStruct.delta_time >= 1:
                     self.__handle_key_events()
-                    self.handling.delta_time -= 1
+                    self.HandlingStruct.delta_time -= 1
                 
-                if self.handling.current_time > self.handling.poll_counter_last_cleared + 1:
+                if self.HandlingStruct.current_time > self.HandlingStruct.poll_counter_last_cleared + 1:
                     self.__get_polling_rate()
-                    self.handling.poll_tick_counter = 0
-                    self.handling.poll_counter_last_cleared += 1
+                    self.HandlingStruct.poll_tick_counter = 0
+                    self.HandlingStruct.poll_counter_last_cleared += 1
             
                 await asyncio.sleep(0)
     
     def __handle_key_events(self):
-        self.handling.poll_tick_counter += 1
+        self.HandlingStruct.poll_tick_counter += 1
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -255,7 +258,7 @@ class Core():
         """
         Update the stored polling rate value
         """
-        self.StructDebug.POLLING_RATE = self.handling.poll_tick_counter
+        self.StructDebug.POLLING_RATE = self.handling.HandlingStruct.poll_tick_counter
 
     def __calc_exe_time_avg(self):
         """
@@ -461,18 +464,18 @@ class Core():
                         'BEST_POLLING_T': self.StructDebug.best_polling_t,
                         'WORST_POLLING_T': self.StructDebug.worst_polling_t,
                         
-                        'DAS_COUNTER': self.handling.DAS_counter,
-                        'DAS': self.handling.handling_settings['DAS'],
+                        'DAS_COUNTER': self.handling.HandlingStruct.DAS_counter,
+                        'DAS': self.handling.Config.HANDLING_SETTINGS['DAS'],
                         
-                        'ARR_COUNTER': self.handling.ARR_counter,
-                        'ARR': self.handling.handling_settings['ARR'],
+                        'ARR_COUNTER': self.handling.HandlingStruct.ARR_counter,
+                        'ARR': self.handling.Config.HANDLING_SETTINGS['ARR'],
                         
-                        'DCD': self.handling.handling_settings['DCD'],
-                        'SDF': self.handling.handling_settings['SDF'],
+                        'DCD': self.handling.Config.HANDLING_SETTINGS['DCD'],
+                        'SDF': self.handling.Config.HANDLING_SETTINGS['SDF'],
                         
-                        'DAS_CANCEL': self.handling.handling_settings['DASCancel'],
-                        'PREVHD': self.handling.handling_settings['PrevAccHD'],
-                        'PREFSD': self.handling.handling_settings['PrefSD'],
+                        'DAS_CANCEL': self.handling.Config.HANDLING_SETTINGS['DASCancel'],
+                        'PREVHD': self.handling.Config.HANDLING_SETTINGS['PrevAccHD'],
+                        'PREFSD': self.handling.Config.HANDLING_SETTINGS['PrefSD'],
                         
                         'BOUNDBOX': self.StructDebug.draw_bounding_box,
                         'ORIGIN': self.StructDebug.draw_origin,
@@ -485,14 +488,14 @@ class Core():
         
     def __get_key_dict(self):
         self.key_dict = {
-            'KEY_LEFT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_LEFT]]['current'],
-            'KEY_RIGHT': self.handling.key_states[self.handling.key_bindings[Action.MOVE_RIGHT]]['current'],
-            'KEY_CLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_CLOCKWISE]]['current'],
-            'KEY_COUNTERCLOCKWISE': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]]['current'],
-            'KEY_180': self.handling.key_states[self.handling.key_bindings[Action.ROTATE_180]]['current'],
-            'KEY_HARD_DROP' : self.handling.key_states[self.handling.key_bindings[Action.HARD_DROP]]['current'],
-            'KEY_SOFT_DROP': self.handling.key_states[self.handling.key_bindings[Action.SOFT_DROP]]['current'],
-            'KEY_HOLD': self.handling.key_states[self.handling.key_bindings[Action.HOLD]]['current'],
+            'KEY_LEFT': self.handling.key_states[self.handling.Config.key_bindings[Action.MOVE_LEFT]]['current'],
+            'KEY_RIGHT': self.handling.key_states[self.handling.Config.key_bindings[Action.MOVE_RIGHT]]['current'],
+            'KEY_CLOCKWISE': self.handling.key_states[self.handling.Config.key_bindings[Action.ROTATE_CLOCKWISE]]['current'],
+            'KEY_COUNTERCLOCKWISE': self.handling.key_states[self.handling.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]]['current'],
+            'KEY_180': self.handling.key_states[self.handling.Config.key_bindings[Action.ROTATE_180]]['current'],
+            'KEY_HARD_DROP' : self.handling.key_states[self.handling.Config.key_bindings[Action.HARD_DROP]]['current'],
+            'KEY_SOFT_DROP': self.handling.key_states[self.handling.Config.key_bindings[Action.SOFT_DROP]]['current'],
+            'KEY_HOLD': self.handling.key_states[self.handling.Config.key_bindings[Action.HOLD]]['current'],
         }
 class Clock:
     def __init__(self, max_entries = 10):

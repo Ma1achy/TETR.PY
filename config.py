@@ -1,8 +1,21 @@
 from dataclasses import dataclass, field
+import pygame
+from core.handling import Action
 from typing import Dict, Tuple
 @dataclass
 class StructConfig():
-   
+    
+    key_bindings: Dict[Action, int] = field(default_factory = lambda: {
+        Action.MOVE_LEFT:                   pygame.K_LEFT,
+        Action.MOVE_RIGHT:                  pygame.K_RIGHT,
+        Action.ROTATE_CLOCKWISE:            pygame.K_x,
+        Action.ROTATE_COUNTERCLOCKWISE:     pygame.K_z,
+        Action.ROTATE_180:                  pygame.K_SPACE,
+        Action.HARD_DROP:                   pygame.K_DOWN,
+        Action.SOFT_DROP:                   pygame.K_UP,
+        Action.HOLD:                        pygame.K_c
+    })
+    
     HANDLING_SETTINGS: Dict[str, object] = field(default_factory = lambda: {
         'ARR': 33,           # Auto repeat rate (int) in ms: The speed at which tetrominoes move when holding down the movement keys (ms)
         'DAS': 167,          # Delayed Auto Shift (int) in ms: The time between the initial key press and the automatic repeat movement (ms)

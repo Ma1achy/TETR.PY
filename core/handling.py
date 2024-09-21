@@ -18,7 +18,7 @@ class Action(Enum):
     HOLD = auto()
 
 class Handling():
-    def __init__(self, config):
+    def __init__(self, Config, HandlingStruct):
         """
         Handle the key inputs and provide the actions to the game loop in a queue.
         
@@ -32,53 +32,22 @@ class Handling():
             consume_action(): Consume the oldset action in the queue
         """
         
-        self.config = config
-        self.polling_tick_time = 1 / self.config.POLLING_RATE
-        self.current_time = 0
-        self.prev_time = 0
-        self.delta_time = 0
-        self.last_tick_time = 0
-        self.do_first_tick = True
-        self.poll_tick_counter = 0
-        self.poll_counter_last_cleared = 0
-        self.current_direction = None
-        
-        self.buffer_threshold = 128 # tick range where old actions are still considered valid
+        self.Config = Config
+        self.HandlingStruct = HandlingStruct
+        self.polling_tick_time = 1 / self.Config.POLLING_RATE
+     
+        self.actions = self.__GetEmptyActions()
         self.action_queue = deque()
         
-        self.DAS_counter = 0
-        self.das_remainder = 0
-        
-        self.DAS_charged = False
-        self.ARR_counter = 0
-        self.do_movement = False 
-        self.arr_remainder = 0
-        self.instant_movement = False
-        
-        self.actions = self.__GetEmptyActions()
-        
-        self.key_bindings = {
-            Action.MOVE_LEFT:                   pygame.K_LEFT,
-            Action.MOVE_RIGHT:                  pygame.K_RIGHT,
-            Action.ROTATE_CLOCKWISE:            pygame.K_x,
-            Action.ROTATE_COUNTERCLOCKWISE:     pygame.K_z,
-            Action.ROTATE_180:                  pygame.K_SPACE,
-            Action.HARD_DROP:                   pygame.K_DOWN,
-            Action.SOFT_DROP:                   pygame.K_UP,
-            Action.HOLD:                        pygame.K_c
-        }
-        
-        self.handling_settings = self.config.HANDLING_SETTINGS
-        
         self.key_states = {
-            self.key_bindings[Action.MOVE_LEFT]:                     {'current': False, 'previous': False},
-            self.key_bindings[Action.MOVE_RIGHT]:                    {'current': False, 'previous': False},
-            self.key_bindings[Action.ROTATE_CLOCKWISE]:              {'current': False, 'previous': False},
-            self.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]:       {'current': False, 'previous': False},
-            self.key_bindings[Action.ROTATE_180]:                    {'current': False, 'previous': False},
-            self.key_bindings[Action.HARD_DROP]:                     {'current': False, 'previous': False},
-            self.key_bindings[Action.SOFT_DROP]:                     {'current': False, 'previous': False},
-            self.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.MOVE_LEFT]:                     {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.MOVE_RIGHT]:                    {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.ROTATE_CLOCKWISE]:              {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]:       {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.ROTATE_180]:                    {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.HARD_DROP]:                     {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.SOFT_DROP]:                     {'current': False, 'previous': False},
+            self.Config.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
         }
         
     def __GetEmptyActions(self):
@@ -128,7 +97,7 @@ class Handling():
         
         self.__get_action_buffer() # add actions to buffer
         
-        self.prev_time = self.current_time
+        self.HandlingStruct.prev_time = self.HandlingStruct.current_time
            
     def __forward_key_states(self):
         """
@@ -144,7 +113,7 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        return self.key_states[self.key_bindings[action]]['current'] and not self.key_states[self.key_bindings[action]]['previous']
+        return self.key_states[self.Config.key_bindings[action]]['current'] and not self.key_states[self.Config.key_bindings[action]]['previous']
     
     def __is_action_down(self, action:Action):
         """
@@ -155,7 +124,7 @@ class Handling():
         returns:
             bool: True if the action is down, False otherwise
         """
-        return self.key_states[self.key_bindings[action]]['current']
+        return self.key_states[self.Config.key_bindings[action]]['current']
     
     def __set_action_state(self, action:Action, state:bool):
         """
@@ -166,7 +135,7 @@ class Handling():
             state (bool): The state of the action
         """
         self.actions[action]['state'] = state
-        self.actions[action]['timestamp'] = self.current_time
+        self.actions[action]['timestamp'] = self.HandlingStruct.current_time
         
     def __LeftRightMovementPriority(self, action:Action):
         """
@@ -177,8 +146,8 @@ class Handling():
             action (Action): The action to be performed
         """
         if self.__is_action_down(Action.MOVE_LEFT) and self.__is_action_down(Action.MOVE_RIGHT) :
-            if self.handling_settings['PrioriDir']: # if the setting is true, the most recent key will be prioritised
-                if self.current_direction is Action.MOVE_LEFT:
+            if self.Config.HANDLING_SETTINGS['PrioriDir']: # if the setting is true, the most recent key will be prioritised
+                if self.HandlingStruct.current_direction is Action.MOVE_LEFT:
                     self.__set_action_state(Action.MOVE_RIGHT, True)
                     self.__set_action_state(Action.MOVE_LEFT, False)
                 else:
@@ -188,11 +157,11 @@ class Handling():
                 self.__set_action_state(action, False) # if left and right are pressed at the same time, no action is performed
             
         elif self.__is_action_down(Action.MOVE_LEFT):
-            self.current_direction = action
+            self.HandlingStruct.current_direction = action
             self.__set_action_state(Action.MOVE_LEFT, True)
             
         elif self.__is_action_down(Action.MOVE_RIGHT):
-            self.current_direction = action
+            self.HandlingStruct.current_direction = action
             self.__set_action_state(Action.MOVE_RIGHT, True) 
       
     def __test_actions(self, action:Action, check:callable):
@@ -301,12 +270,12 @@ class Handling():
         args:
             action (Action): The action to be performed
         """	
-        if self.do_movement:
-            self.do_movement = False
+        if self.HandlingStruct.do_movement:
+            self.HandlingStruct.do_movement = False
             self.__queue_action(action)
             
-        if self.instant_movement: # handle ARR of 0 separately
-            self.instant_movement = False
+        if self.HandlingStruct.instant_movement: # handle ARR of 0 separately
+            self.HandlingStruct.instant_movement = False
             self.__instant_movement(action)      
              
     def __instant_movement(self, action:Action):
@@ -316,29 +285,29 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        for _ in range(0, self.config.MATRIX_WIDTH):
-            self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+        for _ in range(0, self.Config.MATRIX_WIDTH):
+            self.__queue_action(action)
             
     def __DAS(self):
         """
         If the Left/Right movement keys are held down, the DAS timer will be incremented until it reaches the DAS threshold (ms). 
         Once charged, the ARR will be performed at the set rate (ms).
         """
-        if self.handling_settings['DASCancel']:
+        if self.Config.HANDLING_SETTINGS['DASCancel']:
             self.__DAS_cancel()
       
         if self.__is_action_down(Action.MOVE_LEFT) or self.__is_action_down(Action.MOVE_RIGHT):
            
-            if self.DAS_counter % self.handling_settings['DAS'] == 0 or self.DAS_counter >= self.handling_settings['DAS']:
+            if self.HandlingStruct.DAS_counter % self.Config.HANDLING_SETTINGS['DAS'] == 0 or self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS']:
                 self.__ARR()
                      
-            if self.DAS_counter >= self.handling_settings['DAS']:
-                self.DAS_counter = self.handling_settings['DAS']
+            if self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS']:
+                self.HandlingStruct.DAS_counter = self.Config.HANDLING_SETTINGS['DAS']
                 
             else:
-                q, r = divmod((self.current_time - self.prev_time) + self.das_remainder, self.polling_tick_time)
-                self.das_remainder = r
-                self.DAS_counter += int(q)
+                q, r = divmod((self.HandlingStruct.current_time - self.HandlingStruct.prev_time) + self.HandlingStruct.das_remainder, self.polling_tick_time)
+                self.HandlingStruct.das_remainder = r
+                self.HandlingStruct.DAS_counter += int(q)
                
         else: # reset DAS & ARR if key is released
             self.__reset_DAS_ARR()
@@ -355,28 +324,28 @@ class Handling():
         If the DAS timer is charged, the ARR timer will be incremented until it reaches the ARR threshold (ms).
         Once charged, the action will be performed and the ARR timer will be reset.
         """ 
-        if self.handling_settings['ARR'] == 0: # to avoid modulo by zero
-            self.do_movement = True
-            if self.DAS_counter >= self.handling_settings['DAS']:
-                self.instant_movement = True # when ARR = 0, the movement is instant (no delay since inf repeat rate)
+        if self.Config.HANDLING_SETTINGS['ARR'] == 0: # to avoid modulo by zero
+            self.HandlingStruct.do_movement = True
+            if self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS']:
+                self.HandlingStruct.instant_movement = True # when ARR = 0, the movement is instant (no delay since inf repeat rate)
         else:
-            if self.ARR_counter % self.handling_settings['ARR'] == 0 or self.ARR_counter >= self.handling_settings['ARR']:
-                self.do_movement = True  
-                self.ARR_counter = 0
+            if self.HandlingStruct.ARR_counter % self.Config.HANDLING_SETTINGS['ARR'] == 0 or self.HandlingStruct.ARR_counter >= self.Config.HANDLING_SETTINGS['ARR']:
+                self.HandlingStruct.do_movement = True  
+                self.HandlingStruct.ARR_counter = 0
             
-            if self.DAS_counter >= self.handling_settings['DAS']:
-                q, r = divmod((self.current_time - self.prev_time) + self.arr_remainder, self.polling_tick_time)
-                self.arr_remainder = r  
-                self.ARR_counter += int(q)
+            if self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS']:
+                q, r = divmod((self.HandlingStruct.current_time - self.HandlingStruct.prev_time) + self.HandlingStruct.arr_remainder, self.polling_tick_time)
+                self.HandlingStruct.arr_remainder = r  
+                self.HandlingStruct.ARR_counter += int(q)
                 
     def __reset_DAS_ARR(self):
         """
         Reset DAS once the action has been performed
         """
-        self.DAS_counter = 0
+        self.HandlingStruct.DAS_counter = 0
         self.done_inital_ARR_movement = False
         self.done_one_move = False
-        self.DAS_charged = False
-        self.instant_movement = False
-        self.ARR_counter = 0
+        self.HandlingStruct.DAS_charged = False
+        self.HandlingStruct.instant_movement = False
+        self.HandlingStruct.ARR_counter = 0
     
