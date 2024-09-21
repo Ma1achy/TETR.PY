@@ -9,7 +9,7 @@ class StructGameInstance():
     current_tetromino: str = None
     on_floor: bool = False
 
-    gravity: float = 0
+    gravity: float = 1/60
     G_units_in_ticks: int = 0
     gravity_counter: int = 0
     move_down: bool= False

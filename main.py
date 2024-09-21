@@ -26,7 +26,7 @@ from instance.four import Four
 
 async def main():
     game_instance = Core()
-    four = Four(game_instance,  game_instance.Config,  game_instance.GameInstanceStruct, game_instance.Flags, rotation_system = 'SRS')
+    four = Four(game_instance, rotation_system = 'SRS')
     await game_instance.run(four)
 
 if __name__ == "__main__":
