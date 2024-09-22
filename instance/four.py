@@ -2,7 +2,6 @@ from instance.tetromino import Tetromino
 from instance.matrix import Matrix
 from core.handling import Action
 from instance.rotation import RotationSystem
-from core.state.struct_flags import FLAG
 
 class Four():
     def __init__(self, core_instance, rotation_system: str = 'SRS'):
@@ -59,7 +58,7 @@ class Four():
         """
         Get the next state of the game
         """
-        if not self.core_instance.FlagStruct.FLAGS[FLAG.GAME_OVER]:
+        if not self.core_instance.FlagStruct.GAME_OVER:
             self.__perform_actions()
             self.__do_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
             self.__update_current_tetromino()
@@ -145,7 +144,7 @@ class Four():
             self.core_instance.GameInstanceStruct.matrix.insert_blocks(self.core_instance.GameInstanceStruct.current_tetromino.blocks, self.core_instance.GameInstanceStruct.current_tetromino.position, self.core_instance.GameInstanceStruct.matrix.piece)
             self.__update_current_tetromino()
         else:
-            self.core_instance.FlagStruct.FLAGS[FLAG.GAME_OVER] = True
+            self.core_instance.FlagStruct.GAME_OVER = True
             print("Game Over")
         
         self.__update_current_tetromino()
@@ -240,7 +239,7 @@ class Four():
         """
         Activate the top out warning
         """
-        if self.core_instance.FlagStruct.FLAGS[FLAG.GAME_OVER]:
+        if self.core_instance.FlagStruct.GAME_OVER:
             return
         
         next_piece = self.core_instance.GameInstanceStruct.queue.view_queue(idx = 0)
@@ -258,9 +257,9 @@ class Four():
             val (bool): The value to set the danger flag to
         """
         if val:
-            self.core_instance.FlagStruct.FLAGS[FLAG.DANGER] = True
+            self.core_instance.FlagStruct.DANGER = True
         else:
-            self.core_instance.FlagStruct.FLAGS[FLAG.DANGER] = False
+            self.core_instance.FlagStruct.DANGER = False
             
     def __do_gravity(self, G, soft_drop_factor = 1):
         """

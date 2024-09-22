@@ -9,7 +9,7 @@ from core.handling import Action
 from core.state.struct_debug import StructDebug
 from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance
-from core.state.struct_flags import StructFlags
+from core.state.struct_flags import StructFlags, set_flag_attr
 from core.state.struct_handling import StructHandling
 from core.state.struct_render import StructRender
 
@@ -49,6 +49,7 @@ class Core():
         args:
         (Four) four: the instance of the game
         """
+        set_flag_attr() # set the flag attributes
         self.start_time = time.perf_counter()
         pygame.init()
         

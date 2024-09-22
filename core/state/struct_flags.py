@@ -15,3 +15,15 @@ class StructFlags():
         FLAG.GAME_OVER: False
     })
     
+def create_property(flag):
+    def getter(self):
+        return self.FLAGS[flag]
+
+    def setter(self, value):
+        self.FLAGS[flag] = value
+
+    return property(getter, setter)
+
+def set_flag_attr():
+    for flag in FLAG:
+        setattr(StructFlags, flag.name, create_property(flag))

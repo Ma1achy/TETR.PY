@@ -2,7 +2,7 @@ from instance.matrix import Matrix
 import pygame
 from config import StructConfig
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags, FLAG
+from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
 from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix
 
@@ -107,7 +107,7 @@ class Render():
         for i, row in enumerate(matrix):
             for j, value in enumerate(row):
                 if value != 0:
-                    if self.FlagStruct.FLAGS[FLAG.GAME_OVER]:
+                    if self.FlagStruct.GAME_OVER:
                         colour = self.Config.COLOUR_MAP[8]
                     else:
                         colour = self.Config.COLOUR_MAP[value]
@@ -233,7 +233,7 @@ class Render():
         """
         Get the colour of the border
         """
-        if self.FlagStruct.FLAGS[FLAG.DANGER]:
+        if self.FlagStruct.DANGER:
             return (255, 0, 0)
         else:
             return (255, 255, 255)
@@ -252,7 +252,7 @@ class Render():
         self.__draw_blocks(self.GameInstanceStruct.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0))
         self.__draw_blocks(self.GameInstanceStruct.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255))
         
-        if self.FlagStruct.FLAGS[FLAG.DANGER]:
+        if self.FlagStruct.DANGER:
             self.draw_danger_crosses()
         
         if self.GameInstanceStruct.current_tetromino is not None:
