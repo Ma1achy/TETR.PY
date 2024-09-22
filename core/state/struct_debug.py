@@ -56,7 +56,3 @@ class StructDebug():
    average_polling_t: float = 0
    worst_polling_t: float = 0
    best_polling_t: float  = 0
-           
-   draw_bounding_box: bool = False
-   draw_origin: bool = False
-   draw_pivot: bool = False

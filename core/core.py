@@ -11,6 +11,7 @@ from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_flags import StructFlags
 from core.state.struct_handling import StructHandling
+from core.state.struct_render import StructRender
 
 class Core():
     def __init__(self):
@@ -22,14 +23,15 @@ class Core():
         """
         self.Config = StructConfig()
         self.StructTiming = StructTiming()
-        self.StructDebug = StructDebug()
         self.GameInstanceStruct = StructGameInstance()
         self.HandlingStruct = StructHandling()
-        self.Flags = StructFlags()
+        self.FlagStruct = StructFlags()
+        self.RenderStruct = StructRender()
+        self.StructDebug = StructDebug()
         
         self.render_clock = Clock()
         self.window = self.__init_window()
-        self.render = Render(self.window, self.StructDebug)
+        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct)
         self.handling = Handling(self.Config, self.HandlingStruct)
         
         self.TPS = self.Config.TPS
@@ -47,7 +49,6 @@ class Core():
         args:
         (Four) four: the instance of the game
         """
-        self.state_snapshot = four.forward_state()
         self.start_time = time.perf_counter()
         pygame.init()
         
@@ -148,11 +149,11 @@ class Core():
                     self.__show_debug_menu()
                 
                 if event.key == pygame.K_F4:
-                    self.StructDebug.draw_bounding_box = not self.StructDebug.draw_bounding_box
+                    self.RenderStruct.draw_bounding_box = not self.RenderStruct.draw_bounding_box
                 if event.key == pygame.K_F5:
-                    self.StructDebug.draw_origin = not self.StructDebug.draw_origin
+                    self.RenderStruct.draw_origin = not self.RenderStruct.draw_origin
                 if event.key == pygame.K_F6:
-                    self.StructDebug.draw_pivot = not self.StructDebug.draw_pivot
+                    self.RenderStruct.draw_pivot = not self.RenderStruct.draw_pivot
                     
                 if event.key == pygame.K_ESCAPE:
                     self.__exit()
@@ -224,7 +225,6 @@ class Core():
         """
         self.StructDebug.delta_tick = self.__calc_df()
         four.loop()
-        self.state_snapshot = four.forward_state()
         self.StructTiming.tick_counter += 1
     
     def __do_render(self):
@@ -232,7 +232,7 @@ class Core():
         Render a single frame of the game
         """
         self.__get_key_dict()
-        self.render.render_frame(self.state_snapshot, self.key_dict, self.StructDebug.debug_dict)
+        self.render.render_frame(self.key_dict, self.StructDebug.debug_dict)
         self.render_clock.tick()
                
     def __exit(self):
@@ -477,9 +477,15 @@ class Core():
                         'PREVHD': self.handling.Config.HANDLING_SETTINGS['PrevAccHD'],
                         'PREFSD': self.handling.Config.HANDLING_SETTINGS['PrefSD'],
                         
-                        'BOUNDBOX': self.StructDebug.draw_bounding_box,
-                        'ORIGIN': self.StructDebug.draw_origin,
-                        'PIVOT': self.StructDebug.draw_pivot,
+                        'GRAVITY': self.GameInstanceStruct.gravity,
+                        'GRAV_COUNTER': self.GameInstanceStruct.gravity_counter,
+                        'G_IN_TICKS': self.GameInstanceStruct.G_units_in_ticks,
+                        'ON_FLOOR': self.GameInstanceStruct.on_floor,
+                        'G_MULTI': self.GameInstanceStruct.soft_drop_factor,
+                        'LOCK_DELAY': self.GameInstanceStruct.lock_delay,
+                        'LOCK_DELAY_COUNTER': self.GameInstanceStruct.lock_delay_counter,
+                        'LOCK_DELAY_TICKS': self.GameInstanceStruct.lock_delay_in_ticks,
+                        'MAX_MOVES': self.GameInstanceStruct.max_moves_before_lock,
                     }
             else:
                 self.StructDebug.debug_dict = None

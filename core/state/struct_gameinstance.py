@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from utils import Vec2
+from instance.four import Queue
+from instance.matrix import Matrix
 
 @dataclass
 class StructGameInstance():
@@ -8,7 +10,10 @@ class StructGameInstance():
     held_tetromino: str = None 
     current_tetromino: str = None
     on_floor: bool = False
-
+    
+    queue:Queue = None
+    matrix:Matrix = None
+    
     gravity: float = 1/60
     G_units_in_ticks: int = 0
     gravity_counter: int = 0

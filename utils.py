@@ -93,10 +93,11 @@ def get_prefix(number:float, unit:str, precision:int = 1):
     
     return f"{num:.{precision}f} {prefix}{unit}" 
   
-def tetromino_previews(type:str):
+def get_tetromino_blocks(type:str):
     """
-    Get the blocks for the given tetromino to render previews.
-  
+    Get the blocks for the given tetromino.
+    This is the 0th rotation state of the piece that SRS uses.
+    
     args:
         type (str): The type of tetromino
     
@@ -108,27 +109,32 @@ def tetromino_previews(type:str):
             [
                 (0, 1, 0),
                 (1, 1, 1),
+                (0, 0, 0)
             ],
         'S': 
             [
                 (0, 2, 2),
                 (2, 2, 0),
+                (0, 0, 0)
             ],
             
         'Z':
             [
                 (3, 3, 0),
                 (0, 3, 3),
+                (0, 0, 0)
             ],
         'L': 
             [
                 (0, 0, 4),
                 (4, 4, 4),
+                (0, 0, 0)
             ],
         'J':
             [
                 (5, 0, 0),
                 (5, 5, 5),
+                (0, 0, 0)
             ],
         'O': 
             [
@@ -137,7 +143,10 @@ def tetromino_previews(type:str):
             ],
         'I': 
             [
+                (0, 0, 0, 0),
                 (7, 7, 7, 7),
+                (0, 0, 0, 0),
+                (0, 0, 0, 0),
             ] 
     }
     return blocks[type]

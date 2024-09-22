@@ -1,7 +1,17 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Dict
+from enum import Enum, auto
+
+
+class FLAG(Enum):
+    DANGER = auto()
+    GAME_OVER = auto()
+
 
 @dataclass
 class StructFlags():
-
-    danger: bool = False
-    game_over: bool = False
+    FLAGS: Dict[FLAG, bool] = field(default_factory = lambda: {
+        FLAG.DANGER: False,
+        FLAG.GAME_OVER: False
+    })
+    

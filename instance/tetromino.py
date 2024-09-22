@@ -1,4 +1,4 @@
-from utils import Vec2
+from utils import Vec2, get_tetromino_blocks
 from instance.matrix import Matrix
 from core.handling import Action
 
@@ -19,7 +19,7 @@ class Tetromino():
         
         self.type = type
         self.state = state
-        self.blocks = self.__get_tetromino_blocks()
+        self.blocks = get_tetromino_blocks(self.type)
         self.position = self.__get_origin(x, y)
         self.pivot = self.__get_pivot()
         
@@ -360,61 +360,3 @@ class Tetromino():
     def increment_lock_delay_counter(self):
         if self.is_on_floor():
             self.lock_delay_counter += 1
-
-    def __get_tetromino_blocks(self):
-        """
-        Get the blocks for the given tetromino.
-        This is the 0th rotation state of the piece that SRS uses.
-        
-        args:
-            type (str): The type of tetromino
-        
-        returns:
-            blocks (list): The pieces blocks
-        """
-        blocks = {
-            'T':
-                [
-                    (0, 1, 0),
-                    (1, 1, 1),
-                    (0, 0, 0)
-                ],
-            'S': 
-                [
-                    (0, 2, 2),
-                    (2, 2, 0),
-                    (0, 0, 0)
-                ],
-                
-            'Z':
-                [
-                    (3, 3, 0),
-                    (0, 3, 3),
-                    (0, 0, 0)
-                ],
-            'L': 
-                [
-                    (0, 0, 4),
-                    (4, 4, 4),
-                    (0, 0, 0)
-                ],
-            'J':
-                [
-                    (5, 0, 0),
-                    (5, 5, 5),
-                    (0, 0, 0)
-                ],
-            'O': 
-                [
-                    (6, 6), 
-                    (6, 6),
-                ],
-            'I': 
-                [
-                    (0, 0, 0, 0),
-                    (7, 7, 7, 7),
-                    (0, 0, 0, 0),
-                    (0, 0, 0, 0),
-                ] 
-        }
-        return blocks[self.type]

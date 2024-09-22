@@ -1,12 +1,13 @@
 from instance.matrix import Matrix
-from core.state.struct_debug import StructDebug
 import pygame
 from config import StructConfig
 from core.state.struct_render import StructRender
-from utils import lerpBlendRGBA, Font, tetromino_previews, get_prefix
+from core.state.struct_flags import StructFlags, FLAG
+from core.state.struct_gameinstance import StructGameInstance
+from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix
 
 class Render():
-    def __init__(self, window:pygame.Surface, DebugStruct:StructDebug):
+    def __init__(self, window:pygame.Surface, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance):
         """
         Render an instance of four onto a window
         
@@ -14,38 +15,28 @@ class Render():
             self.window (pygame.Surface): the window to render the game onto
         """
         
-        self.config = StructConfig()
-        self.RenderStruct = StructRender()
-        self.DebugStruct = DebugStruct
+        self.Config = Config
+        self.RenderStruct = RenderStruct
+        self.FlagStruct = Flags
+        self.GameInstanceStruct = GameInstanceStruct
+        
         self.window = window
         pygame.font.init()
         self.four_surface = self.__init_four_surface()
-        
-        self.danger = False
-        self.game_over = False
-        
-        self.gravity = 0
-        self.gravity_counter = 0
-        self.soft_drop_factor = 1
-        self.G_units_in_ticks = 0
-        self.on_floor = False
-        self.soft_drop_factor = 1
-        self.lock_delay_counter = 0
-        self.max_moves_before_lock = 0
-        
+    
         # fonts
-        self.hun2_big = Font(self.config.GRID_SIZE).hun2()
-        self.hun2_small = Font(self.config.GRID_SIZE//2).hun2()
-        self.pfw_small = Font(self.config.GRID_SIZE//2).pfw()
-        self.action_ui = Font(self.config.GRID_SIZE).action_ui()
+        self.hun2_big = Font(self.Config.GRID_SIZE).hun2()
+        self.hun2_small = Font(self.Config.GRID_SIZE//2).hun2()
+        self.pfw_small = Font(self.Config.GRID_SIZE//2).pfw()
+        self.action_ui = Font(self.Config.GRID_SIZE).action_ui()
             
     def __init_four_surface(self):
         """
         Create the surface to render the matrix, border and blocks to which can be rendered elsewhere on the window
         """
-        return pygame.surface.Surface((self.config.FOUR_INSTANCE_WIDTH, self.config.FOUR_INSTANCE_HEIGHT))
+        return pygame.surface.Surface((self.Config.FOUR_INSTANCE_WIDTH, self.Config.FOUR_INSTANCE_HEIGHT))
     
-    def render_frame(self, four, key_dict, debug_dict):
+    def render_frame(self, key_dict, debug_dict):
         """
         Render the frame of the Four Instance
         
@@ -55,26 +46,13 @@ class Render():
             debug_dict (dict): the dictionary of debug information
         """
         self.RenderStruct.surfaces = []
-        
-        self.danger = four.danger
-        self.game_over = four.game_over
-        self.gravity = four.gravity
-        self.gravity_counter = four.gravity_counter
-        self.soft_drop_factor = four.soft_drop_factor
-        self.G_units_in_ticks = four.G_units_in_ticks
-        self.on_floor = four.on_floor
-        self.soft_drop_factor = four.soft_drop_factor
-        self.lock_delay_counter = four.lock_delay_counter
-        self.max_moves_before_lock = four.max_moves_before_lock
-        self.lock_delay = four.lock_delay
-        self.lock_delay_in_ticks = four.lock_delay_in_ticks
-        
+
         self.four_surface.fill((0, 0, 0))
         self.window.fill((0, 0, 0))
         
-        self.__render_matrix(four)
-        self.__render_hold(four)
-        self.__render_queue(four)
+        self.__render_matrix()
+        self.__render_hold()
+        self.__render_queue()
             
         for surface, coords in self.RenderStruct.surfaces:
             self.four_surface.blit(surface, coords)
@@ -83,10 +61,7 @@ class Render():
         
         if debug_dict:
             self.__draw_debug(debug_dict)
-            self.DebugStruct.draw_bounding_box = debug_dict['BOUNDBOX']
-            self.DebugStruct.draw_origin = debug_dict['ORIGIN']
-            self.DebugStruct.draw_pivot = debug_dict['PIVOT']
-        
+         
         if key_dict:
             self.__draw_key_states(key_dict)
             
@@ -96,7 +71,7 @@ class Render():
         """
         Get the coordinates for the four surface to be centered in the window
         """
-        return (self.config.WINDOW_WIDTH - self.config.FOUR_INSTANCE_WIDTH) // 2, (self.config.WINDOW_HEIGHT - self.config.FOUR_INSTANCE_HEIGHT) // 2
+        return (self.Config.WINDOW_WIDTH - self.Config.FOUR_INSTANCE_WIDTH) // 2, (self.Config.WINDOW_HEIGHT - self.Config.FOUR_INSTANCE_HEIGHT) // 2
               
     def __draw_grid(self, matrix_surface_rect:pygame.Rect):
         """
@@ -107,19 +82,19 @@ class Render():
         """
         grid_colour = lerpBlendRGBA((0, 0, 0), self.__get_border_colour(), 0.25)
         
-        for idx in range(self.config.MATRIX_HEIGHT // 2, self.config.MATRIX_HEIGHT + 1):
+        for idx in range(self.Config.MATRIX_HEIGHT // 2, self.Config.MATRIX_HEIGHT + 1):
             pygame.draw.line(self.four_surface, grid_colour,
-                             (matrix_surface_rect.x, matrix_surface_rect.y + idx * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + self.config.MATRIX_WIDTH * self.config.GRID_SIZE, matrix_surface_rect.y + idx * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT)
+                             (matrix_surface_rect.x, matrix_surface_rect.y + idx * self.Config.GRID_SIZE - self.Config.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + self.Config.MATRIX_WIDTH * self.Config.GRID_SIZE, matrix_surface_rect.y + idx * self.Config.GRID_SIZE - self.Config.MATRIX_SURFACE_HEIGHT)
                              )
             
-        for idx in range(self.config.MATRIX_WIDTH + 1):
+        for idx in range(self.Config.MATRIX_WIDTH + 1):
             pygame.draw.line(self.four_surface, grid_colour,
-                             (matrix_surface_rect.x + idx * self.config.GRID_SIZE, matrix_surface_rect.y + self.config.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + idx * self.config.GRID_SIZE, matrix_surface_rect.y + self.config.MATRIX_HEIGHT // 2 * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT)
+                             (matrix_surface_rect.x + idx * self.Config.GRID_SIZE, matrix_surface_rect.y + self.Config.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + idx * self.Config.GRID_SIZE, matrix_surface_rect.y + self.Config.MATRIX_HEIGHT // 2 * self.Config.GRID_SIZE - self.Config.MATRIX_SURFACE_HEIGHT)
                              )
             
-    def __draw_blocks(self, matrix:Matrix, matrix_surface_rect:pygame.Rect, transparent:bool, alpha:float, blend_colour:tuple = (0, 0, 0), draw_rim:bool = True):
+    def __draw_blocks(self, matrix:Matrix, matrix_surface_rect:pygame.Rect, transparent:bool, alpha:float, blend_colour:tuple = (0, 0, 0)):
         """
         Draw the blocks in the matrix
         
@@ -132,14 +107,14 @@ class Render():
         for i, row in enumerate(matrix):
             for j, value in enumerate(row):
                 if value != 0:
-                    if self.game_over:
-                        colour = self.config.COLOUR_MAP[8]
+                    if self.FlagStruct.FLAGS[FLAG.GAME_OVER]:
+                        colour = self.Config.COLOUR_MAP[8]
                     else:
-                        colour = self.config.COLOUR_MAP[value]
+                        colour = self.Config.COLOUR_MAP[value]
                     if transparent:
                         colour = lerpBlendRGBA(blend_colour, colour, alpha)
                     pygame.draw.rect(self.four_surface, colour, 
-                                     (matrix_surface_rect.x + j * self.config.GRID_SIZE, matrix_surface_rect.y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT, self.config.GRID_SIZE, self.config.GRID_SIZE)
+                                     (matrix_surface_rect.x + j * self.Config.GRID_SIZE, matrix_surface_rect.y + i * self.Config.GRID_SIZE - self.Config.MATRIX_SURFACE_HEIGHT, self.Config.GRID_SIZE, self.Config.GRID_SIZE)
                                      )
 
     def __draw_matrix_border(self):
@@ -149,104 +124,101 @@ class Render():
         # ====== MATRIX ======
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # matrix left border
-                 (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y), 
-                 (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1, self.config.MATRIX_SCREEN_CENTER_Y + self.config.MATRIX_SURFACE_HEIGHT - 1), 
-                 self.config.BORDER_WIDTH)
+                 (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.BORDER_WIDTH // 2 - 1, self.Config.MATRIX_SCREEN_CENTER_Y), 
+                 (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.BORDER_WIDTH // 2 - 1, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.MATRIX_SURFACE_HEIGHT - 1), 
+                 self.Config.BORDER_WIDTH)
 
         pygame.draw.line(self.four_surface, self.__get_border_colour(),   # matrix right border
-                        (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH // 2, self.config.MATRIX_SCREEN_CENTER_Y), 
-                        (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH // 2, self.config.MATRIX_SCREEN_CENTER_Y + self.config.MATRIX_SURFACE_HEIGHT - 1), 
-                        self.config.BORDER_WIDTH)
+                        (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH // 2, self.Config.MATRIX_SCREEN_CENTER_Y), 
+                        (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH // 2, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.MATRIX_SURFACE_HEIGHT - 1), 
+                        self.Config.BORDER_WIDTH)
 
         pygame.draw.line(self.four_surface, self.__get_border_colour(),  # matrix bottom border
-                        (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH - self.config.GRID_SIZE, self.config.MATRIX_SCREEN_CENTER_Y + self.config.MATRIX_SURFACE_HEIGHT + self.config.BORDER_WIDTH // 2 - 1), 
-                        (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH - 1, self.config.MATRIX_SCREEN_CENTER_Y + self.config.MATRIX_SURFACE_HEIGHT + self.config.BORDER_WIDTH // 2 - 1), 
-                        self.config.BORDER_WIDTH)
+                        (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.BORDER_WIDTH - self.Config.GRID_SIZE, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.MATRIX_SURFACE_HEIGHT + self.Config.BORDER_WIDTH // 2 - 1), 
+                        (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH - 1, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.MATRIX_SURFACE_HEIGHT + self.Config.BORDER_WIDTH // 2 - 1), 
+                        self.Config.BORDER_WIDTH)
 
         # ====== GARBAGE =======
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # left garbage border
-                        (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1 - self.config.GRID_SIZE, self.config.MATRIX_SCREEN_CENTER_Y), 
-                        (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH // 2 - 1 - self.config.GRID_SIZE, self.config.MATRIX_SCREEN_CENTER_Y + self.config.MATRIX_SURFACE_HEIGHT - 1), 
-                        self.config.BORDER_WIDTH)
+                        (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.BORDER_WIDTH // 2 - 1 - self.Config.GRID_SIZE, self.Config.MATRIX_SCREEN_CENTER_Y), 
+                        (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.BORDER_WIDTH // 2 - 1 - self.Config.GRID_SIZE, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.MATRIX_SURFACE_HEIGHT - 1), 
+                        self.Config.BORDER_WIDTH)
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(),  
-                        (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH - self.config.GRID_SIZE, self.config.MATRIX_SCREEN_CENTER_Y + self.config.MATRIX_SURFACE_HEIGHT - self.config.GRID_SIZE * 8 + self.config.BORDER_WIDTH // 2 - 1) , 
-                        (self.config.MATRIX_SCREEN_CENTER_X - self.config.BORDER_WIDTH , self.config.MATRIX_SCREEN_CENTER_Y + self.config.MATRIX_SURFACE_HEIGHT - self.config.GRID_SIZE * 8 + self.config.BORDER_WIDTH // 2 - 1), 
-                        self.config.BORDER_WIDTH)
+                        (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.BORDER_WIDTH - self.Config.GRID_SIZE, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.MATRIX_SURFACE_HEIGHT - self.Config.GRID_SIZE * 8 + self.Config.BORDER_WIDTH // 2 - 1) , 
+                        (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.BORDER_WIDTH , self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.MATRIX_SURFACE_HEIGHT - self.Config.GRID_SIZE * 8 + self.Config.BORDER_WIDTH // 2 - 1), 
+                        self.Config.BORDER_WIDTH)
         
     def __draw_queue_border(self):
         
-        match self.config.QUEUE_LENGTH:
+        match self.Config.QUEUE_LENGTH:
             case 1:
-                queue_size = self.config.GRID_SIZE * 4.5
+                queue_size = self.Config.GRID_SIZE * 4.5
             case 2: 
-                queue_size = self.config.GRID_SIZE * 7.5
+                queue_size = self.Config.GRID_SIZE * 7.5
             case 3:
-                queue_size = self.config.GRID_SIZE * 10.5
+                queue_size = self.Config.GRID_SIZE * 10.5
             case 4:
-                queue_size = self.config.GRID_SIZE * 13.5
+                queue_size = self.Config.GRID_SIZE * 13.5
             case 5:
-                queue_size = self.config.GRID_SIZE * 16.5
+                queue_size = self.Config.GRID_SIZE * 16.5
             case 6:
-                queue_size = self.config.GRID_SIZE * 19.5
+                queue_size = self.Config.GRID_SIZE * 19.5
             case _:
-                queue_size = self.config.GRID_SIZE * 19.5
+                queue_size = self.Config.GRID_SIZE * 19.5
       
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue left border
-                        (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + 6 * self.config.GRID_SIZE + self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE // 2 - 1),
-                        (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + 6 * self.config.GRID_SIZE + self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + queue_size - self.config.GRID_SIZE // 2 - 1),
-                        self.config.BORDER_WIDTH)
+                        (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + 6 * self.Config.GRID_SIZE + self.Config.BORDER_WIDTH, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE // 2 - 1),
+                        (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + 6 * self.Config.GRID_SIZE + self.Config.BORDER_WIDTH, self.Config.MATRIX_SCREEN_CENTER_Y + queue_size - self.Config.GRID_SIZE // 2 - 1),
+                        self.Config.BORDER_WIDTH)
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue bottom border
-                (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH + 6 * self.config.GRID_SIZE  + self.config.BORDER_WIDTH // 2, self.config.MATRIX_SCREEN_CENTER_Y + queue_size - self.config.GRID_SIZE // 2 - 1),
-                (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH // 2, self.config.MATRIX_SCREEN_CENTER_Y + queue_size - self.config.GRID_SIZE // 2 - 1),
-                self.config.BORDER_WIDTH)
+                (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH + 6 * self.Config.GRID_SIZE  + self.Config.BORDER_WIDTH // 2, self.Config.MATRIX_SCREEN_CENTER_Y + queue_size - self.Config.GRID_SIZE // 2 - 1),
+                (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH // 2, self.Config.MATRIX_SCREEN_CENTER_Y + queue_size - self.Config.GRID_SIZE // 2 - 1),
+                self.Config.BORDER_WIDTH)
 
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # queue top border
-                        (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH + 6 * self.config.GRID_SIZE  + self.config.BORDER_WIDTH // 2, self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE // 2 - 1),
-                        (self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH // 2, self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE // 2 - 1),
-                        self.config.GRID_SIZE)
+                        (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH + 6 * self.Config.GRID_SIZE  + self.Config.BORDER_WIDTH // 2, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE // 2 - 1),
+                        (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH // 2, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE // 2 - 1),
+                        self.Config.GRID_SIZE)
     
         text_surface = self.hun2_big.render('NEXT', True, (0, 0, 0))
-        self.RenderStruct.surfaces.append((text_surface, (self.config.MATRIX_SCREEN_CENTER_X + self.config.GRID_SIZE * 10 + self.config.BORDER_WIDTH , self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE * 0.15))) 
+        self.RenderStruct.surfaces.append((text_surface, (self.Config.MATRIX_SCREEN_CENTER_X + self.Config.GRID_SIZE * 10 + self.Config.BORDER_WIDTH , self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE * 0.15))) 
         
     def __draw_hold_border(self):
         
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # hold left border
-                        (self.config.MATRIX_SCREEN_CENTER_X - 7 * self.config.GRID_SIZE - self.config.BORDER_WIDTH //2 - 1, self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE // 2 - 1),
-                        (self.config.MATRIX_SCREEN_CENTER_X - 7 * self.config.GRID_SIZE - self.config.BORDER_WIDTH //2 - 1, self.config.MATRIX_SCREEN_CENTER_Y + 4 * self.config.GRID_SIZE),
-                        self.config.BORDER_WIDTH)
+                        (self.Config.MATRIX_SCREEN_CENTER_X - 7 * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH //2 - 1, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE // 2 - 1),
+                        (self.Config.MATRIX_SCREEN_CENTER_X - 7 * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH //2 - 1, self.Config.MATRIX_SCREEN_CENTER_Y + 4 * self.Config.GRID_SIZE),
+                        self.Config.BORDER_WIDTH)
 
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # hold bottom border
-                        (self.config.MATRIX_SCREEN_CENTER_X - 7 * self.config.GRID_SIZE - self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + 4 * self.config.GRID_SIZE),
-                        (self.config.MATRIX_SCREEN_CENTER_X - self.config.GRID_SIZE - self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + 4 * self.config.GRID_SIZE),
-                        self.config.BORDER_WIDTH)
+                        (self.Config.MATRIX_SCREEN_CENTER_X - 7 * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH, self.Config.MATRIX_SCREEN_CENTER_Y + 4 * self.Config.GRID_SIZE),
+                        (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.GRID_SIZE - self.Config.BORDER_WIDTH, self.Config.MATRIX_SCREEN_CENTER_Y + 4 * self.Config.GRID_SIZE),
+                        self.Config.BORDER_WIDTH)
 
         pygame.draw.line(self.four_surface, self.__get_border_colour(), # hold top border
-            (self.config.MATRIX_SCREEN_CENTER_X - 7 * self.config.GRID_SIZE - self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE // 2 - 1),
-            (self.config.MATRIX_SCREEN_CENTER_X - self.config.GRID_SIZE - self.config.BORDER_WIDTH, self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE // 2 - 1),
-            self.config.GRID_SIZE)
+            (self.Config.MATRIX_SCREEN_CENTER_X - 7 * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE // 2 - 1),
+            (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.GRID_SIZE - self.Config.BORDER_WIDTH, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE // 2 - 1),
+            self.Config.GRID_SIZE)
         
             
         text_surface = self.hun2_big.render('HOLD', True, (0, 0, 0))
-        self.RenderStruct.surfaces.append((text_surface, (self.config.MATRIX_SCREEN_CENTER_X - self.config.GRID_SIZE * 7, self.config.MATRIX_SCREEN_CENTER_Y + self.config.GRID_SIZE * 0.15)))
+        self.RenderStruct.surfaces.append((text_surface, (self.Config.MATRIX_SCREEN_CENTER_X - self.Config.GRID_SIZE * 7, self.Config.MATRIX_SCREEN_CENTER_Y + self.Config.GRID_SIZE * 0.15)))
         
-    def draw_danger_crosses(self, matrix: Matrix):
+    def draw_danger_crosses(self):
         """
         Draw crosses on the danger matrix
-        
-        args:
-            matrix (Matrix): the matrix to draw the crosses on
         """
-        offset = self.config.GRID_SIZE // 5
-        for i, row in enumerate(matrix):
+        offset = self.Config.GRID_SIZE // 5
+        for i, row in enumerate(self.GameInstanceStruct.matrix.danger):
             for j, value in enumerate(row):
                 if value == -1:
-                    start_x = self.config.MATRIX_SCREEN_CENTER_X + j * self.config.GRID_SIZE + offset
-                    start_y = self.config.MATRIX_SCREEN_CENTER_Y + i * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT + offset
-                    end_x = self.config.MATRIX_SCREEN_CENTER_X + (j + 1) * self.config.GRID_SIZE - offset
-                    end_y = self.config.MATRIX_SCREEN_CENTER_Y + (i + 1) * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT - offset
+                    start_x = self.Config.MATRIX_SCREEN_CENTER_X + j * self.Config.GRID_SIZE + offset
+                    start_y = self.Config.MATRIX_SCREEN_CENTER_Y + i * self.Config.GRID_SIZE - self.Config.MATRIX_SURFACE_HEIGHT + offset
+                    end_x = self.Config.MATRIX_SCREEN_CENTER_X + (j + 1) * self.Config.GRID_SIZE - offset
+                    end_y = self.Config.MATRIX_SCREEN_CENTER_Y + (i + 1) * self.Config.GRID_SIZE - self.Config.MATRIX_SURFACE_HEIGHT - offset
                     
                     pygame.draw.line(self.four_surface, (255, 0, 0), 
                                     (start_x, start_y), 
@@ -261,70 +233,67 @@ class Render():
         """
         Get the colour of the border
         """
-        if self.danger:
+        if self.FlagStruct.FLAGS[FLAG.DANGER]:
             return (255, 0, 0)
         else:
             return (255, 255, 255)
                           
-    def __render_matrix(self, four):
+    def __render_matrix(self):
         """
         Render the matrix onto the window
         
         args:
             four (Four): the Four instance to render
         """
-        matrix_surface_rect = pygame.Rect(self.config.MATRIX_SCREEN_CENTER_X, self.config.MATRIX_SCREEN_CENTER_Y, self.config.MATRIX_SURFACE_WIDTH, self.config.MATRIX_SURFACE_HEIGHT)
+        matrix_surface_rect = pygame.Rect(self.Config.MATRIX_SCREEN_CENTER_X, self.Config.MATRIX_SCREEN_CENTER_Y, self.Config.MATRIX_SURFACE_WIDTH, self.Config.MATRIX_SURFACE_HEIGHT)
         
-        self.__draw_blocks(four.matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33, blend_colour=(0, 0, 0), draw_rim = False)
+        self.__draw_blocks(self.GameInstanceStruct.matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33, blend_colour=(0, 0, 0))
         self.__draw_grid(matrix_surface_rect)
-        self.__draw_blocks(four.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0), draw_rim = True)
-        self.__draw_blocks(four.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255), draw_rim = True)
+        self.__draw_blocks(self.GameInstanceStruct.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0))
+        self.__draw_blocks(self.GameInstanceStruct.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255))
         
-        if self.danger:
-            self.draw_danger_crosses(four.matrix.danger)
+        if self.FlagStruct.FLAGS[FLAG.DANGER]:
+            self.draw_danger_crosses()
         
-        if four.current_tetromino is not None:
-            if self.DebugStruct.draw_origin:
-                self.__draw_tetromino_position(four)
+        if self.GameInstanceStruct.current_tetromino is not None:
+            if self.RenderStruct.draw_origin:
+                self.__draw_tetromino_position()
             
-            if self.DebugStruct.draw_bounding_box:
-                self.__draw_tetromino_bounding_box(four)
+            if self.RenderStruct.draw_bounding_box:
+                self.__draw_tetromino_bounding_box()
             
-            if self.DebugStruct.draw_pivot:
-                self.__draw_pivot_position(four)
+            if self.RenderStruct.draw_pivot:
+                self.__draw_pivot_position()
         
         self.__draw_matrix_border() 
        
-    def __render_queue(self, four):
+    def __render_queue(self):
         """
         Render the queue onto the window
         
         args:
             four (Four): the Four instance to render
         """
-        queue_rect = self.__queue_rect(four.queue.length)
+        queue_rect = self.__queue_rect()
         pygame.draw.rect(self.four_surface, (0, 0, 0), queue_rect)
-        for idx, tetromino in enumerate(four.queue.queue):
+        for idx, tetromino in enumerate(self.GameInstanceStruct.queue.queue):
             
             # split queue_rect into four.queue.length number of rows
-            row_height = queue_rect.height // four.queue.length
+            row_height = queue_rect.height // self.GameInstanceStruct.queue.length
             row_y = queue_rect.y + idx * row_height
             
             preview_rect = pygame.Rect(queue_rect.x, row_y, queue_rect.width, row_height)
             self.__render_tetromino_preview(tetromino, preview_rect)
             self.__draw_queue_border()
        
-    def __queue_rect(self, queue_length):
+    def __queue_rect(self):
         """
         Get the rectangle for the queue
-        
-        args:
-            queue_length (int): the length of the queue
         """
-        rect_x = self.config.MATRIX_SCREEN_CENTER_X + self.config.MATRIX_SURFACE_WIDTH + self.config.BORDER_WIDTH
-        rect_y =  self.config.MATRIX_SCREEN_CENTER_Y + 1 * self.config.GRID_SIZE
-        rect_width = 6 * self.config.GRID_SIZE
-        rect_height = 3 * queue_length * self.config.GRID_SIZE - self.config.BORDER_WIDTH // 2
+        rect_x = self.Config.MATRIX_SCREEN_CENTER_X + self.Config.MATRIX_SURFACE_WIDTH + self.Config.BORDER_WIDTH
+        rect_y =  self.Config.MATRIX_SCREEN_CENTER_Y + 1 * self.Config.GRID_SIZE
+        rect_width = 6 * self.Config.GRID_SIZE
+        rect_height = 3 * self.GameInstanceStruct.queue.length * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH // 2
     
         return pygame.Rect(rect_x, rect_y, rect_width, rect_height)	
         
@@ -332,21 +301,21 @@ class Render():
         """
         Get the rectangle for the hold
         """
-        rect_x = self.config.MATRIX_SCREEN_CENTER_X - 7 * self.config.GRID_SIZE
-        rect_y =  self.config.MATRIX_SCREEN_CENTER_Y + 1 * self.config.GRID_SIZE
-        rect_width = 6 * self.config.GRID_SIZE - self.config.BORDER_WIDTH
-        rect_height = 3 * self.config.GRID_SIZE - self.config.BORDER_WIDTH // 2
+        rect_x = self.Config.MATRIX_SCREEN_CENTER_X - 7 * self.Config.GRID_SIZE
+        rect_y =  self.Config.MATRIX_SCREEN_CENTER_Y + 1 * self.Config.GRID_SIZE
+        rect_width = 6 * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH
+        rect_height = 3 * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH // 2
     
         return pygame.Rect(rect_x, rect_y, rect_width, rect_height)
     
-    def __render_hold(self, four):
+    def __render_hold(self):
         """
         Render the hold onto the window
         
         args:
             four (Four): the Four instance
         """
-        tetromino = four.held_tetromino    
+        tetromino = self.GameInstanceStruct.held_tetromino    
         hold_rect = self.__hold_rect()
         pygame.draw.rect(self.four_surface, (0, 0, 0), hold_rect)
         if tetromino is not None:
@@ -361,9 +330,11 @@ class Render():
             tetromino (list): the type of tetromino to render
             rect (pygame.Rect): the rectangle to draw the tetromino in
         """
-        tetromino = tetromino_previews(tetromino)
-        tetromino_height = len(tetromino) * self.config.GRID_SIZE
-        tetromino_width = len(tetromino[0]) * self.config.GRID_SIZE
+        tetromino = get_tetromino_blocks(tetromino)
+        tetromino = [row for row in tetromino if any(cell != 0 for cell in row)] # remove rows with only 0 values in from tetromino
+        
+        tetromino_height = len(tetromino) * self.Config.GRID_SIZE
+        tetromino_width = len(tetromino[0]) * self.Config.GRID_SIZE
 
         offset_x = (rect.width - tetromino_width) // 2
         offset_y = (rect.height - tetromino_height) // 2
@@ -371,9 +342,9 @@ class Render():
         for i, row in enumerate(tetromino):
             for j, value in enumerate(row):
                 if value != 0:
-                    colour = self.config.COLOUR_MAP[value]
+                    colour = self.Config.COLOUR_MAP[value]
                     pygame.draw.rect(self.four_surface, colour, 
-                                    (rect.x + offset_x + j * self.config.GRID_SIZE, rect.y + offset_y + i * self.config.GRID_SIZE, self.config.GRID_SIZE, self.config.GRID_SIZE)
+                                    (rect.x + offset_x + j * self.Config.GRID_SIZE, rect.y + offset_y + i * self.Config.GRID_SIZE, self.Config.GRID_SIZE, self.Config.GRID_SIZE)
                                     )
     
     def __draw_debug(self, debug_dict):
@@ -385,64 +356,64 @@ class Render():
         """
         debug_surfaces = []
 
-        if debug_dict['FPS'] < self.config.FPS * 0.95:
+        if debug_dict['FPS'] < self.Config.FPS * 0.95:
             fps_colour = (255, 255, 0)
-        elif debug_dict['FPS'] < self.config.FPS * 0.5:
+        elif debug_dict['FPS'] < self.Config.FPS * 0.5:
             fps_colour = (255, 0, 0)
-        elif self.config.UNCAPPED_FPS:
+        elif self.Config.UNCAPPED_FPS:
             fps_colour = (0, 255, 255)
         else:
             fps_colour = (0, 255, 0)
 
         # FPS debug information
         fps_text = f'FPS: {int(debug_dict["FPS"])}'
-        if self.config.UNCAPPED_FPS:
+        if self.Config.UNCAPPED_FPS:
             fps_text += ' (UNCAPPED)'
-        debug_surfaces.append((self.hun2_big.render(fps_text, True, fps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE // 2)))
+        debug_surfaces.append((self.hun2_big.render(fps_text, True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE // 2)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_FPS"])} | best: {int(debug_dict["BEST_FPS"])} | current: {int(debug_dict["FPS_RAW"])}', True, fps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 1.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_FPS"])} | best: {int(debug_dict["BEST_FPS"])} | current: {int(debug_dict["FPS_RAW"])}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 1.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'Render Time: {get_prefix(debug_dict["REN_T"], "s")}', True, fps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 2)))
+        debug_surfaces.append((self.hun2_small.render(f'Render Time: {get_prefix(debug_dict["REN_T"], "s")}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 2)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_REN_T"], "s")} | best: {get_prefix(debug_dict["BEST_REN_T"], "s")} | current: {get_prefix(debug_dict["REN_T_RAW"], "s")}', True, fps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 2.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_REN_T"], "s")} | best: {get_prefix(debug_dict["BEST_REN_T"], "s")} | current: {get_prefix(debug_dict["REN_T_RAW"], "s")}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 2.5)))
 
         if debug_dict['DF_RAW'] is None:
             debug_dict['DF_RAW'] = 0
 
-        if debug_dict['TPS'] < self.config.TPS * 0.95:
+        if debug_dict['TPS'] < self.Config.TPS * 0.95:
             tps_colour = (255, 0, 0)
         else:
             tps_colour = (0, 255, 0)
 
         # TPS debug information
-        debug_surfaces.append((self.hun2_big.render(f'TPS: {int(debug_dict["TPS"])}', True, tps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 3.5)))
+        debug_surfaces.append((self.hun2_big.render(f'TPS: {int(debug_dict["TPS"])}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 3.5)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_TPS"])} | best: {int(debug_dict["BEST_TPS"])} | current: {int(debug_dict["TPS_RAW"])}', True, tps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 4.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_TPS"])} | best: {int(debug_dict["BEST_TPS"])} | current: {int(debug_dict["TPS_RAW"])}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 4.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'Execution Time: {get_prefix(debug_dict["SIM_T"], "s")}', True, tps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 5)))
+        debug_surfaces.append((self.hun2_small.render(f'Execution Time: {get_prefix(debug_dict["SIM_T"], "s")}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 5)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_SIM_T"], "s")} | best: {get_prefix(debug_dict["BEST_SIM_T"], "s")} | current: {get_prefix(debug_dict["SIM_T_RAW"], "s")}', True, tps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 5.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_SIM_T"], "s")} | best: {get_prefix(debug_dict["BEST_SIM_T"], "s")} | current: {get_prefix(debug_dict["SIM_T_RAW"], "s")}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 5.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'df: {debug_dict["DF"]:.2f}', True, tps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 6)))
+        debug_surfaces.append((self.hun2_small.render(f'df: {debug_dict["DF"]:.2f}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 6)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {debug_dict["WORST_DF"]} | best: {debug_dict["BEST_DF"]} | current: {int(debug_dict["DF_RAW"])}', True, tps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 6.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {debug_dict["WORST_DF"]} | best: {debug_dict["BEST_DF"]} | current: {int(debug_dict["DF_RAW"])}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 6.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'Tick: {debug_dict["TICKCOUNT"]}', True, tps_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 7)))
+        debug_surfaces.append((self.hun2_small.render(f'Tick: {debug_dict["TICKCOUNT"]}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 7)))
         
         # handling debug information
         
-        if debug_dict['POLLING_RATE'] < self.config.POLLING_RATE * 0.95:
+        if debug_dict['POLLING_RATE'] < self.Config.POLLING_RATE * 0.95:
             poll_colour = (255, 0, 0)
         else:
             poll_colour = (0, 255, 0)
         
-        debug_surfaces.append((self.hun2_big.render(f'POLL: {int(debug_dict["POLLING_RATE"])}', True, poll_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 8)))
+        debug_surfaces.append((self.hun2_big.render(f'POLL: {int(debug_dict["POLLING_RATE"])}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 8)))
         
-        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_POLLING_RATE"])} | best: {int(debug_dict["BEST_POLLING_RATE"])} | current: {int(debug_dict["POLLING_RATE_RAW"])}', True, poll_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 9)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_POLLING_RATE"])} | best: {int(debug_dict["BEST_POLLING_RATE"])} | current: {int(debug_dict["POLLING_RATE_RAW"])}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 9)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Polling Time: {get_prefix(debug_dict["POLLING_T"], "s")}', True, poll_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 9.5)))
+        debug_surfaces.append((self.hun2_small.render(f'Polling Time: {get_prefix(debug_dict["POLLING_T"], "s")}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 9.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, poll_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 10)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 10)))
 
 
         if debug_dict['DAS_COUNTER'] < debug_dict['DAS']:
@@ -450,29 +421,27 @@ class Render():
         else:
             das_colour = (0, 255, 0)
 
-        debug_surfaces.append((self.hun2_big.render(f'DAS: {int(debug_dict["DAS_COUNTER"])} ms', True, das_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 11)))
+        debug_surfaces.append((self.hun2_big.render(f'DAS: {int(debug_dict["DAS_COUNTER"])} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 11)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["DAS"]} ms', True, das_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 12)))
+        debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["DAS"]} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12)))
         
-        debug_surfaces.append((self.pfw_small.render(f'DCD: {debug_dict["DCD"]} | DAS Cancel: {debug_dict["DAS_CANCEL"]}', True, das_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 12.5)))
+        debug_surfaces.append((self.pfw_small.render(f'DCD: {debug_dict["DCD"]} | DAS Cancel: {debug_dict["DAS_CANCEL"]}', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12.5)))
         
         if debug_dict['ARR_COUNTER'] < debug_dict['ARR']:
             arr_colour = (255, 255, 255)
         else:
             arr_colour = (0, 255, 0)
         
-        debug_surfaces.append((self.hun2_big.render(f'ARR: {int(debug_dict["ARR_COUNTER"])} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 13.5)))
+        debug_surfaces.append((self.hun2_big.render(f'ARR: {int(debug_dict["ARR_COUNTER"])} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 13.5)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 14.5)))
+        debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 14.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]} | On Floor: {self.on_floor}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 15.5)))
+        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]} | On Floor: {debug_dict["ON_FLOOR"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 15.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'Gravity: {self.gravity:.2f} G ({self.G_units_in_ticks} ticks) | Multi: {self.soft_drop_factor} | Counter: {self.gravity_counter}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16)))
+        debug_surfaces.append((self.pfw_small.render(f'Gravity: {debug_dict["GRAVITY"]:.2f} G ({debug_dict["G_IN_TICKS"]} ticks) | Multi: {debug_dict["G_MULTI"]} | Counter: {debug_dict["GRAV_COUNTER"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16)))
     
-        debug_surfaces.append((self.pfw_small.render(f'Lock Delay: {self.lock_delay} ({int(self.lock_delay_in_ticks)} ticks) | Resets Left: {self.max_moves_before_lock} | Counter: {self.lock_delay_counter}', True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 16.5)))
-        
-        debug_surfaces.append((self.pfw_small.render(f"Draw Origin: {self.DebugStruct.draw_origin} | Draw Bounding Box: {self.DebugStruct.draw_bounding_box} | Draw Pivot: {self.DebugStruct.draw_pivot}", True, (255, 255, 255)), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 17.5)))
-        
+        debug_surfaces.append((self.pfw_small.render(f'Lock Delay: {debug_dict["LOCK_DELAY"]} ({debug_dict["LOCK_DELAY_TICKS"]} ticks) | Resets Left: {debug_dict["MAX_MOVES"]} | Counter: {debug_dict["LOCK_DELAY_COUNTER"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16.5)))
+               
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)
 
@@ -494,56 +463,56 @@ class Render():
         harddrop_colour = (255, 255, 255)   if key_dict['KEY_HARD_DROP']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
         hold_colour = (255, 255, 255)       if key_dict['KEY_HOLD']               else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
         
-        key_surfaces.append((self.action_ui.render('B', True, left_colour), (self.config.GRID_SIZE // 2, self.config.GRID_SIZE * 26.5)))
+        key_surfaces.append((self.action_ui.render('B', True, left_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 26.5)))
 
-        key_surfaces.append((self.action_ui.render('A', True, right_colour), (self.config.GRID_SIZE *2 , self.config.GRID_SIZE * 26.5)))
+        key_surfaces.append((self.action_ui.render('A', True, right_colour), (self.Config.GRID_SIZE *2 , self.Config.GRID_SIZE * 26.5)))
 
-        key_surfaces.append((self.action_ui.render('C', True, softdrop_colour), (self.config.GRID_SIZE * 3.5, self.config.GRID_SIZE * 26.5)))
+        key_surfaces.append((self.action_ui.render('C', True, softdrop_colour), (self.Config.GRID_SIZE * 3.5, self.Config.GRID_SIZE * 26.5)))
 
-        key_surfaces.append((self.action_ui.render('G', True, harddrop_colour), (self.config.GRID_SIZE * 5, self.config.GRID_SIZE * 26.5)))
+        key_surfaces.append((self.action_ui.render('G', True, harddrop_colour), (self.Config.GRID_SIZE * 5, self.Config.GRID_SIZE * 26.5)))
 
-        key_surfaces.append((self.action_ui.render('E', True, ccw_colour), (self.config.GRID_SIZE * 6.5, self.config.GRID_SIZE * 26.5)))
+        key_surfaces.append((self.action_ui.render('E', True, ccw_colour), (self.Config.GRID_SIZE * 6.5, self.Config.GRID_SIZE * 26.5)))
 
-        key_surfaces.append((self.action_ui.render('D', True, cw_colour), (self.config.GRID_SIZE * 8, self.config.GRID_SIZE * 26.5)))
+        key_surfaces.append((self.action_ui.render('D', True, cw_colour), (self.Config.GRID_SIZE * 8, self.Config.GRID_SIZE * 26.5)))
 
-        key_surfaces.append((self.action_ui.render('F', True, colour_180), (self.config.GRID_SIZE * 9.5, self.config.GRID_SIZE * 26.5)))
+        key_surfaces.append((self.action_ui.render('F', True, colour_180), (self.Config.GRID_SIZE * 9.5, self.Config.GRID_SIZE * 26.5)))
 
-        key_surfaces.append((self.action_ui.render('H', True, hold_colour), (self.config.GRID_SIZE * 11, self.config.GRID_SIZE * 26.5))) 
+        key_surfaces.append((self.action_ui.render('H', True, hold_colour), (self.Config.GRID_SIZE * 11, self.Config.GRID_SIZE * 26.5))) 
         
         for surface, coords in key_surfaces:
             self.window.blit(surface, coords)
     
-    def __draw_pivot_position(self, four):
+    def __draw_pivot_position(self):
         
-        loc = four.current_tetromino.position + four.current_tetromino.pivot
+        loc = self.GameInstanceStruct.current_tetromino.position + self.GameInstanceStruct.current_tetromino.pivot
         
-        x = self.config.MATRIX_SCREEN_CENTER_X + loc.x * self.config.GRID_SIZE 
-        y = self.config.MATRIX_SCREEN_CENTER_Y + loc.y * self.config.GRID_SIZE - (self.config.MATRIX_HEIGHT * self.config.GRID_SIZE)//2
+        x = self.Config.MATRIX_SCREEN_CENTER_X + loc.x * self.Config.GRID_SIZE 
+        y = self.Config.MATRIX_SCREEN_CENTER_Y + loc.y * self.Config.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.Config.GRID_SIZE)//2
 
-        length = self.config.GRID_SIZE // 4
+        length = self.Config.GRID_SIZE // 4
 
         pygame.draw.line(self.four_surface, (255, 255, 255), (x - length, y), (x + length, y), 2)
         pygame.draw.line(self.four_surface, (255, 255, 255), (x, y - length), (x, y + length), 2)
         
-    def __draw_tetromino_bounding_box(self, four):
+    def __draw_tetromino_bounding_box(self):
   
-        blocks = four.current_tetromino.blocks 
+        blocks = self.GameInstanceStruct.current_tetromino.blocks 
       
-        width = len(blocks[0]) * self.config.GRID_SIZE
-        height = len(blocks) * self.config.GRID_SIZE
+        width = len(blocks[0]) * self.Config.GRID_SIZE
+        height = len(blocks) * self.Config.GRID_SIZE
         
-        x = self.config.MATRIX_SCREEN_CENTER_X + four.current_tetromino.position.x * self.config.GRID_SIZE
-        y = self.config.MATRIX_SCREEN_CENTER_Y + four.current_tetromino.position.y * self.config.GRID_SIZE - self.config.MATRIX_SURFACE_HEIGHT
+        x = self.Config.MATRIX_SCREEN_CENTER_X + self.GameInstanceStruct.current_tetromino.position.x * self.Config.GRID_SIZE
+        y = self.Config.MATRIX_SCREEN_CENTER_Y + self.GameInstanceStruct.current_tetromino.position.y * self.Config.GRID_SIZE - self.Config.MATRIX_SURFACE_HEIGHT
         
         pygame.draw.rect(self.four_surface, (255, 0, 0), (x, y, width, height), 2)
         
-    def __draw_tetromino_position(self, four):
-        loc = four.current_tetromino.position
+    def __draw_tetromino_position(self):
+        loc = self.GameInstanceStruct.current_tetromino.position
         
-        x = self.config.MATRIX_SCREEN_CENTER_X + loc.x * self.config.GRID_SIZE
-        y = self.config.MATRIX_SCREEN_CENTER_Y + loc.y * self.config.GRID_SIZE - (self.config.MATRIX_HEIGHT * self.config.GRID_SIZE)//2 
+        x = self.Config.MATRIX_SCREEN_CENTER_X + loc.x * self.Config.GRID_SIZE
+        y = self.Config.MATRIX_SCREEN_CENTER_Y + loc.y * self.Config.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.Config.GRID_SIZE)//2 
         
-        length = self.config.GRID_SIZE // 4
+        length = self.Config.GRID_SIZE // 4
 
         pygame.draw.line(self.four_surface, (255, 0, 0), (x - length, y), (x + length, y), 2)
         pygame.draw.line(self.four_surface, (255, 0, 0), (x, y - length), (x, y + length), 2)
