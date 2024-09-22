@@ -323,18 +323,20 @@ class Four():
         """
         Automatically lock the current tetromino
         """
-        # convert from frames in 1/60th of a second to ticks 1/self.config.TPS of a second
-        self.core_instance.GameInstanceStruct.lock_delay_in_ticks = self.core_instance.GameInstanceStruct.lock_delay/60 * self.core_instance.Config.TPS
-        
         if self.core_instance.GameInstanceStruct.current_tetromino is None:
             return
         
-        if self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor() and self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter >= self.core_instance.GameInstanceStruct.lock_delay_in_ticks:
-            self.__lock()
-            
-        elif not self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor(): # reset the lock delay counter if the piece is not on the floor
-            self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter = 0
+        if self.core_instance.GameInstanceStruct.lock_delay == 'inf':
+            self.core_instance.GameInstanceStruct.lock_delay_in_ticks = 'inf'
+        else:
+            self.core_instance.GameInstanceStruct.lock_delay_in_ticks = self.core_instance.GameInstanceStruct.lock_delay/60 * self.core_instance.Config.TPS # convert from frames in 1/60th of a second to ticks in 1/self.config.TPS of a second
         
+            if self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor() and self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter >= self.core_instance.GameInstanceStruct.lock_delay_in_ticks:
+                self.__lock()
+            
+        if self.core_instance.GameInstanceStruct.current_tetromino is not None and not self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor(): # reset the lock delay counter if the piece is not on the floor
+            self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter = 0
+  
 class Queue():
     def __init__(self, rng, length = 5):
         """
