@@ -10,8 +10,6 @@ from instance.four import Four
 # - The move resets are replenished if the piece falls below its lowest position (given by the y coord of the center of rotation of the piece)
 # - Each ARR move counts as a reset (this is a bit weird when using 0 ARR but makes sense)
 
-# - Implement Flag system to simplify passing around information about the game state cause its getting a bit messy
-
 # - Implement Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames
 
 #  === game logic ===
