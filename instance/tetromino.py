@@ -110,15 +110,16 @@ class Tetromino():
                 vector = Vec2(0, 0)
                 raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
             
-        desired_position = vector + self.position
+        if self.collision(self.blocks, vector + self.position): # validate movement
+            return
+    
+        self.position = vector + self.position
         
-        if not self.collision(self.blocks, desired_position): # validate movement
-            self.position = desired_position
-            if not self.is_on_floor():
-                self.lock_delay_counter = 0
-            else:
-                self.lock_delay_reset()
-        
+        if not self.is_on_floor():
+            self.lock_delay_counter = 0
+        else:
+            self.lock_delay_reset()
+       
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
         """
         Check if the piece at the desired position will collide with the matrix bounds or other blocks
