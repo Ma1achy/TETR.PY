@@ -6,14 +6,18 @@ from enum import Enum, auto
 class FLAG(Enum):
     DANGER = auto()
     GAME_OVER = auto()
-
-
+    
+    IS_SPIN = auto()
+    TSPIN = auto()
+    TSPIN_MINI = auto()
+    ALL_CLEAR = auto()
+    COMBO = auto()
+    
+def generate_flags():
+    return {flag: False for flag in FLAG}
 @dataclass
 class StructFlags():
-    FLAGS: Dict[FLAG, bool] = field(default_factory = lambda: {
-        FLAG.DANGER: False,
-        FLAG.GAME_OVER: False
-    })
+    FLAGS: Dict[FLAG, bool] = field(default_factory = generate_flags)
     
 def create_property(flag):
     def getter(self):
