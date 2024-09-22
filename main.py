@@ -4,7 +4,7 @@ from instance.four import Four
 
 #TODO:
 
-# FIX: lock delay reset mechanics (currently is half right): 
+# FIX: lock delay reset mechanics (currently is half right in terms of overall behaviour): 
 # - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
 # - If 15 resets are reached, the piece locks instantly on contact with the floor
 # - The move resets are replenished if the piece falls below its lowest position (given by the y coord of the center of rotation of the piece)
