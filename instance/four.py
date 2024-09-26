@@ -60,7 +60,7 @@ class Four():
         """
         if not self.core_instance.FlagStruct.GAME_OVER:
             self.__perform_actions()
-            self.__do_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
+            self.__apply_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
             self.__update_current_tetromino()
             self.__clear_lines()
             
@@ -261,9 +261,9 @@ class Four():
         else:
             self.core_instance.FlagStruct.DANGER = False
             
-    def __do_gravity(self, G, soft_drop_factor = 1):
+    def __apply_gravity(self, G, soft_drop_factor = 1):
         """
-        Perform gravity
+        Apply gravity to the current tetromino
         
         args:
             G (int): The gravity value in blocks per fractions of 1/60th of a second, i.e 1G = 1 block per 1/60th of a second
@@ -284,20 +284,20 @@ class Four():
             self.core_instance.GameInstanceStruct.G_units_in_ticks = 'inf'
             return
         else:
-            if G == 0 and soft_drop_factor != 1: # if G = 0 and soft dropping do gravity a level 1 speed
+            if G == 0 and soft_drop_factor != 1: # if G = 0 and soft dropping do gravity at level 1 speed
                 G = 1/60
                 
-            # convert G from units blocks per 1/60 seconds to units blocks per no. of ticks 
+            # convert G from units of blocks per 1/60 seconds to units of blocks per no. of ticks 
             self.core_instance.GameInstanceStruct.G_units_in_ticks = int(self.core_instance.Config.TPS/((G * soft_drop_factor) * 60))
             
             if self.core_instance.GameInstanceStruct.gravity_counter >= self.core_instance.GameInstanceStruct.G_units_in_ticks:
-                self.__gravity_tick()
+                self.__do_gravity()
             else:
                 self.core_instance.GameInstanceStruct.gravity_counter += 1
             
-    def __gravity_tick(self):
+    def __do_gravity(self):
         """
-        Gravity tick
+        Do gravity on the current tetromino
         """
         self.core_instance.GameInstanceStruct.current_tetromino.attempt_to_move_downwards()
         self.core_instance.GameInstanceStruct.gravity_counter = 0
@@ -314,10 +314,10 @@ class Four():
         Reset the gravity counter after a soft drop so there is no extra time left on the gravity counter
         """
         self.core_instance.GameInstanceStruct.soft_dropping = False
-        for ac in self.actions_this_tick:
-            if Action.SOFT_DROP not in ac.values():
-                self.core_instance.GameInstanceStruct.gravity_counter = 0
-                break  
+        actions = [ac['action'] for ac in self.actions_this_tick]
+        
+        if Action.SOFT_DROP not in actions:
+            self.core_instance.GameInstanceStruct.gravity_counter = 0
     
     def __auto_lock(self):
         """
