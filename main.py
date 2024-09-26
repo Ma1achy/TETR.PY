@@ -20,7 +20,6 @@ from instance.four import Four
 # - GAME OVER CONDITIONS
 
 # redo render code it is a 3 course itallian meal rn
-# - Implement Prefer Soft Drop Over Movement: At very high speeds, the soft drop action will be prioritized over movement (not sure if this is necessary because my control loop can do multiple actions per frame)
 
 async def main():
     game_instance = Core()
