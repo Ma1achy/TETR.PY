@@ -59,8 +59,14 @@ class Four():
         Get the next state of the game
         """
         if not self.core_instance.FlagStruct.GAME_OVER:
-            self.__perform_actions()
-            self.__apply_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
+            
+            if self.core_instance.Config.HANDLING_SETTINGS['PrefSD']: # prefer soft drop over movement, apply gravity first then DAS
+                self.__perform_gravity()
+                self.__perform_actions()
+            else:
+                self.__perform_actions()
+                self.__perform_gravity()
+                
             self.__update_current_tetromino()
             self.__clear_lines()
             
@@ -185,12 +191,25 @@ class Four():
             self.core_instance.GameInstanceStruct.matrix.insert_blocks(self.core_instance.GameInstanceStruct.current_tetromino.blocks, self.core_instance.GameInstanceStruct.current_tetromino.position, self.core_instance.GameInstanceStruct.matrix.matrix)
             self.core_instance.GameInstanceStruct.matrix.piece = self.core_instance.GameInstanceStruct.matrix.empty_matrix()
             self.core_instance.GameInstanceStruct.current_tetromino = None
-            
-    def __perform_actions(self):
     
+    def __perform_gravity(self):
+        
+        for action_dict in self.actions_this_tick:
+            action = action_dict['action']
+            
+            if action == Action.SOFT_DROP:
+                if self.core_instance.GameInstanceStruct.current_tetromino is not None:
+                    self.core_instance.GameInstanceStruct.soft_dropping = True
+                    self.core_instance.GameInstanceStruct.soft_drop_factor = self.core_instance.Config.HANDLING_SETTINGS['SDF']     
+                    self.__update_current_tetromino()
+        
+        self.__apply_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
+           
+    def __perform_actions(self):
+                            
         for action_dict in self.actions_this_tick:
             action = action_dict['action'] 
-            
+                  
             match action:
                 case Action.MOVE_LEFT | Action.MOVE_RIGHT:
                     if self.core_instance.GameInstanceStruct.current_tetromino is not None: 
@@ -211,12 +230,6 @@ class Four():
                     if self.core_instance.GameInstanceStruct.current_tetromino is not None:
                         self.__hard_drop()
                     
-                case Action.SOFT_DROP:  
-                    if self.core_instance.GameInstanceStruct.current_tetromino is not None:
-                        self.core_instance.GameInstanceStruct.soft_dropping = True
-                        self.core_instance.GameInstanceStruct.soft_drop_factor = self.core_instance.Config.HANDLING_SETTINGS['SDF']     
-                        self.__update_current_tetromino()
-                        
                 case Action.HOLD:
                     if self.core_instance.GameInstanceStruct.current_tetromino is not None:
                         self.__hold()
