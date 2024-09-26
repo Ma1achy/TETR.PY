@@ -238,9 +238,8 @@ class Handling():
         """
         Get the actions that are currently active and add them to the queue.
         """
-        
         for action in self.actions:
-            if self.actions[action]['state'] is True:
+            if self.actions[action]['state']:
                 if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
                     self.__do_DAS_ARR(action)
                 else:
