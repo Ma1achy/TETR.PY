@@ -7,7 +7,6 @@ class StructTiming():
     current_time: float = 0
     last_tick_time: float = 0
     delta_time: float = 0
-    time_per_tick: float = 1 / 256
     do_first_tick: bool = True
     tick_counter: int = 0
     tick_counter_last_cleared: float = 0
@@ -15,7 +14,6 @@ class StructTiming():
     current_frame_time: float = 0
     last_frame_time: float = 0
     delta_frame_time: float = 0
-    frame_time: float = 1 / 144
     draw_first_frame: bool = True
 
     start_times: Dict[str, int] = field(default_factory = lambda: {

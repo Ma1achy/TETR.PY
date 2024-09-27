@@ -36,6 +36,8 @@ class Core():
         
         self.TPS = self.Config.TPS
         self.FPS = self.Config.FPS
+        self.time_per_tick = 1 / self.Config.TPS
+        self.frame_time = 1 / self.Config.FPS
         
         self.exited = False
         self.state_snapshot = None
@@ -172,7 +174,7 @@ class Core():
         while not self.exited:
          
             self.StructTiming.current_time = self.StructTiming.elapsed_times["game_loop"]
-            self.StructTiming.delta_time += (self.StructTiming.current_time - self.StructTiming.last_tick_time) / self.StructTiming.time_per_tick
+            self.StructTiming.delta_time += (self.StructTiming.current_time - self.StructTiming.last_tick_time) / self.time_per_tick
             self.StructTiming.last_tick_time = self.StructTiming.current_time
              
             if self.StructTiming.do_first_tick:
@@ -202,7 +204,7 @@ class Core():
                 
             else:
                 self.StructTiming.current_frame_time = self.StructTiming.elapsed_times["render_loop"]
-                self.StructTiming.delta_frame_time += (self.StructTiming.current_frame_time - self.StructTiming.last_frame_time) / self.StructTiming.frame_time
+                self.StructTiming.delta_frame_time += (self.StructTiming.current_frame_time - self.StructTiming.last_frame_time) / self.frame_time
                 self.StructTiming.last_frame_time = self.StructTiming.current_frame_time
                 
                 if self.StructTiming.draw_first_frame:
