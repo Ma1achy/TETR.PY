@@ -60,7 +60,7 @@ class Four():
         """
         if not self.core_instance.FlagStruct.GAME_OVER:
             
-            if self.core_instance.Config.HANDLING_SETTINGS['PrefSD']: # prefer soft drop over movement, apply gravity first then DAS
+            if self.core_instance.Config.HANDLING_SETTINGS['PrefSD']: # prefer soft drop over movement, apply gravity first then DAS. With SDF == 'inf' and ARR == 0. Pices will fall first into a well then move left or right to the walls
                 self.__perform_gravity()
                 self.__perform_actions()
             else:
@@ -107,6 +107,7 @@ class Four():
             self.core_instance.GameInstanceStruct.matrix.insert_blocks(self.core_instance.GameInstanceStruct.current_tetromino.blocks, self.core_instance.GameInstanceStruct.current_tetromino.position, self.core_instance.GameInstanceStruct.matrix.piece)
             self.core_instance.GameInstanceStruct.current_tetromino.ghost()
             
+            # TODO: fix the below mess as this is silly, can just acess/update these values directly
             self.core_instance.GameInstanceStruct.on_floor = self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor()
             self.core_instance.GameInstanceStruct.lock_delay_counter = self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter
             self.core_instance.GameInstanceStruct.max_moves_before_lock = self.core_instance.GameInstanceStruct.current_tetromino.max_moves_before_lock
@@ -168,6 +169,36 @@ class Four():
         """
         cleared_lines = self.core_instance.GameInstanceStruct.matrix.clear_lines()
         # TODO: Implement scoring logic / t spin line clear detection
+    
+    def __move(self, action):
+        """
+        Move the current tetromino left or right
+        
+        args:
+            action (Action): The action to perform
+        """
+        self.core_instance.GameInstanceStruct.current_tetromino.move(action)
+        self.__update_current_tetromino()
+        
+    def __rotate90(self, action):
+        """
+        Rotate the current tetromino by 90 degrees
+        
+        args:
+            action (Action): The action to perform
+        """
+        self.core_instance.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['90'])
+        self.__update_current_tetromino()
+        
+    def __rotate180(self, action):
+        """
+        Rotate the current tetromino by 180 degrees
+        
+        args:
+            action (Action): The action to perform
+        """
+        self.core_instance.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['180'])
+        self.__update_current_tetromino()
         
     def __hard_drop(self):
         """
@@ -175,6 +206,14 @@ class Four():
         """
         self.__move_to_floor()
         self.__lock()
+        
+    def __soft_drop(self):
+        """
+        Soft drop the current tetromino
+        """
+        self.core_instance.GameInstanceStruct.soft_dropping = True
+        self.core_instance.GameInstanceStruct.soft_drop_factor = self.core_instance.Config.HANDLING_SETTINGS['SDF']
+        self.__update_current_tetromino()
     
     def __hold(self):
         """
@@ -194,46 +233,49 @@ class Four():
     
     def __perform_gravity(self):
         
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
         for action_dict in self.actions_this_tick:
             action = action_dict['action']
             
             if action == Action.SOFT_DROP:
-                if self.core_instance.GameInstanceStruct.current_tetromino is not None:
-                    self.core_instance.GameInstanceStruct.soft_dropping = True
-                    self.core_instance.GameInstanceStruct.soft_drop_factor = self.core_instance.Config.HANDLING_SETTINGS['SDF']     
-                    self.__update_current_tetromino()
+                self.__soft_drop()
         
         self.__apply_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
            
     def __perform_actions(self):
-                            
+        
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
         for action_dict in self.actions_this_tick:
             action = action_dict['action'] 
                   
             match action:
                 case Action.MOVE_LEFT | Action.MOVE_RIGHT:
-                    if self.core_instance.GameInstanceStruct.current_tetromino is not None: 
-                        self.core_instance.GameInstanceStruct.current_tetromino.move(action) 
-                        self.__update_current_tetromino()
+                    self.__move(action)
                     
                 case Action.ROTATE_CLOCKWISE | Action.ROTATE_COUNTERCLOCKWISE:
-                    if self.core_instance.GameInstanceStruct.current_tetromino is not None:
-                        self.core_instance.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['90'])
-                        self.__update_current_tetromino()
+                    self.__rotate90(action)
                         
                 case Action.ROTATE_180:
-                    if self.core_instance.GameInstanceStruct.current_tetromino is not None:
-                        self.core_instance.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['180'])
-                        self.__update_current_tetromino()
+                    self.__rotate180(action)
                         
                 case Action.HARD_DROP:
-                    if self.core_instance.GameInstanceStruct.current_tetromino is not None:
-                        self.__hard_drop()
+                    self.__hard_drop()
                     
                 case Action.HOLD:
-                    if self.core_instance.GameInstanceStruct.current_tetromino is not None:
-                        self.__hold()
-                        
+                    self.__hold()
+                
+                case Action.SOFT_DROP: # when the soft drop factor is infinite the soft drop should not be tick based but action based, fixes edge case where ARR == 0 and SDF == 'inf' where the piece can skip over holes when it should fall
+                    if self.core_instance.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+                        self.__move_to_floor()
+            
+            # if gravity is 20G gravity should be applied after every action, otherwise ARR of zero ignores gravity when moving over holes
+            if self.core_instance.GameInstanceStruct.gravity == 20:
+                self.__move_to_floor()
+                   
     def __is_row_17_empty(self):
         """
         Test if the 17th row is empty for top out warning
@@ -312,6 +354,9 @@ class Four():
         """
         Do gravity on the current tetromino
         """
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
         self.core_instance.GameInstanceStruct.current_tetromino.attempt_to_move_downwards()
         self.core_instance.GameInstanceStruct.gravity_counter = 0
         
@@ -319,6 +364,9 @@ class Four():
         """
         Move the current tetromino to the floor
         """
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
         while not self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor():
             self.core_instance.GameInstanceStruct.current_tetromino.attempt_to_move_downwards()
             
@@ -342,7 +390,7 @@ class Four():
         if self.core_instance.GameInstanceStruct.lock_delay == 'inf':
             self.core_instance.GameInstanceStruct.lock_delay_in_ticks = 'inf'
         else:
-            self.core_instance.GameInstanceStruct.lock_delay_in_ticks = self.core_instance.GameInstanceStruct.lock_delay/60 * self.core_instance.Config.TPS # convert from frames in 1/60th of a second to ticks in 1/self.config.TPS of a second
+            self.core_instance.GameInstanceStruct.lock_delay_in_ticks = int(self.core_instance.GameInstanceStruct.lock_delay/60 * self.core_instance.Config.TPS) # convert from frames in 1/60th of a second to ticks in 1/self.config.TPS of a second
         
             if self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor() and self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter >= self.core_instance.GameInstanceStruct.lock_delay_in_ticks:
                 self.__lock()

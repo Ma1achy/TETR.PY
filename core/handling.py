@@ -284,9 +284,14 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        for _ in range(0, self.Config.MATRIX_WIDTH):
-            self.__queue_action(action)
-            
+        if self.__is_action_down(Action.SOFT_DROP) and self.Config.HANDLING_SETTINGS['SDF'] == 'inf': # if soft drop is held and the soft drop factor is infinite, the piece should still attempt to move downwards for each ARR movement (ARR == 0 edge case fix)
+            for _ in range(0, self.Config.MATRIX_WIDTH):
+                self.__queue_action(Action.SOFT_DROP)
+                self.__queue_action(action)    
+        else:
+            for _ in range(0, self.Config.MATRIX_WIDTH):
+                self.__queue_action(action)
+
     def __DAS(self):
         """
         If the Left/Right movement keys are held down, the DAS timer will be incremented until it reaches the DAS threshold (ms). 
@@ -324,8 +329,8 @@ class Handling():
         Once charged, the action will be performed and the ARR timer will be reset.
         """ 
         if self.Config.HANDLING_SETTINGS['ARR'] == 0: # to avoid modulo by zero
-            self.HandlingStruct.do_movement = True
-            if self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS']:
+            self.HandlingStruct.do_movement = True # FIXME: when ARR = 0, but perfSD is on the piece should not skip over holes, SD needs to be interlaced within these movement actions.
+            if self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS']: 
                 self.HandlingStruct.instant_movement = True # when ARR = 0, the movement is instant (no delay since inf repeat rate)
         else:
             if self.HandlingStruct.ARR_counter % self.Config.HANDLING_SETTINGS['ARR'] == 0 or self.HandlingStruct.ARR_counter >= self.Config.HANDLING_SETTINGS['ARR']:
