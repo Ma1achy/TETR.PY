@@ -157,18 +157,11 @@ class Tetromino():
                 vertical_move = Vec2(0, 0)
                 raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
             
-        for _ in range(self.matrix.WIDTH):
+        while not self.collision(self.blocks, vertical_move + self.position):
+            self.position = vertical_move + self.position
+            
             if not self.collision(self.blocks, horizontal_move + self.position):
                 self.position = horizontal_move + self.position
-                
-            while not self.collision(self.blocks, vertical_move + self.position):
-                self.position = vertical_move + self.position
-            
-            # if not self.collision(self.blocks, vertical_move + self.position):
-            #     self.position = vertical_move + self.position
-            
-            # while not self.collision(self.blocks, horizontal_move + self.position):
-            #     self.position = horizontal_move + self.position
                 
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
         """
