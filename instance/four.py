@@ -215,6 +215,42 @@ class Four():
         self.core_instance.GameInstanceStruct.soft_drop_factor = self.core_instance.Config.HANDLING_SETTINGS['SDF']
         self.__update_current_tetromino()
     
+    def __sonic_move(self, action):
+        """
+        Move the current tetromino left or right with no lock delay
+        
+        args:
+            action (Action): The action to perform
+        """
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
+        self.core_instance.GameInstanceStruct.current_tetromino.sonic_move(action)
+        self.__update_current_tetromino()
+        
+    def __sonic_drop(self):
+        """
+        Perform a sonic drop
+        """
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
+        self.__move_to_floor()
+        self.__update_current_tetromino()
+        
+    def __sonic_move_and_drop(self, action):
+        """
+        Move the current tetromino left or right with no lock delay and then hard drop
+        
+        args:
+            action (Action): The action to perform
+        """
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
+        self.core_instance.GameInstanceStruct.current_tetromino.sonic_move_and_drop(action)
+        self.__update_current_tetromino()
+    
     def __hold(self):
         """
         Hold the current tetromino
@@ -255,6 +291,9 @@ class Four():
             match action:
                 case Action.MOVE_LEFT | Action.MOVE_RIGHT:
                     self.__move(action)
+                
+                case Action.SONIC_LEFT | Action.SONIC_RIGHT:
+                    self.__sonic_move(action)
                     
                 case Action.ROTATE_CLOCKWISE | Action.ROTATE_COUNTERCLOCKWISE:
                     self.__rotate90(action)
@@ -268,9 +307,11 @@ class Four():
                 case Action.HOLD:
                     self.__hold()
                 
-                case Action.SOFT_DROP: # when the soft drop factor is infinite the soft drop should not be tick based but action based, fixes edge case where ARR == 0 and SDF == 'inf' where the piece can skip over holes when it should fall
-                    if self.core_instance.Config.HANDLING_SETTINGS['SDF'] == 'inf':
-                        self.__move_to_floor()
+                case Action.SONIC_DROP:
+                    self.__sonic_drop()
+                
+                case Action.SONIC_LEFT_DROP | Action.SONIC_RIGHT_DROP:
+                    self.__sonic_move_and_drop(action)
             
             # if gravity is 20G gravity should be applied after every action, otherwise ARR of zero ignores gravity when moving over holes
             if self.core_instance.GameInstanceStruct.gravity == 20:

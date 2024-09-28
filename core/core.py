@@ -497,14 +497,14 @@ class Core():
         
     def __get_key_dict(self):
         self.key_dict = {
-            'KEY_LEFT': self.handling.key_states[self.handling.Config.key_bindings[Action.MOVE_LEFT]]['current'],
-            'KEY_RIGHT': self.handling.key_states[self.handling.Config.key_bindings[Action.MOVE_RIGHT]]['current'],
-            'KEY_CLOCKWISE': self.handling.key_states[self.handling.Config.key_bindings[Action.ROTATE_CLOCKWISE]]['current'],
-            'KEY_COUNTERCLOCKWISE': self.handling.key_states[self.handling.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]]['current'],
-            'KEY_180': self.handling.key_states[self.handling.Config.key_bindings[Action.ROTATE_180]]['current'],
-            'KEY_HARD_DROP' : self.handling.key_states[self.handling.Config.key_bindings[Action.HARD_DROP]]['current'],
-            'KEY_SOFT_DROP': self.handling.key_states[self.handling.Config.key_bindings[Action.SOFT_DROP]]['current'],
-            'KEY_HOLD': self.handling.key_states[self.handling.Config.key_bindings[Action.HOLD]]['current'],
+            'KEY_LEFT': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.MOVE_LEFT]),
+            'KEY_RIGHT': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.MOVE_RIGHT]),
+            'KEY_CLOCKWISE': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.ROTATE_CLOCKWISE]),
+            'KEY_COUNTERCLOCKWISE': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]),
+            'KEY_180': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.ROTATE_180]),
+            'KEY_HARD_DROP' : all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.HARD_DROP]),
+            'KEY_SOFT_DROP': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.SOFT_DROP]),
+            'KEY_HOLD': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.HOLD]),
         }
 class Clock:
     def __init__(self, max_entries = 10):

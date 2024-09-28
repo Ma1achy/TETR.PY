@@ -16,7 +16,18 @@ class Action(Enum):
     HARD_DROP = auto()
     SOFT_DROP = auto()
     HOLD = auto()
-
+    
+    # ARR == 0 behaviour
+    SONIC_LEFT = auto()
+    SONIC_RIGHT = auto()
+    
+    # inf SDF behaviour
+    SONIC_DROP = auto()
+    
+    # ARR == 0 & inf SDF behaviour
+    SONIC_LEFT_DROP = auto()
+    SONIC_RIGHT_DROP = auto()
+    
 class Handling():
     def __init__(self, Config, HandlingStruct):
         """
@@ -40,14 +51,9 @@ class Handling():
         self.action_queue = deque()
         
         self.key_states = {
-            self.Config.key_bindings[Action.MOVE_LEFT]:                     {'current': False, 'previous': False},
-            self.Config.key_bindings[Action.MOVE_RIGHT]:                    {'current': False, 'previous': False},
-            self.Config.key_bindings[Action.ROTATE_CLOCKWISE]:              {'current': False, 'previous': False},
-            self.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]:       {'current': False, 'previous': False},
-            self.Config.key_bindings[Action.ROTATE_180]:                    {'current': False, 'previous': False},
-            self.Config.key_bindings[Action.HARD_DROP]:                     {'current': False, 'previous': False},
-            self.Config.key_bindings[Action.SOFT_DROP]:                     {'current': False, 'previous': False},
-            self.Config.key_bindings[Action.HOLD]:                          {'current': False, 'previous': False},
+            key: {'current': False, 'previous': False}
+            for action, keys in self.Config.key_bindings.items()
+            for key in keys
         }
         
     def __GetEmptyActions(self):
@@ -62,7 +68,12 @@ class Handling():
             Action.ROTATE_180:                  {'state': False, 'timestamp': 0},
             Action.HARD_DROP:                   {'state': False, 'timestamp': 0},
             Action.SOFT_DROP:                   {'state': False, 'timestamp': 0},
-            Action.HOLD:                        {'state': False, 'timestamp': 0}
+            Action.HOLD:                        {'state': False, 'timestamp': 0},
+            Action.SONIC_LEFT:                  {'state': False, 'timestamp': 0},
+            Action.SONIC_RIGHT:                 {'state': False, 'timestamp': 0},
+            Action.SONIC_DROP:                  {'state': False, 'timestamp': 0},
+            Action.SONIC_LEFT_DROP:             {'state': False, 'timestamp': 0},
+            Action.SONIC_RIGHT_DROP:            {'state': False, 'timestamp': 0}
         }
     
     def before_loop_hook(self):
@@ -77,9 +88,22 @@ class Handling():
         """
         Get the actions from the key states and add them to the action buffer
         """
-        self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
+        if self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+            self.__test_actions(Action.SONIC_LEFT_DROP, self.__is_action_down)
+            self.__test_actions(Action.SONIC_RIGHT_DROP, self.__is_action_down)   
+                
+        if not(self.__is_action_down(Action.SONIC_LEFT_DROP) or self.__is_action_down(Action.SONIC_RIGHT_DROP)) and (self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS'] and self.Config.HANDLING_SETTINGS['ARR'] == 0):
+            self.__test_actions(Action.SONIC_LEFT, self.__is_action_down)
+            self.__test_actions(Action.SONIC_RIGHT, self.__is_action_down)  
+              
+        else:
+            self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
+            self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
             
-        self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
+        if self.Config.HANDLING_SETTINGS['SDF'] == 'inf' and self.Config.HANDLING_SETTINGS['PrefSD']:
+            self.__test_actions(Action.SONIC_DROP, self.__is_action_down)
+        else:
+            self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
         
         self.__test_actions(Action.ROTATE_CLOCKWISE, self.__is_action_toggled)
         
@@ -88,8 +112,6 @@ class Handling():
         self.__test_actions(Action.ROTATE_180, self.__is_action_toggled)
         
         self.__test_actions(Action.HARD_DROP, self.__is_action_toggled)
-        
-        self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
         
         self.__test_actions(Action.HOLD, self.__is_action_toggled)
         
@@ -113,7 +135,7 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        return self.key_states[self.Config.key_bindings[action]]['current'] and not self.key_states[self.Config.key_bindings[action]]['previous']
+        return all(self.key_states[key]['current'] and not self.key_states[key]['previous'] for key in self.Config.key_bindings[action])
     
     def __is_action_down(self, action:Action):
         """
@@ -124,7 +146,7 @@ class Handling():
         returns:
             bool: True if the action is down, False otherwise
         """
-        return self.key_states[self.Config.key_bindings[action]]['current']
+        return all(self.key_states[key]['current'] for key in self.Config.key_bindings[action])
     
     def __set_action_state(self, action:Action, state:bool):
         """
@@ -137,32 +159,36 @@ class Handling():
         self.actions[action]['state'] = state
         self.actions[action]['timestamp'] = self.HandlingStruct.current_time
         
-    def __LeftRightMovementPriority(self, action:Action):
+    def __LeftRightMovementPriority(self, action_1:Action, action_2:Action):
         """
         Prioritise the Most Recent Direction: when both the left and right keys are held the more recent key to be held will be prioritised
         or no movement will be performed if the relevant setting is False.
         
         args:
-            action (Action): The action to be performed
+            action_1 (Action): The action to compare with
+            action_2 (Action): The action to compare with
         """
-        if self.__is_action_down(Action.MOVE_LEFT) and self.__is_action_down(Action.MOVE_RIGHT) :
+        if self.__is_action_down(action_1) and self.__is_action_down(action_2) :
             if self.Config.HANDLING_SETTINGS['PrioriDir']: # if the setting is true, the most recent key will be prioritised
-                if self.HandlingStruct.current_direction is Action.MOVE_LEFT:
-                    self.__set_action_state(Action.MOVE_RIGHT, True)
-                    self.__set_action_state(Action.MOVE_LEFT, False)
+                if self.HandlingStruct.current_direction is action_1:
+                    self.__set_action_state(action_2, True)
+                    self.__set_action_state(action_1, False)
+                    print(f'{action_2} prioritised over {action_1}')
                 else:
-                    self.__set_action_state(Action.MOVE_LEFT, True)
-                    self.__set_action_state(Action.MOVE_RIGHT, False)
+                    self.__set_action_state(action_1, True)
+                    self.__set_action_state(action_2, False)
+                    print(f'{action_1} prioritised over {action_2}')
             else:
-                self.__set_action_state(action, False) # if left and right are pressed at the same time, no action is performed
+                self.__set_action_state(action_1, False) # if left and right are pressed at the same time, no action is performed
+                self.__set_action_state(action_2, False)
+                
+        elif self.__is_action_down(action_1):
+            self.HandlingStruct.current_direction = action_1
+            self.__set_action_state(action_1, True)
             
-        elif self.__is_action_down(Action.MOVE_LEFT):
-            self.HandlingStruct.current_direction = action
-            self.__set_action_state(Action.MOVE_LEFT, True)
-            
-        elif self.__is_action_down(Action.MOVE_RIGHT):
-            self.HandlingStruct.current_direction = action
-            self.__set_action_state(Action.MOVE_RIGHT, True) 
+        elif self.__is_action_down(action_2):
+            self.HandlingStruct.current_direction = action_2
+            self.__set_action_state(action_2, True) 
       
     def __test_actions(self, action:Action, check:callable):
         """
@@ -173,13 +199,23 @@ class Handling():
             check (callable): The function to be called to check the action state
         """
         if check(action):
-            if action is Action.MOVE_LEFT or action is Action.MOVE_RIGHT:
-                self.__LeftRightMovementPriority(action)
+            if action is Action.MOVE_LEFT:
+                self.__LeftRightMovementPriority(action, Action.MOVE_RIGHT)
+            elif action is Action.MOVE_RIGHT:
+                self.__LeftRightMovementPriority(action, Action.MOVE_LEFT)
+            elif action is Action.SONIC_LEFT:
+                self.__LeftRightMovementPriority(action, Action.SONIC_RIGHT)
+            elif action is Action.SONIC_RIGHT:
+                self.__LeftRightMovementPriority(action, Action.SONIC_LEFT)
+            elif action is Action.SONIC_LEFT_DROP:
+                self.__LeftRightMovementPriority(action, Action.SONIC_RIGHT_DROP)
+            elif action is Action.SONIC_RIGHT_DROP:
+                self.__LeftRightMovementPriority(action, Action.SONIC_LEFT_DROP)
             else:
                 self.__set_action_state(action, True)  
         else:
             self.__set_action_state(action, False)
-                   
+                     
     def __get_key_info(self, key:pygame.key):
         """
         Get the key info from the key object
@@ -273,25 +309,6 @@ class Handling():
             self.HandlingStruct.do_movement = False
             self.__queue_action(action)
             
-        if self.HandlingStruct.instant_movement: # handle ARR of 0 separately
-            self.HandlingStruct.instant_movement = False
-            self.__instant_movement(action)      
-             
-    def __instant_movement(self, action:Action):
-        """
-        Instantly move the tetromino to the left or right without any delay (ARR = 0)
-        
-        args:
-            action (Action): The action to be performed
-        """
-        if self.__is_action_down(Action.SOFT_DROP) and self.Config.HANDLING_SETTINGS['SDF'] == 'inf': # if soft drop is held and the soft drop factor is infinite, the piece should still attempt to move downwards for each ARR movement (ARR == 0 edge case fix)
-            for _ in range(0, self.Config.MATRIX_WIDTH):
-                self.__queue_action(Action.SOFT_DROP)
-                self.__queue_action(action)    
-        else:
-            for _ in range(0, self.Config.MATRIX_WIDTH):
-                self.__queue_action(action)
-
     def __DAS(self):
         """
         If the Left/Right movement keys are held down, the DAS timer will be incremented until it reaches the DAS threshold (ms). 
@@ -329,9 +346,7 @@ class Handling():
         Once charged, the action will be performed and the ARR timer will be reset.
         """ 
         if self.Config.HANDLING_SETTINGS['ARR'] == 0: # to avoid modulo by zero
-            self.HandlingStruct.do_movement = True # FIXME: when ARR = 0, but perfSD is on the piece should not skip over holes, SD needs to be interlaced within these movement actions.
-            if self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS']: 
-                self.HandlingStruct.instant_movement = True # when ARR = 0, the movement is instant (no delay since inf repeat rate)
+            self.HandlingStruct.do_movement = True
         else:
             if self.HandlingStruct.ARR_counter % self.Config.HANDLING_SETTINGS['ARR'] == 0 or self.HandlingStruct.ARR_counter >= self.Config.HANDLING_SETTINGS['ARR']:
                 self.HandlingStruct.do_movement = True  

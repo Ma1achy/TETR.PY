@@ -119,7 +119,57 @@ class Tetromino():
             self.lock_delay_counter = 0
         else:
             self.lock_delay_reset()
-       
+            
+    def sonic_move(self, action:Action):
+        """
+        Move the piece in the given direction 
+        
+        args:
+            action (Action): The action to perform
+        """
+        match action:
+            case Action.SONIC_LEFT:
+                vector = Vec2(-1, 0)
+            
+            case Action.SONIC_RIGHT:
+                vector = Vec2(1, 0)
+    
+            case _:
+                vector = Vec2(0, 0)
+                raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
+        
+        while not self.collision(self.blocks, vector + self.position):    
+            self.position = vector + self.position
+        
+    def sonic_move_and_drop(self, action:Action):
+        
+        match action:
+            case Action.SONIC_LEFT_DROP:
+                horizontal_move = Vec2(-1, 0)
+                vertical_move = Vec2(0, 1)
+                
+            case Action.SONIC_RIGHT_DROP:
+                horizontal_move = Vec2(1, 0)
+                vertical_move = Vec2(0, 1)
+                
+            case _:
+                horizontal_move = Vec2(0, 0)
+                vertical_move = Vec2(0, 0)
+                raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
+            
+        for _ in range(self.matrix.WIDTH):
+            if not self.collision(self.blocks, horizontal_move + self.position):
+                self.position = horizontal_move + self.position
+                
+            while not self.collision(self.blocks, vertical_move + self.position):
+                self.position = vertical_move + self.position
+            
+            # if not self.collision(self.blocks, vertical_move + self.position):
+            #     self.position = vertical_move + self.position
+            
+            # while not self.collision(self.blocks, horizontal_move + self.position):
+            #     self.position = horizontal_move + self.position
+                
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
         """
         Check if the piece at the desired position will collide with the matrix bounds or other blocks

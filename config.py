@@ -5,22 +5,22 @@ from typing import Dict, Tuple
 @dataclass
 class StructConfig():
     
-    key_bindings: Dict[Action, int] = field(default_factory = lambda: {
-        Action.MOVE_LEFT:                   pygame.K_LEFT,
-        Action.MOVE_RIGHT:                  pygame.K_RIGHT,
-        Action.ROTATE_CLOCKWISE:            pygame.K_x,
-        Action.ROTATE_COUNTERCLOCKWISE:     pygame.K_z,
-        Action.ROTATE_180:                  pygame.K_SPACE,
-        Action.HARD_DROP:                   pygame.K_DOWN,
-        Action.SOFT_DROP:                   pygame.K_UP,
-        Action.HOLD:                        pygame.K_c
+    key_bindings: Dict[Action, list[int]] = field(default_factory = lambda: {
+        Action.MOVE_LEFT:                   [pygame.K_LEFT],
+        Action.MOVE_RIGHT:                  [pygame.K_RIGHT],
+        Action.ROTATE_CLOCKWISE:            [pygame.K_x],
+        Action.ROTATE_COUNTERCLOCKWISE:     [pygame.K_z],
+        Action.ROTATE_180:                  [pygame.K_SPACE],
+        Action.HARD_DROP:                   [pygame.K_DOWN],
+        Action.SOFT_DROP:                   [pygame.K_UP],
+        Action.HOLD:                        [pygame.K_c],
     })
     
     HANDLING_SETTINGS: Dict[str, object] = field(default_factory = lambda: {
-        'ARR': 33,           # Auto repeat rate (int) in ms: The speed at which tetrominoes move when holding down the movement keys (ms)
+        'ARR': 0,           # Auto repeat rate (int) in ms: The speed at which tetrominoes move when holding down the movement keys (ms)
         'DAS': 167,          # Delayed Auto Shift (int) in ms: The time between the initial key press and the automatic repeat movement (ms)
         'DCD': 0,            # DAS Cut Delay (int) in ms: If non-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rotating a piece (ms)
-        'SDF': 23,           # Soft Drop Factor (int): The factor the soft dropping scales the current gravity by, or 'inf' for instant soft drop
+        'SDF': 'inf',           # Soft Drop Factor (int): The factor the soft dropping scales the current gravity by, or 'inf' for instant soft drop
         'PrevAccHD': True,   # Prevent Accidental Hard Drops (bool): When a piece locks on its own, the hard drop action is disabled for a few frames
         'DASCancel': False,  # Cancel DAS When Changing Directions (bool): If true, the DAS timer will reset if the opposite direction is pressed
         'PrefSD': True,      # Prefer Soft Drop Over Movement (bool): At very high speeds, the soft drop action will be prioritized over movement
@@ -70,3 +70,10 @@ class StructConfig():
         self.MATRIX_SURFACE_HEIGHT = self.MATRIX_HEIGHT // 2 * self.GRID_SIZE
         self.MATRIX_SCREEN_CENTER_X = (self.FOUR_INSTANCE_WIDTH - self.MATRIX_SURFACE_WIDTH) // 2
         self.MATRIX_SCREEN_CENTER_Y = (self.FOUR_INSTANCE_HEIGHT - self.MATRIX_SURFACE_HEIGHT) // 2
+    
+        self.key_bindings[Action.SONIC_LEFT] = self.key_bindings[Action.MOVE_LEFT]
+        self.key_bindings[Action.SONIC_RIGHT] = self.key_bindings[Action.MOVE_RIGHT]
+        self.key_bindings[Action.SONIC_DROP] = self.key_bindings[Action.SOFT_DROP]
+        
+        self.key_bindings[Action.SONIC_LEFT_DROP] = (self.key_bindings[Action.MOVE_LEFT][0], self.key_bindings[Action.SOFT_DROP][0])
+        self.key_bindings[Action.SONIC_RIGHT_DROP] = (self.key_bindings[Action.MOVE_RIGHT][0], self.key_bindings[Action.SOFT_DROP][0])
