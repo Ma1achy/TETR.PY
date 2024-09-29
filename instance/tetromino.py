@@ -153,9 +153,8 @@ class Tetromino():
 
         if not self.collision(self.blocks, self.position + Vec2(0, 1)):  # attempt to move downwards until the piece cannot move downwards anymore
             self.position += Vec2(0, 1)
-            self.sonic_move_and_drop(action)
-        else:
-            # if the piece cannot move downwards, attempt to move sideways
+            self.sonic_move_and_drop(action) # attempt to move downwards again
+        else: # if the piece cannot move downwards, attempt to move sideways
             if not self.collision(self.blocks, self.position + horizontal_vector):
                 self.position += horizontal_vector
                 self.sonic_move_and_drop(action) # see if the piece can move downwards again after moving sideways
