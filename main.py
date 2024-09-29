@@ -4,7 +4,7 @@ from instance.four import Four
 
 #TODO:
 
-# PerfSD behaviour when disabled is weird (it is not prioritizing movement over soft drop)
+# FIX: PerfSD == False is not working as intended
 
 # FIX: lock delay reset mechanics (currently is half right in terms of overall behaviour): 
 # - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
