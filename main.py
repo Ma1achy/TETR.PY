@@ -4,7 +4,6 @@ from instance.four import Four
 
 #TODO:
 
-# FIX: sonic_left_drop and sonic_right_drop are not working properly (ignores input priority ffs)
 # PerfSD behaviour when disabled is weird (it is not prioritizing movement over soft drop)
 
 # FIX: lock delay reset mechanics (currently is half right in terms of overall behaviour): 

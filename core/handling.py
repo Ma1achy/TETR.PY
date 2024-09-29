@@ -56,6 +56,15 @@ class Handling():
             for key in keys
         }
         
+        self.direction_of_action = {
+            Action.MOVE_LEFT: 'left',
+            Action.MOVE_RIGHT: 'right',
+            Action.SONIC_LEFT: 'left',
+            Action.SONIC_RIGHT: 'right',
+            Action.SONIC_LEFT_DROP: 'left',
+            Action.SONIC_RIGHT_DROP: 'right'
+        }
+        
     def __GetEmptyActions(self):
         """
         Return an empty actions dictionary
@@ -148,6 +157,21 @@ class Handling():
         """
         return all(self.key_states[key]['current'] for key in self.Config.key_bindings[action])
     
+    def __is_direction_down(self, direction: str) -> bool:
+        """
+        Test if any of the actions associated with the given direction are down.
+        
+        Args:
+            direction (str): The direction to be tested ('left' or 'right').
+            
+        Returns:
+            bool: True if any action in the given direction is down, False otherwise.
+        """
+        for action, action_direction in self.direction_of_action.items():
+            if action_direction == direction and self.__is_action_down(action):
+                return True
+        return False
+        
     def __set_action_state(self, action:Action, state:bool):
         """
         Set the action state
@@ -159,34 +183,37 @@ class Handling():
         self.actions[action]['state'] = state
         self.actions[action]['timestamp'] = self.HandlingStruct.current_time
         
-    def __LeftRightMovementPriority(self, action_1:Action, action_2:Action):
+    def __LeftRightMovementPriority(self, action_1: Action, action_2: Action):
         """
-        Prioritise the Most Recent Direction: when both the left and right keys are held the more recent key to be held will be prioritised
-        or no movement will be performed if the relevant setting is False.
-        
+        Prioritise the most recent direction: when both left and right directions are held,
+        the more recent key (direction) will be prioritized, or no movement will be performed if the relevant setting is False.
+
         args:
-            action_1 (Action): The action to compare with
-            action_2 (Action): The action to compare with
+            action_1 (Action): The first action to compare.
+            action_2 (Action): The second action to compare.
         """
-        if self.__is_action_down(action_1) and self.__is_action_down(action_2) :
-            if self.Config.HANDLING_SETTINGS['PrioriDir']: # if the setting is true, the most recent key will be prioritised
-                if self.HandlingStruct.current_direction is action_1:
+        direction_1 = self.direction_of_action[action_1]
+        direction_2 = self.direction_of_action[action_2]
+
+        if self.__is_direction_down(direction_1) and self.__is_direction_down(direction_2):
+            if self.Config.HANDLING_SETTINGS['PrioriDir']:  # if the setting is true, the most recent key will be prioritised
+                if self.HandlingStruct.current_direction == direction_1:
                     self.__set_action_state(action_2, True)
                     self.__set_action_state(action_1, False)
                 else:
                     self.__set_action_state(action_1, True)
                     self.__set_action_state(action_2, False)
-            else:
-                self.__set_action_state(action_1, False) # if left and right are pressed at the same time, no action is performed
+            else:  # if left and right are pressed at the same time, no action is performed
+                self.__set_action_state(action_1, False)
                 self.__set_action_state(action_2, False)
-                
-        elif self.__is_action_down(action_1):
-            self.HandlingStruct.current_direction = action_1
+
+        elif self.__is_direction_down(direction_1): # if only one direction is pressed, that direction is prioritised
+            self.HandlingStruct.current_direction = direction_1
             self.__set_action_state(action_1, True)
-            
-        elif self.__is_action_down(action_2):
-            self.HandlingStruct.current_direction = action_2
-            self.__set_action_state(action_2, True) 
+
+        elif self.__is_direction_down(direction_2):
+            self.HandlingStruct.current_direction = direction_2
+            self.__set_action_state(action_2, True)
       
     def __test_actions(self, action:Action, check:callable):
         """
