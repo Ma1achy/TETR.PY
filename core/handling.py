@@ -199,7 +199,8 @@ class Handling():
                 if self.HandlingStruct.current_direction == direction_1:
                     self.__set_action_state(action_2, True)
                     self.__set_action_state(action_1, False)
-                else:
+                    
+                elif self.HandlingStruct.current_direction == direction_2:
                     self.__set_action_state(action_1, True)
                     self.__set_action_state(action_2, False)
             else:  # if left and right are pressed at the same time, no action is performed
