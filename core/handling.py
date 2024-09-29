@@ -97,12 +97,12 @@ class Handling():
         """
         Get the actions from the key states and add them to the action buffer
         """
-        if self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
-            if self.Config.HANDLING_SETTINGS['PrefSD']:
-                self.__test_actions(Action.SONIC_DROP, self.__is_action_down)
-                
+        if self.Config.HANDLING_SETTINGS['SDF'] == 'inf' and (self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS'] and self.Config.HANDLING_SETTINGS['ARR'] == 0):     
             self.__test_actions(Action.SONIC_LEFT_DROP, self.__is_action_down)
             self.__test_actions(Action.SONIC_RIGHT_DROP, self.__is_action_down)
+        
+        if self.Config.HANDLING_SETTINGS['PrefSD'] and self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+            self.__test_actions(Action.SONIC_DROP, self.__is_action_down)
         else:
             self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
                 
