@@ -173,11 +173,9 @@ class Handling():
                 if self.HandlingStruct.current_direction is action_1:
                     self.__set_action_state(action_2, True)
                     self.__set_action_state(action_1, False)
-                    print(f'{action_2} prioritised over {action_1}')
                 else:
                     self.__set_action_state(action_1, True)
                     self.__set_action_state(action_2, False)
-                    print(f'{action_1} prioritised over {action_2}')
             else:
                 self.__set_action_state(action_1, False) # if left and right are pressed at the same time, no action is performed
                 self.__set_action_state(action_2, False)
