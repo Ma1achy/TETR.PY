@@ -145,23 +145,22 @@ class Tetromino():
         
         match action:
             case Action.SONIC_LEFT_DROP:
-                horizontal_move = Vec2(-1, 0)
-                vertical_move = Vec2(0, 1)
-                
+                horizontal_vector = Vec2(-1, 0)
             case Action.SONIC_RIGHT_DROP:
-                horizontal_move = Vec2(1, 0)
-                vertical_move = Vec2(0, 1)
-                
+                horizontal_vector = Vec2(1, 0)
             case _:
-                horizontal_move = Vec2(0, 0)
-                vertical_move = Vec2(0, 0)
                 raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
-            
-        while not self.collision(self.blocks, vertical_move + self.position):
-            self.position = vertical_move + self.position
-            
-            if not self.collision(self.blocks, horizontal_move + self.position):
-                self.position = horizontal_move + self.position
+
+        if not self.collision(self.blocks, self.position + Vec2(0, 1)):  # attempt to move downwards until the piece cannot move downwards anymore
+            self.position += Vec2(0, 1)
+            self.sonic_move_and_drop(action)
+        else:
+            # if the piece cannot move downwards, attempt to move sideways
+            if not self.collision(self.blocks, self.position + horizontal_vector):
+                self.position += horizontal_vector
+                self.sonic_move_and_drop(action) # see if the piece can move downwards again after moving sideways
+            else:
+                return
                 
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
         """

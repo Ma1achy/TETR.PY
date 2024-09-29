@@ -4,6 +4,9 @@ from instance.four import Four
 
 #TODO:
 
+# FIX: sonic_left_drop and sonic_right_drop are not working properly (ignores input priority ffs)
+# PerfSD behaviour when disabled is weird (it is not prioritizing movement over soft drop)
+
 # FIX: lock delay reset mechanics (currently is half right in terms of overall behaviour): 
 # - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
 # - If 15 resets are reached, the piece locks instantly on contact with the floor
