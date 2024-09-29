@@ -23,7 +23,7 @@ class StructConfig():
         'SDF': 'inf',           # Soft Drop Factor (int): The factor the soft dropping scales the current gravity by, or 'inf' for instant soft drop
         'PrevAccHD': True,   # Prevent Accidental Hard Drops (bool): When a piece locks on its own, the hard drop action is disabled for a few frames
         'DASCancel': False,  # Cancel DAS When Changing Directions (bool): If true, the DAS timer will reset if the opposite direction is pressed
-        'PrefSD': True,      # Prefer Soft Drop Over Movement (bool): At very high speeds, the soft drop action will be prioritized over movement
+        'PrefSD': False,      # Prefer Soft Drop Over Movement (bool): At very high speeds, the soft drop action will be prioritized over movement
         'PrioriDir': True    # Prioritize the Most Recent Direction (bool): when True if both the left and right keys are held the more recent key to be held will be prioritized, if False no movement will be performed
     })
     

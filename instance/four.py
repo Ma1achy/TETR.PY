@@ -248,7 +248,7 @@ class Four():
         if self.core_instance.GameInstanceStruct.current_tetromino is None:
             return
         
-        self.core_instance.GameInstanceStruct.current_tetromino.sonic_move_and_drop(action)
+        self.core_instance.GameInstanceStruct.current_tetromino.sonic_move_and_drop(action, self.core_instance.Config.HANDLING_SETTINGS['PrefSD'])
         self.__update_current_tetromino()
     
     def __hold(self):

@@ -101,7 +101,7 @@ class Handling():
             self.__test_actions(Action.SONIC_LEFT_DROP, self.__is_action_down)
             self.__test_actions(Action.SONIC_RIGHT_DROP, self.__is_action_down)
         
-        if self.Config.HANDLING_SETTINGS['PrefSD'] and self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+        if not(self.__is_action_down(Action.SONIC_LEFT_DROP) or self.__is_action_down(Action.SONIC_RIGHT_DROP)) and (self.Config.HANDLING_SETTINGS['SDF'] == 'inf' and self.Config.HANDLING_SETTINGS['PrefSD']):
             self.__test_actions(Action.SONIC_DROP, self.__is_action_down)
         else:
             self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
@@ -109,7 +109,6 @@ class Handling():
         if not(self.__is_action_down(Action.SONIC_LEFT_DROP) or self.__is_action_down(Action.SONIC_RIGHT_DROP)) and (self.HandlingStruct.DAS_counter >= self.Config.HANDLING_SETTINGS['DAS'] and self.Config.HANDLING_SETTINGS['ARR'] == 0):
             self.__test_actions(Action.SONIC_LEFT, self.__is_action_down)
             self.__test_actions(Action.SONIC_RIGHT, self.__is_action_down)  
-              
         else:
             self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
             self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
