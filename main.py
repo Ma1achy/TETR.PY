@@ -3,11 +3,7 @@ from core.core import Core
 from instance.four import Four
 
 #TODO:
-# prefsd == false kinda right idk??? literally is right but its wrong when you hold right and then hold left 
-# (teleports across which makes sense but not how tetrio does it??? their implementation is weird lmao)
-# unless it is something to do with das cancelling when changing directions but when the piece is no longer moving
-
-# that is what is going on in tetrio when a piece can no longer move the das timer is reset
+# FIX: Left and Right movement should have different DAS and ARR timers!
 
 # FIX: lock delay reset mechanics (currently is half right in terms of overall behaviour): 
 # - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
