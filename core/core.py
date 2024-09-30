@@ -467,10 +467,12 @@ class Core():
                         'BEST_POLLING_T': self.StructDebug.best_polling_t,
                         'WORST_POLLING_T': self.StructDebug.worst_polling_t,
                         
-                        'DAS_COUNTER': self.handling.HandlingStruct.DAS_counter,
+                        'DAS_LEFT_COUNTER': self.handling.HandlingStruct.DAS_LEFT_COUNTER,
+                        'DAS_RIGHT_COUNTER': self.handling.HandlingStruct.DAS_RIGHT_COUNTER,
                         'DAS': self.handling.Config.HANDLING_SETTINGS['DAS'],
                         
-                        'ARR_COUNTER': self.handling.HandlingStruct.ARR_counter,
+                        'ARR_LEFT_COUNTER': self.handling.HandlingStruct.ARR_LEFT_COUNTER,
+                        'ARR_RIGHT_COUNTER': self.handling.HandlingStruct.ARR_RIGHT_COUNTER,
                         'ARR': self.handling.Config.HANDLING_SETTINGS['ARR'],
                         
                         'DCD': self.handling.Config.HANDLING_SETTINGS['DCD'],
