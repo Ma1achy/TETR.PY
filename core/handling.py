@@ -97,31 +97,13 @@ class Handling():
         """
         Get the actions from the key states and add them to the action buffer
         """
-        self.__DAS_LEFT()
+        self.__do_DAS_tick()
         
-        self.__DAS_RIGHT()
+        self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
+                
+        self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
         
-        if self.Config.HANDLING_SETTINGS['SDF'] == 'inf' and self.Config.HANDLING_SETTINGS['ARR'] == 0:     
-            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
-                self.__test_actions(Action.SONIC_LEFT_DROP, self.__is_action_down)
-                
-            elif self.HandlingStruct.DAS_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
-                self.__test_actions(Action.SONIC_RIGHT_DROP, self.__is_action_down)
-        
-        if not(self.__is_action_down(Action.SONIC_LEFT_DROP) or self.__is_action_down(Action.SONIC_RIGHT_DROP)) and (self.Config.HANDLING_SETTINGS['SDF'] == 'inf' and self.Config.HANDLING_SETTINGS['PrefSD']):
-            self.__test_actions(Action.SONIC_DROP, self.__is_action_down)
-        else:
-            self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
-                
-        if not(self.__is_action_down(Action.SONIC_LEFT_DROP) or self.__is_action_down(Action.SONIC_RIGHT_DROP)) and self.Config.HANDLING_SETTINGS['ARR'] == 0:
-            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
-                self.__test_actions(Action.SONIC_LEFT, self.__is_action_down)
-                
-            elif self.HandlingStruct.DAS_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
-                self.__test_actions(Action.SONIC_RIGHT, self.__is_action_down)  
-        else:
-            self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
-            self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
+        self.__test_actions(Action.MOVE_RIGHT, self.__is_action_down)
 
         self.__test_actions(Action.ROTATE_CLOCKWISE, self.__is_action_toggled)
         
@@ -189,7 +171,18 @@ class Handling():
         """
         self.actions[action]['state'] = state
         self.actions[action]['timestamp'] = self.HandlingStruct.current_time
-        
+    
+    def __do_DAS_tick(self):
+        if self.Config.HANDLING_SETTINGS['DASCancel']:
+            if self.HandlingStruct.dir_priority == 'left':
+                self.__DAS_LEFT()
+            
+            if self.HandlingStruct.dir_priority == 'right':
+                self.__DAS_RIGHT()
+        else:
+            self.__DAS_LEFT()
+            self.__DAS_RIGHT()
+
     def __LeftRightMovementPriority(self, action_1: Action, action_2: Action):
         """
         Prioritise the most recent direction: when both left and right directions are held,
@@ -207,21 +200,27 @@ class Handling():
                 if self.HandlingStruct.current_direction == direction_1:
                     self.__set_action_state(action_2, True)
                     self.__set_action_state(action_1, False)
+                    self.HandlingStruct.dir_priority = direction_2
                     
                 elif self.HandlingStruct.current_direction == direction_2:
                     self.__set_action_state(action_1, True)
                     self.__set_action_state(action_2, False)
+                    self.HandlingStruct.dir_priority = direction_1
+                    
             else:  # if left and right are pressed at the same time, no action is performed
                 self.__set_action_state(action_1, False)
                 self.__set_action_state(action_2, False)
+                self.HandlingStruct.dir_priority = None
 
         elif self.__is_direction_down(direction_1): # if only one direction is pressed, that direction is prioritised
             self.HandlingStruct.current_direction = direction_1
             self.__set_action_state(action_1, True)
+            self.HandlingStruct.dir_priority = direction_1
 
         elif self.__is_direction_down(direction_2):
             self.HandlingStruct.current_direction = direction_2
             self.__set_action_state(action_2, True)
+            self.HandlingStruct.dir_priority = direction_2
       
     def __test_actions(self, action:Action, check:callable):
         """
@@ -236,15 +235,7 @@ class Handling():
                 self.__LeftRightMovementPriority(action, Action.MOVE_RIGHT)
             elif action is Action.MOVE_RIGHT:
                 self.__LeftRightMovementPriority(action, Action.MOVE_LEFT)
-            elif action is Action.SONIC_LEFT:
-                self.__LeftRightMovementPriority(action, Action.SONIC_RIGHT)
-            elif action is Action.SONIC_RIGHT:
-                self.__LeftRightMovementPriority(action, Action.SONIC_LEFT)
-            elif action is Action.SONIC_LEFT_DROP:
-                self.__LeftRightMovementPriority(action, Action.SONIC_RIGHT_DROP)
-            elif action is Action.SONIC_RIGHT_DROP:
-                self.__LeftRightMovementPriority(action, Action.SONIC_LEFT_DROP)
-            else:
+            else:   
                 self.__set_action_state(action, True)  
         else:
             self.__set_action_state(action, False)
@@ -342,7 +333,6 @@ class Handling():
         """	
         if self.HandlingStruct.DO_MOVEMENT_LEFT:
             self.HandlingStruct.DO_MOVEMENT_LEFT = False
-            print(action)
             self.__queue_action(action)
         
     def __do_DAS_ARR_RIGHT(self, action:Action):
@@ -409,9 +399,9 @@ class Handling():
         Cancel DAS When Changing Directions: The DAS timer will reset for the previous direction if the opposite direction is pressed
         """
         if self.__is_direction_down('left') and self.__is_direction_down('right'):
-            if self.HandlingStruct.current_direction == 'right':
+            if self.HandlingStruct.dir_priority == 'right':
                 self.__reset_DAS_ARR('left')
-            elif self.HandlingStruct.current_direction == 'left':
+            if self.HandlingStruct.dir_priority == 'left':
                 self.__reset_DAS_ARR('right')
     
     def __ARR_LEFT(self):
@@ -421,6 +411,11 @@ class Handling():
         """ 
         if self.Config.HANDLING_SETTINGS['ARR'] == 0: # to avoid modulo by zero
             self.HandlingStruct.DO_MOVEMENT_LEFT = True
+            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS'] and self.HandlingStruct.dir_priority == 'left':
+                if self.__is_action_down(Action.SONIC_LEFT_DROP) and self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+                    self.__queue_action(Action.SONIC_LEFT_DROP)
+                else:
+                    self.__queue_action(Action.SONIC_LEFT)  
         else:
             if self.HandlingStruct.ARR_LEFT_COUNTER % self.Config.HANDLING_SETTINGS['ARR'] == 0 or self.HandlingStruct.ARR_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
                 self.HandlingStruct.DO_MOVEMENT_LEFT = True  
@@ -438,6 +433,11 @@ class Handling():
         """ 
         if self.Config.HANDLING_SETTINGS['ARR'] == 0:
             self.HandlingStruct.DO_MOVEMENT_RIGHT = True
+            if self.HandlingStruct.DAS_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS'] and self.HandlingStruct.dir_priority == 'right':
+                if self.__is_action_down(Action.SONIC_RIGHT_DROP) and self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+                    self.__queue_action(Action.SONIC_RIGHT_DROP)
+                else:
+                    self.__queue_action(Action.SONIC_RIGHT)    
         else:
             if self.HandlingStruct.ARR_RIGHT_COUNTER % self.Config.HANDLING_SETTINGS['ARR'] == 0 or self.HandlingStruct.ARR_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
                 self.HandlingStruct.DO_MOVEMENT_RIGHT = True

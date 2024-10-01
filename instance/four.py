@@ -59,15 +59,9 @@ class Four():
         Get the next state of the game
         """
         if not self.core_instance.FlagStruct.GAME_OVER:
-            
-            if self.core_instance.Config.HANDLING_SETTINGS['PrefSD']: # prefer soft drop over movement, apply gravity first then DAS. With SDF == 'inf' and ARR == 0. Pices will fall first into a well then move left or right to the walls
-                self.__perform_gravity()
-                self.__perform_actions()
-            else:
-                self.__perform_actions()
-                self.__perform_gravity()
-                
-            self.__update_current_tetromino()
+        
+            self.__perform_actions()
+            self.__perform_gravity()
             self.__clear_lines()
             
             if self.core_instance.GameInstanceStruct.current_tetromino is None:

@@ -11,7 +11,8 @@ class StructHandling():
     poll_tick_counter: int = 0
     poll_counter_last_cleared: float = 0
     current_direction: Action = None
-
+    dir_priority = None
+    
     buffer_threshold: int = 128 # tick range where old actions are still considered valid
     
     DAS_LEFT_COUNTER: int = 0

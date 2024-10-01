@@ -3,7 +3,6 @@ from core.core import Core
 from instance.four import Four
 
 #TODO:
-# FIX: Left and Right movement should have different DAS and ARR timers!
 
 # FIX: lock delay reset mechanics (currently is half right in terms of overall behaviour): 
 # - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
