@@ -319,10 +319,10 @@ class Render():
         hold_rect = self.__hold_rect()
         pygame.draw.rect(self.four_surface, (0, 0, 0), hold_rect)
         if tetromino is not None:
-            self.__render_tetromino_preview(tetromino, hold_rect)
+            self.__render_tetromino_preview(tetromino, hold_rect, can_hold = self.GameInstanceStruct.can_hold)
         self.__draw_hold_border()
     
-    def __render_tetromino_preview(self, tetromino, rect):
+    def __render_tetromino_preview(self, tetromino, rect, can_hold = True):
         """
         Render a tetromino preview
         
@@ -342,7 +342,11 @@ class Render():
         for i, row in enumerate(tetromino):
             for j, value in enumerate(row):
                 if value != 0:
-                    colour = self.Config.COLOUR_MAP[value]
+                    if can_hold:
+                        colour = self.Config.COLOUR_MAP[value]
+                    else:
+                        colour = lerpBlendRGBA(self.Config.COLOUR_MAP[value], (75, 75, 75), 0.85)
+                    
                     pygame.draw.rect(self.four_surface, colour, 
                                     (rect.x + offset_x + j * self.Config.GRID_SIZE, rect.y + offset_y + i * self.Config.GRID_SIZE, self.Config.GRID_SIZE, self.Config.GRID_SIZE)
                                     )
@@ -415,15 +419,13 @@ class Render():
         
         debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 10)))
 
-
         das_colour = (255, 255, 255)
 
         debug_surfaces.append((self.hun2_big.render(f'DAS: L: {int(debug_dict["DAS_LEFT_COUNTER"])} ms | R: {int(debug_dict["DAS_RIGHT_COUNTER"])} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 11)))
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["DAS"]} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12)))
         
-        debug_surfaces.append((self.pfw_small.render(f'DCD: {debug_dict["DCD"]} | DAS Cancel: {debug_dict["DAS_CANCEL"]}', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12.5)))
-        
+        debug_surfaces.append((self.pfw_small.render(f'DCD: {debug_dict["DCD"]} | DAS Cancel: {debug_dict["DAS_CANCEL"]} | Direction: {debug_dict["DIR"]} (Priority: {debug_dict["PRIORIDIR"]})', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12.5)))
         
         arr_colour = (255, 255, 255)
         

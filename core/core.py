@@ -482,6 +482,9 @@ class Core():
                         'PREVHD': self.handling.Config.HANDLING_SETTINGS['PrevAccHD'],
                         'PREFSD': self.handling.Config.HANDLING_SETTINGS['PrefSD'],
                         
+                        'PRIORIDIR': self.handling.Config.HANDLING_SETTINGS['PrioriDir'],
+                        'DIR': self.handling.HandlingStruct.dir_priority,
+                        
                         'GRAVITY': self.GameInstanceStruct.gravity,
                         'GRAV_COUNTER': self.GameInstanceStruct.gravity_counter,
                         'G_IN_TICKS': self.GameInstanceStruct.G_units_in_ticks,

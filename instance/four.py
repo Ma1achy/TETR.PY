@@ -273,6 +273,7 @@ class Four():
                 self.__soft_drop()
         
         self.__apply_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
+        self.__update_current_tetromino()
            
     def __perform_actions(self):
         
