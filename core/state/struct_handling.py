@@ -14,12 +14,19 @@ class StructHandling():
 
     buffer_threshold: int = 128 # tick range where old actions are still considered valid
     
-    DAS_counter: int = 0
-    das_remainder: float = 0
-    DAS_charged: bool = False
+    DAS_LEFT_COUNTER: int = 0
+    DAS_LEFT_COUNTER_REMAINDER: float = 0
     
-    ARR_counter: int = 0
-    arr_remainder: float = 0
+    ARR_LEFT_COUNTER: int = 0
+    ARR_LEFT_COUNTER_REMAINDER: float = 0
     
-    do_movement: bool = False 
-    instant_movement: bool = False
+    DO_MOVEMENT_LEFT: bool = False 
+      
+    DAS_RIGHT_COUNTER: int = 0
+    DAS_RIGHT_COUNTER_REMAINDER: float = 0
+    
+    ARR_RIGHT_COUNTER: int = 0
+    ARR_RIGHT_COUNTER_REMAINDER: float = 0
+    
+    DO_MOVEMENT_RIGHT: bool = False
+  
