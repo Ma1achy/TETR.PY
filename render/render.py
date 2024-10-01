@@ -7,7 +7,7 @@ from core.state.struct_gameinstance import StructGameInstance
 from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix
 
 class Render():
-    def __init__(self, window:pygame.Surface, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance):
+    def __init__(self, window:pygame.Surface, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct):  
         """
         Render an instance of four onto a window
         
@@ -19,6 +19,7 @@ class Render():
         self.RenderStruct = RenderStruct
         self.FlagStruct = Flags
         self.GameInstanceStruct = GameInstanceStruct
+        self.TimingStruct = TimingStruct
         
         self.window = window
         pygame.font.init()
@@ -26,6 +27,7 @@ class Render():
     
         # fonts
         self.hun2_big = Font(self.Config.GRID_SIZE).hun2()
+        self.hun2_med = Font(3 * self.Config.GRID_SIZE // 4).hun2()
         self.hun2_small = Font(self.Config.GRID_SIZE//2).hun2()
         self.pfw_small = Font(self.Config.GRID_SIZE//2).pfw()
         self.action_ui = Font(self.Config.GRID_SIZE).action_ui()
@@ -53,6 +55,7 @@ class Render():
         self.__render_matrix()
         self.__render_hold()
         self.__render_queue()
+        self.draw_timer()
             
         for surface, coords in self.RenderStruct.surfaces:
             self.four_surface.blit(surface, coords)
@@ -421,7 +424,7 @@ class Render():
 
         das_colour = (255, 255, 255)
 
-        debug_surfaces.append((self.hun2_big.render(f'DAS: L: {int(debug_dict["DAS_LEFT_COUNTER"])} ms | R: {int(debug_dict["DAS_RIGHT_COUNTER"])} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 11)))
+        debug_surfaces.append((self.hun2_big.render(f'DAS: {int(debug_dict["DAS_LEFT_COUNTER"])} ms {int(debug_dict["DAS_RIGHT_COUNTER"])} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 11)))
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["DAS"]} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12)))
         
@@ -429,7 +432,7 @@ class Render():
         
         arr_colour = (255, 255, 255)
         
-        debug_surfaces.append((self.hun2_big.render(f'ARR: L: {int(debug_dict["ARR_LEFT_COUNTER"])} ms | R: {int(debug_dict["ARR_RIGHT_COUNTER"])} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 13.5)))
+        debug_surfaces.append((self.hun2_big.render(f'ARR: {int(debug_dict["ARR_LEFT_COUNTER"])} ms {int(debug_dict["ARR_RIGHT_COUNTER"])} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 13.5)))
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 14.5)))
         
@@ -438,7 +441,7 @@ class Render():
         debug_surfaces.append((self.pfw_small.render(f'Gravity: {debug_dict["GRAVITY"]:.2f} G ({debug_dict["G_IN_TICKS"]} ticks) | Multi: {debug_dict["G_MULTI"]} | Counter: {debug_dict["GRAV_COUNTER"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16)))
     
         debug_surfaces.append((self.pfw_small.render(f'Lock Delay: {debug_dict["LOCK_DELAY"]} ({debug_dict["LOCK_DELAY_TICKS"]} ticks) | Resets Left: {debug_dict["MAX_MOVES"]} | Counter: {debug_dict["LOCK_DELAY_COUNTER"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16.5)))
-               
+          
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)
 
@@ -514,5 +517,17 @@ class Render():
         pygame.draw.line(self.four_surface, (255, 0, 0), (x - length, y), (x + length, y), 2)
         pygame.draw.line(self.four_surface, (255, 0, 0), (x, y - length), (x, y + length), 2)
     
-   
-        
+    def format_time(self):
+        if not self.FlagStruct.GAME_OVER:
+            minutes = int((self.TimingStruct.current_time % 3600) // 60)
+            seconds = int(self.TimingStruct.current_time % 60)
+            milliseconds = int((self.TimingStruct.current_time % 1) * 1000)
+            time_minsec = f"{minutes}:{seconds:02}"
+            time_ms = f"{milliseconds:03}"
+        return time_minsec, time_ms
+    
+    def draw_timer(self):   
+        time_minsec, time_ms = self.format_time()
+        self.RenderStruct.surfaces.append((self.hun2_med.render('Time', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.33, self.Config.GRID_SIZE * 22.33)))
+        self.RenderStruct.surfaces.append((self.hun2_big.render(f'{time_minsec}.', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.5 - (len(time_minsec) * self.Config.GRID_SIZE//2 + 1), self.Config.GRID_SIZE * 23.25)))
+        self.RenderStruct.surfaces.append((self.hun2_med.render(f'{time_ms}', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.66, self.Config.GRID_SIZE * 23.45)))

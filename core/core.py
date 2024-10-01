@@ -31,7 +31,7 @@ class Core():
         
         self.render_clock = Clock()
         self.window = self.__init_window()
-        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct)
+        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.StructTiming)
         self.handling = Handling(self.Config, self.HandlingStruct)
         
         self.TPS = self.Config.TPS

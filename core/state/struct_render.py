@@ -10,4 +10,4 @@ class StructRender():
     draw_bounding_box: bool = False
     draw_origin: bool = False
     draw_pivot: bool = False
-    
+    current_time: float = 0

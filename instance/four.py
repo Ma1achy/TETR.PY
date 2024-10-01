@@ -171,6 +171,9 @@ class Four():
         args:
             action (Action): The action to perform
         """
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
         self.core_instance.GameInstanceStruct.current_tetromino.move(action)
         self.__update_current_tetromino()
         

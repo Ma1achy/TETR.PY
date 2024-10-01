@@ -109,7 +109,10 @@ class Handling():
         
         self.__test_actions(Action.ROTATE_180, self.__is_action_toggled)
         
-        self.__test_actions(Action.HARD_DROP, self.__is_action_toggled)
+        if self.Config.HANDLING_SETTINGS['SonicDrop']:
+            self.__test_actions(Action.SONIC_DROP, self.__is_action_toggled) # FIXME: Implement logic so once this is pressed again the piece locks instantly
+        else:
+            self.__test_actions(Action.HARD_DROP, self.__is_action_toggled)
         
         self.__test_actions(Action.HOLD, self.__is_action_toggled)
         
