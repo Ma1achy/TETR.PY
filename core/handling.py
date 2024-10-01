@@ -2,8 +2,6 @@ from enum import Enum, auto
 import pygame as pygame
 from collections import deque
 
-# TODO:
-# - Seperate DAS and ARR timers for left and right movement
 class Action(Enum):
     """
     Actions that can be performed
