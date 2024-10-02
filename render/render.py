@@ -518,16 +518,17 @@ class Render():
         pygame.draw.line(self.four_surface, (255, 0, 0), (x, y - length), (x, y + length), 2)
     
     def format_time(self):
-        if not self.FlagStruct.GAME_OVER:
-            minutes = int((self.TimingStruct.current_time % 3600) // 60)
-            seconds = int(self.TimingStruct.current_time % 60)
-            milliseconds = int((self.TimingStruct.current_time % 1) * 1000)
-            time_minsec = f"{minutes}:{seconds:02}"
-            time_ms = f"{milliseconds:03}"
+        minutes = int((self.TimingStruct.current_time % 3600) // 60)
+        seconds = int(self.TimingStruct.current_time % 60)
+        milliseconds = int((self.TimingStruct.current_time % 1) * 1000)
+        time_minsec = f"{minutes}:{seconds:02}"
+        time_ms = f"{milliseconds:03}"
         return time_minsec, time_ms
     
-    def draw_timer(self):   
-        time_minsec, time_ms = self.format_time()
+    def draw_timer(self): 
+        if not self.FlagStruct.GAME_OVER:
+            self.time_minsec, self.time_ms = self.format_time()
+            
         self.RenderStruct.surfaces.append((self.hun2_med.render('Time', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.33, self.Config.GRID_SIZE * 22.33)))
-        self.RenderStruct.surfaces.append((self.hun2_big.render(f'{time_minsec}.', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.5 - (len(time_minsec) * self.Config.GRID_SIZE//2 + 1), self.Config.GRID_SIZE * 23.25)))
-        self.RenderStruct.surfaces.append((self.hun2_med.render(f'{time_ms}', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.66, self.Config.GRID_SIZE * 23.45)))
+        self.RenderStruct.surfaces.append((self.hun2_big.render(f'{self.time_minsec}.', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.5 - (len(self.time_minsec) * self.Config.GRID_SIZE//2 + 1), self.Config.GRID_SIZE * 23.25)))
+        self.RenderStruct.surfaces.append((self.hun2_med.render(f'{self.time_ms}', True, (255, 255, 255)), (self.Config.GRID_SIZE * 4.66, self.Config.GRID_SIZE * 23.45)))
