@@ -7,16 +7,10 @@ from instance.four import Four
 # - Implement Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames (use flag system)
 # - check if when prefSD is true if the order of preform actions and gravity needs to be swapped in game loop.
 
-# FIX: lock delay reset mechanics (currently is half right in terms of overall behaviour): 
-# - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
-# - If 15 resets are reached, the piece locks instantly on contact with the floor
-# - The move resets are replenished if the piece falls below its lowest position (given by the y coord of the center of rotation of the piece)
-# - Each ARR move counts as a reset (this is a bit weird when using 0 ARR but makes sense)
-
 #  === game logic ===
 # - PERFECT CLEAR DETECTION 
 # - COMBO DETECTION
-# - SCORING
+# - SCORINGz
 # - LEVELS
 # - GAME OVER CONDITIONS
 

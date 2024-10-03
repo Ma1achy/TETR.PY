@@ -488,12 +488,13 @@ class Core():
                         'GRAVITY': self.GameInstanceStruct.gravity,
                         'GRAV_COUNTER': self.GameInstanceStruct.gravity_counter,
                         'G_IN_TICKS': self.GameInstanceStruct.G_units_in_ticks,
-                        'ON_FLOOR': self.GameInstanceStruct.on_floor,
+                        'ON_FLOOR': self.GameInstanceStruct.current_tetromino.is_on_floor() if self.GameInstanceStruct.current_tetromino else False,
                         'G_MULTI': self.GameInstanceStruct.soft_drop_factor,
                         'LOCK_DELAY': self.GameInstanceStruct.lock_delay,
-                        'LOCK_DELAY_COUNTER': self.GameInstanceStruct.lock_delay_counter,
+                        'LOCK_DELAY_COUNTER': self.GameInstanceStruct.current_tetromino.lock_delay_counter if self.GameInstanceStruct.current_tetromino else 0,
                         'LOCK_DELAY_TICKS': self.GameInstanceStruct.lock_delay_in_ticks,
-                        'MAX_MOVES': self.GameInstanceStruct.max_moves_before_lock,
+                        'MAX_MOVES': self.GameInstanceStruct.current_tetromino.max_moves_before_lock if self.GameInstanceStruct.current_tetromino else 0,
+                        'LOWEST_PIVOT': self.GameInstanceStruct.current_tetromino.lowest_pivot_position if self.GameInstanceStruct.current_tetromino else 0,
                     }
             else:
                 self.StructDebug.debug_dict = None

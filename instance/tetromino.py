@@ -26,6 +26,7 @@ class Tetromino():
         self.ghost_position = Vec2(self.position.x, self.position.y)
         self.matrix = matrix
         
+        self.lowest_pivot_position = self.matrix.HEIGHT - (self.pivot.y + self.position.y)
         self.lock_delay_counter = 0
         self.max_moves_before_lock = 15
         
@@ -112,14 +113,10 @@ class Tetromino():
             
         if self.collision(self.blocks, vector + self.position): # validate movement
             return
-    
-        self.position = vector + self.position
-        
-        if not self.is_on_floor():
-            self.lock_delay_counter = 0
-        else:
-            self.lock_delay_reset()
-            
+
+        self.__reset_lock_delay_valid_movement()
+        self.position += vector
+       
     def sonic_move(self, action:Action):
         """
         Move the piece in the given direction 
@@ -139,7 +136,8 @@ class Tetromino():
                 raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
         
         while not self.collision(self.blocks, vector + self.position):    
-            self.position = vector + self.position
+            self.position += vector
+            self.__reset_lock_delay_valid_movement()
         
     def sonic_move_and_drop(self, action:Action, PrefSD:bool):
         """
@@ -166,12 +164,14 @@ class Tetromino():
                 self.sonic_move_and_drop(action, PrefSD)
             else:
                 if not self.collision(self.blocks, self.position + horizontal_vector):
+                    self.__reset_lock_delay_valid_movement()
                     self.position += horizontal_vector
                     self.sonic_move_and_drop(action, PrefSD)
                 else:
                     return
         else:
             if not self.collision(self.blocks, self.position + horizontal_vector): 
+                self.__reset_lock_delay_valid_movement()
                 self.position += horizontal_vector
                 self.sonic_move_and_drop(action, PrefSD) 
             else:
@@ -266,14 +266,12 @@ class Tetromino():
                 
             else: # all other pieces use immobility test for spin detection
                 self.__is_spin(rotated_piece, kick)
-                
+            
+            self.__reset_lock_delay_valid_movement() 
             self.state = desired_state
             self.blocks = rotated_piece
             self.position += kick
-            
-            if self.is_on_floor():
-                self.lock_delay_reset()
-                
+              
     def __get_kick(self, kick_table, desired_state:int, offset:int):
         """
         Get the kick translation to apply to the piece for the given offset_order
@@ -413,12 +411,27 @@ class Tetromino():
         if not self.collision(self.blocks, self.ghost_position):
             self.matrix.ghost = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
-            
-    def lock_delay_reset(self):
-        if self.max_moves_before_lock != 0:
+    
+    def reset_lock_delay_lower_pivot(self):
+        """
+        Update the lowest pivot position of the piece and reset the lock delay if it is 
+        lower than the previous lowest pivot position
+        """
+        pivot_pos_y = self.matrix.HEIGHT - (len(self.blocks) / 2 + self.position.y)
+
+        if pivot_pos_y < self.lowest_pivot_position:
+            self.lowest_pivot_position = pivot_pos_y
             self.lock_delay_counter = 0
-            self.max_moves_before_lock -= 1
+            self.max_moves_before_lock = 15
         
-    def increment_lock_delay_counter(self):
+        return self.lowest_pivot_position
+    
+    def __reset_lock_delay_valid_movement(self):
+        """
+        Reset the lock delay due to valid movement
+        """
+        self.lock_delay_counter = 0
+        
         if self.is_on_floor():
-            self.lock_delay_counter += 1
+            self.max_moves_before_lock += -1
+        

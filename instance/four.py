@@ -62,6 +62,7 @@ class Four():
         
             self.__perform_actions()
             self.__perform_gravity()
+            self.__do_lock_delay()
             self.__clear_lines()
             
             if self.core_instance.GameInstanceStruct.current_tetromino is None:
@@ -100,14 +101,8 @@ class Four():
             self.core_instance.GameInstanceStruct.matrix.piece = self.core_instance.GameInstanceStruct.matrix.empty_matrix()
             self.core_instance.GameInstanceStruct.matrix.insert_blocks(self.core_instance.GameInstanceStruct.current_tetromino.blocks, self.core_instance.GameInstanceStruct.current_tetromino.position, self.core_instance.GameInstanceStruct.matrix.piece)
             self.core_instance.GameInstanceStruct.current_tetromino.ghost()
+            self.core_instance.GameInstanceStruct.current_tetromino.reset_lock_delay_lower_pivot()
             
-            # TODO: fix the below mess as this is silly, can just acess/update these values directly
-            self.core_instance.GameInstanceStruct.on_floor = self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor()
-            self.core_instance.GameInstanceStruct.lock_delay_counter = self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter
-            self.core_instance.GameInstanceStruct.max_moves_before_lock = self.core_instance.GameInstanceStruct.current_tetromino.max_moves_before_lock
-            self.core_instance.GameInstanceStruct.current_tetromino.increment_lock_delay_counter()
-            self.__auto_lock()
-        
     def __get_next_piece(self, hold:bool):
         """
         Get the next piece from the queue and spawn it
@@ -139,6 +134,7 @@ class Four():
             next_piece (str): The type of the next tetromino
         """
         spawning_tetromino = Tetromino(next_piece, 0, self.core_instance.GameInstanceStruct.spawn_pos.x, self.core_instance.GameInstanceStruct.spawn_pos.y, self.core_instance.GameInstanceStruct.matrix)
+        self.core_instance.GameInstanceStruct.lock_delay_counter = 0
         
         if self.__check_spawn(spawning_tetromino):
             self.core_instance.GameInstanceStruct.current_tetromino = spawning_tetromino
@@ -265,7 +261,7 @@ class Four():
             self.core_instance.GameInstanceStruct.current_tetromino = None
     
     def __perform_gravity(self):
-        
+    
         if self.core_instance.GameInstanceStruct.current_tetromino is None:
             return
         
@@ -274,7 +270,7 @@ class Four():
             
             if action == Action.SOFT_DROP:
                 self.__soft_drop()
-        
+            
         self.__apply_gravity(self.core_instance.GameInstanceStruct.gravity, self.core_instance.GameInstanceStruct.soft_drop_factor)
         self.__update_current_tetromino()
            
@@ -419,24 +415,46 @@ class Four():
         if Action.SOFT_DROP not in actions:
             self.core_instance.GameInstanceStruct.gravity_counter = 0
     
-    def __auto_lock(self):
+    def __do_lock_delay(self):
         """
-        Automatically lock the current tetromino
+        Increment the lock delay counter when the current tetromino is on the floor and lock it when the counter reaches the lock delay
+        
+        - Lock delay is reset every time a piece is moved or rotated (successfully) (the maximum amount of resets is 15 and every reset subtracts 1 from the total resets)
+        - If 15 resets are reached, the piece locks instantly on contact with the floor
+        - The move resets are replenished if the piece falls below its lowest position (given by the y coord of the center of rotation of the piece)
+        - Each ARR move counts as a reset (this is a bit weird when using 0 ARR but makes sense)
         """
+        
         if self.core_instance.GameInstanceStruct.current_tetromino is None:
             return
         
         if self.core_instance.GameInstanceStruct.lock_delay == 'inf':
             self.core_instance.GameInstanceStruct.lock_delay_in_ticks = 'inf'
-        else:
+            return
+        else: 
             self.core_instance.GameInstanceStruct.lock_delay_in_ticks = int(self.core_instance.GameInstanceStruct.lock_delay/60 * self.core_instance.Config.TPS) # convert from frames in 1/60th of a second to ticks in 1/self.config.TPS of a second
         
-            if self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor() and self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter >= self.core_instance.GameInstanceStruct.lock_delay_in_ticks:
+            if self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor():
+                self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter += 1
+                
+            if self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter >= self.core_instance.GameInstanceStruct.lock_delay_in_ticks:
                 self.__lock()
             
-        if self.core_instance.GameInstanceStruct.current_tetromino is not None and not self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor(): # reset the lock delay counter if the piece is not on the floor
+            self.__do_lock_delay_reset()
+    
+    def __do_lock_delay_reset(self):
+        """
+        Reset the lock delay counter
+        """    
+        if self.core_instance.GameInstanceStruct.current_tetromino is None:
+            return
+        
+        if not self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor(): # if the piece is not on the floor reset the lock delay counter
             self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter = 0
-  
+        
+        if self.core_instance.GameInstanceStruct.current_tetromino.max_moves_before_lock == 0 and self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor(): # if the piece has reached the maximum amount of moves lock it on contact with the floor
+            self.__lock()
+            
 class Queue():
     def __init__(self, rng, length = 5):
         """
