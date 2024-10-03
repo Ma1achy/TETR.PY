@@ -4,13 +4,29 @@ from enum import Enum, auto
 
 
 class FLAG(Enum):
-    DANGER = auto()
+    # game state
     GAME_OVER = auto()
+    DANGER = auto()
+    
+    # handling that is reliant on game state
+    DO_PREV_ACC_HD = auto() 
+    DO_DCD = auto() 
+    
+    # scoring
+    SINGLE = auto()
+    DOUBLE = auto()
+    TRIPLE = auto()
+    QUADRUPLE = auto()
+    
+    SOFT_DROP = auto()
+    HARD_DROP = auto()
     
     IS_SPIN = auto()
     TSPIN = auto()
     TSPIN_MINI = auto()
+    
     ALL_CLEAR = auto()
+    BACK2BACK = auto()
     COMBO = auto()
     
 def generate_flags():
