@@ -22,7 +22,7 @@ class StructGameInstance():
     soft_dropping: bool = True
     soft_drop_factor: int = 1
 
-    lock_delay: int = 120
+    lock_delay: int = 30
     lock_delay_in_ticks: int = 0
     can_hold: bool = True
     
