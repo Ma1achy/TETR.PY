@@ -1,5 +1,6 @@
 from instance.matrix import Matrix
 import pygame
+import math
 from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
@@ -253,7 +254,15 @@ class Render():
         self.__draw_blocks(self.GameInstanceStruct.matrix.ghost, matrix_surface_rect, transparent = True, alpha = 0.33, blend_colour=(0, 0, 0))
         self.__draw_grid(matrix_surface_rect)
         self.__draw_blocks(self.GameInstanceStruct.matrix.matrix, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(0, 0, 0))
-        self.__draw_blocks(self.GameInstanceStruct.matrix.piece, matrix_surface_rect, transparent = True, alpha = 1, blend_colour=(255, 255, 255))
+        
+        if self.GameInstanceStruct.current_tetromino is not None:
+            piece_alpha = self.calculate_alpha(self.GameInstanceStruct.current_tetromino.lock_delay_counter, self.GameInstanceStruct.lock_delay_in_ticks)
+            piece_colour = (0, 0, 0)
+        else:
+            piece_alpha = 1
+            piece_colour = (255, 255, 255)
+
+        self.__draw_blocks(self.GameInstanceStruct.matrix.piece, matrix_surface_rect, transparent = True, alpha = piece_alpha, blend_colour=piece_colour)
         
         if self.FlagStruct.DANGER:
             self.draw_danger_crosses()
@@ -269,7 +278,19 @@ class Render():
                 self.__draw_pivot_position()
         
         self.__draw_matrix_border() 
-       
+        
+    def calculate_alpha(self, lock_delay_counter, lock_delay_in_ticks):
+        if lock_delay_in_ticks == 0:
+            return 1
+        
+        progress = lock_delay_counter / lock_delay_in_ticks
+        smooth_progress = self.smoothstep(progress)
+        alpha = 1 - max(0, min(0.25, smooth_progress))
+        return alpha
+    
+    def smoothstep(self, x):
+        return x * x * x * (x * (6 * x - 15) + 10)
+
     def __render_queue(self):
         """
         Render the queue onto the window
