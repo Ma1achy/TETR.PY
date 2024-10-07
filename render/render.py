@@ -1,6 +1,5 @@
 from instance.matrix import Matrix
 import pygame
-import math
 from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
