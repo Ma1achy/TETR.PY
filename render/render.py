@@ -111,7 +111,7 @@ class Render():
             for j, value in enumerate(row):
                 if value != 0:
                     if self.FlagStruct.GAME_OVER:
-                        colour = self.Config.COLOUR_MAP[8]
+                        colour = lerpBlendRGBA(self.Config.COLOUR_MAP[value], (75, 75, 75), 0.85)
                     else:
                         colour = self.Config.COLOUR_MAP[value]
                     if transparent:

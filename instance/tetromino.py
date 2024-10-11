@@ -411,6 +411,9 @@ class Tetromino():
         if not self.collision(self.blocks, self.ghost_position):
             self.matrix.ghost = self.matrix.empty_matrix()
             self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
+        
+        if self.ghost_position.y <= self.position.y:
+            self.matrix.ghost = self.matrix.empty_matrix()
     
     def reset_lock_delay_lower_pivot(self):
         """
