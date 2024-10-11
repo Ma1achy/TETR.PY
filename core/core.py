@@ -495,6 +495,10 @@ class Core():
                         'LOCK_DELAY_TICKS': self.GameInstanceStruct.lock_delay_in_ticks,
                         'MAX_MOVES': self.GameInstanceStruct.current_tetromino.max_moves_before_lock if self.GameInstanceStruct.current_tetromino else 0,
                         'LOWEST_PIVOT': self.GameInstanceStruct.current_tetromino.lowest_pivot_position if self.GameInstanceStruct.current_tetromino else 0,
+                        
+                        'PREV_ACC_HD_COUNTER': self.handling.HandlingStruct.PREV_ACC_HD_COUNTER,
+                        'PREV_ACC_HD_TIME': int(self.Config.HANDLING_SETTINGS['PrevAccHDTime']/60*self.Config.TPS),
+                        'PREV_ACC_HD_FLAG': self.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP,
                     }
             else:
                 self.StructDebug.debug_dict = None

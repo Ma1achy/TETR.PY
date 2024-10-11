@@ -30,4 +30,5 @@ class StructHandling():
     ARR_RIGHT_COUNTER_REMAINDER: float = 0
     
     DO_MOVEMENT_RIGHT: bool = False
-  
+    
+    PREV_ACC_HD_COUNTER: int = 0

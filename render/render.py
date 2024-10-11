@@ -456,11 +456,13 @@ class Render():
         
         debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 14.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrevAccHD: {debug_dict["PREVHD"]} | PrefSD: {debug_dict["PREFSD"]} | On Floor: {debug_dict["ON_FLOOR"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 15.5)))
+        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrefSD: {debug_dict["PREFSD"]} | On Floor: {debug_dict["ON_FLOOR"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 15.5)))
         
         debug_surfaces.append((self.pfw_small.render(f'Gravity: {debug_dict["GRAVITY"]:.2f} G ({debug_dict["G_IN_TICKS"]} ticks) | Multi: {debug_dict["G_MULTI"]} | Counter: {debug_dict["GRAV_COUNTER"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16)))
     
         debug_surfaces.append((self.pfw_small.render(f'Lock Delay: {debug_dict["LOCK_DELAY"]} ({debug_dict["LOCK_DELAY_TICKS"]} ticks) | Resets Left: {debug_dict["MAX_MOVES"]} | Counter: {debug_dict["LOCK_DELAY_COUNTER"]} | y: {debug_dict['LOWEST_PIVOT']}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16.5)))
+        
+        debug_surfaces.append((self.pfw_small.render(f'PrevAccHD: {debug_dict["PREVHD"]} | Delay: {debug_dict['PREV_ACC_HD_TIME']} ticks| Counter: {debug_dict['PREV_ACC_HD_COUNTER']} | Flag: {debug_dict['PREV_ACC_HD_FLAG']}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 17)))
           
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)

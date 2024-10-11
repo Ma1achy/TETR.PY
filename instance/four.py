@@ -279,6 +279,8 @@ class Four():
         if self.core_instance.GameInstanceStruct.current_tetromino is None:
             return
         
+        self.__do_prevent_accidental_hard_drop()
+        
         for action_dict in self.actions_this_tick:
             action = action_dict['action'] 
                   
@@ -296,7 +298,8 @@ class Four():
                     self.__rotate180(action)
                         
                 case Action.HARD_DROP:
-                    self.__hard_drop()
+                    if not self.core_instance.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP:
+                        self.__hard_drop()
                     
                 case Action.HOLD:
                     self.__hold()
@@ -439,7 +442,8 @@ class Four():
                 
             if self.core_instance.GameInstanceStruct.current_tetromino.lock_delay_counter >= self.core_instance.GameInstanceStruct.lock_delay_in_ticks:
                 self.__lock()
-            
+                self.__prevent_accidental_hard_drop()
+                    
             self.__do_lock_delay_reset()
     
     def __do_lock_delay_reset(self):
@@ -454,7 +458,21 @@ class Four():
         
         if self.core_instance.GameInstanceStruct.current_tetromino.max_moves_before_lock == 0 and self.core_instance.GameInstanceStruct.current_tetromino.is_on_floor(): # if the piece has reached the maximum amount of moves lock it on contact with the floor
             self.__lock()
+            self.__prevent_accidental_hard_drop()
             
+    def __prevent_accidental_hard_drop(self):
+        if self.core_instance.Config.HANDLING_SETTINGS['PrevAccHD']:
+            self.core_instance.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP = True
+                    
+    def __do_prevent_accidental_hard_drop(self):
+        
+        if self.core_instance.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP:
+            self.core_instance.HandlingStruct.PREV_ACC_HD_COUNTER += 1
+        
+            if self.core_instance.HandlingStruct.PREV_ACC_HD_COUNTER >= int(self.core_instance.Config.HANDLING_SETTINGS['PrevAccHDTime']/60*self.core_instance.Config.TPS):
+                self.core_instance.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP = False
+                self.core_instance.HandlingStruct.PREV_ACC_HD_COUNTER = 0
+    
 class Queue():
     def __init__(self, rng, length = 5):
         """

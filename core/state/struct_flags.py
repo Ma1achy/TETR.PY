@@ -9,7 +9,7 @@ class FLAG(Enum):
     DANGER = auto()
     
     # handling that is reliant on game state
-    DO_PREV_ACC_HD = auto() 
+    DO_PREVENT_ACCIDENTAL_HARD_DROP = auto() 
     DO_DCD = auto() 
     
     # scoring
