@@ -4,7 +4,6 @@ from instance.four import Four
 
 #TODO:
 
-# - Implement Prevent Accidental Hard Drops: When a piece locks on its own, the harddrop action is disabled for a few frames (use flag system)
 # - check if when prefSD is true if the order of preform actions and gravity needs to be swapped in game loop.
 
 #  === game logic ===
