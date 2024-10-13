@@ -12,7 +12,7 @@ class StructHandling():
     poll_counter_last_cleared: float = 0
     current_direction: Action = None
     dir_priority = None
-    
+
     buffer_threshold: int = 128 # tick range where old actions are still considered valid
     
     DAS_LEFT_COUNTER: int = 0
@@ -32,3 +32,5 @@ class StructHandling():
     DO_MOVEMENT_RIGHT: bool = False
     
     PREV_ACC_HD_COUNTER: int = 0
+
+    key_dict = None # dict of keys that are currently pressed

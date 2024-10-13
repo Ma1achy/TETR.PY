@@ -40,11 +40,8 @@ class Core():
         self.frame_time = 1 / self.Config.FPS
         
         self.exited = False
-        self.state_snapshot = None
         
-        self.key_dict = None
-        
-    def __initialise(self, four):
+    def __initialise(self):
         """
         Initalise the instance of the game
         
@@ -68,7 +65,9 @@ class Core():
         """
         self.exited = True
         pygame.quit()
-           
+    
+    # =========================================== CORE PROCESSES ===========================================
+    
     async def run(self, four):
         """
         Run the game
@@ -76,10 +75,10 @@ class Core():
         args:
         (Four) four: the instance of the game
         """
-        self.__initialise(four)
+        self.__initialise()
         
         await asyncio.gather(
-            self.__timing_wrapper("handle_events", self.__handle_events()),
+            self.__timing_wrapper("handle_events", self.__handling_loop()),
             self.__timing_wrapper("game_loop", self.__game_loop(four)),
             self.__timing_wrapper("get_debug_info", self.__get_debug_info()),
             self.__timing_wrapper("render_loop", self.__render_loop()),
@@ -112,10 +111,12 @@ class Core():
             await coro
         finally:
             monitor_task.cancel()  
-
-    async def __handle_events(self):
+            
+    # ------------------------------------------- HANDLING LOOP -------------------------------------------
+    
+    async def __handling_loop(self):
         """
-        Handle pygame key events and pass them to the handling object, updates at an uncapped rate
+        Handle pygame key events and pass them to the handling object
         """
         while not self.exited:
                 
@@ -139,7 +140,12 @@ class Core():
                 await asyncio.sleep(0)
     
     def __handle_key_events(self):
+        """
+        Handle pygame key events
+        """
+        
         self.HandlingStruct.poll_tick_counter += 1
+        self.handling.get_key_dict()
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -163,6 +169,8 @@ class Core():
                 
             elif event.type == pygame.KEYUP:
                 self.handling.on_key_release(event.key)
+    
+    # ------------------------------------------- GAME LOOP -------------------------------------------
     
     async def __game_loop(self, four):
         """
@@ -191,7 +199,20 @@ class Core():
                 self.StructTiming.tick_counter_last_cleared += 1
             
             await asyncio.sleep(0)
-
+            
+    def __do_tick(self, four):
+        """
+        Peform one tick of the game logic
+        
+        args:
+        (Four) four: the instance of the game
+        """
+        self.StructDebug.delta_tick = self.__calc_df()
+        four.loop()
+        self.StructTiming.tick_counter += 1
+    
+    # ------------------------------------------- RENDER LOOP -------------------------------------------
+       
     async def __render_loop(self):
         """
         The main render loop, updates at a fixed or uncapped frame rate
@@ -218,33 +239,16 @@ class Core():
             self.__get_fps()
             
             await asyncio.sleep(0)
-            
-    def __do_tick(self, four):
-        """
-        Peform one tick of the game logic
-        
-        args:
-        (Four) four: the instance of the game
-        """
-        self.StructDebug.delta_tick = self.__calc_df()
-        four.loop()
-        self.StructTiming.tick_counter += 1
     
     def __do_render(self):
         """
         Render a single frame of the game
         """
-        self.__get_key_dict()
-        self.render.render_frame(self.key_dict, self.StructDebug.debug_dict)
+        self.render.render_frame(self.HandlingStruct.key_dict, self.StructDebug.debug_dict)
         self.render_clock.tick()
+    
+    # =========================================== DEBUG INFO ===========================================  
                
-    def __exit(self):
-        """
-        Exit the game
-        """
-        self.exited = True
-        pygame.quit()
-        
     def __get_tps(self):
         """
         Update the stored TPS value
@@ -504,18 +508,6 @@ class Core():
                 self.StructDebug.debug_dict = None
         
             await asyncio.sleep(0)
-        
-    def __get_key_dict(self):
-        self.key_dict = {
-            'KEY_LEFT': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.MOVE_LEFT]),
-            'KEY_RIGHT': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.MOVE_RIGHT]),
-            'KEY_CLOCKWISE': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.ROTATE_CLOCKWISE]),
-            'KEY_COUNTERCLOCKWISE': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]),
-            'KEY_180': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.ROTATE_180]),
-            'KEY_HARD_DROP' : all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.HARD_DROP]),
-            'KEY_SOFT_DROP': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.SOFT_DROP]),
-            'KEY_HOLD': all(self.handling.key_states[key]['current'] for key in self.handling.Config.key_bindings[Action.HOLD]),
-        }
 class Clock:
     def __init__(self, max_entries = 10):
         """

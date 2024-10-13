@@ -62,7 +62,9 @@ class Handling():
             Action.SONIC_LEFT_DROP: 'left',
             Action.SONIC_RIGHT_DROP: 'right'
         }
-        
+    
+    # ============================================== ACTION HANDLING ==============================================
+       
     def __GetEmptyActions(self):
         """
         Return an empty actions dictionary
@@ -87,9 +89,18 @@ class Handling():
         """
         Hook that is called within the game loop before the tick is executed to obtain the current action states to be used in the game loop
         """
-        self.__get_actions() # has to be before the key states are forwarded or toggled actions will not be detected (can't belive this took 2 hours to figure out)
+        self.__get_actions()
         self.__forward_key_states()     
         return self.action_queue
+    
+    def __forward_key_states(self):
+        """
+        Forward the key states for comaprison in the future (allows for toggle/hold detection)
+        """
+        for k in self.key_states:
+            self.key_states[k]['previous'] = self.key_states[k]['current']
+    
+    # ------------------------------------------- ACTION TESTING -------------------------------------------
     
     def __get_actions(self):
         """
@@ -119,13 +130,6 @@ class Handling():
         self.__get_action_buffer() # add actions to buffer
         
         self.HandlingStruct.prev_time = self.HandlingStruct.current_time
-           
-    def __forward_key_states(self):
-        """
-        Forward the key states for comaprison in the future (allows for toggle/hold detection)
-        """
-        for k in self.key_states:
-            self.key_states[k]['previous'] = self.key_states[k]['current']
     
     def __is_action_toggled(self, action:Action):
         """
@@ -172,18 +176,27 @@ class Handling():
         """
         self.actions[action]['state'] = state
         self.actions[action]['timestamp'] = self.HandlingStruct.current_time
-    
-    def __do_DAS_tick(self):
-        if self.Config.HANDLING_SETTINGS['DASCancel']:
-            if self.HandlingStruct.dir_priority == 'left':
-                self.__DAS_LEFT()
-            
-            if self.HandlingStruct.dir_priority == 'right':
-                self.__DAS_RIGHT()
+      
+    def __test_actions(self, action:Action, check:callable):
+        """
+        Perform the state tests on an action and update the action state
+        
+        args:
+            action (Action): The action to be performed
+            check (callable): The function to be called to check the action state
+        """
+        if check(action):
+            if action is Action.MOVE_LEFT:
+                self.__LeftRightMovementPriority(action, Action.MOVE_RIGHT)
+            elif action is Action.MOVE_RIGHT:
+                self.__LeftRightMovementPriority(action, Action.MOVE_LEFT)
+            else:   
+                self.__set_action_state(action, True)  
         else:
-            self.__DAS_LEFT()
-            self.__DAS_RIGHT()
+            self.__set_action_state(action, False)
 
+    # ------------------------------------------- LEFT/RIGHT MOVEMENT PRIORITY -------------------------------------------
+    
     def __LeftRightMovementPriority(self, action_1: Action, action_2: Action):
         """
         Prioritise the most recent direction: when both left and right directions are held,
@@ -222,25 +235,9 @@ class Handling():
             self.HandlingStruct.current_direction = direction_2
             self.__set_action_state(action_2, True)
             self.HandlingStruct.dir_priority = direction_2
-      
-    def __test_actions(self, action:Action, check:callable):
-        """
-        Perform the state tests on an action and update the action state
-        
-        args:
-            action (Action): The action to be performed
-            check (callable): The function to be called to check the action state
-        """
-        if check(action):
-            if action is Action.MOVE_LEFT:
-                self.__LeftRightMovementPriority(action, Action.MOVE_RIGHT)
-            elif action is Action.MOVE_RIGHT:
-                self.__LeftRightMovementPriority(action, Action.MOVE_LEFT)
-            else:   
-                self.__set_action_state(action, True)  
-        else:
-            self.__set_action_state(action, False)
-                     
+     
+    # ------------------------------------------- KEY EVENT HANDLING ------------------------------------------------  
+               
     def __get_key_info(self, key:pygame.key):
         """
         Get the key info from the key object
@@ -248,13 +245,10 @@ class Handling():
         args:
             key (pygame.key): The key object
         """
-        
         try:
-            k = key.char
-            
+            k = key.char       
         except AttributeError:
             k = key
-        
         return k
                            
     def on_key_press(self, key:pygame.key):
@@ -264,15 +258,12 @@ class Handling():
         args:
             key (pygame.key): The key object
         """
-        
         keyinfo = self.__get_key_info(key)
-        
         try:
             KeyEntry = self.key_states[keyinfo]
             if KeyEntry:
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = True
-          
         except KeyError:
             return
     
@@ -283,18 +274,17 @@ class Handling():
         args:
             key (pygame.key): The key object
         """
-        
         keyinfo = self.__get_key_info(key)
-        
         try:
             KeyEntry = self.key_states[keyinfo]
             if KeyEntry:
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = False
-             
         except KeyError:
             return  
-        
+    
+    # ============================================== ACTION QUEUE ==============================================
+     
     def __get_action_buffer(self):
         """
         Get the actions that are currently active and add them to the queue.
@@ -324,10 +314,25 @@ class Handling():
             action (Action): The action to add to the queue
         """
         self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
-        
+    
+    # ============================================== DAS AND ARR LOGIC ==============================================
+    
+    def __do_DAS_tick(self):
+        """
+        Do a tick of the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR) logic
+        """
+        if self.Config.HANDLING_SETTINGS['DASCancel']:
+            if self.HandlingStruct.dir_priority == 'left':
+                self.__DAS_LEFT()
+            if self.HandlingStruct.dir_priority == 'right':
+                self.__DAS_RIGHT()
+        else:
+            self.__DAS_LEFT()
+            self.__DAS_RIGHT()
+            
     def __do_DAS_ARR_LEFT(self, action:Action):
         """
-        Perform the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR)
+        Perform the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR) for the left direction
         
         args:
             action (Action): The action to be performed
@@ -338,7 +343,7 @@ class Handling():
         
     def __do_DAS_ARR_RIGHT(self, action:Action):
         """
-        Perform the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR)
+        Perform the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR) for the right direction
         
         args:
             action (Action): The action to be performed
@@ -346,11 +351,35 @@ class Handling():
         if self.HandlingStruct.DO_MOVEMENT_RIGHT:
             self.HandlingStruct.DO_MOVEMENT_RIGHT = False
             self.__queue_action(action)
-            
+    
+    def __reset_DAS_ARR(self, direction:str = None):
+        """
+        Reset DAS once the action has been performed
+        
+        args:
+            direction (str): The direction to reset DAS for
+        """
+        if direction == 'left':
+            self.HandlingStruct.DAS_LEFT_COUNTER = 0
+            self.HandlingStruct.DAS_LEFT_COUNTER_REMAINDER = 0
+            self.HandlingStruct.ARR_LEFT_COUNTER = 0
+            self.HandlingStruct.ARR_LEFT_COUNTER_REMAINDER = 0
+
+        elif direction == 'right':
+            self.HandlingStruct.DAS_RIGHT_COUNTER = 0
+            self.HandlingStruct.DAS_RIGHT_COUNTER_REMAINDER = 0
+            self.HandlingStruct.ARR_RIGHT_COUNTER = 0 
+            self.HandlingStruct.ARR_RIGHT_COUNTER_REMAINDER = 0
+        else:
+            self.__reset_DAS_ARR('left')
+            self.__reset_DAS_ARR('right')
+    
+    # ---------------------------------------------------- DAS ----------------------------------------------------   
+     
     def __DAS_LEFT(self):
         """
-        If the Left/Right movement keys are held down, the DAS timer will be incremented until it reaches the DAS threshold (ms). 
-        Once charged, the ARR will be performed at the set rate (ms).
+        If the Left movement keys are held down, the Left DAS timer will be incremented until it reaches the DAS threshold (ms). 
+        Once charged, the Left ARR will be performed at the set rate (ms).
         """
         if self.Config.HANDLING_SETTINGS['DASCancel']: # if the opposite direction is pressed, the DAS timer will reset for the previous direction
             self.__DAS_cancel()
@@ -373,8 +402,8 @@ class Handling():
     
     def __DAS_RIGHT(self):
         """
-        If the Left/Right movement keys are held down, the DAS timer will be incremented until it reaches the DAS threshold (ms). 
-        Once charged, the ARR will be performed at the set rate (ms).
+        If the Right movement keys are held down, the Right DAS timer will be incremented until it reaches the DAS threshold (ms). 
+        Once charged, the Right ARR will be performed at the set rate (ms).
         """
         if self.Config.HANDLING_SETTINGS['DASCancel']:
             self.__DAS_cancel()
@@ -397,7 +426,7 @@ class Handling():
 
     def __DAS_cancel(self):
         """
-        Cancel DAS When Changing Directions: The DAS timer will reset for the previous direction if the opposite direction is pressed
+        Cancel DAS When Changing Directions: When enabled, the DAS timer will reset for the previous direction if the opposite direction is pressed
         """
         if self.__is_direction_down('left') and self.__is_direction_down('right'):
             if self.HandlingStruct.dir_priority == 'right':
@@ -405,10 +434,12 @@ class Handling():
             if self.HandlingStruct.dir_priority == 'left':
                 self.__reset_DAS_ARR('right')
     
+    # ---------------------------------------------------- ARR ----------------------------------------------------
+    
     def __ARR_LEFT(self):
         """
-        If the DAS timer is charged, the ARR timer will be incremented until it reaches the ARR threshold (ms).
-        Once charged, the action will be performed and the ARR timer will be reset.
+        If the Left DAS timer is charged, the Left ARR timer will be incremented until it reaches the ARR threshold (ms).
+        Once charged, the action will be performed and the Left ARR timer will be reset.
         """ 
         if self.Config.HANDLING_SETTINGS['ARR'] == 0: # to avoid modulo by zero
             self.HandlingStruct.DO_MOVEMENT_LEFT = True
@@ -429,8 +460,8 @@ class Handling():
                 
     def __ARR_RIGHT(self):
         """
-        If the DAS timer is charged, the ARR timer will be incremented until it reaches the ARR threshold (ms).
-        Once charged, the action will be performed and the ARR timer will be reset.
+        If the Right DAS timer is charged, the Right ARR timer will be incremented until it reaches the ARR threshold (ms).
+        Once charged, the action will be performed and the Right ARR timer will be reset.
         """ 
         if self.Config.HANDLING_SETTINGS['ARR'] == 0:
             self.HandlingStruct.DO_MOVEMENT_RIGHT = True
@@ -449,21 +480,16 @@ class Handling():
                 self.HandlingStruct.ARR_RIGHT_COUNTER_REMAINDER = r
                 self.HandlingStruct.ARR_RIGHT_COUNTER += int(q)
                 
-    def __reset_DAS_ARR(self, direction:str = None):
-        """
-        Reset DAS once the action has been performed
-        """
-        if direction == 'left':
-            self.HandlingStruct.DAS_LEFT_COUNTER = 0
-            self.HandlingStruct.DAS_LEFT_COUNTER_REMAINDER = 0
-            self.HandlingStruct.ARR_LEFT_COUNTER = 0
-            self.HandlingStruct.ARR_LEFT_COUNTER_REMAINDER = 0
-
-        elif direction == 'right':
-            self.HandlingStruct.DAS_RIGHT_COUNTER = 0
-            self.HandlingStruct.DAS_RIGHT_COUNTER_REMAINDER = 0
-            self.HandlingStruct.ARR_RIGHT_COUNTER = 0 
-            self.HandlingStruct.ARR_RIGHT_COUNTER_REMAINDER = 0
-        else:
-            self.__reset_DAS_ARR('left')
-            self.__reset_DAS_ARR('right')
+    # ---------------------------------------------------- HELD KEYS ----------------------------------------------------
+    
+    def get_key_dict(self):
+        self.HandlingStruct.key_dict = {
+                'KEY_LEFT': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_LEFT]),
+                'KEY_RIGHT': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_RIGHT]),
+                'KEY_CLOCKWISE': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_CLOCKWISE]),
+                'KEY_COUNTERCLOCKWISE': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]),
+                'KEY_180': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_180]),
+                'KEY_HARD_DROP' : all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.HARD_DROP]),
+                'KEY_SOFT_DROP': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.SOFT_DROP]),
+                'KEY_HOLD': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.HOLD]),
+            }

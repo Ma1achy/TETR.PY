@@ -14,6 +14,9 @@ from instance.four import Four
 # - GAME OVER CONDITIONS
 
 # redo render code it is a 3 course itallian meal rn
+# move debug stuff into sep obj
+# seperate kick tables from piece groupings to kick table per piece type.
+
 async def main():
     game_instance = Core()
     four = Four(game_instance, rotation_system = 'SRS')

@@ -17,7 +17,7 @@ class StructConfig():
     })
     
     HANDLING_SETTINGS: Dict[str, object] = field(default_factory = lambda: {
-        'ARR': 33,           # Auto repeat rate (int) in ms: The speed at which tetrominoes move when holding down the movement keys (ms)
+        'ARR': 167,           # Auto repeat rate (int) in ms: The speed at which tetrominoes move when holding down the movement keys (ms)
         'DAS': 167,          # Delayed Auto Shift (int) in ms: The time between the initial key press and the automatic repeat movement (ms)
         'DCD': 0,            # DAS Cut Delay (int) in ms: If non-zero, any ongoing DAS movement will pause for a set amount of time after dropping/rotating a piece (ms)
         'SDF': 23,           # Soft Drop Factor (int): The factor the soft dropping scales the current gravity by, or 'inf' for instant soft drop
