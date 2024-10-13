@@ -158,7 +158,6 @@ class Four():
             return True
         else:
             self.__update_current_tetromino() 
-            self.__lock()
             self.core_instance.FlagStruct.GAME_OVER = True
             print("Game Over")
             return False
