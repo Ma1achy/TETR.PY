@@ -5,7 +5,6 @@ from render.render import Render
 import time
 import asyncio
 from collections import deque 
-from core.handling import Action
 from core.state.struct_debug import StructDebug
 from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance
@@ -22,7 +21,7 @@ class Core():
             run(four): Run the instance of four
         """
         self.Config = StructConfig()
-        self.StructTiming = StructTiming()
+        self.TimingStruct = StructTiming()
         self.GameInstanceStruct = StructGameInstance()
         self.HandlingStruct = StructHandling()
         self.FlagStruct = StructFlags()
@@ -31,7 +30,7 @@ class Core():
         
         self.render_clock = Clock()
         self.window = self.__init_window()
-        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.StructTiming)
+        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct)
         self.handling = Handling(self.Config, self.HandlingStruct)
         
         self.TPS = self.Config.TPS
@@ -94,14 +93,14 @@ class Core():
         (coro) coro: the coroutine to time
         """
         
-        self.StructTiming.start_times[name] = time.perf_counter()
+        self.TimingStruct.start_times[name] = time.perf_counter()
         
         async def monitor():
             while True:
                 
                 iter_start = time.perf_counter()
-                self.StructTiming.elapsed_times[name] = time.perf_counter() - self.StructTiming.start_times[name]
-                self.StructTiming.iter_times[name] = time.perf_counter() - iter_start
+                self.TimingStruct.elapsed_times[name] = time.perf_counter() - self.TimingStruct.start_times[name]
+                self.TimingStruct.iter_times[name] = time.perf_counter() - iter_start
                 
                 await asyncio.sleep(0) 
         
@@ -120,7 +119,7 @@ class Core():
         """
         while not self.exited:
                 
-                self.HandlingStruct.current_time = self.StructTiming.elapsed_times["handle_events"]
+                self.HandlingStruct.current_time = self.TimingStruct.elapsed_times["handle_events"]
                 self.HandlingStruct.delta_time += (self.handling.HandlingStruct.current_time - self.handling.HandlingStruct.last_tick_time) / self.handling.polling_tick_time
                 self.HandlingStruct.last_tick_time = self.handling.HandlingStruct.current_time
               
@@ -181,22 +180,22 @@ class Core():
         """
         while not self.exited:
          
-            self.StructTiming.current_time = self.StructTiming.elapsed_times["game_loop"]
-            self.StructTiming.delta_time += (self.StructTiming.current_time - self.StructTiming.last_tick_time) / self.time_per_tick
-            self.StructTiming.last_tick_time = self.StructTiming.current_time
+            self.TimingStruct.current_time = self.TimingStruct.elapsed_times["game_loop"]
+            self.TimingStruct.delta_time += (self.TimingStruct.current_time - self.TimingStruct.last_tick_time) / self.time_per_tick
+            self.TimingStruct.last_tick_time = self.TimingStruct.current_time
              
-            if self.StructTiming.do_first_tick:
+            if self.TimingStruct.do_first_tick:
                 self.__do_tick(four)
-                self.StructTiming.do_first_tick = False
+                self.TimingStruct.do_first_tick = False
             
-            while self.StructTiming.delta_time >= 1:
+            while self.TimingStruct.delta_time >= 1:
                 self.__do_tick(four)
-                self.StructTiming.delta_time -= 1
+                self.TimingStruct.delta_time -= 1
                 
-            if self.StructTiming.current_time > self.StructTiming.tick_counter_last_cleared + 1:
+            if self.TimingStruct.current_time > self.TimingStruct.tick_counter_last_cleared + 1:
                 self.__get_tps()
-                self.StructTiming.tick_counter = 0
-                self.StructTiming.tick_counter_last_cleared += 1
+                self.TimingStruct.tick_counter = 0
+                self.TimingStruct.tick_counter_last_cleared += 1
             
             await asyncio.sleep(0)
             
@@ -209,7 +208,7 @@ class Core():
         """
         self.StructDebug.delta_tick = self.__calc_df()
         four.loop()
-        self.StructTiming.tick_counter += 1
+        self.TimingStruct.tick_counter += 1
     
     # ------------------------------------------- RENDER LOOP -------------------------------------------
        
@@ -224,17 +223,17 @@ class Core():
                 self.__do_render()
                 
             else:
-                self.StructTiming.current_frame_time = self.StructTiming.elapsed_times["render_loop"]
-                self.StructTiming.delta_frame_time += (self.StructTiming.current_frame_time - self.StructTiming.last_frame_time) / self.frame_time
-                self.StructTiming.last_frame_time = self.StructTiming.current_frame_time
+                self.TimingStruct.current_frame_time = self.TimingStruct.elapsed_times["render_loop"]
+                self.TimingStruct.delta_frame_time += (self.TimingStruct.current_frame_time - self.TimingStruct.last_frame_time) / self.frame_time
+                self.TimingStruct.last_frame_time = self.TimingStruct.current_frame_time
                 
-                if self.StructTiming.draw_first_frame:
+                if self.TimingStruct.draw_first_frame:
                     self.__do_render()
-                    self.StructTiming.draw_first_frame = False
+                    self.TimingStruct.draw_first_frame = False
                 
-                if self.StructTiming.delta_frame_time >= 1:
+                if self.TimingStruct.delta_frame_time >= 1:
                     self.__do_render()
-                    self.StructTiming.delta_frame_time -= 1
+                    self.TimingStruct.delta_frame_time -= 1
          
             self.__get_fps()
             
@@ -253,7 +252,7 @@ class Core():
         """
         Update the stored TPS value
         """
-        self.TPS = self.StructTiming.tick_counter
+        self.TPS = self.TimingStruct.tick_counter
     
     def __get_fps(self):
         """
@@ -278,7 +277,7 @@ class Core():
         if len(self.StructDebug.tick_times) >= self.StructDebug.max_avg_len:
             self.StructDebug.tick_times.pop(self.StructDebug.exe_idx)
              
-        self.StructDebug.tick_times.append(self.StructTiming.iter_times["game_loop"])
+        self.StructDebug.tick_times.append(self.TimingStruct.iter_times["game_loop"])
             
         self.StructDebug.best_tick_time = min(self.StructDebug.tick_times)
         self.StructDebug.worst_tick_time = max(self.StructDebug.tick_times)
@@ -297,7 +296,7 @@ class Core():
         if len(self.StructDebug.render_times) >= self.StructDebug.max_avg_len:
             self.StructDebug.render_times.pop(self.StructDebug.r_idx)
             
-        self.StructDebug.render_times.append(self.StructTiming.iter_times["render_loop"])
+        self.StructDebug.render_times.append(self.TimingStruct.iter_times["render_loop"])
             
         self.StructDebug.best_render_time = min(self.StructDebug.render_times)
         self.StructDebug.worst_render_time = max(self.StructDebug.render_times)
@@ -398,7 +397,7 @@ class Core():
         if len(self.StructDebug.POLLING_TIMES) >= self.StructDebug.max_avg_len:
             self.StructDebug.POLLING_TIMES.pop(self.StructDebug.polling_t_idx)
             
-        self.StructDebug.POLLING_TIMES.append(self.StructTiming.iter_times["handle_events"])
+        self.StructDebug.POLLING_TIMES.append(self.TimingStruct.iter_times["handle_events"])
         
         self.StructDebug.polling_t_idx += 1
         self.StructDebug.average_polling_t = sum(self.StructDebug.POLLING_TIMES)/len(self.StructDebug.POLLING_TIMES)
@@ -436,7 +435,7 @@ class Core():
                         
                         # render time debug
                         'REN_T': self.render_time_avg,
-                        'REN_T_RAW': self.StructTiming.iter_times["render_loop"],
+                        'REN_T_RAW': self.TimingStruct.iter_times["render_loop"],
                         'BEST_REN_T': self.StructDebug.best_render_time,
                         'WORST_REN_T': self.StructDebug.worst_render_time,
                         
@@ -448,7 +447,7 @@ class Core():
                         
                         # tick time debug
                         'SIM_T': self.StructDebug.tick_time,
-                        'SIM_T_RAW': self.StructTiming.iter_times["game_loop"],
+                        'SIM_T_RAW': self.TimingStruct.iter_times["game_loop"],
                         'BEST_SIM_T': self.StructDebug.best_tick_time,
                         'WORST_SIM_T': self.StructDebug.worst_tick_time,
                         
@@ -459,7 +458,7 @@ class Core():
                         'WORST_DF': self.StructDebug.worst_df,
                         
                         # tick counter
-                        'TICKCOUNT': self.StructTiming.tick_counter,
+                        'TICKCOUNT': self.TimingStruct.tick_counter,
 
                         'POLLING_RATE': self.StructDebug.average_polling,
                         'POLLING_RATE_RAW': self.StructDebug.POLLING_RATE,
@@ -467,7 +466,7 @@ class Core():
                         'WORST_POLLING_RATE': self.StructDebug.worst_polling,
                         
                         'POLLING_T': self.StructDebug.average_polling_t,
-                        'POLLING_T_RAW': self.StructTiming.iter_times["handle_events"],
+                        'POLLING_T_RAW': self.TimingStruct.iter_times["handle_events"],
                         'BEST_POLLING_T': self.StructDebug.best_polling_t,
                         'WORST_POLLING_T': self.StructDebug.worst_polling_t,
                         

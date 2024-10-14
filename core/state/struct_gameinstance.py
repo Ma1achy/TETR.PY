@@ -19,7 +19,7 @@ class StructGameInstance():
     gravity_counter: int = 0
     move_down: bool= False
 
-    soft_dropping: bool = True
+    soft_dropping: bool = False
     soft_drop_factor: int = 1
 
     lock_delay: int = 30

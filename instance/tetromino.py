@@ -1,9 +1,10 @@
 from utils import Vec2, get_tetromino_blocks
 from instance.matrix import Matrix
 from core.handling import Action
+from core.state.struct_flags import FLAG
 
 class Tetromino():
-    def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix):
+    def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix, flags:FLAG):
         """
         Create the active Tetromino in the game of Four.
         
@@ -24,6 +25,7 @@ class Tetromino():
         
         self.ghost_position = Vec2(self.position.x, self.position.y)
         self.matrix = matrix
+        self.flags = flags
         
         self.lowest_pivot_position = self.matrix.HEIGHT - (self.pivot.y + self.position.y)
         self.lock_delay_counter = 0
@@ -252,8 +254,7 @@ class Tetromino():
                 kick_table = kick_table['I_KICKS']  
             case 'O':
                 kick_table = kick_table['O_KICKS']
-        
-        print(self.type, kick_table)      
+         
         return kick_table
     
     # ------------------------------------------------ KICK TESTS ------------------------------------------------
@@ -367,10 +368,10 @@ class Tetromino():
             
             if len(filled_corners) > 1:
                 
-                if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions
-                    set_t_sin_flag("T-Spin")
+                if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions & https://tetris.wiki/T-Spin
+                    self.flags.TSPIN = True
                 else:
-                    set_t_sin_flag("T-Spin Mini")
+                    self.flags.TSPIN_MINI = True
             
         elif len(filled_corners) == 2: # 2 corner test for T-Spin
         
@@ -378,9 +379,10 @@ class Tetromino():
             filled_corners = self.__test_corners(corners, kick)
             
             if len(filled_corners) >= 3: # 3 corner test for T-Spin
-                set_t_sin_flag("T-Spin")
+                self.flags.TSPIN = True
         else:
-            set_t_sin_flag(None)
+            self.flags.TSPIN = False
+            self.flags.TSPIN_MINI = False
         
     def __test_corners(self, corners:list, kick:Vec2):
         """
