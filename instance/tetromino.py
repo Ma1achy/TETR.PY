@@ -16,7 +16,6 @@ class Tetromino():
             y (int): y position of the piece
             matrix (Matrix): The matrix object that contains the blocks that are already placed
         """
-        
         self.type = type
         self.state = state
         self.blocks = get_tetromino_blocks(self.type)
@@ -66,33 +65,9 @@ class Tetromino():
         Get the geometric center of the piece
         """
         return Vec2(len(self.blocks) / 2, len(self.blocks) / 2)
+    
+    # ========================================================== MOVEMENT ============================================================
             
-    def rotate(self, action:Action, kick_table:dict):
-        """
-        Rotate the piece in the given direction
-        
-        args:
-            action (Action): The action to perform
-            kick_table (dict): The kick table to use for the piece
-        """
-        
-        kick_table = self.__get_piece_kick_table(kick_table)
-            
-        match action:
-            case Action.ROTATE_CLOCKWISE:    
-                desired_state = (self.state + 1) % 4
-                rotated_piece = self.__rotate_cw()
-        
-            case Action.ROTATE_COUNTERCLOCKWISE:
-                desired_state = (self.state - 1) % 4
-                rotated_piece = self.__rotate_ccw()
-
-            case Action.ROTATE_180:
-                desired_state = (self.state + 2) % 4
-                rotated_piece = self.__rotate_180()
-        
-        self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset = 0)
-        
     def move(self, action:Action):
         """
         Move the piece in the given direction
@@ -180,6 +155,15 @@ class Tetromino():
                     self.sonic_move_and_drop(action, PrefSD) 
                 else:
                     return
+    
+    def attempt_to_move_downwards(self):
+        """
+        Attempt to move the piece downwards
+        """
+        if self.collision(self.blocks, self.position + Vec2(0, 1)):
+            return
+        else:
+            self.position = self.position + Vec2(0, 1)
                 
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
         """
@@ -205,6 +189,34 @@ class Tetromino():
             return True         
         else:
             return False
+    
+    # ========================================================== ROTATION ============================================================
+    
+    def rotate(self, action:Action, kick_table:dict):
+        """
+        Rotate the piece in the given direction
+        
+        args:
+            action (Action): The action to perform
+            kick_table (dict): The kick table to use for the piece
+        """
+        
+        kick_table = self.__get_piece_kick_table(kick_table)
+            
+        match action:
+            case Action.ROTATE_CLOCKWISE:    
+                desired_state = (self.state + 1) % 4
+                rotated_piece = self.__rotate_cw()
+        
+            case Action.ROTATE_COUNTERCLOCKWISE:
+                desired_state = (self.state - 1) % 4
+                rotated_piece = self.__rotate_ccw()
+
+            case Action.ROTATE_180:
+                desired_state = (self.state + 2) % 4
+                rotated_piece = self.__rotate_180()
+        
+        self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset = 0)
         
     def __rotate_cw(self):
         """
@@ -226,17 +238,26 @@ class Tetromino():
     
     def __get_piece_kick_table(self, kick_table):
         match self.type:
-            case 'T' | 'S' | 'Z' | 'L' | 'J':
-                kick_table = kick_table['TSZLJ_KICKS']
-                
+            case 'T':
+                kick_table = kick_table['T_KICKS']
+            case 'S':
+                kick_table = kick_table['S_KICKS']
+            case 'Z':
+                kick_table = kick_table['Z_KICKS']
+            case 'L':
+                kick_table = kick_table['L_KICKS']
+            case 'J':
+                kick_table = kick_table['J_KICKS']    
             case 'I':
-                kick_table = kick_table['I_KICKS']
-                
+                kick_table = kick_table['I_KICKS']  
             case 'O':
                 kick_table = kick_table['O_KICKS']
-                
+        
+        print(self.type, kick_table)      
         return kick_table
-               
+    
+    # ------------------------------------------------ KICK TESTS ------------------------------------------------
+              
     def __do_kick_tests(self, rotated_piece:list, desired_state:int, kick_table, offset:int):
         """
         Find a valid rotation of the piece by recursively applying kick translations to it
@@ -290,7 +311,9 @@ class Tetromino():
             return None
         else:
             return kick_table[f'{self.state}->{desired_state}'][offset]
-        
+    
+    # ------------------------------------------------ SPIN TESTS ------------------------------------------------
+       
     def __is_spin(self, rotated_piece:int, kick:Vec2):
         """
         check if the rotation is a spin: this is when the piece rotates into an position where it is then immobile
@@ -381,39 +404,13 @@ class Tetromino():
             )
         ]
      
-    def attempt_to_move_downwards(self):
-        """
-        Attempt to move the piece downwards
-        """
-        if self.collision(self.blocks, self.position + Vec2(0, 1)):
-            return
-        else:
-            self.position = self.position + Vec2(0, 1)
+    # ========================================================== LOCK DELAY ============================================================
     
     def is_on_floor(self):
         """
         Check if the piece is on the floor
         """
         return self.collision(self.blocks, self.position + Vec2(0, 1))
-                  
-    def ghost(self):
-        """
-        Create a ghost piece that shows where the piece will land
-        """
-        self.ghost_position = Vec2(self.position.x, self.position.y)
-        
-        while not self.collision(self.blocks, self.ghost_position):
-            self.ghost_position.y += 1
-            
-        self.ghost_position.y -= 1
-        self.ghost_position.x = self.position.x 
-          
-        if not self.collision(self.blocks, self.ghost_position):
-            self.matrix.ghost = self.matrix.empty_matrix()
-            self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
-        
-        if self.ghost_position.y <= self.position.y:
-            self.matrix.ghost = self.matrix.empty_matrix()
     
     def reset_lock_delay_lower_pivot(self):
         """
@@ -437,4 +434,26 @@ class Tetromino():
         
         if self.is_on_floor():
             self.max_moves_before_lock += -1
+    
+    # ========================================================== GHOST PIECE ============================================================
+    
+    # FIXME: Change how current tetromino is rendered then this stupid shit can be deleted lmao
+    
+    def ghost(self):
+        """
+        Create a ghost piece that shows where the piece will land
+        """
+        self.ghost_position = Vec2(self.position.x, self.position.y)
         
+        while not self.collision(self.blocks, self.ghost_position):
+            self.ghost_position.y += 1
+            
+        self.ghost_position.y -= 1
+        self.ghost_position.x = self.position.x 
+          
+        if not self.collision(self.blocks, self.ghost_position):
+            self.matrix.ghost = self.matrix.empty_matrix()
+            self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
+        
+        if self.ghost_position.y <= self.position.y:
+            self.matrix.ghost = self.matrix.empty_matrix()
