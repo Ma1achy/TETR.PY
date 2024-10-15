@@ -10,6 +10,7 @@ class StructTiming():
     do_first_tick: bool = True
     tick_counter: int = 0
     tick_counter_last_cleared: float = 0
+    TPS = 256
 
     current_frame_time: float = 0
     last_frame_time: float = 0

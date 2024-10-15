@@ -1,6 +1,7 @@
 import pygame
 from config import StructConfig
 from core.handling import Handling
+from core.debug import Debug
 from render.render import Render
 import time
 import asyncio
@@ -26,11 +27,12 @@ class Core():
         self.HandlingStruct = StructHandling()
         self.FlagStruct = StructFlags()
         self.RenderStruct = StructRender()
-        self.StructDebug = StructDebug()
+        self.DebugStruct = StructDebug()
         
+        self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
         self.render_clock = Clock()
         self.window = self.__init_window()
-        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct)
+        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct)
         self.handling = Handling(self.Config, self.HandlingStruct)
         
         self.TPS = self.Config.TPS
@@ -206,7 +208,6 @@ class Core():
         args:
         (Four) four: the instance of the game
         """
-        self.StructDebug.delta_tick = self.__calc_df()
         four.loop()
         self.TimingStruct.tick_counter += 1
     
@@ -243,279 +244,54 @@ class Core():
         """
         Render a single frame of the game
         """
-        self.render.render_frame(self.HandlingStruct.key_dict, self.StructDebug.debug_dict)
+        self.RenderStruct.key_dict = self.HandlingStruct.key_dict
+        self.render.render_frame()
         self.render_clock.tick()
-    
-    # =========================================== DEBUG INFO ===========================================  
-               
+                
     def __get_tps(self):
         """
         Update the stored TPS value
         """
         self.TPS = self.TimingStruct.tick_counter
+        self.TimingStruct.TPS = self.TPS
     
     def __get_fps(self):
         """
         Update the stored FPS value
         """
-        self.StructDebug.FPS = self.render_clock.get_fps()
+        self.DebugStruct.FPS = self.render_clock.get_fps()
         
     def __get_polling_rate(self):
         """
         Update the stored polling rate value
         """
-        self.StructDebug.POLLING_RATE = self.handling.HandlingStruct.poll_tick_counter
-
-    def __calc_exe_time_avg(self):
-        """
-        For debug menu, calculate the average execution time of a tick
-        """
-        
-        if self.StructDebug.exe_idx >= self.StructDebug.max_avg_len:
-            self.StructDebug.exe_idx = 0
-            
-        if len(self.StructDebug.tick_times) >= self.StructDebug.max_avg_len:
-            self.StructDebug.tick_times.pop(self.StructDebug.exe_idx)
-             
-        self.StructDebug.tick_times.append(self.TimingStruct.iter_times["game_loop"])
-            
-        self.StructDebug.best_tick_time = min(self.StructDebug.tick_times)
-        self.StructDebug.worst_tick_time = max(self.StructDebug.tick_times)
-            
-        self.StructDebug.exe_idx += 1   
-        self.StructDebug.tick_time = sum(self.StructDebug.tick_times)/len(self.StructDebug.tick_times)
-        
-    def __calc_render_time_avg(self):
-        """
-        For debug menu, calculate the average time to render a frame
-        """
-        
-        if self.StructDebug.r_idx >= self.StructDebug.max_avg_len:
-            self.StructDebug.r_idx = 0
-            
-        if len(self.StructDebug.render_times) >= self.StructDebug.max_avg_len:
-            self.StructDebug.render_times.pop(self.StructDebug.r_idx)
-            
-        self.StructDebug.render_times.append(self.TimingStruct.iter_times["render_loop"])
-            
-        self.StructDebug.best_render_time = min(self.StructDebug.render_times)
-        self.StructDebug.worst_render_time = max(self.StructDebug.render_times)
-        
-        self.StructDebug.r_idx += 1
-        self.render_time_avg =  sum(self.StructDebug.render_times)/len(self.StructDebug.render_times)
-        
-    def __calc_average_TPS(self):
-        """
-        For debug menu, calculate the average TPS
-        """
-        
-        if self.TPS == float('inf') or self.TPS == float('-inf'):
-            self.TPS = 0
-
-        if self.StructDebug.tps_idx >= self.StructDebug.max_avg_len:
-            self.StructDebug.tps_idx = 0
-            
-        if len(self.StructDebug.TPSs) >= self.StructDebug.max_avg_len:
-            self.StructDebug.TPSs.pop(self.StructDebug.tps_idx)
-                
-        self.StructDebug.TPSs.append(self.TPS)
-        
-        self.StructDebug.tps_idx += 1
+        self.DebugStruct.POLLING_RATE = self.handling.HandlingStruct.poll_tick_counter
     
-        self.StructDebug.worst_tps = min(self.StructDebug.TPSs)
-        self.StructDebug.best_tps = max(self.StructDebug.TPSs)
-        
-        self.StructDebug.average_TPS = sum(self.StructDebug.TPSs) / len(self.StructDebug.TPSs)
-        
-    def __calc_average_FPS(self):
-        """
-        For debug menu, calculate the average FPS
-        """
-    
-        if self.StructDebug.fps_idx >= self.StructDebug.max_avg_len:
-            self.StructDebug.fps_idx = 0
-            
-        if len(self.StructDebug.FPSs) >= self.StructDebug.max_avg_len:
-            self.StructDebug.FPSs.pop(self.StructDebug.fps_idx)
-                        
-        self.StructDebug.FPSs.append(self.FPS)
-        
-        self.StructDebug.fps_idx += 1
-        self.StructDebug.average_FPS = sum(self.StructDebug.FPSs)/len(self.StructDebug.FPSs)
-    
-        self.StructDebug.worst_fps = min(self.StructDebug.FPSs)
-        self.StructDebug.best_fps = max(self.StructDebug.FPSs)
-        
-    def __calc_df(self):
-        """
-        For debug menu, calculate the delta frame time, how many frames behind or ahead the game is to the desired TPS
-        """
-        if self.TPS == float('inf') or self.TPS == float('-inf'):
-            self.TPS = 0
-        
-        self.StructDebug.delta_tick = int(self.Config.TPS - self.TPS)
-        
-        if self.StructDebug.df_idx >= self.StructDebug.max_avg_len - 1:
-            self.StructDebug.df_idx = 0
-            
-        if len(self.StructDebug.dfs) >= self.StructDebug.max_avg_len - 1:
-            self.StructDebug.dfs.pop(self.StructDebug.df_idx)
-            
-        self.StructDebug.dfs.append(self.StructDebug.delta_tick)
-        self.StructDebug.average_df = sum(self.StructDebug.dfs)/len(self.StructDebug.dfs)
-        
-        self.StructDebug.worst_df = max(self.StructDebug.dfs)
-        self.StructDebug.best_df = min(self.StructDebug.dfs)
-        
-        self.StructDebug.df_idx += 1
-        
-    def __calc_average_polling(self):
-        """
-        For debug menu, calculate the average polling rate
-        """
-        if self.StructDebug.polling_idx >= self.StructDebug.max_avg_len:
-            self.StructDebug.polling_idx = 0
-            
-        if len(self.StructDebug.POLLING_RATEs) >= self.StructDebug.max_avg_len:
-            self.StructDebug.POLLING_RATEs.pop(self.StructDebug.polling_idx)
-            
-        self.StructDebug.POLLING_RATEs.append(self.StructDebug.POLLING_RATE)
-        
-        self.StructDebug.polling_idx += 1
-        self.StructDebug.average_polling = sum(self.StructDebug.POLLING_RATEs)/len(self.StructDebug.POLLING_RATEs)
-        
-        self.StructDebug.worst_polling = min(self.StructDebug.POLLING_RATEs)
-        self.StructDebug.best_polling = max(self.StructDebug.POLLING_RATEs)
-    
-    def __calc_average_polling_t(self):
-        """
-        For debug menu, calculate the average polling time
-        """
-        if self.StructDebug.polling_t_idx >= self.StructDebug.max_avg_len:
-            self.StructDebug.polling_t_idx = 0
-            
-        if len(self.StructDebug.POLLING_TIMES) >= self.StructDebug.max_avg_len:
-            self.StructDebug.POLLING_TIMES.pop(self.StructDebug.polling_t_idx)
-            
-        self.StructDebug.POLLING_TIMES.append(self.TimingStruct.iter_times["handle_events"])
-        
-        self.StructDebug.polling_t_idx += 1
-        self.StructDebug.average_polling_t = sum(self.StructDebug.POLLING_TIMES)/len(self.StructDebug.POLLING_TIMES)
-        
-        self.StructDebug.worst_polling_t = max(self.StructDebug.POLLING_TIMES)
-        self.StructDebug.best_polling_t = min(self.StructDebug.POLLING_TIMES)
-    
+    # =========================================== DEBUG INFO =========================================== 
+     
     def __show_debug_menu(self):
         """
         Show the debug menu
         """
-        self.StructDebug.DEBUG = not self.StructDebug.DEBUG
+        self.FlagStruct.SHOW_DEBUG_MENU = not self.FlagStruct.SHOW_DEBUG_MENU
     
     async def __get_debug_info(self):
         """
         Fetch the debug information for the debug menu
         """
         while not self.exited:
-            if self.StructDebug.DEBUG:
-                    self.__calc_average_FPS()
-                    self.__calc_render_time_avg()
-                    
-                    self.__calc_average_TPS()
-                    self.__calc_exe_time_avg()
-                    
-                    self.__calc_average_polling()
-                    self.__calc_average_polling_t()
-                    
-                    self.StructDebug.debug_dict = {
-                        # fps debug
-                        'FPS': self.StructDebug.average_FPS,
-                        'FPS_RAW': self.FPS,
-                        'BEST_FPS': self.StructDebug.best_fps,
-                        'WORST_FPS': self.StructDebug.worst_fps,
-                        
-                        # render time debug
-                        'REN_T': self.render_time_avg,
-                        'REN_T_RAW': self.TimingStruct.iter_times["render_loop"],
-                        'BEST_REN_T': self.StructDebug.best_render_time,
-                        'WORST_REN_T': self.StructDebug.worst_render_time,
-                        
-                        # tps debug
-                        'TPS': self.StructDebug.average_TPS,
-                        'TPS_RAW': self.TPS,
-                        'BEST_TPS': self.StructDebug.best_tps,
-                        'WORST_TPS': self.StructDebug.worst_tps,
-                        
-                        # tick time debug
-                        'SIM_T': self.StructDebug.tick_time,
-                        'SIM_T_RAW': self.TimingStruct.iter_times["game_loop"],
-                        'BEST_SIM_T': self.StructDebug.best_tick_time,
-                        'WORST_SIM_T': self.StructDebug.worst_tick_time,
-                        
-                        # delta frame debug
-                        'DF': self.StructDebug.average_df,
-                        'DF_RAW': self.StructDebug.delta_tick,
-                        'BEST_DF': self.StructDebug.best_df,
-                        'WORST_DF': self.StructDebug.worst_df,
-                        
-                        # tick counter
-                        'TICKCOUNT': self.TimingStruct.tick_counter,
-
-                        'POLLING_RATE': self.StructDebug.average_polling,
-                        'POLLING_RATE_RAW': self.StructDebug.POLLING_RATE,
-                        'BEST_POLLING_RATE': self.StructDebug.best_polling,
-                        'WORST_POLLING_RATE': self.StructDebug.worst_polling,
-                        
-                        'POLLING_T': self.StructDebug.average_polling_t,
-                        'POLLING_T_RAW': self.TimingStruct.iter_times["handle_events"],
-                        'BEST_POLLING_T': self.StructDebug.best_polling_t,
-                        'WORST_POLLING_T': self.StructDebug.worst_polling_t,
-                        
-                        'DAS_LEFT_COUNTER': self.handling.HandlingStruct.DAS_LEFT_COUNTER,
-                        'DAS_RIGHT_COUNTER': self.handling.HandlingStruct.DAS_RIGHT_COUNTER,
-                        'DAS': self.handling.Config.HANDLING_SETTINGS['DAS'],
-                        
-                        'ARR_LEFT_COUNTER': self.handling.HandlingStruct.ARR_LEFT_COUNTER,
-                        'ARR_RIGHT_COUNTER': self.handling.HandlingStruct.ARR_RIGHT_COUNTER,
-                        'ARR': self.handling.Config.HANDLING_SETTINGS['ARR'],
-                        
-                        'DCD': self.handling.Config.HANDLING_SETTINGS['DCD'],
-                        'SDF': self.handling.Config.HANDLING_SETTINGS['SDF'],
-                        
-                        'DAS_CANCEL': self.handling.Config.HANDLING_SETTINGS['DASCancel'],
-                        'PREVHD': self.handling.Config.HANDLING_SETTINGS['PrevAccHD'],
-                        'PREFSD': self.handling.Config.HANDLING_SETTINGS['PrefSD'],
-                        
-                        'PRIORIDIR': self.handling.Config.HANDLING_SETTINGS['PrioriDir'],
-                        'DIR': self.handling.HandlingStruct.dir_priority,
-                        
-                        'GRAVITY': self.GameInstanceStruct.gravity,
-                        'GRAV_COUNTER': self.GameInstanceStruct.gravity_counter,
-                        'G_IN_TICKS': self.GameInstanceStruct.G_units_in_ticks,
-                        'ON_FLOOR': self.GameInstanceStruct.current_tetromino.is_on_floor() if self.GameInstanceStruct.current_tetromino else False,
-                        'G_MULTI': self.GameInstanceStruct.soft_drop_factor,
-                        'LOCK_DELAY': self.GameInstanceStruct.lock_delay,
-                        'LOCK_DELAY_COUNTER': self.GameInstanceStruct.current_tetromino.lock_delay_counter if self.GameInstanceStruct.current_tetromino else 0,
-                        'LOCK_DELAY_TICKS': self.GameInstanceStruct.lock_delay_in_ticks,
-                        'MAX_MOVES': self.GameInstanceStruct.current_tetromino.max_moves_before_lock if self.GameInstanceStruct.current_tetromino else 0,
-                        'LOWEST_PIVOT': self.GameInstanceStruct.current_tetromino.lowest_pivot_position if self.GameInstanceStruct.current_tetromino else 0,
-                        
-                        'PREV_ACC_HD_COUNTER': self.handling.HandlingStruct.PREV_ACC_HD_COUNTER,
-                        'PREV_ACC_HD_TIME': int(self.Config.HANDLING_SETTINGS['PrevAccHDTime']/60*self.Config.TPS),
-                        'PREV_ACC_HD_FLAG': self.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP,
-                    }
-            else:
-                self.StructDebug.debug_dict = None
-        
+            if self.FlagStruct.SHOW_DEBUG_MENU:
+                self.Debug.get_metrics()
             await asyncio.sleep(0)
+        
 class Clock:
     def __init__(self, max_entries = 10):
         """
-        Custom clock object as pygames inbuilt clock is trash for timing microsecond processes (has a resolution of 10ms????)
-        Instead use clock with highest resolution possible (time.perf_counter) and calculate the FPS from the average time between ticks
+        Custom clock object for timing microsecond processes that can calculate the FPS from the average time between ticks
         (literally a copy of pygame.time.Clock but with time.perf_counter)
         
         args:
-        (int) max_entries: the maximum number of entries to store in the clock
+        (int) max_entries: the maximum number of entries to store in the clock to be used when averaging
         """
         self.max_entries = max_entries
         self.times = deque(maxlen = max_entries)

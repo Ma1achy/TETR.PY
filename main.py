@@ -19,8 +19,6 @@ from instance.four import Four
 #           - change how the current tetromino is rendered, to similar to how the queue is rendered currently is very jank
 #           - refactor the code to be more maintainable and readable
 
-# move debug stuff into sep obj & file
-
 # change queue generation, need to generate a bag and insert into queue, make sure queue always has 2 bags in it, 3 max.
 # rather than now where it shuffles the bag and removes the first tetromino from the bag and inserts it into the queue and ensures a fixed queue length
 

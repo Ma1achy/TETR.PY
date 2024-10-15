@@ -11,3 +11,5 @@ class StructRender():
     draw_origin: bool = False
     draw_pivot: bool = False
     current_time: float = 0
+    
+    key_dict: dict = None

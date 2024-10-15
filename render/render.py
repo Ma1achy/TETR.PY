@@ -7,7 +7,7 @@ from core.state.struct_gameinstance import StructGameInstance
 from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix
 
 class Render():
-    def __init__(self, window:pygame.Surface, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct):  
+    def __init__(self, window:pygame.Surface, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct, DebugStruct):  
         """
         Render an instance of four onto a window
         
@@ -20,6 +20,7 @@ class Render():
         self.FlagStruct = Flags
         self.GameInstanceStruct = GameInstanceStruct
         self.TimingStruct = TimingStruct
+        self.DebugStruct = DebugStruct
         
         self.window = window
         pygame.font.init()
@@ -38,14 +39,9 @@ class Render():
         """
         return pygame.surface.Surface((self.Config.FOUR_INSTANCE_WIDTH, self.Config.FOUR_INSTANCE_HEIGHT))
     
-    def render_frame(self, key_dict, debug_dict):
+    def render_frame(self):
         """
         Render the frame of the Four Instance
-        
-        args:
-            four (Four): the Four instance to render
-            key_dict (dict): the dictionary of key states
-            debug_dict (dict): the dictionary of debug information
         """
         self.RenderStruct.surfaces = []
 
@@ -62,11 +58,11 @@ class Render():
         
         self.window.blit(self.four_surface, self.__get_four_coords_for_window_center())
         
-        if debug_dict:
-            self.__draw_debug(debug_dict)
+        if self.FlagStruct.SHOW_DEBUG_MENU:
+            self.__draw_debug_menu()
          
-        if key_dict:
-            self.__draw_key_states(key_dict)
+        if self.RenderStruct.key_dict:
+            self.__draw_key_states()
             
         pygame.display.update()
         
@@ -374,18 +370,15 @@ class Render():
                                     (rect.x + offset_x + j * self.Config.GRID_SIZE, rect.y + offset_y + i * self.Config.GRID_SIZE, self.Config.GRID_SIZE, self.Config.GRID_SIZE)
                                     )
     
-    def __draw_debug(self, debug_dict):
+    def __draw_debug_menu(self):
         """
         Draw the debug information onto the window
-        
-        args:
-            debug_dict (dict): the dictionary of debug information
         """
         debug_surfaces = []
 
-        if debug_dict['FPS'] < self.Config.FPS * 0.95:
+        if self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.95:
             fps_colour = (255, 255, 0)
-        elif debug_dict['FPS'] < self.Config.FPS * 0.5:
+        elif self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.5:
             fps_colour = (255, 0, 0)
         elif self.Config.UNCAPPED_FPS:
             fps_colour = (0, 255, 255)
@@ -393,97 +386,93 @@ class Render():
             fps_colour = (0, 255, 0)
 
         # FPS debug information
-        fps_text = f'FPS: {int(debug_dict["FPS"])}'
+        fps_text = f'FPS: {int(self.DebugStruct.Average_FrameRate)}'
+        
         if self.Config.UNCAPPED_FPS:
             fps_text += ' (UNCAPPED)'
+            
         debug_surfaces.append((self.hun2_big.render(fps_text, True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE // 2)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_FPS"])} | best: {int(debug_dict["BEST_FPS"])} | current: {int(debug_dict["FPS_RAW"])}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 1.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(self.DebugStruct.Worst_FrameRate)} | best: {int(self.DebugStruct.Best_FrameRate)} | current: {int(self.DebugStruct.Current_FrameRate)}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 1.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'Render Time: {get_prefix(debug_dict["REN_T"], "s")}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 2)))
+        debug_surfaces.append((self.hun2_small.render(f'Render Time: {get_prefix(self.DebugStruct.Average_RenderTime, "s")}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 2)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_REN_T"], "s")} | best: {get_prefix(debug_dict["BEST_REN_T"], "s")} | current: {get_prefix(debug_dict["REN_T_RAW"], "s")}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 2.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(self.DebugStruct.Worst_RenderTime, "s")} | best: {get_prefix(self.DebugStruct.Best_RenderTime, "s")} | current: {get_prefix(self.DebugStruct.Current_RenderTime, "s")}', True, fps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 2.5)))
 
-        if debug_dict['DF_RAW'] is None:
-            debug_dict['DF_RAW'] = 0
-
-        if debug_dict['TPS'] < self.Config.TPS * 0.95:
+        if self.DebugStruct.Average_TickRate < self.Config.TPS * 0.95:
             tps_colour = (255, 0, 0)
         else:
             tps_colour = (0, 255, 0)
 
-        # TPS debug information
-        debug_surfaces.append((self.hun2_big.render(f'TPS: {int(debug_dict["TPS"])}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 3.5)))
+        # # TPS debug information
+        debug_surfaces.append((self.hun2_big.render(f'TPS: {int(self.DebugStruct.Average_TickRate)}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 3.5)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_TPS"])} | best: {int(debug_dict["BEST_TPS"])} | current: {int(debug_dict["TPS_RAW"])}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 4.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(self.DebugStruct.Worst_TickRate)} | best: {int(self.DebugStruct.Best_TickRate)} | current: {int(self.DebugStruct.Current_TickRate)}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 4.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'Execution Time: {get_prefix(debug_dict["SIM_T"], "s")}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 5)))
+        debug_surfaces.append((self.hun2_small.render(f'Execution Time: {get_prefix(self.DebugStruct.Average_ExecutionTime, "s")}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 5)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_SIM_T"], "s")} | best: {get_prefix(debug_dict["BEST_SIM_T"], "s")} | current: {get_prefix(debug_dict["SIM_T_RAW"], "s")}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 5.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(self.DebugStruct.Worst_ExecutionTime, "s")} | best: {get_prefix(self.DebugStruct.Best_ExecutionTime, "s")} | current: {get_prefix(self.DebugStruct.Current_ExecutionTime, "s")}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 5.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'df: {debug_dict["DF"]:.2f}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 6)))
+        debug_surfaces.append((self.hun2_small.render(f'df: {self.DebugStruct.Average_DeltaTick:.2f}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 6)))
 
-        debug_surfaces.append((self.pfw_small.render(f'worst: {debug_dict["WORST_DF"]} | best: {debug_dict["BEST_DF"]} | current: {int(debug_dict["DF_RAW"])}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 6.5)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {self.DebugStruct.Worst_DeltaTick} | best: {self.DebugStruct.Best_DeltaTick} | current: {int(self.DebugStruct.Current_DeltaTick)}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 6.5)))
 
-        debug_surfaces.append((self.hun2_small.render(f'Tick: {debug_dict["TICKCOUNT"]}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 7)))
+        debug_surfaces.append((self.hun2_small.render(f'Tick: {self.DebugStruct.TickCounter}', True, tps_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 7)))
         
         # handling debug information
         
-        if debug_dict['POLLING_RATE'] < self.Config.POLLING_RATE * 0.95:
+        if self.DebugStruct.Average_PollingRate < self.Config.POLLING_RATE * 0.95:
             poll_colour = (255, 0, 0)
         else:
             poll_colour = (0, 255, 0)
         
-        debug_surfaces.append((self.hun2_big.render(f'POLL: {int(debug_dict["POLLING_RATE"])}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 8)))
+        debug_surfaces.append((self.hun2_big.render(f'POLL: {int(self.DebugStruct.Average_PollingRate)}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 8)))
         
-        debug_surfaces.append((self.pfw_small.render(f'worst: {int(debug_dict["WORST_POLLING_RATE"])} | best: {int(debug_dict["BEST_POLLING_RATE"])} | current: {int(debug_dict["POLLING_RATE_RAW"])}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 9)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {int(self.DebugStruct.Worst_PollingRate)} | best: {int(self.DebugStruct.Best_PollingRate)} | current: {int(self.DebugStruct.Current_PollingRate)}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 9)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Polling Time: {get_prefix(debug_dict["POLLING_T"], "s")}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 9.5)))
+        debug_surfaces.append((self.hun2_small.render(f'Polling Time: {get_prefix(self.DebugStruct.Average_PollingTime, "s")}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 9.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(debug_dict["WORST_POLLING_T"], "s")} | best: {get_prefix(debug_dict["BEST_POLLING_T"], "s")} | current: {get_prefix(debug_dict["POLLING_T_RAW"], "s")}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 10)))
+        debug_surfaces.append((self.pfw_small.render(f'worst: {get_prefix(self.DebugStruct.Worst_PollingTime, "s")} | best: {get_prefix(self.DebugStruct.Best_PollingTime, "s")} | current: {get_prefix(self.DebugStruct.Current_PollingTime, "s")}', True, poll_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 10)))
 
         das_colour = (255, 255, 255)
 
-        debug_surfaces.append((self.hun2_big.render(f'DAS: {int(debug_dict["DAS_LEFT_COUNTER"])} ms {int(debug_dict["DAS_RIGHT_COUNTER"])} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 11)))
+        debug_surfaces.append((self.hun2_big.render(f'DAS: {int(self.DebugStruct.DAS_Left_Counter)} ms {int(self.DebugStruct.DAS_Right_Counter)} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 11)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["DAS"]} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12)))
+        debug_surfaces.append((self.hun2_small.render(f'Threshold: {self.DebugStruct.DAS_Threshold} ms', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12)))
         
-        debug_surfaces.append((self.pfw_small.render(f'DCD: {debug_dict["DCD"]} | DAS Cancel: {debug_dict["DAS_CANCEL"]} | Direction: {debug_dict["DIR"]} (Priority: {debug_dict["PRIORIDIR"]})', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12.5)))
+        debug_surfaces.append((self.pfw_small.render(f'DCD: {self.DebugStruct.DCD} | DAS Cancel: {self.DebugStruct.DAS_Cancel} | Direction: {self.DebugStruct.Prioritise_Direction} (Priority: {self.DebugStruct.Direction})', True, das_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 12.5)))
         
         arr_colour = (255, 255, 255)
         
-        debug_surfaces.append((self.hun2_big.render(f'ARR: {int(debug_dict["ARR_LEFT_COUNTER"])} ms {int(debug_dict["ARR_RIGHT_COUNTER"])} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 13.5)))
+        debug_surfaces.append((self.hun2_big.render(f'ARR: {int(self.DebugStruct.ARR_Left_Counter)} ms {int(self.DebugStruct.ARR_Right_Counter)} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 13.5)))
         
-        debug_surfaces.append((self.hun2_small.render(f'Threshold: {debug_dict["ARR"]} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 14.5)))
+        debug_surfaces.append((self.hun2_small.render(f'Threshold: {self.DebugStruct.ARR_Threshold} ms', True, arr_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 14.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'SDF: {debug_dict["SDF"]} | PrefSD: {debug_dict["PREFSD"]} | On Floor: {debug_dict["ON_FLOOR"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 15.5)))
+        debug_surfaces.append((self.pfw_small.render(f'SDF: { self.DebugStruct.Soft_Drop_Factor} | PrefSD: {self.DebugStruct.Prefer_Soft_Drop} | On Floor: {self.DebugStruct.On_Floor}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 15.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'Gravity: {debug_dict["GRAVITY"]:.2f} G ({debug_dict["G_IN_TICKS"]} ticks) | Multi: {debug_dict["G_MULTI"]} | Counter: {debug_dict["GRAV_COUNTER"]}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16)))
+        debug_surfaces.append((self.pfw_small.render(f'Gravity: {self.DebugStruct.Gravity:.2f} G ({self.DebugStruct.G_in_ticks} ticks) | Multi: {self.DebugStruct.Gravity_Multiplier} | Counter: {self.DebugStruct.Gravity_Counter}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16)))
     
-        debug_surfaces.append((self.pfw_small.render(f'Lock Delay: {debug_dict["LOCK_DELAY"]} ({debug_dict["LOCK_DELAY_TICKS"]} ticks) | Resets Left: {debug_dict["MAX_MOVES"]} | Counter: {debug_dict["LOCK_DELAY_COUNTER"]} | y: {debug_dict['LOWEST_PIVOT']}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16.5)))
+        debug_surfaces.append((self.pfw_small.render(f'Lock Delay: {self.DebugStruct.Lock_Delay} ({self.DebugStruct.Lock_Delay_Ticks} ticks) | Counter: {self.DebugStruct.Lock_Delay_Counter} | Resets Left: {self.DebugStruct.Max_Moves} | y: {self.DebugStruct.Lowest_Pivot}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 16.5)))
         
-        debug_surfaces.append((self.pfw_small.render(f'PrevAccHD: {debug_dict["PREVHD"]} | Delay: {debug_dict['PREV_ACC_HD_TIME']} ticks| Counter: {debug_dict['PREV_ACC_HD_COUNTER']} | Flag: {debug_dict['PREV_ACC_HD_FLAG']}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 17)))
+        debug_surfaces.append((self.pfw_small.render(f'PrevAccHD: {self.DebugStruct.Prevent_Accidental_Hard_Drop} | Delay: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Time} ticks| Counter: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Counter} | Flag: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Flag}', True, (255, 255, 255)), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 17)))
           
         for surface, coords in debug_surfaces:
             self.window.blit(surface, coords)
 
-    def __draw_key_states(self, key_dict):
+    def __draw_key_states(self):
         """
         Draw the key states onto the window
-        
-        args:
-            key_dict (dict): the dictionary of key states
         """
         key_surfaces = []
         
-        left_colour = (255, 255, 255)       if key_dict['KEY_LEFT']               else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        right_colour = (255, 255, 255)      if key_dict['KEY_RIGHT']              else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.3)
-        softdrop_colour = (255, 255, 255)   if key_dict['KEY_SOFT_DROP']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        ccw_colour = (255, 255, 255)        if key_dict['KEY_COUNTERCLOCKWISE']   else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        cw_colour = (255, 255, 255)         if key_dict['KEY_CLOCKWISE']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        colour_180 = (255, 255, 255)        if key_dict['KEY_180']                else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        harddrop_colour = (255, 255, 255)   if key_dict['KEY_HARD_DROP']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
-        hold_colour = (255, 255, 255)       if key_dict['KEY_HOLD']               else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        left_colour = (255, 255, 255)       if self.RenderStruct.key_dict['KEY_LEFT']               else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        right_colour = (255, 255, 255)      if self.RenderStruct.key_dict['KEY_RIGHT']              else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.3)
+        softdrop_colour = (255, 255, 255)   if self.RenderStruct.key_dict['KEY_SOFT_DROP']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        ccw_colour = (255, 255, 255)        if self.RenderStruct.key_dict['KEY_COUNTERCLOCKWISE']   else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        cw_colour = (255, 255, 255)         if self.RenderStruct.key_dict['KEY_CLOCKWISE']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        colour_180 = (255, 255, 255)        if self.RenderStruct.key_dict['KEY_180']                else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        harddrop_colour = (255, 255, 255)   if self.RenderStruct.key_dict['KEY_HARD_DROP']          else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
+        hold_colour = (255, 255, 255)       if self.RenderStruct.key_dict['KEY_HOLD']               else lerpBlendRGBA((0, 0, 0), (255, 255, 255), 0.33)
         
         key_surfaces.append((self.action_ui.render('B', True, left_colour), (self.Config.GRID_SIZE // 2, self.Config.GRID_SIZE * 26.5)))
 

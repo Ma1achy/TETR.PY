@@ -29,6 +29,9 @@ class FLAG(Enum):
     BACK2BACK = auto()
     COMBO = auto()
     
+    # debug
+    SHOW_DEBUG_MENU = auto()
+    
 def generate_flags():
     return {flag: False for flag in FLAG}
 @dataclass
