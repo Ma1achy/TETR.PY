@@ -19,7 +19,9 @@ class Debug():
         self.FlagStruct = FlagStruct
         self.RenderStruct = RenderStruct
         self.DebugStruct = DebugStruct
-        
+    
+    # =================================================== METRIC CALCULATION ===================================================
+    
     def __calculate_metrics(self, values_list, current_value, idx, metric, larger_is_better):
         """
         Calculate the average, best and worst values of a metric
@@ -71,6 +73,8 @@ class Debug():
         setattr(self.DebugStruct, average_attr, average)
         setattr(self.DebugStruct, best_attr, best_value)
         setattr(self.DebugStruct, worst_attr, worst_value)
+    
+    # =================================================== DEBUG METRICS ===================================================
     
     def __get_tick_debug(self):
         """

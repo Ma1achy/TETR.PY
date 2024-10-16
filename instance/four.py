@@ -273,10 +273,7 @@ class Four():
     def __perform_gravity(self):
         """
         Perform gravity on the current tetromino
-        """
-        if self.GameInstanceStruct.current_tetromino is None:
-            return
-                
+        """               
         for action_dict in self.actions_this_tick:
             action = action_dict['action']
             

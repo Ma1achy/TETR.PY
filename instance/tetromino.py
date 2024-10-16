@@ -38,7 +38,7 @@ class Tetromino():
             self.blocks = self.__rotate_180()
         elif self.state == 3:
             self.blocks = self.__rotate_ccw()
-    
+
     def __get_origin(self, x:int, y:int):
         """
         Get the origin of the piece

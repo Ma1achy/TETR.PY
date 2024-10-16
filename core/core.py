@@ -29,9 +29,9 @@ class Core():
         self.RenderStruct = StructRender()
         self.DebugStruct = StructDebug()
         
-        self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
         self.render_clock = Clock()
         self.window = self.__init_window()
+        self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
         self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct)
         self.handling = Handling(self.Config, self.HandlingStruct)
         
