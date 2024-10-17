@@ -108,12 +108,9 @@ class Four():
         Update the current tetromino at the end of the tick
         """
         if self.GameInstanceStruct.current_tetromino is None:
-            self.GameInstanceStruct.matrix.piece = self.GameInstanceStruct.matrix.empty_matrix()
-            self.GameInstanceStruct.matrix.ghost = self.GameInstanceStruct.matrix.empty_matrix()
+            return
         else:
-            self.GameInstanceStruct.matrix.piece = self.GameInstanceStruct.matrix.empty_matrix()
-            self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.piece)
-            self.GameInstanceStruct.current_tetromino.ghost()
+            self.GameInstanceStruct.current_tetromino.shadow()
             self.GameInstanceStruct.current_tetromino.reset_lock_delay_lower_pivot()
                 
     # ---------------------------------------------------- ACTIONS ---------------------------------------------------
@@ -248,7 +245,6 @@ class Four():
         """
         if self.GameInstanceStruct.current_tetromino is not None:
             self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.matrix)
-            self.GameInstanceStruct.matrix.piece = self.GameInstanceStruct.matrix.empty_matrix()
             self.GameInstanceStruct.current_tetromino = None
     
     def __move_to_floor(self):
@@ -380,7 +376,6 @@ class Four():
         if hold_spawn == 'swap': # if the piece is being swapped in, insert the blocks before checking if it can spawn (visual consistency otherwise will look like you die for no reason)
             self.GameInstanceStruct.current_tetromino = None
             self.GameInstanceStruct.current_tetromino = spawning_tetromino
-            self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.piece)
             self.__check_spawn(spawning_tetromino)
         
         elif hold_spawn == 'hold': # if the current piece is being held, normal behaviour
@@ -393,7 +388,6 @@ class Four():
             if self.__check_spawn(spawning_tetromino):
                 self.GameInstanceStruct.queue.get_next_piece()
                 self.GameInstanceStruct.current_tetromino = spawning_tetromino
-                self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.piece)
     
     def __check_spawn(self, spawning_tetromino):
         """
@@ -488,11 +482,7 @@ class Four():
             return
         
         next_piece = self.GameInstanceStruct.queue.view_queue(idx = 0)
-        danger = Tetromino(next_piece, 0, 4, 18, self.GameInstanceStruct.matrix, self.FlagStruct)
-        
-        self.GameInstanceStruct.matrix.danger = self.GameInstanceStruct.matrix.empty_matrix()
-        danger.blocks = [tuple(-1 if val != 0 else val for val in row) for row in danger.blocks]
-        self.GameInstanceStruct.matrix.insert_blocks(danger.blocks, danger.position, self.GameInstanceStruct.matrix.danger)
+        self.GameInstanceStruct.next_tetromino =  Tetromino(next_piece, 0, 4, 18, self.GameInstanceStruct.matrix, self.FlagStruct)
         
     def __event_danger(self, val:bool):
         """

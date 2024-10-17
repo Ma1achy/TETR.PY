@@ -21,6 +21,8 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
 
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
+def smoothstep(x):
+        return x * x * x * (x * (6 * x - 15) + 10)
 class Font():
     def __init__(self, size:int = 20):
         """

@@ -70,8 +70,6 @@ class StructConfig():
         self.GRID_SIZE = self.FOUR_INSTANCE_WIDTH // 25
         self.MATRIX_SURFACE_WIDTH = self.MATRIX_WIDTH * self.GRID_SIZE
         self.MATRIX_SURFACE_HEIGHT = self.MATRIX_HEIGHT // 2 * self.GRID_SIZE
-        self.MATRIX_SCREEN_CENTER_X = (self.FOUR_INSTANCE_WIDTH - self.MATRIX_SURFACE_WIDTH) // 2
-        self.MATRIX_SCREEN_CENTER_Y = (self.FOUR_INSTANCE_HEIGHT - self.MATRIX_SURFACE_HEIGHT) // 2
     
         self.key_bindings[Action.SONIC_LEFT] = self.key_bindings[Action.MOVE_LEFT]
         self.key_bindings[Action.SONIC_RIGHT] = self.key_bindings[Action.MOVE_RIGHT]

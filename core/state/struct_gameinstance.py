@@ -9,6 +9,7 @@ class StructGameInstance():
     spawn_pos = Vec2(4, 18)
     held_tetromino: str = None 
     current_tetromino: str = None
+    next_tetromino: str = None
     on_floor: bool = False
     
     queue:Queue = None

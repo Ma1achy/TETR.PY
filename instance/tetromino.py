@@ -23,7 +23,7 @@ class Tetromino():
         self.position = self.__get_origin(x, y)
         self.pivot = self.__get_pivot()
         
-        self.ghost_position = Vec2(self.position.x, self.position.y)
+        self.shadow_position = Vec2(self.position.x, self.position.y)
         self.matrix = matrix
         self.flags = flags
         
@@ -438,24 +438,15 @@ class Tetromino():
             self.max_moves_before_lock += -1
     
     # ========================================================== GHOST PIECE ============================================================
-    
-    # FIXME: Change how current tetromino is rendered then this stupid shit can be deleted lmao
-    
-    def ghost(self):
+     
+    def shadow(self):
         """
-        Create a ghost piece that shows where the piece will land
+        Create a shadow of the piece that shows where the piece will land
         """
-        self.ghost_position = Vec2(self.position.x, self.position.y)
+        self.shadow_position = Vec2(self.position.x, self.position.y)
         
-        while not self.collision(self.blocks, self.ghost_position):
-            self.ghost_position.y += 1
+        while not self.collision(self.blocks, self.shadow_position):
+            self.shadow_position.y += 1
             
-        self.ghost_position.y -= 1
-        self.ghost_position.x = self.position.x 
-          
-        if not self.collision(self.blocks, self.ghost_position):
-            self.matrix.ghost = self.matrix.empty_matrix()
-            self.matrix.insert_blocks(self.blocks, self.ghost_position, self.matrix.ghost)
-        
-        if self.ghost_position.y <= self.position.y:
-            self.matrix.ghost = self.matrix.empty_matrix()
+        self.shadow_position.y -= 1
+        self.shadow_position.x = self.position.x 
