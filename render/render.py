@@ -25,11 +25,11 @@ class Render():
         self.board_rect_width = self.Config.MATRIX_SURFACE_WIDTH + 17 * self.Config.GRID_SIZE
         self.board_rect_height = self.Config.MATRIX_SURFACE_HEIGHT + self.Config.BORDER_WIDTH + 4 * self.Config.GRID_SIZE
         
-        self.board_rect_x_pos = self.Config.WINDOW_WIDTH // 2 -  15.75 * self.Config.GRID_SIZE + self.Config.BORDER_WIDTH // 2
+        self.board_rect_x_pos = self.Config.WINDOW_WIDTH // 2 -  15.5 * self.Config.GRID_SIZE 
         self.board_rect_y_pos = 0
         
-        self.matrix_rect_pos_x = self.board_rect_width //2 - self.Config.MATRIX_SURFACE_WIDTH //2 + self.Config.GRID_SIZE * 2 + self.Config.BORDER_WIDTH
-        self.matrix_rect_pos_y = self.Config.GRID_SIZE * 4
+        self.matrix_rect_pos_x = self.board_rect_width //2 - self.Config.MATRIX_SURFACE_WIDTH //2 + self.Config.GRID_SIZE * 2 
+        self.matrix_rect_pos_y = self.Config.GRID_SIZE * 4 + self.Config.BORDER_WIDTH // 2
         
         self.queue_rect_width = 6 * self.Config.GRID_SIZE + self.Config.BORDER_WIDTH // 2 + 1
         self.queue_rect_height = 3 * self.Config.QUEUE_LENGTH * self.Config.GRID_SIZE - self.Config.BORDER_WIDTH // 2
@@ -73,8 +73,13 @@ class Render():
             
         # pygame.draw.rect(self.window, (0, 0, 255), self.board_rect, 2)  
         
-        # pygame.draw.line(self.window, (255, 0, 255), (self.Config.WINDOW_WIDTH // 2, 0), (self.Config.WINDOW_WIDTH // 2, self.Config.WINDOW_HEIGHT), 1)
-        # pygame.draw.line(self.window, (255, 0, 255), (0, self.Config.WINDOW_HEIGHT // 2), (self.Config.WINDOW_WIDTH, self.Config.WINDOW_HEIGHT // 2), 1)
+        if self.RenderStruct.draw_guide_lines:
+            pygame.draw.line(self.window, (255, 0, 255), (self.Config.WINDOW_WIDTH // 2, 0), (self.Config.WINDOW_WIDTH // 2, self.Config.WINDOW_HEIGHT), 1)
+            pygame.draw.line(self.window, (255, 0, 255), (0, self.Config.WINDOW_HEIGHT // 2), (self.Config.WINDOW_WIDTH, self.Config.WINDOW_HEIGHT // 2), 1)
+            pygame.draw.line(self.window, (0, 255, 0), (self.Config.WINDOW_WIDTH // 4, 0), (self.Config.WINDOW_WIDTH // 4, self.Config.WINDOW_HEIGHT), 1)
+            pygame.draw.line(self.window, (0, 255, 0), (0, self.Config.WINDOW_HEIGHT // 4), (self.Config.WINDOW_WIDTH, self.Config.WINDOW_HEIGHT // 4), 1)
+            pygame.draw.line(self.window, (0, 255, 0), (self.Config.WINDOW_WIDTH // 4 * 3, 0), (self.Config.WINDOW_WIDTH // 4 * 3, self.Config.WINDOW_HEIGHT), 1)
+            pygame.draw.line(self.window, (0, 255, 0), (0, self.Config.WINDOW_HEIGHT // 4 * 3), (self.Config.WINDOW_WIDTH, self.Config.WINDOW_HEIGHT // 4 * 3), 1)
         
         self.__draw_debug_menu()
         self.__draw_key_states()
@@ -94,13 +99,13 @@ class Render():
         self.__draw_tetromino_blocks(self.GameInstanceStruct.current_tetromino.blocks, rect, blend_colour, piece_alpha)
         
         if self.RenderStruct.draw_bounding_box:
-            pygame.draw.rect(self.window, (0, 255, 0), rect, 2)
+            pygame.draw.rect(self.board_surface, (0, 255, 0), rect, 2)
         
         if self.RenderStruct.draw_origin:
-            self.__draw_tetromino_position()
+            self.__draw_tetromino_position(matrix_surface_rect)
               
         if self.RenderStruct.draw_pivot:
-            self.__draw_pivot_position()
+            self.__draw_pivot_position(matrix_surface_rect)
                 
     def draw_current_tetromino_shadow(self, matrix_surface_rect:pygame.Rect):
             
@@ -285,7 +290,7 @@ class Render():
                         self.Config.GRID_SIZE)
     
         text_surface = self.hun2_big.render('NEXT', True, (0, 0, 0))
-        self.board_surface.blit(text_surface, (self.matrix_rect_pos_x + self.Config.MATRIX_SURFACE_WIDTH // 2 + self.Config.GRID_SIZE * 5.25, self.matrix_rect_pos_y + self.Config.GRID_SIZE * 0.15))
+        self.board_surface.blit(text_surface, (self.matrix_rect_pos_x + self.Config.MATRIX_SURFACE_WIDTH // 2 + self.Config.GRID_SIZE * 5.2, self.matrix_rect_pos_y + self.Config.GRID_SIZE * 0.15))
         
     def __draw_hold_border(self):
     
@@ -548,28 +553,28 @@ class Render():
         for surface, coords in key_surfaces:
             self.window.blit(surface, coords)
     
-    def __draw_pivot_position(self):
+    def __draw_pivot_position(self, matrix_surface_rect):
         
         loc = self.GameInstanceStruct.current_tetromino.position + self.GameInstanceStruct.current_tetromino.pivot
         
-        x = self.Config.MATRIX_SCREEN_CENTER_X + loc.x * self.Config.GRID_SIZE 
-        y = self.Config.MATRIX_SCREEN_CENTER_Y + loc.y * self.Config.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.Config.GRID_SIZE)//2
+        x = matrix_surface_rect.x + loc.x * self.Config.GRID_SIZE 
+        y = matrix_surface_rect.y + loc.y * self.Config.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.Config.GRID_SIZE)//2
 
         length = self.Config.GRID_SIZE // 4
 
-        pygame.draw.line(self.window, (255, 255, 255), (x - length, y), (x + length, y), 2)
-        pygame.draw.line(self.window, (255, 255, 255), (x, y - length), (x, y + length), 2)
+        pygame.draw.line(self.board_surface, (255, 255, 255), (x - length, y), (x + length, y), 2)
+        pygame.draw.line(self.board_surface, (255, 255, 255), (x, y - length), (x, y + length), 2)
                 
-    def __draw_tetromino_position(self):
+    def __draw_tetromino_position(self, matrix_surface_rect):
         loc = self.GameInstanceStruct.current_tetromino.position
         
-        x = self.Config.MATRIX_SCREEN_CENTER_X + loc.x * self.Config.GRID_SIZE
-        y = self.Config.MATRIX_SCREEN_CENTER_Y + loc.y * self.Config.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.Config.GRID_SIZE)//2 
+        x = matrix_surface_rect.x + loc.x * self.Config.GRID_SIZE
+        y = matrix_surface_rect.y + loc.y * self.Config.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.Config.GRID_SIZE)//2 
         
         length = self.Config.GRID_SIZE // 4
 
-        pygame.draw.line(self.window, (0, 255, 0), (x - length, y), (x + length, y), 2)
-        pygame.draw.line(self.window, (0, 255, 0), (x, y - length), (x, y + length), 2)
+        pygame.draw.line(self.board_surface, (0, 255, 0), (x - length, y), (x + length, y), 2)
+        pygame.draw.line(self.board_surface, (0, 255, 0), (x, y - length), (x, y + length), 2)
     
     def __format_time(self):
         minutes = int((self.TimingStruct.current_time % 3600) // 60)

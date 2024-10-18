@@ -7,6 +7,7 @@ class StructRender():
     surfaces: List[pygame.Surface] = field(default_factory = list)
     
     # debug rendering flags
+    draw_guide_lines: bool = False
     draw_bounding_box: bool = False
     draw_origin: bool = False
     draw_pivot: bool = False
