@@ -15,6 +15,7 @@ from instance.four import Four
 
 # redo render code it is a 3 course itallian meal rn
 #         - make blocks use textures
+# - need to abstract out the board rendering into a board object
 
 # change queue generation, need to generate a bag and insert into queue, make sure queue always has 2 bags in it, 3 max.
 # rather than now where it shuffles the bag and removes the first tetromino from the bag and inserts it into the queue and ensures a fixed queue length
