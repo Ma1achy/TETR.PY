@@ -32,9 +32,8 @@ class StructConfig():
     CAPTION: str = 'Four'
     WINDOW_WIDTH: int = 1500
     WINDOW_HEIGHT: int = 900
-    FOUR_INSTANCE_WIDTH: int = 800
-    FOUR_INSTANCE_HEIGHT: int = 900
-    BORDER_WIDTH: int = 5
+ 
+    BORDER_WIDTH: int = 7
 
     UNCAPPED_FPS: bool = False
     FPS: int = 144
@@ -58,19 +57,8 @@ class StructConfig():
         7: (51, 156, 218),   # I
         8: (105, 105, 105),  # garbage
     })
-    
-    # Rendering constants
-    GRID_SIZE: int = field(init = False)
-    MATRIX_SURFACE_WIDTH: int = field(init = False)
-    MATRIX_SURFACE_HEIGHT: int = field(init = False)
-    MATRIX_SCREEN_CENTER_X: int = field(init = False)
-    MATRIX_SCREEN_CENTER_Y: int = field(init = False)
 
     def __post_init__(self):
-        self.GRID_SIZE = self.FOUR_INSTANCE_WIDTH // 25
-        self.MATRIX_SURFACE_WIDTH = self.MATRIX_WIDTH * self.GRID_SIZE
-        self.MATRIX_SURFACE_HEIGHT = self.MATRIX_HEIGHT // 2 * self.GRID_SIZE
-    
         self.key_bindings[Action.SONIC_LEFT] = self.key_bindings[Action.MOVE_LEFT]
         self.key_bindings[Action.SONIC_RIGHT] = self.key_bindings[Action.MOVE_RIGHT]
         self.key_bindings[Action.SONIC_DROP] = self.key_bindings[Action.HARD_DROP]

@@ -14,7 +14,6 @@ from instance.four import Four
 # - GAME OVER CONDITIONS
 
 # redo render code it is a 3 course itallian meal rn
-#         - make border ui a png
 #         - make blocks use textures
 
 # change queue generation, need to generate a bag and insert into queue, make sure queue always has 2 bags in it, 3 max.
