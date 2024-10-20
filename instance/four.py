@@ -2,6 +2,8 @@ from instance.tetromino import Tetromino
 from instance.matrix import Matrix
 from core.handling import Action
 from instance.rotation import RotationSystem
+import math
+from utils import Vec2
 
 class Four():
     def __init__(self, core_instance, rotation_system:str = 'SRS'):
@@ -370,7 +372,10 @@ class Four():
             next_piece (str): The type of the next tetromino
             hold_spawn (bool): Whether the piece is spawning from the hold slot
         """
-        spawning_tetromino = Tetromino(next_piece, 0, self.GameInstanceStruct.spawn_pos.x, self.GameInstanceStruct.spawn_pos.y, self.GameInstanceStruct.matrix, self.FlagStruct)
+        
+        self.spawn_pos = Vec2(math.floor((self.GameInstanceStruct.matrix.WIDTH - 1) / 2), self.GameInstanceStruct.matrix.HEIGHT // 2 - 2)
+        
+        spawning_tetromino = Tetromino(next_piece, 0,  self.spawn_pos.x,  self.spawn_pos.y, self.GameInstanceStruct.matrix, self.FlagStruct)
         self.GameInstanceStruct.lock_delay_counter = 0
         
         if hold_spawn == 'swap': # if the piece is being swapped in, insert the blocks before checking if it can spawn (visual consistency otherwise will look like you die for no reason)
@@ -482,7 +487,7 @@ class Four():
             return
         
         next_piece = self.GameInstanceStruct.queue.view_queue(idx = 0)
-        self.GameInstanceStruct.next_tetromino =  Tetromino(next_piece, 0, 4, 18, self.GameInstanceStruct.matrix, self.FlagStruct)
+        self.GameInstanceStruct.next_tetromino =  Tetromino(next_piece, 0, self.spawn_pos.x, self.spawn_pos.y , self.GameInstanceStruct.matrix, self.FlagStruct)
         
     def __event_danger(self, val:bool):
         """

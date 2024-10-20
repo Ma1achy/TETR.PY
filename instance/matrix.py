@@ -81,22 +81,6 @@ class Matrix():
         }
 
         display_matrix = [row[:] for row in self.matrix]
-            
-        [
-            display_matrix[y].__setitem__(x, -val)
-            
-            for y, row in enumerate(self.piece)
-            for x, val in enumerate(row)
-            if val != 0
-        ]
-                    
-        [
-            display_matrix[y].__setitem__(x, val)
-            
-            for y, row in enumerate(self.ghost)
-            for x, val in enumerate(row)
-            if val != 0
-        ]
                     
         rows = [
             "| " + " ".join(
