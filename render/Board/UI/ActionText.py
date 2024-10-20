@@ -4,7 +4,7 @@ from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
-from render.Board.BoardConsts import StructBoardConsts
+from render.board.board_constants import StructBoardConsts
 import pygame
 
 class UIActionText():

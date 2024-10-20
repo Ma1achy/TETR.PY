@@ -1,7 +1,7 @@
 from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
-from render.Board.BoardConsts import StructBoardConsts
+from render.board.board_constants import StructBoardConsts
 import pygame
 
 class UIBorder():

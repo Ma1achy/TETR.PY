@@ -11,7 +11,7 @@ from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix, SmoothS
 
 from render.UI.DebugMenu import UIDebug
 from render.UI.KeyStatesOverlay import UIKeyStates
-from render.Board.Board import Board
+from render.board.board import Board
 from render.Fonts import Fonts
 
 class Render():
