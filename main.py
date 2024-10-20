@@ -14,8 +14,19 @@ from instance.four import Four
 # - GAME OVER CONDITIONS
 
 # === rendering ===
-#         - make blocks use textures
-#         - animations
+# - make blocks use textures
+# - animations
+# -  alignment helper funcs:
+#            -  horizontal align (define line)
+#            -  vertical align (for text) (define line)
+#            -  center align (uses surface)
+#            -  left align (uses surface)
+#            -  right align (uses surface)
+#            -  top align (uses surface)
+#            -  bottom align (uses surface)
+#            -  center align (uses surface)
+#            -  corner align (uses surface)
+
 
 # change queue generation, need to generate a bag and insert into queue, make sure queue always has 2 bags in it, 3 max.
 # rather than now where it shuffles the bag and removes the first tetromino from the bag and inserts it into the queue and ensures a fixed queue length
