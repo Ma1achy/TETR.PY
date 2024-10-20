@@ -30,11 +30,10 @@ class Core():
         self.DebugStruct = StructDebug()
         
         self.render_clock = Clock()
-        self.window = self.__init_window()
-        self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
-        self.render = Render(self.window, self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct)
-        self.handling = Handling(self.Config, self.HandlingStruct)
         
+        self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
+        self.handling = Handling(self.Config, self.HandlingStruct)
+          
         self.TPS = self.Config.TPS
         self.FPS = self.Config.FPS
         self.time_per_tick = 1 / self.Config.TPS
@@ -50,16 +49,10 @@ class Core():
         (Four) four: the instance of the game
         """
         set_flag_attr() # set the flag attributes
+        self.render = Render(self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct)
         self.start_time = time.perf_counter()
         pygame.init()
         
-    def __init_window(self):
-        """
-        Create the window to draw to
-        """
-        pygame.display.set_caption(self.Config.CAPTION)
-        return pygame.display.set_mode((self.Config.WINDOW_WIDTH, self.Config.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF)
-    
     def __exit(self):
         """
         Exit the game
@@ -245,7 +238,7 @@ class Core():
         Render a single frame of the game
         """
         self.RenderStruct.key_dict = self.HandlingStruct.key_dict
-        self.render.render_frame()
+        self.render.RenderFrame()
         self.render_clock.tick()
                 
     def __get_tps(self):

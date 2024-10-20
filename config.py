@@ -29,12 +29,7 @@ class StructConfig():
         'SonicDrop': False   # Sonic Drop (bool): Whether to replace the hard drop action with the sonic drop action
     })
     
-    CAPTION: str = 'Four'
-    WINDOW_WIDTH: int = 1500
-    WINDOW_HEIGHT: int = 900
- 
-    BORDER_WIDTH: int = 7
-
+    
     UNCAPPED_FPS: bool = False
     FPS: int = 144
     TPS: int = 256
@@ -44,19 +39,6 @@ class StructConfig():
     MATRIX_WIDTH: int = 10
     MATRIX_HEIGHT: int = 40
     QUEUE_LENGTH: int = 5
-
-    COLOUR_MAP: Dict[int, Tuple[int, int, int]] = field(default_factory = lambda: {
-        -1: (255, 0, 0),
-        0: (0, 0, 0),        # empty
-        1: (168, 34, 139),   # T
-        2: (99, 177, 0),     # S
-        3: (206, 0, 43),     # Z
-        4: (219, 87, 0),     # L
-        5: (38, 64, 202),    # J 
-        6: (221, 158, 0),    # O
-        7: (51, 156, 218),   # I
-        8: (105, 105, 105),  # garbage
-    })
 
     def __post_init__(self):
         self.key_bindings[Action.SONIC_LEFT] = self.key_bindings[Action.MOVE_LEFT]

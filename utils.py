@@ -21,7 +21,7 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
 
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
-def smoothstep(x):
+def SmoothStep(x):
         return x * x * x * (x * (6 * x - 15) + 10)
 class Font():
     def __init__(self, size:int = 20):
@@ -46,7 +46,7 @@ class Font():
         font_path = os.path.join(self.base_path, 'cr.ttf')
         return pygame.font.Font(font_path, self.size)
     
-    def action_ui(self):
+    def keystates(self):
         font_path = os.path.join(self.base_path, 'action-icons.ttf')
         return pygame.font.Font(font_path, self.size)
 
@@ -191,3 +191,64 @@ class Vec2():
     
     def distance(a, b): 
         return np.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
+    
+def RotateSurface(surface, angle, pivot, origin):
+    """
+    Rotate a surface around a pivot point.
+
+    Args:
+        surf (pygame.Surface): The surface to rotate.
+        angle (float): The angle to rotate the surface.
+        pivot (tuple): The pivot point to rotate around.
+        origin (tuple): The origin point of the surface.
+
+    Returns:
+        pygame.Surface: The rotated surface.
+        pygame.Rect: The rectangle of the rotated surface.
+    """
+    # Convert pivot and origin to pygame vectors for calculations
+    pivot = pygame.Vector2(pivot)
+    origin = pygame.Vector2(origin)
+    
+    surf_rect = surface.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
+    offset_center_to_pivot = pygame.math.Vector2(origin) - surf_rect.center
+    rotated_offset = offset_center_to_pivot.rotate(-angle)
+    rotated_surface_center = (origin[0] - rotated_offset.x, origin[1] - rotated_offset.y)
+    rotated_surface = pygame.transform.rotate(surface, angle)
+    rotated_surface_rect = rotated_surface.get_rect(center = rotated_surface_center)
+    
+    return rotated_surface, rotated_surface_rect
+
+def ScaleSurface(surface, scale, pivot, origin):
+    """
+    Scale a surface around a pivot point.
+    
+    Args:
+        surf (pygame.Surface): The surface to scale.
+        scale (float): The scale factor.
+        pivot (tuple): The pivot point to scale around.
+        origin (tuple): The origin point of the surface.
+    
+    Returns:
+        pygame.Surface: The scaled surface.
+        pygame.Rect: The rectangle of the scaled surface.
+    """
+    pivot = pygame.Vector2(pivot)
+    origin = pygame.Vector2(origin)
+    surf_rect = surface.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
+    offset_center_to_pivot = pygame.math.Vector2(origin) - surf_rect.center
+    scaled_offset = offset_center_to_pivot * scale
+    scaled_surface_center = (origin[0] - scaled_offset.x, origin[1] - scaled_offset.y)
+    scaled_surface = pygame.transform.scale(surface, (int(surface.get_width() * scale), int(surface.get_height() * scale)))
+    scaled_surface_rect = scaled_surface.get_rect(center = scaled_surface_center)
+    
+    return scaled_surface, scaled_surface_rect
+
+def TransformSurface(surface, scale, angle, pivot, origin, offset):
+    pivot = pygame.Vector2(pivot)
+    origin = pygame.Vector2(origin)
+    offset = pygame.Vector2(offset)
+    
+    scaled_surface, _ = ScaleSurface(surface, scale, pivot, origin + offset)
+    rotated_surface, rotated_surface_rect = RotateSurface(scaled_surface, angle, pivot * scale, origin + offset)
+    return rotated_surface, rotated_surface_rect
