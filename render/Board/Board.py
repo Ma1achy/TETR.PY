@@ -8,8 +8,8 @@ from render.board.struct_board import StructBoardConsts
 import pygame
 from render.board.matrix import Matrix
 from render.board.hold_and_queue import HoldAndQueue
-from render.board.UI.Border import UIBorder
-from render.board.UI.InfoText import UIInfoText
+from render.board.UI.border import UIBorder
+from render.board.UI.info_text import UIInfoText
 
 class Board():
     def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug, Fonts):
@@ -39,13 +39,19 @@ class Board():
         self.board_center_x_board_space = self.BoardConts.matrix_rect_pos_x + self.BoardConts.MATRIX_SURFACE_WIDTH // 2
         self.board_center_y_board_space = self.BoardConts.matrix_rect_pos_y + self.BoardConts.MATRIX_SURFACE_HEIGHT // 2
     
-    def GetBoardSurface(self):
+    def get_board_surface(self):
+        """
+        Get the surface to draw the board onto
+        """
         return pygame.Surface((self.BoardConts.board_rect_width, self.BoardConts.board_rect_height), pygame.SRCALPHA)
     
-    def Draw(self, surface):
-        self.Matrix.Draw(surface)
+    def draw(self, surface):
+        """
+        Draw the board onto a surface
+        """
+        self.Matrix.draw(surface)
         pygame.draw.rect(surface, (0, 0, 255), (0, 0, self.BoardConts.board_rect_width, self.BoardConts.board_rect_height), 1)
         pygame.draw.circle(surface, (255, 0, 0), (self.board_center_x_board_space, self.board_center_y_board_space), 5)
-        self.HoldAndQueue.Draw(surface)
-        self.UI_Border.Draw(surface) 
-        self.UI_InfoText.Draw(surface)
+        self.HoldAndQueue.draw(surface)
+        self.UI_Border.draw(surface) 
+        self.UI_InfoText.draw(surface)

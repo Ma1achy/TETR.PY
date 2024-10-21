@@ -21,34 +21,8 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
 
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
-def SmoothStep(x):
+def smoothstep(x):
         return x * x * x * (x * (6 * x - 15) + 10)
-class Font():
-    def __init__(self, size:int = 20):
-        """
-        Fonts used in the game
-        
-        args:
-            size (int): The size of the font
-        """
-        self.size = size
-        self.base_path = os.path.join(os.path.dirname(__file__), 'render/font')
-    
-    def hun2(self):
-        font_path = os.path.join(self.base_path, 'hun2.ttf')
-        return pygame.font.Font(font_path, self.size)
-    
-    def pfw(self):
-        font_path = os.path.join(self.base_path, 'pfw.ttf')
-        return pygame.font.Font(font_path, self.size)
-    
-    def cr(self):
-        font_path = os.path.join(self.base_path, 'cr.ttf')
-        return pygame.font.Font(font_path, self.size)
-    
-    def keystates(self):
-        font_path = os.path.join(self.base_path, 'action-icons.ttf')
-        return pygame.font.Font(font_path, self.size)
 
 def get_prefix(number:float, unit:str, precision:int = 1):
     """

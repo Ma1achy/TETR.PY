@@ -9,7 +9,7 @@ import pygame
 
 class UIActionText():
     def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug):
-        
+
         self.Config = Config
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct
@@ -17,6 +17,6 @@ class UIActionText():
         self.TimingStruct = TimingStruct
         self.DebugStruct = DebugStruct
         
-    def Draw(self, surface):
+    def draw(self, surface):
         pass
             

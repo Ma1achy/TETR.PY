@@ -12,45 +12,64 @@ class UIBorder():
         self.Fonts = Fonts
         self.BoardConsts = BoardConsts
     
-    def Draw(self, surface):
-        self.__DrawBorder(surface)
-        self.__DrawHoldBorder(surface)
-        self.__DrawQueueBorder(surface)
-        
-    def __DrawBorder(self, surface):
+    def draw(self, surface):
         """
-        Draw a border around the matrix, garbage, queue and hold
-        """
-        # ====== MATRIX ======
+        Draw the border around the matrix, hold, and queue onto a surface
         
-        pygame.draw.line(surface, self.__GetBorderColour(), # matrix left border
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
+        self.__draw_border(surface)
+        self.__draw_garbage_border(surface)
+        self.__draw_hold_border(surface)
+        self.__draw_queue_border(surface)
+        
+    def __draw_border(self, surface):
+        """
+        Draw a border around the matrix
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """ 
+        pygame.draw.line(surface, self.__get_border_colour(), # matrix left border
                  (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH // 2 - 1, self.BoardConsts.MATRIX_SURFACE_HEIGHT + self.BoardConsts.matrix_rect_pos_y), 
                  (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH // 2 - 1, self.BoardConsts.matrix_rect_pos_y), self.RenderStruct.BORDER_WIDTH)
 
-        pygame.draw.line(surface, self.__GetBorderColour(),   # matrix right border
+        pygame.draw.line(surface, self.__get_border_colour(),   # matrix right border
                         (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y), 
                         (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT - 1), 
                         self.RenderStruct.BORDER_WIDTH)
 
-        pygame.draw.line(surface, self.__GetBorderColour(),  # matrix bottom border
+        pygame.draw.line(surface, self.__get_border_colour(),  # matrix bottom border
                         (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.BORDER_WIDTH - self.RenderStruct.GRID_SIZE, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT + self.RenderStruct.BORDER_WIDTH // 2 - 1), 
                         (self.BoardConsts.matrix_rect_pos_x   + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH - 1, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT + self.RenderStruct.BORDER_WIDTH // 2 - 1), 
                         self.RenderStruct.BORDER_WIDTH)
 
-        # ====== GARBAGE =======
+    def __draw_garbage_border(self, surface):
+        """
+        Draw a border around the garbage bar
         
-        pygame.draw.line(surface, self.__GetBorderColour(), # left garbage border
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
+        pygame.draw.line(surface, self.__get_border_colour(), # left garbage border
                         (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.BORDER_WIDTH // 2 - 1 - self.RenderStruct.GRID_SIZE, self.BoardConsts.matrix_rect_pos_y), 
                         (self.BoardConsts.matrix_rect_pos_x   - self.RenderStruct.BORDER_WIDTH // 2 - 1 - self.RenderStruct.GRID_SIZE, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT - 1), 
                         self.RenderStruct.BORDER_WIDTH)
         
-        pygame.draw.line(surface, self.__GetBorderColour(),  
+        pygame.draw.line(surface, self.__get_border_colour(),  
                         (self.BoardConsts.matrix_rect_pos_x   - self.RenderStruct.BORDER_WIDTH - self.RenderStruct.GRID_SIZE, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT - self.RenderStruct.GRID_SIZE * 8 + self.RenderStruct.BORDER_WIDTH // 2 - 1) , 
                         (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.BORDER_WIDTH , self.BoardConsts.matrix_rect_pos_y+ self.BoardConsts.MATRIX_SURFACE_HEIGHT - self.RenderStruct.GRID_SIZE * 8 + self.RenderStruct.BORDER_WIDTH // 2 - 1), 
                         self.RenderStruct.BORDER_WIDTH)
         
-    def __DrawQueueBorder(self, surface):
-
+    
+    def __draw_queue_border(self, surface):
+        """
+        Draw a border around the queue
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
         match self.GameInstanceStruct.queue.length:
             case 1:
                 queue_size = self.RenderStruct.GRID_SIZE * 4.5
@@ -67,17 +86,17 @@ class UIBorder():
             case _:
                 queue_size = self.RenderStruct.GRID_SIZE * 19.5
       
-        pygame.draw.line(surface, self.__GetBorderColour(), # queue left border
+        pygame.draw.line(surface, self.__get_border_colour(), # queue left border
                         (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + 6 * self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
                         (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + 6 * self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + queue_size - self.RenderStruct.GRID_SIZE // 2 - 1),
                         self.RenderStruct.BORDER_WIDTH)
         
-        pygame.draw.line(surface, self.__GetBorderColour(), # queue bottom border
+        pygame.draw.line(surface, self.__get_border_colour(), # queue bottom border
                 (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH + 6 * self.RenderStruct.GRID_SIZE  + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + queue_size - self.RenderStruct.GRID_SIZE // 2 - 1),
                 (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + queue_size - self.RenderStruct.GRID_SIZE // 2 - 1),
                 self.RenderStruct.BORDER_WIDTH)
 
-        pygame.draw.line(surface, self.__GetBorderColour(), # queue top border
+        pygame.draw.line(surface, self.__get_border_colour(), # queue top border
                         (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH + 6 * self.RenderStruct.GRID_SIZE  + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
                         (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
                         self.RenderStruct.GRID_SIZE)
@@ -85,19 +104,24 @@ class UIBorder():
         text_surface = self.Fonts.hun2_big.render('NEXT', True, (0, 0, 0))
         surface.blit(text_surface, (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 0.15))
         
-    def __DrawHoldBorder(self, surface):
-    
-        pygame.draw.line(surface, self.__GetBorderColour(), # hold left border
+    def __draw_hold_border(self, surface):
+        """
+        Draw a border around the hold
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
+        pygame.draw.line(surface, self.__get_border_colour(), # hold left border
                         (self.BoardConsts.matrix_rect_pos_x  - 7 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH //2 - 1, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
                         (self.BoardConsts.matrix_rect_pos_x  - 7 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH //2 - 1, self.BoardConsts.matrix_rect_pos_y + 4 * self.RenderStruct.GRID_SIZE),
                         self.RenderStruct.BORDER_WIDTH)
 
-        pygame.draw.line(surface, self.__GetBorderColour(), # hold bottom border
+        pygame.draw.line(surface, self.__get_border_colour(), # hold bottom border
                         (self.BoardConsts.matrix_rect_pos_x  - 7 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + 4 * self.RenderStruct.GRID_SIZE),
                         (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + 4 * self.RenderStruct.GRID_SIZE),
                         self.RenderStruct.BORDER_WIDTH)
 
-        pygame.draw.line(surface, self.__GetBorderColour(), # hold top border
+        pygame.draw.line(surface, self.__get_border_colour(), # hold top border
             (self.BoardConsts.matrix_rect_pos_x  - 7 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
             (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
             self.RenderStruct.GRID_SIZE)
@@ -106,7 +130,7 @@ class UIBorder():
         text_surface = self.Fonts.hun2_big.render('HOLD', True, (0, 0, 0))
         surface.blit(text_surface, (self.BoardConsts.matrix_rect_pos_x  - 7.25 * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE * 0.25, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 0.15))
         
-    def __GetBorderColour(self):
+    def __get_border_colour(self):
         """
         Get the colour of the border
         """

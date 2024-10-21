@@ -20,30 +20,35 @@ class HoldAndQueue():
         self.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         self.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
     
-    def Draw(self, surface):
-        self.__DrawQueue(surface)
-        self.__DrawHold(surface)
-    
-    def __DrawQueue(self, surface):
+    def draw(self, surface):
         """
-        Render the queue onto the window
+        Draw the hold and queue onto a surface
         
-        args0
-            four (Four): the Four instance to render
+        args:
+            surface (pygame.Surface): The surface to draw onto
         """
-        queue_rect = self.__GetQueueRect()
+        self.__draw_queue(surface)
+        self.__draw_hold(surface)
+    
+    def __draw_queue(self, surface):
+        """
+        Draw the queue
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
+        queue_rect = self.__get_queue_rect()
         pygame.gfxdraw.box(surface, queue_rect, (0, 0, 0))
         
         for idx, tetromino in enumerate(self.GameInstanceStruct.queue.queue):
             
-            # split queue_rect into queue length number of rows
-            row_height = queue_rect.height // self.GameInstanceStruct.queue.length
+            row_height = queue_rect.height // self.GameInstanceStruct.queue.length  # split queue_rect into queue length number of rows
             row_y = queue_rect.y + idx * row_height
             
             preview_rect = pygame.Rect(queue_rect.x, row_y, queue_rect.width, row_height)
-            self.__DrawTetrominoPreview(surface, tetromino, preview_rect)
+            self.__draw_tetromino_preview(surface, tetromino, preview_rect)
        
-    def __GetQueueRect(self):
+    def __get_queue_rect(self):
         """
         Get the rectangle for the queue
         """
@@ -52,7 +57,7 @@ class HoldAndQueue():
     
         return pygame.Rect(rect_x, rect_y, self.queue_rect_width, self.queue_rect_height)	
     
-    def __GetHoldRect(self):
+    def __get_hold_rect(self):
         """
         Get the rectangle for the hold
         """
@@ -61,26 +66,28 @@ class HoldAndQueue():
     
         return pygame.Rect(rect_x, rect_y, self.hold_rect_width, self.hold_rect_height)
     
-    def __DrawHold(self, surface):
+    def __draw_hold(self, surface):
         """
-        Render the hold onto the window
+        Draw the hold
         
         args:
-            four (Four): the Four instance
+            surface (pygame.Surface): The surface to draw onto
         """
         tetromino = self.GameInstanceStruct.held_tetromino    
-        hold_rect = self.__GetHoldRect()
+        hold_rect = self.__get_hold_rect()
         pygame.gfxdraw.box(surface, hold_rect, (0, 0, 0))
         
-        self.__DrawTetrominoPreview(surface, tetromino, hold_rect, can_hold = self.GameInstanceStruct.can_hold)
+        self.__draw_tetromino_preview(surface, tetromino, hold_rect, can_hold = self.GameInstanceStruct.can_hold)
         
-    def __DrawTetrominoPreview(self, surface, tetromino, rect, can_hold = True):
+    def __draw_tetromino_preview(self, surface, tetromino, rect, can_hold = True):
         """
-        Render a tetromino preview
+        Draw preview of a tetromino
         
         args:
-            tetromino (list): the type of tetromino to render
-            rect (pygame.Rect): the rectangle to draw the tetromino in
+            surface (pygame.Surface): The surface to draw onto
+            tetromino (list): The tetromino to draw
+            rect (pygame.Rect): The rectangle to draw the tetromino into
+            can_hold (bool): Whether the tetromino can be held
         """
         if tetromino is None:
             return

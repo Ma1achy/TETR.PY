@@ -8,12 +8,21 @@ class UIKeyStates():
         self.key_surfaces = []
         self.key_font = Fonts.key_font
         
-    def Draw(self, surface):
-        self.__DrawKeyStates(surface)
-    
-    def __DrawKeyStates(self, surface):
+    def draw(self, surface):
         """
-        Draw the key states onto the window
+        Draw the key states onto a surface
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
+        self.__draw_key_states(surface)
+    
+    def __draw_key_states(self, surface):
+        """
+        Draw the current key states
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
         """
         if self.RenderStruct.key_dict is None:
             return

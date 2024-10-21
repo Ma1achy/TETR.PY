@@ -7,12 +7,12 @@ from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
-from utils import lerpBlendRGBA, Font, get_tetromino_blocks, get_prefix, SmoothStep, TransformSurface, RotateSurface, ScaleSurface
+from utils import lerpBlendRGBA, get_tetromino_blocks, get_prefix, smoothstep, TransformSurface, RotateSurface, ScaleSurface
 
-from render.UI.DebugMenu import UIDebug
-from render.UI.KeyStatesOverlay import UIKeyStates
+from render.UI.debug_menu import UIDebug
+from render.UI.key_states_overlay import UIKeyStates
 from render.board.board import Board
-from render.Fonts import Fonts
+from render.fonts import Fonts
 
 class Render():
     def __init__(self, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug):  
@@ -31,9 +31,7 @@ class Render():
         self.DebugStruct = DebugStruct
         
         self.angle = 0
-        
-        
-        
+    
         self.board_center_screen_pos_x = self.RenderStruct.WINDOW_WIDTH // 2 
         self.board_center_screen_pos_y = self.RenderStruct.WINDOW_HEIGHT // 2
       
@@ -59,12 +57,12 @@ class Render():
 
         self.window.fill((0, 0, 0))
         
-        board_surface = self.Board.GetBoardSurface()
+        board_surface = self.Board.get_board_surface()
         
         board_rect_x_pos = self.RenderStruct.WINDOW_WIDTH // 2 - board_surface.get_width() // 2
         board_rect_y_pos = self.RenderStruct.WINDOW_HEIGHT - board_surface.get_height() - 4 * self.RenderStruct.GRID_SIZE 
         
-        self.Board.Draw(board_surface)
+        self.Board.draw(board_surface)
         
         self.angle = 0
         offset_x, offset_y = 0, 0
@@ -92,8 +90,8 @@ class Render():
         #     pygame.draw.line(self.window, (0, 255, 0), (self.RenderStruct.WINDOW_WIDTH // 4 * 3, 0), (self.RenderStruct.WINDOW_WIDTH // 4 * 3, self.RenderStruct.WINDOW_HEIGHT), 1)
         #     pygame.draw.line(self.window, (0, 255, 0), (0, self.RenderStruct.WINDOW_HEIGHT // 4 * 3), (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT // 4 * 3), 1)
     
-        self.UI_Debug.Draw(self.window)
-        self.UI_KeyStates.Draw(self.window)
+        self.UI_Debug.draw(self.window)
+        self.UI_KeyStates.draw(self.window)
         
         pygame.display.update()
 

@@ -17,13 +17,22 @@ class UIDebug():
         self.DebugStruct = DebugStruct
         self.FlagStruct = FlagStruct
     
-    def Draw(self, surface):
-        self.__DrawDebugMenu(surface)
-    
-    def __DrawDebugMenu(self, surface):
+    def draw(self, surface):
         """
-        Draw the debug information onto the window
-        """        
+        Draw the debug menu onto a surface
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
+        self.__draw_debug_menu(surface)
+    
+    def __draw_debug_menu(self, surface):
+        """
+        Draw the debug information
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """      
         if not self.FlagStruct.SHOW_DEBUG_MENU:
             return
         
