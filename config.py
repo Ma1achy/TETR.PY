@@ -30,14 +30,11 @@ class StructConfig():
     })
     
     
-    UNCAPPED_FPS: bool = False
+    UNCAPPED_FPS: bool = True
     FPS: int = 144
     TPS: int = 256
     POLLING_RATE: int = 1000
 
-    SEED: int = 0
-    MATRIX_WIDTH: int = 10
-    MATRIX_HEIGHT: int = 40
     QUEUE_LENGTH: int = 5
 
     def __post_init__(self):

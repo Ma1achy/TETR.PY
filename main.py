@@ -33,7 +33,7 @@ from instance.four import Four
 
 async def main():
     game_instance = Core()
-    four = Four(game_instance, rotation_system = 'SRS')
+    four = Four(game_instance, matrix_width = 10, matrix_height = 20, rotation_system = 'SRS', seed = 0)
     await game_instance.run(four)
 
 if __name__ == "__main__":

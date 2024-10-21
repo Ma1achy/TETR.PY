@@ -6,7 +6,7 @@ import math
 from utils import Vec2
 
 class Four():
-    def __init__(self, core_instance, rotation_system:str = 'SRS'):
+    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', seed = 0):
         """
         Create an instance of the game Four
         
@@ -27,30 +27,10 @@ class Four():
     
         self.rotation_system = RotationSystem(rotation_system)
         self.kick_table = self.rotation_system.kick_table
-        self.rng = self.__init_rng()
         
-        self.GameInstanceStruct.queue = self.__init_queue()
-        self.GameInstanceStruct.matrix = self.__init_matrix()
-    
-    # =================================================== INITIALIZATION ===================================================
-    
-    def __init_rng(self):
-        """
-        Create a random number generator
-        """
-        return RNG(self.Config.SEED)
-    
-    def __init_queue(self):
-        """
-        Create a queue of tetrominos
-        """
-        return Queue(self.rng, self.Config.QUEUE_LENGTH)
-    
-    def __init_matrix(self):
-        """
-        Create the game field
-        """
-        return Matrix(self.Config.MATRIX_WIDTH, self.Config.MATRIX_HEIGHT)
+        self.rng = RNG(seed)
+        self.GameInstanceStruct.queue = Queue(self.rng, self.Config.QUEUE_LENGTH)
+        self.GameInstanceStruct.matrix = Matrix(matrix_width, matrix_height)
     
     # =================================================== GAME LOGIC ===================================================
         
