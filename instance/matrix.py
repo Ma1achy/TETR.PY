@@ -20,7 +20,7 @@ class Matrix():
             __str__(): String representation of the matrix
         """
         self.WIDTH = WIDTH
-        self.HEIGHT = HEIGHT
+        self.HEIGHT = HEIGHT * 2
         self.matrix = self.empty_matrix() # blocks that are already placed
 
     def empty_matrix(self):
