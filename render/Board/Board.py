@@ -4,7 +4,7 @@ from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
-from render.board.board_constants import StructBoardConsts
+from render.board.struct_board import StructBoardConsts
 import pygame
 from render.board.matrix import Matrix
 from render.board.hold_and_queue import HoldAndQueue
@@ -31,10 +31,10 @@ class Board():
         self.BoardConts.matrix_rect_pos_x = self.BoardConts.board_rect_width // 2 - self.BoardConts.MATRIX_SURFACE_WIDTH // 2 
         self.BoardConts.matrix_rect_pos_y = self.BoardConts.MATRIX_SURFACE_HEIGHT + self.RenderStruct.GRID_SIZE * 4 - self.RenderStruct.BORDER_WIDTH
         
-        self.Matrix = Matrix(self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.BoardConts)
-        self.HoldAndQueue = HoldAndQueue(Config, RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConts)
-        self.UI_Border = UIBorder(Config, RenderStruct, FlagStruct, Fonts, self.BoardConts)
-        self.UI_InfoText = UIInfoText(RenderStruct, FlagStruct, TimingStruct, self.BoardConts, Fonts)
+        self.Matrix = Matrix(RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConts)
+        self.HoldAndQueue = HoldAndQueue(RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConts)
+        self.UI_Border = UIBorder(RenderStruct, FlagStruct, GameInstanceStruct, Fonts, self.BoardConts)
+        self.UI_InfoText = UIInfoText(RenderStruct, FlagStruct, TimingStruct,  Fonts, self.BoardConts)
         
         self.board_center_x_board_space = self.BoardConts.matrix_rect_pos_x + self.BoardConts.MATRIX_SURFACE_WIDTH // 2
         self.board_center_y_board_space = self.BoardConts.matrix_rect_pos_y + self.BoardConts.MATRIX_SURFACE_HEIGHT // 2

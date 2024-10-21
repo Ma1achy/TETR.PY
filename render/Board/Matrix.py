@@ -1,17 +1,15 @@
-from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
-from render.board.board_constants import StructBoardConsts
+from render.board.struct_board import StructBoardConsts
 import pygame
 from utils import lerpBlendRGBA, SmoothStep
 
 class Matrix():
-    def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, BoardConsts:StructBoardConsts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, BoardConsts:StructBoardConsts):
         
-        self.Config = Config
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct
         self.GameInstanceStruct = GameInstanceStruct
@@ -85,7 +83,7 @@ class Matrix():
         tetromino_rect_width = self.RenderStruct.GRID_SIZE * len(tetromino.blocks[1])
         
         tetromino_position_x =  matrix_surface_rect.x + position.x * self.RenderStruct.GRID_SIZE
-        tetromino_position_y = matrix_surface_rect.y + position.y * self.RenderStruct.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.RenderStruct.GRID_SIZE)//2 
+        tetromino_position_y = matrix_surface_rect.y + position.y * self.RenderStruct.GRID_SIZE - (self.GameInstanceStruct.matrix.HEIGHT * self.RenderStruct.GRID_SIZE)//2 
         
         return pygame.Rect(tetromino_position_x, tetromino_position_y , tetromino_rect_length, tetromino_rect_width)    
     
@@ -105,7 +103,7 @@ class Matrix():
                     )
                     
     def __GetLockDelayAlpha(self, lock_delay_counter, lock_delay_in_ticks):
-        if lock_delay_in_ticks == 0:
+        if lock_delay_in_ticks == 0 or lock_delay_in_ticks == 'inf':
             return 1
         
         progress = lock_delay_counter / lock_delay_in_ticks
@@ -139,17 +137,17 @@ class Matrix():
         grid_colour = lerpBlendRGBA((0, 0, 0), self.__GetGridColour(), 0.25)
         width = 1
         
-        for idx in range(self.Config.MATRIX_HEIGHT // 2, self.Config.MATRIX_HEIGHT + 1):
+        for idx in range(self.GameInstanceStruct.matrix.HEIGHT // 2, self.GameInstanceStruct.matrix.HEIGHT):
             pygame.draw.line(surface, grid_colour,
                              (matrix_surface_rect.x, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + self.Config.MATRIX_WIDTH * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + self.GameInstanceStruct.matrix.WIDTH * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
                              width
                              )
             
-        for idx in range(self.Config.MATRIX_WIDTH + 1):
+        for idx in range(self.GameInstanceStruct.matrix.WIDTH + 1):
             pygame.draw.line(surface, grid_colour,
                              (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + self.BoardConts.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + self.Config.MATRIX_HEIGHT // 2 * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y +  self.GameInstanceStruct.matrix.HEIGHT // 2 * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
                              width
                              )
     
@@ -180,7 +178,7 @@ class Matrix():
         loc = self.GameInstanceStruct.current_tetromino.position
         
         x = matrix_surface_rect.x + loc.x * self.RenderStruct.GRID_SIZE
-        y = matrix_surface_rect.y + loc.y * self.RenderStruct.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.RenderStruct.GRID_SIZE) // 2 
+        y = matrix_surface_rect.y + loc.y * self.RenderStruct.GRID_SIZE - (self.GameInstanceStruct.matrix.HEIGHT * self.RenderStruct.GRID_SIZE) // 2 
         
         length = self.RenderStruct.GRID_SIZE // 4
 
@@ -192,7 +190,7 @@ class Matrix():
         loc = self.GameInstanceStruct.current_tetromino.position + self.GameInstanceStruct.current_tetromino.pivot
         
         x = matrix_surface_rect.x + loc.x * self.RenderStruct.GRID_SIZE 
-        y = matrix_surface_rect.y + loc.y * self.RenderStruct.GRID_SIZE - (self.Config.MATRIX_HEIGHT * self.RenderStruct.GRID_SIZE) // 2
+        y = matrix_surface_rect.y + loc.y * self.RenderStruct.GRID_SIZE - (self.GameInstanceStruct.matrix.HEIGHT * self.RenderStruct.GRID_SIZE) // 2
 
         length = self.RenderStruct.GRID_SIZE // 4
 

@@ -1,14 +1,13 @@
-from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
-from render.board.board_constants import StructBoardConsts
+from render.board.struct_board import StructBoardConsts
 import pygame
 
 class UIBorder():
-    def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, Fonts, BoardConsts:StructBoardConsts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct, Fonts, BoardConsts:StructBoardConsts):
         
-        self.Config = Config
         self.RenderStruct = RenderStruct
+        self.GameInstanceStruct = GameInstanceStruct
         self.FlagStruct = FlagStruct
         self.Fonts = Fonts
         self.BoardConsts = BoardConsts
@@ -52,7 +51,7 @@ class UIBorder():
         
     def __DrawQueueBorder(self, surface):
 
-        match self.Config.QUEUE_LENGTH:
+        match self.GameInstanceStruct.queue.length:
             case 1:
                 queue_size = self.RenderStruct.GRID_SIZE * 4.5
             case 2: 

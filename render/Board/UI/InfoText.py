@@ -1,10 +1,10 @@
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
 from core.state.struct_timing import StructTiming
-from render.board.board_constants import StructBoardConsts
+from render.board.struct_board import StructBoardConsts
 
 class UIInfoText():
-    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, TimingStruct:StructTiming, BoardConsts:StructBoardConsts, Fonts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, TimingStruct:StructTiming, Fonts, BoardConsts:StructBoardConsts):
         
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct

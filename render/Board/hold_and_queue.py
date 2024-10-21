@@ -1,23 +1,21 @@
-from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
-from render.board.board_constants import StructBoardConsts
+from render.board.struct_board import StructBoardConsts
 import pygame
 from utils import lerpBlendRGBA, get_tetromino_blocks
 
 
 class HoldAndQueue():
-    def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, BoardConsts:StructBoardConsts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, BoardConsts:StructBoardConsts):
         
-        self.Config = Config
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct
         self.GameInstanceStruct = GameInstanceStruct
         self.BoardConsts = BoardConsts
         
         self.queue_rect_width = 6 * self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH // 2 + 1
-        self.queue_rect_height = 3 * self.Config.QUEUE_LENGTH * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
+        self.queue_rect_height = 3 * self.GameInstanceStruct.queue.length * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         
         self.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         self.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
