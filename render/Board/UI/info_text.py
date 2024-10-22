@@ -45,6 +45,6 @@ class UIInfoText():
         if not self.FlagStruct.GAME_OVER:
             self.time_minsec, self.time_ms = self.__format_time()
             
-        surface.blit(self.Fonts.hun2_med.render('Time', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE * 5.33, self.RenderStruct.GRID_SIZE * 22.33 + self.BoardConsts.MATRIX_SURFACE_HEIGHT))
-        surface.blit(self.Fonts.hun2_big.render(f'{self.time_minsec}.', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE * 5.5 - (len(self.time_minsec) * self.RenderStruct.GRID_SIZE//2 + 1), self.RenderStruct.GRID_SIZE * 23.25 + self.BoardConsts.MATRIX_SURFACE_HEIGHT))
-        surface.blit(self.Fonts.hun2_med.render(f'{self.time_ms}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE * 5.66, self.RenderStruct.GRID_SIZE * 23.45 + self.BoardConsts.MATRIX_SURFACE_HEIGHT))
+        surface.blit(self.Fonts.hun2_med.render('Time', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE * 5.33, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT - self.Fonts.hun2_med.get_height() * 2.25))
+        surface.blit(self.Fonts.hun2_big.render(f'{self.time_minsec}.', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE * 5.5 - (len(self.time_minsec) * self.RenderStruct.GRID_SIZE//2 + 1), self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT  - self.Fonts.hun2_med.get_height()))
+        surface.blit(self.Fonts.hun2_med.render(f'{self.time_ms}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE * 5.66, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT  - 3 * self.Fonts.hun2_med.get_height()//4))

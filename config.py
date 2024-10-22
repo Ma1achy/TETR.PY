@@ -35,8 +35,6 @@ class StructConfig():
     TPS: int = 256
     POLLING_RATE: int = 1000
 
-    QUEUE_LENGTH: int = 5
-
     def __post_init__(self):
         self.key_bindings[Action.SONIC_LEFT] = self.key_bindings[Action.MOVE_LEFT]
         self.key_bindings[Action.SONIC_RIGHT] = self.key_bindings[Action.MOVE_RIGHT]
