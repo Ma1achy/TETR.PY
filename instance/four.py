@@ -496,31 +496,25 @@ class Queue():
         
         args:
             rng (RNG): The random number generator to use
-            length (int): The length of the queue
+            randomiser (str): The randomiser type to use
         """
+        self.RNG = RNG
         self.randomiser = randomiser
-        self.tetrominos = ["Z", "L", "O", "S", "I", "J", "T"]
         
         if self.randomiser == '14BAG':
             self.tetrominos = ["Z", "L", "O", "S", "I", "J", "T", "Z", "L", "O", "S", "I", "J", "T"]
+        else:
+            self.tetrominos = ["Z", "L", "O", "S", "I", "J", "T"]
         
         self.length = len(self.tetrominos) * 3
-        self.RNG = RNG
-        self.length = 14
         self.last_generated = None
         
         self.queue = []
         self.get_queue()
 
-    def get_bag(self):
-        """
-        Create and shuffle a new bag of seven tetrominos
-        """
-        return self.RNG.shuffle_array(self.tetrominos.copy()) 
-
     def get_queue(self):
         """
-        Fill the queue from the bag, and refill the bag when empty.
+        Fill the queue from the tetromino list and apply the relevant randomiser 
         """
         if self.randomiser == '7BAG' or self.randomiser == '14BAG':
             self.bag_randomiser()
@@ -552,10 +546,22 @@ class Queue():
         return self.queue[idx]
     
     def bag_randomiser(self):
+        """
+        The 7-bag randomization system generates a set of the seven tetrominos and shuffles them before putting them into the queue.
+        This guarantees that there will never be a gap of more than 12 tetrominos between any two tetrominos of the same type.
+        
+        The 14-bag randomization system is a variant of the 7-bag system with less of a guarantee against droughts.
+        """
         while len(self.queue) <= self.length: 
             self.queue.extend(self.RNG.shuffle_array(self.tetrominos.copy())) 
     
     def classic_randomiser(self):
+        """
+        This is the randomizer used in Tetris for the NES. 
+        For each piece, the randomizer rolls an eight-sided die, with seven sides representing seven tetrominos and the eighth side 
+        representing a reroll. If a reroll or the same tetromino that was previously generated is rolled, 
+        then the randomizer selects randomly from the tetrominos.
+        """
         while len(self.queue) <= self.length:
                 index = math.floor(self.RNG.next_float() * (len(self.tetrominos) + 1))
                 if index == self.last_generated or index >= len(self.tetrominos):
@@ -564,30 +570,67 @@ class Queue():
                 self.queue.append(self.tetrominos[index]) 
     
     def pairs_randomiser(self):
+        """
+        This randomizer picks pairs of tetromino types and gives three of each in a random order.
+        """
         while len(self.queue) <= self.length:
                 s = self.RNG.shuffle_array(self.tetrominos.copy())
                 pairs = [s[0], s[0], s[0], s[1], s[1], s[1]]
                 self.queue.extend(self.RNG.shuffle_array(pairs))
                
     def random_randomiser(self):
+        """
+        This randomizer is entirely random.
+        """
         while len(self.queue) < self.length:
                 index = math.floor(self.RNG.next_float() * len(self.tetrominos))
                 self.queue.append(self.tetrominos[index])
 
 class RNG:
     def __init__(self, seed):
+        """
+        This pseudorandom number generator uses the Lehmer random number generator (specifically MINSTD) with the multiplier a = 16807 
+        and the modulus m = 2147483647. It generates integers and floating-point numbers, and can also shuffle arrays.
+        The shuffle algorithm is the Fisher–Yates shuffle.
+        
+        args:
+            seed (int): The seed value for the RNG.
+        """
         self.t = seed % 2147483647
         if self.t <= 0:
             self.t += 2147483646
     
     def next(self):
+        """
+        Generates the next pseudorandom integer in the sequence based on the current internal state.
+        Uses the Lehmer random number generator
+        
+        returns:
+            int: The next pseudorandom integer.
+        """
         self.t = (16807 * self.t) % 2147483647
         return self.t
 
     def next_float(self):
+        """
+        Generates the next pseudorandom floating-point number in the range [0, 1) by converting
+        the next integer from the Lehmer RNG into a floating-point number.
+        
+        returns:
+            float: A pseudorandom floating-point number between 0 and 1.
+        """
         return (self.next() - 1) / 2147483646
 
     def shuffle_array(self, array):
+        """
+        Shuffles the given array in place using the Fisher–Yates shuffle algorithm.
+             
+        args:
+            array (list): The list to be shuffled.
+        
+        returns:
+            list: The shuffled array.
+        """
         if len(array) == 0:
             return array
 
