@@ -30,7 +30,12 @@ class Four():
         
         self.GameInstanceStruct.randomiser = randomiser
         self.GameInstanceStruct.seed = seed
+        
+        if queue_previews > 6:
+            queue_previews = 6
+            
         self.GameInstanceStruct.queue_previews = queue_previews
+        
         self.RNG = RNG(self.GameInstanceStruct.seed)
         self.GameInstanceStruct.queue = Queue(self.RNG, randomiser)
         self.GameInstanceStruct.matrix = Matrix(matrix_width, matrix_height)
