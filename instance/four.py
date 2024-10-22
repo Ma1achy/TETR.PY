@@ -24,9 +24,10 @@ class Four():
         self.GameInstanceStruct = core_instance.GameInstanceStruct
         self.TimingStruct = core_instance.TimingStruct
         self.HandlingStruct = core_instance.HandlingStruct
-    
-        self.rotation_system = RotationSystem(rotation_system)
-        self.kick_table = self.rotation_system.kick_table
+
+        self.GameInstanceStruct.rotation_system_type = rotation_system
+        self.GameInstanceStruct.rotation_system = RotationSystem(rotation_system)
+        self.GameInstanceStruct.kick_table = self.GameInstanceStruct.rotation_system.kick_table
         
         self.GameInstanceStruct.randomiser = randomiser
         self.GameInstanceStruct.seed = seed
@@ -162,7 +163,7 @@ class Four():
         args:
             action (Action): The action to perform
         """
-        self.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['90'])
+        self.GameInstanceStruct.current_tetromino.rotate(action, self.GameInstanceStruct.kick_table['90'])
         
     def __rotate180(self, action):
         """
@@ -171,7 +172,7 @@ class Four():
         args:
             action (Action): The action to perform
         """
-        self.GameInstanceStruct.current_tetromino.rotate(action, self.kick_table['180'])
+        self.GameInstanceStruct.current_tetromino.rotate(action, self.GameInstanceStruct.kick_table['180'])
   
     def __hard_drop(self):
         """
@@ -333,6 +334,7 @@ class Four():
         args:
             hold (bool): Whether to hold the current piece
         """
+        self.reset_flags()
         self.GameInstanceStruct.can_hold = True
         hold_spawn = False
         
@@ -488,6 +490,11 @@ class Four():
             self.FlagStruct.DANGER = True
         else:
             self.FlagStruct.DANGER = False
+    
+    def reset_flags(self):
+        self.FlagStruct.IS_SPIN = False
+        self.FlagStruct.TSPIN = False
+        self.FlagStruct.TSPIN_MINI = False
     
 class Queue():
     def __init__(self, RNG, randomiser = '7BAG'):

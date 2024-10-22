@@ -37,10 +37,16 @@ class Fonts():
         self.RenderStruct = RenderStruct
         pygame.font.init()
          
+        self.hun2_bigger = Font(int(self.RenderStruct.GRID_SIZE*1.5)).hun2()
         self.hun2_big = Font(self.RenderStruct.GRID_SIZE).hun2()
         self.hun2_med = Font(3 * self.RenderStruct.GRID_SIZE // 4).hun2()
         self.hun2_small = Font( self.RenderStruct.GRID_SIZE // 2).hun2()
+
+        self.pfw_bigger = Font(int(self.RenderStruct.GRID_SIZE*1.5)).pfw()
+        self.pfw_big = Font(self.RenderStruct.GRID_SIZE).pfw()
+        self.pfw_med = Font(3 * self.RenderStruct.GRID_SIZE // 4).pfw()
         self.pfw_small = Font(self.RenderStruct.GRID_SIZE // 2).pfw()
+        
         self.key_font = Font(self.RenderStruct.GRID_SIZE).keystates()
         
         

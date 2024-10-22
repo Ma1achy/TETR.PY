@@ -149,3 +149,13 @@ class Debug():
         self.DebugStruct.Prevent_Accidental_Hard_Drop_Counter = self.HandlingStruct.PREV_ACC_HD_COUNTER
         
         self.DebugStruct.Seed = self.GameInstanceStruct.seed
+        self.DebugStruct.Randomiser = self.GameInstanceStruct.randomiser
+        self.DebugStruct.RotationSystem = self.GameInstanceStruct.rotation_system_type
+        
+        self.DebugStruct.TSPINFLAG = self.FlagStruct.TSPIN
+        self.DebugStruct.TSPINMINIFLAG = self.FlagStruct.TSPIN_MINI
+        self.DebugStruct.SPINFLAG = self.FlagStruct.IS_SPIN
+     
+        self.DebugStruct.ALLCLEARFLAG = self.FlagStruct.ALL_CLEAR
+        self.DebugStruct.BACK2BACKFLAG = self.FlagStruct.BACK2BACK
+        self.DebugStruct.COMBOFLAG = self.FlagStruct.COMBO

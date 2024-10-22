@@ -273,6 +273,7 @@ class Tetromino():
         returns:
             (None): if the rotation is invalid
         """
+        self.reset_spin_flags()
         kick = self.__get_kick(kick_table, desired_state, offset)
         
         if kick is None: # no more offsets to try => rotation is invalid
@@ -322,13 +323,10 @@ class Tetromino():
         args:
             rotated_piece (list): The rotated piece
             kick (Vec2): The kick translation to apply
-            
-        returns:
-            (bool): True if the piece is immobile, False otherwise
         """
         if self.collision(rotated_piece, self.position + kick + Vec2(1, 0)) and self.collision(rotated_piece, self.position + kick + Vec2(-1, 0)) and self.collision(rotated_piece, self.position + kick+ Vec2(0, 1)) and self.collision(rotated_piece, self.position + kick + Vec2(0, -1)):
-            return True
-            
+            self.flags.IS_SPIN = True
+           
     def __Is_T_Spin(self, offset:int, desired_state:int, kick:Vec2):
         """
         Test if the T piece rotation is a T-spin.
@@ -356,9 +354,6 @@ class Tetromino():
             2: [Vec2(2, 2), Vec2(0, 2)],
             3: [Vec2(0, 2), Vec2(0, 0)]
         }
-        
-        def set_t_sin_flag(flag):
-            pass
             
         filled_corners = self.__test_corners(corner_pairs[desired_state], kick) # do facing test
             
@@ -450,3 +445,8 @@ class Tetromino():
             
         self.shadow_position.y -= 1
         self.shadow_position.x = self.position.x 
+    
+    def reset_spin_flags(self):
+        self.flags.IS_SPIN = False
+        self.flags.TSPIN = False
+        self.flags.TSPIN_MINI = False

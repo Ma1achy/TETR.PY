@@ -118,7 +118,11 @@ class UIDebug():
         
         self.debug_surfaces.append((self.Fonts.pfw_small.render(f'PrevAccHD: {self.DebugStruct.Prevent_Accidental_Hard_Drop} | Delay: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Time} ticks| Counter: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Counter} | Flag: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Flag}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 17)))
         
-        self.debug_surfaces.append((self.Fonts.pfw_small.render(f'Seed: {self.DebugStruct.Seed}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 17.5)))
+        self.debug_surfaces.append((self.Fonts.pfw_small.render(f'Seed: {self.DebugStruct.Seed} | Randomiser: {self.DebugStruct.Randomiser} | Rotation System: {self.DebugStruct.RotationSystem}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 17.5)))
+        
+        self.debug_surfaces.append((self.Fonts.pfw_small.render(f'IS_SPIN: {self.DebugStruct.SPINFLAG} | TSPIN: {self.DebugStruct.TSPINFLAG} | TSPIN_MINI: {self.FlagStruct.TSPIN_MINI}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 18)))
+        
+        self.debug_surfaces.append((self.Fonts.pfw_small.render(f'ALL_CLEAR: {self.DebugStruct.ALLCLEARFLAG} | B2B: {self.DebugStruct.BACK2BACKFLAG} | COMBO: {self.DebugStruct.COMBOFLAG}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 18.5)))
         
         for surf, coords in self.debug_surfaces:
             surface.blit(surf, coords)
