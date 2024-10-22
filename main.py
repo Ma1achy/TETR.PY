@@ -13,6 +13,8 @@ from instance.four import Four
 # - LEVELS
 # - GAME OVER CONDITIONS
 
+# TODO: implement das cut delay
+
 # === rendering ===
 # - make blocks use textures
 # - animations
