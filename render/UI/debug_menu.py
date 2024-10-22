@@ -118,5 +118,7 @@ class UIDebug():
         
         self.debug_surfaces.append((self.Fonts.pfw_small.render(f'PrevAccHD: {self.DebugStruct.Prevent_Accidental_Hard_Drop} | Delay: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Time} ticks| Counter: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Counter} | Flag: {self.DebugStruct.Prevent_Accidental_Hard_Drop_Flag}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 17)))
         
+        self.debug_surfaces.append((self.Fonts.pfw_small.render(f'Seed: {self.DebugStruct.Seed}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 17.5)))
+        
         for surf, coords in self.debug_surfaces:
             surface.blit(surf, coords)

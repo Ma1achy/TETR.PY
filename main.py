@@ -16,9 +16,9 @@ from instance.four import Four
 # === rendering ===
 # - make blocks use textures
 # - animations
-# -  alignment helper funcs:
+# -  lignment helper funcs:
 #            -  horizontal align (define line)
-#            -  vertical align (for text) (define line)
+#            -  vertical align (define line)
 #            -  center align (uses surface)
 #            -  left align (uses surface)
 #            -  right align (uses surface)
@@ -27,13 +27,12 @@ from instance.four import Four
 #            -  center align (uses surface)
 #            -  corner align (uses surface)
 
-
 # change queue generation, need to generate a bag and insert into queue, make sure queue always has 2 bags in it, 3 max.
 # rather than now where it shuffles the bag and removes the first tetromino from the bag and inserts it into the queue and ensures a fixed queue length
 
 async def main():
     game_instance = Core()
-    four = Four(game_instance, matrix_width = 10, matrix_height = 20, rotation_system = 'SRS', seed = 0)
+    four = Four(game_instance, matrix_width = 10, matrix_height = 20, rotation_system = 'SRS', randomiser = '7BAG', queue_previews = 5,  seed = 292168102)
     await game_instance.run(four)
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import math
 from utils import Vec2
 
 class Four():
-    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', seed = 0):
+    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0):
         """
         Create an instance of the game Four
         
@@ -28,8 +28,11 @@ class Four():
         self.rotation_system = RotationSystem(rotation_system)
         self.kick_table = self.rotation_system.kick_table
         
-        self.rng = RNG(seed)
-        self.GameInstanceStruct.queue = Queue(self.rng, self.Config.QUEUE_LENGTH)
+        self.GameInstanceStruct.randomiser = randomiser
+        self.GameInstanceStruct.seed = seed
+        self.GameInstanceStruct.queue_previews = queue_previews
+        self.rng = RNG(self.GameInstanceStruct.seed)
+        self.GameInstanceStruct.queue = Queue(self.rng, randomiser)
         self.GameInstanceStruct.matrix = Matrix(matrix_width, matrix_height)
     
     # =================================================== GAME LOGIC ===================================================
@@ -482,74 +485,99 @@ class Four():
             self.FlagStruct.DANGER = False
     
 class Queue():
-    def __init__(self, rng, length = 5):
+    def __init__(self, rng, randomiser = '7BAG'):
         """
         Queue of next tetrominos
         
         args:
             rng (RNG): The random number generator to use
             length (int): The length of the queue
-            
-        methods:
-            get_bag(): Create a bag of tetrominos
-            get_queue(): Get the queue of tetrominos
-            get_next_piece(): Get the next piece from the queue
-            view_queue(): See a piece in the queue at a specific index
         """
+        self.randomiser = randomiser
+        self.minos = ["Z", "L", "O", "S", "I", "J", "T"]
+        
+        if self.randomiser == '14BAG':
+            self.minos = ["Z", "L", "O", "S", "I", "J", "T", "Z", "L", "O", "S", "I", "J", "T"]
+        
+        self.length = len(self.minos) * 2
         self.rng = rng
-        self.length = length
-        self.bag = self.get_bag()
+        self.length = 14
+        self.bag = self.get_bag() if self.randomiser in ['7BAG', '14BAG'] else None
+        self.last_generated = None
+        
         self.queue = []
         self.get_queue()
- 
+
     def get_bag(self):
         """
-        Create a bag of seven tetrominos
-        
-        args:
-            bag (list): The bag to fill with tetrominos
+        Create and shuffle a new bag of seven tetrominos
         """
-        bag = ["Z", "L", "O", "S", "I", "J", "T"]
-        self.rng.shuffle_array(bag)
-        
-        return bag
-    
+        return self.rng.shuffle_array(self.minos.copy()) 
+
     def get_queue(self):
         """
-        Take a piece from the bag without replacement and add it to the queue if the bag is empty refill the bag
+        Fill the queue from the bag, and refill the bag when empty.
         """
-        while len(self.queue) < self.length:
-            
-            if len(self.bag) == 0:
-                self.bag = self.get_bag()
+        if self.randomiser == '7BAG' or self.randomiser == '14BAG':
+            self.bag_randomiser()
                 
-            self.queue.append(self.bag.pop())
+        elif self.randomiser == 'CLASSIC':
+            self.classic_randomiser()
+        
+        elif self.randomiser == 'PAIRS':
+            self.pairs_randomiser()
+        
+        elif self.randomiser == 'RANDOM':
+            self.random_randomiser()
             
     def get_next_piece(self):
         """
-        Get the next piece from the queue
+        Get the next piece from the queue and refill the queue as necessary.
         """
         next_piece = self.queue.pop(0)
-        
-        if len(self.queue) < self.length:
-            self.get_queue()
+        self.get_queue()
             
         return next_piece
     
     def view_queue(self, idx = 0):
         """
-        See the next piece in the queue
+        See the next piece in the queue without removing it.
         """
-        if idx >= len(self.queue) - 1:
-            return self.queue[-1]
+        if idx < 0 or idx >= len(self.queue):
+            return None
         return self.queue[idx]
+    
+    def bag_randomiser(self):
+        while len(self.queue) <  self.length:
+                if len(self.bag) == 0: 
+                    self.bag = self.get_bag()
+                self.queue.append(self.bag.pop(0)) 
+    
+    def classic_randomiser(self):
+        while len(self.queue) < self.length:
+                index = math.floor(self.rng.next_float() * (len(self.minos) + 1))
+                if index == self.last_generated or index >= len(self.minos):
+                    index = math.floor(self.rng.next_float() * len(self.minos))
+                self.last_generated = index
+                self.queue.append(self.minos[index]) 
+    
+    def pairs_randomiser(self):
+        while len(self.queue) < self.length:
+                s = self.rng.shuffle_array(self.minos.copy())
+                pairs = [s[0], s[0], s[0], s[1], s[1], s[1]]
+                self.queue.extend(self.rng.shuffle_array(pairs))
+               
+    def random_randomiser(self):
+        while len(self.queue) < self.length:
+                index = math.floor(self.rng.next_float() * len(self.minos))
+                self.queue.append(self.minos[index])
 
 class RNG:
     def __init__(self, seed):
         self.t = seed % 2147483647
         if self.t <= 0:
             self.t += 2147483646
-
+    
     def next(self):
         self.t = (16807 * self.t) % 2147483647
         return self.t
@@ -562,8 +590,8 @@ class RNG:
             return array
 
         for i in range(len(array) - 1, 0, -1):
-            r = int(self.next_float() * (i + 1))
-            array[i], array[r] = array[r], array[i]
+            r = math.floor(self.next_float() * (i + 1))
+            [array[i], array[r]] = [array[r], array[i]]
 
         return array
         

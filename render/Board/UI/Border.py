@@ -70,7 +70,7 @@ class UIBorder():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
-        match self.GameInstanceStruct.queue.length:
+        match self.GameInstanceStruct.queue_previews:
             case 1:
                 queue_size = self.RenderStruct.GRID_SIZE * 4.5
             case 2: 

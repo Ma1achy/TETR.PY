@@ -15,7 +15,7 @@ class HoldAndQueue():
         self.BoardConsts = BoardConsts
         
         self.queue_rect_width = 6 * self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH // 2 + 1
-        self.queue_rect_height = 3 * self.GameInstanceStruct.queue.length * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
+        self.queue_rect_height = 3 * self.GameInstanceStruct.queue_previews * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         
         self.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         self.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
@@ -41,8 +41,10 @@ class HoldAndQueue():
         pygame.gfxdraw.box(surface, queue_rect, (0, 0, 0))
         
         for idx, tetromino in enumerate(self.GameInstanceStruct.queue.queue):
+            if idx == self.GameInstanceStruct.queue_previews:
+                break
             
-            row_height = queue_rect.height // self.GameInstanceStruct.queue.length  # split queue_rect into queue length number of rows
+            row_height = queue_rect.height // self.GameInstanceStruct.queue_previews  # split queue_rect into queue length number of rows
             row_y = queue_rect.y + idx * row_height
             
             preview_rect = pygame.Rect(queue_rect.x, row_y, queue_rect.width, row_height)

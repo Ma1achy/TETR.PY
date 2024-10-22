@@ -147,3 +147,5 @@ class Debug():
         self.DebugStruct.Prevent_Accidental_Hard_Drop_Flag = self.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP
         self.DebugStruct.Prevent_Accidental_Hard_Drop_Time = int(self.Config.HANDLING_SETTINGS['PrevAccHDTime'] / 60 * self.Config.TPS)
         self.DebugStruct.Prevent_Accidental_Hard_Drop_Counter = self.HandlingStruct.PREV_ACC_HD_COUNTER
+        
+        self.DebugStruct.Seed = self.GameInstanceStruct.seed
