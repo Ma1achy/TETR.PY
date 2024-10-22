@@ -12,7 +12,7 @@ from utils import lerpBlendRGBA, get_tetromino_blocks, get_prefix, smoothstep, T
 from render.UI.debug_menu import UIDebug
 from render.UI.key_states_overlay import UIKeyStates
 from render.board.board import Board
-from render.fonts1 import Fonts
+from render.fonts import Fonts
 
 class Render():
     def __init__(self, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug):  
