@@ -31,8 +31,8 @@ class Four():
         self.GameInstanceStruct.randomiser = randomiser
         self.GameInstanceStruct.seed = seed
         self.GameInstanceStruct.queue_previews = queue_previews
-        self.rng = RNG(self.GameInstanceStruct.seed)
-        self.GameInstanceStruct.queue = Queue(self.rng, randomiser)
+        self.RNG = RNG(self.GameInstanceStruct.seed)
+        self.GameInstanceStruct.queue = Queue(self.RNG, randomiser)
         self.GameInstanceStruct.matrix = Matrix(matrix_width, matrix_height)
     
     # =================================================== GAME LOGIC ===================================================
@@ -485,7 +485,7 @@ class Four():
             self.FlagStruct.DANGER = False
     
 class Queue():
-    def __init__(self, rng, randomiser = '7BAG'):
+    def __init__(self, RNG, randomiser = '7BAG'):
         """
         Queue of next tetrominos
         
@@ -500,7 +500,7 @@ class Queue():
             self.tetrominos = ["Z", "L", "O", "S", "I", "J", "T", "Z", "L", "O", "S", "I", "J", "T"]
         
         self.length = len(self.tetrominos) * 3
-        self.rng = rng
+        self.RNG = RNG
         self.length = 14
         self.last_generated = None
         
@@ -511,7 +511,7 @@ class Queue():
         """
         Create and shuffle a new bag of seven tetrominos
         """
-        return self.rng.shuffle_array(self.tetrominos.copy()) 
+        return self.RNG.shuffle_array(self.tetrominos.copy()) 
 
     def get_queue(self):
         """
@@ -547,26 +547,26 @@ class Queue():
         return self.queue[idx]
     
     def bag_randomiser(self):
-        while len(self.queue) <= self.length / 2: # ensure at least one bag is in the queue at all times
-            self.queue.extend(self.rng.shuffle_array(self.tetrominos.copy())) 
+        while len(self.queue) <= self.length: 
+            self.queue.extend(self.RNG.shuffle_array(self.tetrominos.copy())) 
     
     def classic_randomiser(self):
-        while len(self.queue) <= self.length / 2:
-                index = math.floor(self.rng.next_float() * (len(self.tetrominos) + 1))
+        while len(self.queue) <= self.length:
+                index = math.floor(self.RNG.next_float() * (len(self.tetrominos) + 1))
                 if index == self.last_generated or index >= len(self.tetrominos):
-                    index = math.floor(self.rng.next_float() * len(self.tetrominos))
+                    index = math.floor(self.RNG.next_float() * len(self.tetrominos))
                 self.last_generated = index
                 self.queue.append(self.tetrominos[index]) 
     
     def pairs_randomiser(self):
-        while len(self.queue) <= self.length / 2:
-                s = self.rng.shuffle_array(self.tetrominos.copy())
+        while len(self.queue) <= self.length:
+                s = self.RNG.shuffle_array(self.tetrominos.copy())
                 pairs = [s[0], s[0], s[0], s[1], s[1], s[1]]
-                self.queue.extend(self.rng.shuffle_array(pairs))
+                self.queue.extend(self.RNG.shuffle_array(pairs))
                
     def random_randomiser(self):
         while len(self.queue) < self.length:
-                index = math.floor(self.rng.next_float() * len(self.tetrominos))
+                index = math.floor(self.RNG.next_float() * len(self.tetrominos))
                 self.queue.append(self.tetrominos[index])
 
 class RNG:
