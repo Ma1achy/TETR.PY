@@ -93,9 +93,9 @@ class Core():
         async def monitor():
             while True:
                 
-                iter_start = time.perf_counter()
+                previous = self.TimingStruct.elapsed_times[name]
                 self.TimingStruct.elapsed_times[name] = time.perf_counter() - self.TimingStruct.start_times[name]
-                self.TimingStruct.iter_times[name] = time.perf_counter() - iter_start
+                self.TimingStruct.iter_times[name] = self.TimingStruct.elapsed_times[name] - previous
                 
                 await asyncio.sleep(0) 
         

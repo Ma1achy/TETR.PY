@@ -154,14 +154,14 @@ class UIInfoText():
             # self.Fonts.hun2_biggest.set_bold(True)
             # self.Fonts.hun2_med.set_bold(True)
             
-            text_time_minsec_outline  = self.Fonts.hun2_biggest_bold.render(f'{self.time_minsec}.', True, (105, 105, 105))
-            text_time_ms_outline = self.Fonts.hun2_med_bold.render(self.time_ms, True, (105, 105, 105))
+            text_time_minsec_outline  = self.Fonts.hun2_biggest.render(f'{self.time_minsec}.', True, (105, 105, 105))
+            text_time_ms_outline = self.Fonts.hun2_med.render(self.time_ms, True, (105, 105, 105))
             
             # self.Fonts.hun2_biggest.set_bold(False)
             # self.Fonts.hun2_med.set_bold(False)
             
-            text_time_minsec_outline_position = (text_time_minsec_position[0], text_time_minsec_position[1])
-            text_time_ms_outline_position = (text_time_ms_position[0], text_time_ms_position[1])
+            text_time_minsec_outline_position = (text_time_minsec_position[0] + self.RenderStruct.GRID_SIZE*0.2, text_time_minsec_position[1])
+            text_time_ms_outline_position = (text_time_ms_position[0] + 3 * 0.1* self.RenderStruct.GRID_SIZE // 4, text_time_ms_position[1])
            
             objective_surface.blit(text_time_minsec_outline, text_time_minsec_outline_position)
             objective_surface.blit(text_time_ms_outline, text_time_ms_outline_position)

@@ -24,14 +24,17 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
 def smoothstep(x):
         return x * x * x * (x * (6 * x - 15) + 10)
 
-def get_prefix(number:float, unit:str, precision:int = 1):
+def get_prefix(number: float, unit: str, precision: int = 1) -> str:
     """
-    Get the number in scientific notation with the correct prefix
-    
-    args:
-        number (float): The number to convert
-        unit (str): The unit of the number
-        precision (int): The number of decimal places to round to
+    Get the number in scientific notation with the correct prefix.
+
+    Args:
+        number (float): The number to convert.
+        unit (str): The unit of the number.
+        precision (int): The number of decimal places to round to.
+
+    Returns:
+        str: The formatted number with the appropriate SI prefix.
     """
     prefixes = [
         (1e-24, "y"),  # yocto
@@ -42,7 +45,7 @@ def get_prefix(number:float, unit:str, precision:int = 1):
         (1e-9, "n"),   # nano
         (1e-6, "u"),   # micro
         (1e-3, "m"),   # milli
-        (1, ""),       
+        (1, ""),       # no prefix
         (1e3, "k"),    # kilo
         (1e6, "M"),    # mega
         (1e9, "G"),    # giga
@@ -52,22 +55,14 @@ def get_prefix(number:float, unit:str, precision:int = 1):
         (1e21, "Z"),   # zetta
         (1e24, "Y")    # yotta
     ]
+    
+    if number == 0:
+        return f"{0:.{precision}f} {unit}"
 
-    # get exponent of number
-    num_exp = int(f"{number:.0e}".split("e")[1])
-    
-    diffs = []
-        
-    # get prefix of number from exp by finding the closest prefix
-    for (value, prefix) in prefixes:
-        prefix_exp = int(f"{value:.0e}".split("e")[1])
-        diff = prefix_exp - num_exp
-        diffs.append((prefix, diff, value))
-    
-    prefix, _, value = min(diffs, key = lambda x: (abs(x[1]), x[0]))
-    num = number / value # get the number in the new prefix
-    
-    return f"{num:.{precision}f} {prefix}{unit}" 
+    for value, prefix in reversed(prefixes):
+        if abs(number) >= value:
+            num = number / value
+            return f"{num:.{precision}f} {prefix}{unit}"
   
 def get_tetromino_blocks(type:str):
     """

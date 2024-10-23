@@ -172,18 +172,18 @@ class UIActionText():
         
         line1_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width / 2 - line1_text_rect.width / 2, text_surface_rect.topleft[1])
     
-        line1_text_outline = self.Fonts.hun2_biggest_bold.render('ALL', True, (209, 129, 48))
+        line1_text_outline = self.Fonts.hun2_biggest.render('ALL', True, (209, 129, 48))
         
-        line1_text_outline_position = (line1_text_position[0], line1_text_position[1])
+        line1_text_outline_position = (line1_text_position[0] + self.RenderStruct.GRID_SIZE*0.2, line1_text_position[1])
         
         line2_text = self.Fonts.hun2_biggest.render('CLEAR', True, (253, 220, 92))
         line2_text_rect = line2_text.get_rect()
         
         line2_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width / 2 - line2_text_rect.width / 2, text_surface_rect.bottomleft[1] - line2_text_rect.height)
         
-        line2_text_outline = self.Fonts.hun2_biggest_bold.render('CLEAR', True, (209, 129, 48))
+        line2_text_outline = self.Fonts.hun2_biggest.render('CLEAR', True, (209, 129, 48))
         
-        line2_text_outline_position = (line2_text_position[0], line2_text_position[1])
+        line2_text_outline_position = (line2_text_position[0] + self.RenderStruct.GRID_SIZE*0.2, line2_text_position[1])
         
         text_surface.blit(line1_text_outline, line1_text_outline_position)
         text_surface.blit(line1_text, line1_text_position)
