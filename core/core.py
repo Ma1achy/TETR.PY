@@ -240,7 +240,7 @@ class Core():
         self.RenderStruct.key_dict = self.HandlingStruct.key_dict
         self.render.RenderFrame()
         self.render_clock.tick()
-                
+     
     def __get_tps(self):
         """
         Update the stored TPS value

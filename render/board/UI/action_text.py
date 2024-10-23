@@ -17,11 +17,15 @@ class UIActionText():
         self.Fonts = Fonts
         self.BoardConsts = BoardConsts
         
+        self.middle_text_surf_width = self.RenderStruct.GRID_SIZE * 10
+        self.middle_text_surf_height = self.RenderStruct.GRID_SIZE * 6
+        
     def draw(self, surface):
         self.draw_spin_action_text(surface)
         self.draw_line_clear_action_text(surface)
         self.draw_back_to_back_action_text(surface)
         self.draw_combo_action_text(surface)
+        self.draw_all_clear_action_text(surface)
     
     def draw_spin_action_text(self, surface):
         if self.FlagStruct.TSPIN:
@@ -155,3 +159,37 @@ class UIActionText():
         
         pygame.draw.rect(surface, (255, 255, 255), (combo_positon[0], combo_positon[1], combo_text_rect.width, combo_text_rect.height), 1)
         pygame.draw.rect(surface, (255, 255, 255), (multiplier_positon[0], multiplier_positon[1], multiplier_text_rect.width, multiplier_text_rect.height), 1)
+    
+    def draw_all_clear_action_text(self, surface):
+        
+        colour = (253, 220, 92)
+                  
+        text_surface = pygame.Surface((self.middle_text_surf_width, self.middle_text_surf_height), pygame.SRCALPHA)
+        text_surface_rect = text_surface.get_rect()
+        
+        line1_text = self.Fonts.hun2_biggest.render('ALL', True, (253, 220, 92))
+        line1_text_rect = line1_text.get_rect()
+        
+        line1_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width / 2 - line1_text_rect.width / 2, text_surface_rect.topleft[1])
+    
+        line1_text_outline = self.Fonts.hun2_biggest_bold.render('ALL', True, (209, 129, 48))
+        
+        line1_text_outline_position = (line1_text_position[0], line1_text_position[1])
+        
+        line2_text = self.Fonts.hun2_biggest.render('CLEAR', True, (253, 220, 92))
+        line2_text_rect = line2_text.get_rect()
+        
+        line2_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width / 2 - line2_text_rect.width / 2, text_surface_rect.bottomleft[1] - line2_text_rect.height)
+        
+        line2_text_outline = self.Fonts.hun2_biggest_bold.render('CLEAR', True, (209, 129, 48))
+        
+        line2_text_outline_position = (line2_text_position[0], line2_text_position[1])
+        
+        text_surface.blit(line1_text_outline, line1_text_outline_position)
+        text_surface.blit(line1_text, line1_text_position)
+        
+        text_surface.blit(line2_text_outline, line2_text_outline_position)
+        text_surface.blit(line2_text, line2_text_position)
+         
+        text_surface.set_alpha(256)  # (0-255, where 0 is fully transparent and 255 is fully opaque)
+        surface.blit(text_surface, (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH / 2 - self.middle_text_surf_width / 2, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT / 2 - self.middle_text_surf_height / 2))

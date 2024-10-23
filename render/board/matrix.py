@@ -25,7 +25,6 @@ class Matrix():
         matrix_rect = pygame.Rect(self.BoardConts.matrix_rect_pos_x, self.BoardConts.matrix_rect_pos_y, self.BoardConts.MATRIX_SURFACE_WIDTH, self.BoardConts.MATRIX_SURFACE_HEIGHT)
         
         self.__draw_current_tetromino_shadow(surface, matrix_rect)
-        self.__draw_matrix_grid(surface, matrix_rect)
         self.__draw_placed_blocks(surface, self.GameInstanceStruct.matrix.matrix, matrix_rect)
         self.__draw_current_tetromino(surface, matrix_rect)
         
@@ -74,11 +73,14 @@ class Matrix():
             return
         
         rect = self.__get_rect(self.GameInstanceStruct.current_tetromino, self.GameInstanceStruct.current_tetromino.shadow_position, matrix_surface_rect)
+        shadow_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
         
         blend_colour = (0, 0, 0)
-        piece_alpha = 0.33
+        piece_alpha = 1
         
-        self.__draw_tetromino_blocks(surface, self.GameInstanceStruct.current_tetromino.blocks, rect, blend_colour, piece_alpha)
+        self.__draw_tetromino_blocks(shadow_surface, self.GameInstanceStruct.current_tetromino.blocks, shadow_surface.get_rect(), blend_colour, piece_alpha)
+        shadow_surface.set_alpha(88)
+        surface.blit(shadow_surface, (rect.x, rect.y))
     
     def __draw_next_tetromino_warning(self, surface, matrix_surface_rect:pygame.Rect):
         """
@@ -130,10 +132,10 @@ class Matrix():
                         colour = lerpBlendRGBA(self.RenderStruct.COLOUR_MAP[value], (75, 75, 75), 0.85)
                     else:
                         colour = self.RenderStruct.COLOUR_MAP[value]
-                    pygame.gfxdraw.box(
+                    pygame.draw.rect(
                         surface, 
-                        (rect.x + j * self.RenderStruct.GRID_SIZE, rect.y + i * self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE),
-                        lerpBlendRGBA(blend_colour, colour, alpha)
+                        lerpBlendRGBA(blend_colour, colour, alpha),
+                        (rect.x + j * self.RenderStruct.GRID_SIZE, rect.y + i * self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE)
                     )
                     
     def __get_lock_delay_alpha(self, lock_delay_counter, lock_delay_in_ticks):
@@ -165,32 +167,7 @@ class Matrix():
                     pygame.draw.line(surface, (255, 0, 0), 
                                      (rect.x + (j + 1) * self.RenderStruct.GRID_SIZE - padding, rect.y + i * self.RenderStruct.GRID_SIZE + padding), 
                                      (rect.x + j * self.RenderStruct.GRID_SIZE + padding, rect.y + (i + 1) * self.RenderStruct.GRID_SIZE - padding), thickness)
-                   
-    def __draw_matrix_grid(self, surface, matrix_surface_rect:pygame.Rect):
-        """
-        Draw the grid in the background of the matrix
-        
-        args:
-            surface (pygame.Surface): The surface to draw onto
-            matrix_surface_rect (pygame.Rect): the rectangle that the matrix is drawn in
-        """
-        grid_colour = lerpBlendRGBA((0, 0, 0), self.__get_grid_colour(), 0.25)
-        width = 1
-        
-        for idx in range(self.GameInstanceStruct.matrix.HEIGHT // 2, self.GameInstanceStruct.matrix.HEIGHT):
-            pygame.draw.line(surface, grid_colour,
-                             (matrix_surface_rect.x, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + self.GameInstanceStruct.matrix.WIDTH * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
-                             width
-                             )
-            
-        for idx in range(self.GameInstanceStruct.matrix.WIDTH + 1):
-            pygame.draw.line(surface, grid_colour,
-                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + self.BoardConts.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y +  self.GameInstanceStruct.matrix.HEIGHT // 2 * self.RenderStruct.GRID_SIZE - self.BoardConts.MATRIX_SURFACE_HEIGHT),
-                             width
-                             )
-    
+                    
     def __draw_placed_blocks(self, surface, matrix, matrix_surface_rect:pygame.Rect):
         """
         Draw the placed blocks in the matrix

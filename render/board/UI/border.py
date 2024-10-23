@@ -2,6 +2,7 @@ from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
 from render.board.struct_board import StructBoardConsts
 import pygame
+from utils import lerpBlendRGBA
 
 class UIBorder():
     def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct, Fonts, BoardConsts:StructBoardConsts):
@@ -19,11 +20,38 @@ class UIBorder():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
+        self.__draw_matrix_grid(surface)
         self.__draw_border(surface)
         self.__draw_garbage_border(surface)
         self.__draw_hold_border(surface)
         self.__draw_queue_border(surface)
         
+    def __draw_matrix_grid(self, surface):
+        """
+        Draw the grid in the background of the matrix
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+            matrix_surface_rect (pygame.Rect): the rectangle that the matrix is drawn in
+        """
+        matrix_surface_rect = pygame.Rect(self.BoardConsts.matrix_rect_pos_x, self.BoardConsts.matrix_rect_pos_y, self.BoardConsts.MATRIX_SURFACE_WIDTH, self.BoardConsts.MATRIX_SURFACE_HEIGHT)
+        grid_colour = lerpBlendRGBA((0, 0, 0), self.__get_border_colour(), 0.25)
+        width = 1
+        
+        for idx in range(self.GameInstanceStruct.matrix.HEIGHT // 2, self.GameInstanceStruct.matrix.HEIGHT):
+            pygame.draw.line(surface, grid_colour,
+                             (matrix_surface_rect.x, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConsts.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + self.GameInstanceStruct.matrix.WIDTH * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConsts.MATRIX_SURFACE_HEIGHT),
+                             width
+                             )
+            
+        for idx in range(self.GameInstanceStruct.matrix.WIDTH + 1):
+            pygame.draw.line(surface, grid_colour,
+                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + self.BoardConsts.MATRIX_SURFACE_HEIGHT),
+                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y +  self.GameInstanceStruct.matrix.HEIGHT // 2 * self.RenderStruct.GRID_SIZE - self.BoardConsts.MATRIX_SURFACE_HEIGHT),
+                             width
+                             )
+             
     def __draw_border(self, surface):
         """
         Draw a border around the matrix

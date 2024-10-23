@@ -14,11 +14,11 @@ class HoldAndQueue():
         self.GameInstanceStruct = GameInstanceStruct
         self.BoardConsts = BoardConsts
         
-        self.queue_rect_width = 6 * self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH // 2 + 1
-        self.queue_rect_height = 3 * self.GameInstanceStruct.queue_previews * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
+        self.BoardConsts.queue_rect_width = 6 * self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH // 2 + 1
+        self.BoardConsts.queue_rect_height = 3 * self.GameInstanceStruct.queue_previews * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         
-        self.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
-        self.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
+        self.BoardConsts.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
+        self.BoardConsts.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
     
     def draw(self, surface):
         """
@@ -57,7 +57,7 @@ class HoldAndQueue():
         rect_x = self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2
         rect_y =  self.BoardConsts.matrix_rect_pos_y + 1 * self.RenderStruct.GRID_SIZE
     
-        return pygame.Rect(rect_x, rect_y, self.queue_rect_width, self.queue_rect_height)	
+        return pygame.Rect(rect_x, rect_y, self.BoardConsts.queue_rect_width, self.BoardConsts.queue_rect_height)	
     
     def __get_hold_rect(self):
         """
@@ -66,7 +66,7 @@ class HoldAndQueue():
         rect_x = self.BoardConsts.matrix_rect_pos_x - 7 * self.RenderStruct.GRID_SIZE
         rect_y =  self.BoardConsts.matrix_rect_pos_y + 1 * self.RenderStruct.GRID_SIZE
     
-        return pygame.Rect(rect_x, rect_y, self.hold_rect_width, self.hold_rect_height)
+        return pygame.Rect(rect_x, rect_y, self.BoardConsts.hold_rect_width, self.BoardConsts.hold_rect_height)
     
     def __draw_hold(self, surface):
         """

@@ -35,7 +35,7 @@ class Board():
         self.Matrix = Matrix(RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConsts)
         self.HoldAndQueue = HoldAndQueue(RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConsts)
         self.UI_Border = UIBorder(RenderStruct, FlagStruct, GameInstanceStruct, Fonts, self.BoardConsts)
-        self.UI_InfoText = UIInfoText(RenderStruct, FlagStruct, TimingStruct,  Fonts, self.BoardConsts)
+        self.UI_InfoText = UIInfoText(RenderStruct, FlagStruct, GameInstanceStruct, TimingStruct,  Fonts, self.BoardConsts)
         self.UI_ActionText = UIActionText(GameInstanceStruct, RenderStruct, FlagStruct, TimingStruct, Fonts, self.BoardConsts)
         
         self.board_center_x_board_space = self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH // 2
@@ -51,10 +51,11 @@ class Board():
         """
         Draw the board onto a surface
         """
+        self.UI_Border.draw(surface) 
+        self.HoldAndQueue.draw(surface)
+        self.UI_ActionText.draw(surface)
         self.Matrix.draw(surface)
         pygame.draw.rect(surface, (0, 0, 255), (0, 0, self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), 1)
         pygame.draw.circle(surface, (255, 0, 0), (self.board_center_x_board_space, self.board_center_y_board_space), 5)
-        self.HoldAndQueue.draw(surface)
-        self.UI_Border.draw(surface) 
         self.UI_InfoText.draw(surface)
-        self.UI_ActionText.draw(surface)
+       

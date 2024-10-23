@@ -36,11 +36,28 @@ class Fonts():
         """     
         self.RenderStruct = RenderStruct
         pygame.font.init()
-         
+        
+        self.hun2_biggest_bold = Font(int(self.RenderStruct.GRID_SIZE*3)).hun2()
+        self.hun2_bigger_bold = Font(int(self.RenderStruct.GRID_SIZE*1.5)).hun2()
+        self.hun2_big_bold = Font(self.RenderStruct.GRID_SIZE).hun2()
+        self.hun2_med_bold = Font(3 * self.RenderStruct.GRID_SIZE // 4).hun2()
+        self.hun2_small_bold = Font( self.RenderStruct.GRID_SIZE // 2).hun2()
+        
+        self.hun2_biggest_bold.set_bold(True)
+        self.hun2_bigger_bold.set_bold(True)
+        self.hun2_big_bold.set_bold(True)
+        self.hun2_med_bold.set_bold(True)
+        self.hun2_small_bold.set_bold(True)
+        
+        
+        self.hun2_biggest = Font(int(self.RenderStruct.GRID_SIZE*3)).hun2()
         self.hun2_bigger = Font(int(self.RenderStruct.GRID_SIZE*1.5)).hun2()
         self.hun2_big = Font(self.RenderStruct.GRID_SIZE).hun2()
         self.hun2_med = Font(3 * self.RenderStruct.GRID_SIZE // 4).hun2()
         self.hun2_small = Font( self.RenderStruct.GRID_SIZE // 2).hun2()
+        
+        self.slot_big = Font(int(self.RenderStruct.GRID_SIZE*1.2)).hun2()
+        self.slot_small = Font(3 * self.RenderStruct.GRID_SIZE // 5).hun2()
 
         self.pfw_bigger = Font(int(self.RenderStruct.GRID_SIZE*1.5)).pfw()
         self.pfw_big = Font(self.RenderStruct.GRID_SIZE).pfw()
