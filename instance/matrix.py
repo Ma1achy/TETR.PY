@@ -62,6 +62,8 @@ class Matrix():
 
         if len(full_lines) > 0:
             return len(full_lines)
+        else:
+            return False
     
     def __str__(self):
         """

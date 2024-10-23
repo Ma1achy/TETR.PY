@@ -13,10 +13,7 @@ class FLAG(Enum):
     DO_DCD = auto() 
     
     # scoring
-    SINGLE = auto()
-    DOUBLE = auto()
-    TRIPLE = auto()
-    QUADRUPLE = auto()
+    LINE_CLEAR = auto()
     
     SOFT_DROP = auto()
     HARD_DROP = auto()

@@ -252,7 +252,12 @@ class Four():
         """
         Clear full lines from the matrix
         """
-        self.GameInstanceStruct.matrix.clear_lines()
+        self.FlagStruct.LINE_CLEAR = self.GameInstanceStruct.matrix.clear_lines()
+        
+  
+            
+            
+            
         # TODO: Implement scoring logic / t spin line clear detection
     
     # --------------------------------------------------- GRAVITY ---------------------------------------------------
@@ -334,7 +339,6 @@ class Four():
         args:
             hold (bool): Whether to hold the current piece
         """
-        self.reset_flags()
         self.GameInstanceStruct.can_hold = True
         hold_spawn = False
         

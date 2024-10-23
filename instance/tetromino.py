@@ -325,7 +325,7 @@ class Tetromino():
             kick (Vec2): The kick translation to apply
         """
         if self.collision(rotated_piece, self.position + kick + Vec2(1, 0)) and self.collision(rotated_piece, self.position + kick + Vec2(-1, 0)) and self.collision(rotated_piece, self.position + kick+ Vec2(0, 1)) and self.collision(rotated_piece, self.position + kick + Vec2(0, -1)):
-            self.flags.IS_SPIN = True
+            self.flags.IS_SPIN = self.type
            
     def __Is_T_Spin(self, offset:int, desired_state:int, kick:Vec2):
         """

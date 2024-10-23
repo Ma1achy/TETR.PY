@@ -18,15 +18,140 @@ class UIActionText():
         self.BoardConsts = BoardConsts
         
     def draw(self, surface):
-        self.draw_t_spin_action_text(surface)
+        self.draw_spin_action_text(surface)
         self.draw_line_clear_action_text(surface)
         self.draw_back_to_back_action_text(surface)
+        self.draw_combo_action_text(surface)
     
-    def draw_t_spin_action_text(self, surface):
-        surface.blit(self.Fonts.hun2_big.render('T-SPIN', True, (168, 34, 139)), (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.GRID_SIZE * 5 - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 4.4 + self.RenderStruct.BORDER_WIDTH))
+    def draw_spin_action_text(self, surface):
+        if self.FlagStruct.TSPIN:
+            text = 'T-SPIN'
+            mini_text = None
+            colour = (168, 34, 139)
+        elif self.FlagStruct.TSPIN_MINI:
+            text = 'T-SPIN'
+            mini_text = 'MINI '
+            colour = (168, 34, 139)
+        elif self.FlagStruct.IS_SPIN == 'Z':
+            text = 'Z-SPIN'
+            mini_text = 'MINI '
+            colour = (206, 0, 43)
+        elif self.FlagStruct.IS_SPIN == 'L':
+            text = 'L-SPIN'
+            mini_text = 'MINI '
+            colour = (219, 87, 0)
+        elif self.FlagStruct.IS_SPIN == 'O':
+            text = 'O-SPIN'
+            mini_text = 'MINI '
+            colour = (221, 158, 0)
+        elif self.FlagStruct.IS_SPIN == 'S':
+            text = 'S-SPIN'
+            mini_text = 'MINI '
+            colour = (99, 177, 0)
+        elif self.FlagStruct.IS_SPIN == 'I':
+            text = 'I-SPIN'
+            mini_text = 'MINI '
+            colour = (51, 156, 218)
+        elif self.FlagStruct.IS_SPIN == 'J':
+            text = 'J-SPIN'
+            mini_text = 'MINI '
+            colour = (38, 64, 202)
+        else:
+            text = 'SPIN TYPE'
+            mini_text = 'MINI '
+            colour = (255, 255, 255)
+            
+        spin_text_surface = self.Fonts.hun2_big.render(text, True, colour)
+        spin_text_rect = spin_text_surface.get_rect()
+        spin_text_position = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - spin_text_rect.width - self.RenderStruct.GRID_SIZE * 1.25, self.BoardConsts.matrix_rect_pos_y + spin_text_rect.height + self.RenderStruct.GRID_SIZE * 3.5 + self.RenderStruct.BORDER_WIDTH)
+        
+        surface.blit(spin_text_surface, spin_text_position)
+        
+        mini_text_surface = self.Fonts.hun2_med.render(mini_text, True, colour)
+        mini_text_rect = mini_text_surface.get_rect()
+        mini_text_position = (spin_text_position[0] - mini_text_rect.width, spin_text_position[1] + spin_text_rect.height // 2 - mini_text_rect.height // 2)
+        
+        surface.blit(mini_text_surface, mini_text_position)
+        pygame.draw.rect(surface, colour, (mini_text_position[0], mini_text_position[1], mini_text_rect.width, mini_text_rect.height), 1)
+        pygame.draw.rect(surface, colour, (spin_text_position[0], spin_text_position[1], spin_text_rect.width, spin_text_rect.height), 1)
         
     def draw_line_clear_action_text(self, surface):
-        surface.blit(self.Fonts.hun2_bigger.render('DOUBLE', True, (255, 255, 255)), (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.GRID_SIZE * 7.25 - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 5.5 + self.RenderStruct.BORDER_WIDTH))
-    
+        if self.FlagStruct.LINE_CLEAR:
+            text = self.get_lines_text()
+        else:
+            text = 'LINE CLEAR'
+                
+            text_surface = self.Fonts.hun2_bigger.render(text, True, (255, 255, 255))
+            text_rect = text_surface.get_rect()
+            position = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - text_rect.width - self.RenderStruct.GRID_SIZE * 1.25, self.BoardConsts.matrix_rect_pos_y + text_rect.height + self.RenderStruct.GRID_SIZE * 4 + self.RenderStruct.BORDER_WIDTH)
+            
+            surface.blit(text_surface, position)
+            pygame.draw.rect(surface, (255, 255, 255), (position[0], position[1], text_rect.width, text_rect.height), 1)
+        
     def draw_back_to_back_action_text(self, surface):
-        surface.blit(self.Fonts.hun2_med.render('B2B x2', True, (253, 220, 92)), (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.GRID_SIZE * 3.9 - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 7 + self.RenderStruct.BORDER_WIDTH))
+        multiplier_text = 'MULTI'
+        cross_text = 'X'
+        b2b_text = 'B2B' + ' '
+         
+        multiplier_text_surface = self.Fonts.hun2_med.render(multiplier_text, True, (253, 220, 92))
+        multiplier_text_rect = multiplier_text_surface.get_rect()
+        multiplier_positon = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - multiplier_text_rect.width - self.RenderStruct.GRID_SIZE * 1.25, self.BoardConsts.matrix_rect_pos_y + multiplier_text_rect.height + self.RenderStruct.GRID_SIZE * 6.25 + self.RenderStruct.BORDER_WIDTH)
+        
+        cross_text_surface = self.Fonts.hun2_small.render(cross_text, True, (253, 220, 92))
+        cross_text_rect = cross_text_surface.get_rect()
+        cross_positon = (multiplier_positon[0] - cross_text_rect.width *1.1, multiplier_positon[1] + multiplier_text_rect.height//2 - cross_text_rect.height//2)
+        
+        b2b_text_surface = self.Fonts.hun2_med.render(b2b_text, True, (253, 220, 92))
+        b2b_text_rect = b2b_text_surface.get_rect()
+        b2b_positon = (cross_positon[0] - b2b_text_rect.width, multiplier_positon[1])
+        
+        surface.blit(multiplier_text_surface, multiplier_positon)
+        surface.blit(cross_text_surface, cross_positon)
+        surface.blit(b2b_text_surface, b2b_positon)
+        
+        pygame.draw.rect(surface, (253, 220, 92), (multiplier_positon[0], multiplier_positon[1], multiplier_text_rect.width, multiplier_text_rect.height), 1)
+        pygame.draw.rect(surface, (253, 220, 92), (cross_positon[0], cross_positon[1], cross_text_rect.width, cross_text_rect.height), 1)
+        pygame.draw.rect(surface, (253, 220, 92), (b2b_positon[0], b2b_positon[1], b2b_text_rect.width, b2b_text_rect.height), 1)
+        
+    def get_lines_text(self):
+        if self.FlagStruct.LINE_CLEAR == 1:
+            return 'SINGLE'
+        elif self.FlagStruct.LINE_CLEAR == 2:
+            return 'DOUBLE'
+        elif self.FlagStruct.LINE_CLEAR == 3:
+            return 'TRIPLE'
+        elif self.FlagStruct.LINE_CLEAR == 4:
+            return 'QUAD'
+        elif self.FlagStruct.LINE_CLEAR == 5:
+            return 'PENTUPLE'
+        elif self.FlagStruct.LINE_CLEAR == 6:
+            return 'SEXTUPLE'
+        elif self.FlagStruct.LINE_CLEAR == 7:
+            return 'SEPTUPLE'
+        elif self.FlagStruct.LINE_CLEAR == 8:
+            return 'OCTUPLE'
+        elif self.FlagStruct.LINE_CLEAR == 9:
+            return 'NONUPLE'
+        elif self.FlagStruct.LINE_CLEAR == 10:
+            return 'DECUPLE'
+        else:
+            return self.GameInstanceStruct.LINE_CLEAR
+
+    def draw_combo_action_text(self, surface):
+        
+        combo_text = 'COMBO'
+        multiplier_text = 'MULTI' + ' '
+        
+        combo_text_surface = self.Fonts.hun2_big.render(combo_text, True, (255, 255, 255))
+        combo_text_rect = combo_text_surface.get_rect()
+        combo_positon = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - combo_text_rect.width - self.RenderStruct.GRID_SIZE * 1.25, self.BoardConsts.matrix_rect_pos_y + combo_text_rect.height + self.RenderStruct.GRID_SIZE * 7 + self.RenderStruct.BORDER_WIDTH)
+        
+        multiplier_text_surface = self.Fonts.hun2_bigger.render(multiplier_text, True, (255, 255, 255))
+        multiplier_text_rect = multiplier_text_surface.get_rect()
+        multiplier_positon = (combo_positon[0] - multiplier_text_rect.width, combo_positon[1] + combo_text_rect.height // 2 - multiplier_text_rect.height // 2)
+        
+        surface.blit(combo_text_surface, combo_positon)
+        surface.blit(multiplier_text_surface, multiplier_positon)
+        
+        pygame.draw.rect(surface, (255, 255, 255), (combo_positon[0], combo_positon[1], combo_text_rect.width, combo_text_rect.height), 1)
+        pygame.draw.rect(surface, (255, 255, 255), (multiplier_positon[0], multiplier_positon[1], multiplier_text_rect.width, multiplier_text_rect.height), 1)
