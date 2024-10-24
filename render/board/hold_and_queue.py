@@ -14,11 +14,13 @@ class HoldAndQueue():
         self.GameInstanceStruct = GameInstanceStruct
         self.BoardConsts = BoardConsts
         
-        self.BoardConsts.queue_rect_width = 6 * self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH // 2 + 1
+        self.background_alpha = 200
+        
+        self.BoardConsts.queue_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         self.BoardConsts.queue_rect_height = 3 * self.GameInstanceStruct.queue_previews * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
         
-        self.BoardConsts.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
-        self.BoardConsts.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
+        self.BoardConsts.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH 
+        self.BoardConsts.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2 
     
     def draw(self, surface):
         """
@@ -38,7 +40,11 @@ class HoldAndQueue():
             surface (pygame.Surface): The surface to draw onto
         """
         queue_rect = self.__get_queue_rect()
-        pygame.gfxdraw.box(surface, queue_rect, (0, 0, 0))
+        queue_background_Surf = pygame.Surface((queue_rect.width, queue_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+        queue_background_Surf.fill((0, 0, 0))
+        
+        queue_background_Surf.set_alpha(self.background_alpha)
+        surface.blit(queue_background_Surf, queue_rect.topleft)
         
         for idx, tetromino in enumerate(self.GameInstanceStruct.queue.queue):
             if idx == self.GameInstanceStruct.queue_previews:
@@ -54,7 +60,7 @@ class HoldAndQueue():
         """
         Get the rectangle for the queue
         """
-        rect_x = self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2
+        rect_x = self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH 
         rect_y =  self.BoardConsts.matrix_rect_pos_y + 1 * self.RenderStruct.GRID_SIZE
     
         return pygame.Rect(rect_x, rect_y, self.BoardConsts.queue_rect_width, self.BoardConsts.queue_rect_height)	
@@ -77,7 +83,11 @@ class HoldAndQueue():
         """
         tetromino = self.GameInstanceStruct.held_tetromino    
         hold_rect = self.__get_hold_rect()
-        pygame.gfxdraw.box(surface, hold_rect, (0, 0, 0))
+        hold_background_Surf = pygame.Surface((hold_rect.width, hold_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+        hold_background_Surf.fill((0, 0, 0))
+        
+        hold_background_Surf.set_alpha(self.background_alpha)
+        surface.blit(hold_background_Surf, hold_rect.topleft)
         
         self.__draw_tetromino_preview(surface, tetromino, hold_rect, can_hold = self.GameInstanceStruct.can_hold)
         

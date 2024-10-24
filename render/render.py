@@ -42,6 +42,10 @@ class Render():
         self.UI_Debug = UIDebug(self.Config, self.RenderStruct, self.DebugStruct, self.FlagStruct, self.Fonts)
         self.UI_KeyStates = UIKeyStates(self.RenderStruct, self.Fonts)
         
+        self.image_path = 'render\image.jpg'
+        self.image = pygame.image.load(self.image_path)
+        self.image = pygame.transform.scale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
+        
     def __init_window(self):
         """
         Create the window to draw to
@@ -55,13 +59,10 @@ class Render():
         """
         # self.RenderStruct.surfaces = []
 
-        self.window.fill((0, 0, 0))
+        self.window.fill((32, 32, 32))
+        self.window.blit(self.image, (0, 0))
         
         board_surface = self.Board.get_board_surface()
-        
-        board_rect_x_pos = self.RenderStruct.WINDOW_WIDTH // 2 - board_surface.get_width() // 2
-        board_rect_y_pos = self.RenderStruct.WINDOW_HEIGHT - board_surface.get_height() - 4 * self.RenderStruct.GRID_SIZE 
-        
         self.Board.draw(board_surface)
         
         self.angle = 0

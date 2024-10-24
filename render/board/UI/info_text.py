@@ -4,6 +4,7 @@ from core.state.struct_timing import StructTiming
 from render.board.struct_board import StructBoardConsts
 from core.state.struct_gameinstance import StructGameInstance
 import pygame
+from utils import comma_separate
 
 class UIInfoText():
     def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, Fonts, BoardConsts:StructBoardConsts):
@@ -24,19 +25,19 @@ class UIInfoText():
         self.left_slot_4_pos = (self.left_slot_1_pos[0], self.left_slot_3_pos[1] - self.slot_height - self.RenderStruct.GRID_SIZE * 0.5)
         self.right_slot_1_pos = (self.BoardConsts.matrix_rect_pos_x + self.RenderStruct.BORDER_WIDTH * 2 + self.BoardConsts.MATRIX_SURFACE_WIDTH,  self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.queue_rect_height  + self.RenderStruct.BORDER_WIDTH * 2 + self.RenderStruct.GRID_SIZE)
         
-        self.objective_width = self.RenderStruct.GRID_SIZE * 10
-        self.objective_height = self.RenderStruct.GRID_SIZE * 5
-        self.objective_slot_pos = (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH//2 - self.objective_width // 2, self.BoardConsts.matrix_rect_pos_y + 1*self.BoardConsts.MATRIX_SURFACE_HEIGHT//4 - self.objective_height // 2)
+        self.middle_width = self.RenderStruct.GRID_SIZE * 10
+        self.middle_height = self.RenderStruct.GRID_SIZE * 5
+        self.objective_slot_pos = (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH//2 - self.middle_width // 2, self.BoardConsts.matrix_rect_pos_y + 1*self.BoardConsts.MATRIX_SURFACE_HEIGHT//4 - self.middle_height // 2)
         
         # TODO: create surfaces that you can choose to render different counters/timers/info onto
         # they will then be blitted onto the board surface in the correct position
         self.slots = {
             0: 'STOPWATCH',
-            1: 'STOPWATCH',
-            2: 'STOPWATCH',
-            3: 'STOPWATCH',
-            4: 'STOPWATCH',
-            5: 'STOPWATCH',
+            1: 'SCORE',
+            2: None,
+            3: None,
+            4: 'SCORE',
+            5: 'SCORE',
         }
          
     def draw(self, surface):
@@ -77,7 +78,7 @@ class UIInfoText():
             return self.right_slot_1_pos, right_slot_1_rect
         
         elif slot == 5:
-            objective_slot_rect = pygame.Rect(self.objective_slot_pos[0], self.objective_slot_pos[1],  self.objective_width, self.objective_height)
+            objective_slot_rect = pygame.Rect(self.objective_slot_pos[0], self.objective_slot_pos[1],  self.middle_width, self.middle_height)
            # pygame.draw.rect(surface, (255, 255, 255), objective_slot_rect, 1)
             return self.objective_slot_pos, objective_slot_rect
         
@@ -87,6 +88,8 @@ class UIInfoText():
             match self.slots[slot]:
                 case 'STOPWATCH':
                     self.__draw_timer(slot, surface)
+                case 'SCORE':
+                    self.draw_score(surface, slot)
                 case None:
                     pass
                 case _:
@@ -128,7 +131,7 @@ class UIInfoText():
             
             text_time_ms = self.Fonts.hun2_med.render(self.time_ms, True, (255, 255, 255))
             text_time_ms_rect = text_time_ms.get_rect()
-            text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.05, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) / 4)
+            text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.05, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) // 4)
             
             text_time = self.Fonts.slot_small.render('TIME', True, (255, 255, 255))
             text_time_rect = text_time.get_rect()
@@ -138,9 +141,9 @@ class UIInfoText():
             surface.blit(text_time_minsec, text_time_minsec_position)
             surface.blit(text_time, text_time_position)
         
-        elif slot == 5: # objective
+        elif slot == 5: # middle
             
-            objective_surface = pygame.Surface((self.objective_width, self.objective_height), pygame.SRCALPHA)
+            middle_surface = pygame.Surface((self.middle_width, self.middle_height), pygame.SRCALPHA)
             
             text_time_minsec = self.Fonts.hun2_biggest.render(f'{self.time_minsec}.', True, (255, 255, 255))
             text_time_minsec_rect = text_time_minsec.get_rect()
@@ -148,8 +151,8 @@ class UIInfoText():
             text_time_ms = self.Fonts.hun2_med.render(self.time_ms, True, (255, 255, 255))
             text_time_ms_rect = text_time_ms.get_rect()
             
-            text_time_minsec_position = (self.objective_width / 2 - text_time_minsec_rect.width / 2 - text_time_ms_rect.width / 2, self.objective_height / 2 - text_time_minsec_rect.height / 2)
-            text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.2, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.hun2_biggest.get_height() - self.Fonts.hun2_med.get_height())/5)
+            text_time_minsec_position = (self.middle_width // 2 - text_time_minsec_rect.width / 2 - text_time_ms_rect.width // 2, self.middle_height // 2 - text_time_minsec_rect.height // 2)
+            text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.2, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.hun2_biggest.get_height() - self.Fonts.hun2_med.get_height())//5)
 
             # self.Fonts.hun2_biggest.set_bold(True)
             # self.Fonts.hun2_med.set_bold(True)
@@ -163,14 +166,14 @@ class UIInfoText():
             text_time_minsec_outline_position = (text_time_minsec_position[0] + self.RenderStruct.GRID_SIZE*0.2, text_time_minsec_position[1])
             text_time_ms_outline_position = (text_time_ms_position[0] + 3 * 0.1* self.RenderStruct.GRID_SIZE // 4, text_time_ms_position[1])
            
-            objective_surface.blit(text_time_minsec_outline, text_time_minsec_outline_position)
-            objective_surface.blit(text_time_ms_outline, text_time_ms_outline_position)
+            middle_surface.blit(text_time_minsec_outline, text_time_minsec_outline_position)
+            middle_surface.blit(text_time_ms_outline, text_time_ms_outline_position)
             
-            objective_surface.blit(text_time_ms, text_time_ms_position)
-            objective_surface.blit(text_time_minsec, text_time_minsec_position)
-            objective_surface.set_alpha(88)  # (0-255, where 0 is fully transparent and 255 is fully opaque)
+            middle_surface.blit(text_time_ms, text_time_ms_position)
+            middle_surface.blit(text_time_minsec, text_time_minsec_position)
+            middle_surface.set_alpha(88)  # (0-255, where 0 is fully transparent and 255 is fully opaque)
             
-            surface.blit(objective_surface, slot_rect.topleft)
+            surface.blit(middle_surface, slot_rect.topleft)
             
         else: # right aligned 
             
@@ -180,7 +183,7 @@ class UIInfoText():
             
             text_time_minsec = self.Fonts.slot_big.render(f'{self.time_minsec}.', True, (255, 255, 255))
             text_time_minsec_rect = text_time_minsec.get_rect()
-            text_time_minsec_position = (text_time_ms_position[0] - text_time_minsec_rect.width - self.RenderStruct.GRID_SIZE * 0.05, text_time_ms_position[1] + text_time_ms_rect.height - text_time_minsec_rect.height + (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) / 4)
+            text_time_minsec_position = (text_time_ms_position[0] - text_time_minsec_rect.width - self.RenderStruct.GRID_SIZE * 0.05, text_time_ms_position[1] + text_time_ms_rect.height - text_time_minsec_rect.height + (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) // 4)
             
             text_time = self.Fonts.slot_small.render('TIME', True, (255, 255, 255))
             text_time_rect = text_time.get_rect()
@@ -194,6 +197,70 @@ class UIInfoText():
         # pygame.draw.rect(surface, (255, 255, 255), (text_time_minsec_position[0], text_time_minsec_position[1], text_time_minsec_rect.width, text_time_minsec_rect.height), 1)
         # pygame.draw.rect(surface, (255, 255, 255), (text_time_position[0], text_time_position[1], text_time_rect.width, text_time_rect.height), 1)
 
+    def draw_score(self, surface, slot):
+        """
+        Draw the score
+        
+        args:
+            surface (pygame.Surface): The surface to draw onto
+        """
+        score = 1934013
+        slot_pos, slot_rect = self.get_slot_rects(surface, slot)
+        
+        if slot == 4: # left aligned
+            
+            title_text = self.Fonts.slot_small.render('SCORE', True, (255, 255, 255))
+            title_text_rect = title_text.get_rect()
+            
+            score_text = self.Fonts.slot_big.render(f'{comma_separate(score)}', True, (255, 255, 255))
+            score_text_rect = score_text.get_rect()
+        
+            title_text_position = (slot_rect.topleft[0], slot_rect.topleft[1])
+            score_text_position = (slot_rect.topleft[0], slot_rect.bottomleft[1] - score_text_rect.height)
+            
+            surface.blit(title_text, title_text_position)
+            surface.blit(score_text, score_text_position)
+        
+        elif slot == 5: # middle
+            
+            middle_surface = pygame.Surface((self.middle_width, self.middle_height), pygame.SRCALPHA)
+            
+            score_text = self.Fonts.hun2_biggerer.render(f'{comma_separate(score)}', True, (255, 255, 255))
+            score_text_rect = score_text.get_rect()
+            
+            score_text_position = (self.middle_width // 2 - score_text_rect.width // 2, self.middle_height // 2 - score_text_rect.height // 2)
+            
+            score_text_outline = self.Fonts.hun2_biggerer.render(f'{comma_separate(score)}', True, (105, 105, 105))
+            score_text_outline_position = (score_text_position[0] + self.RenderStruct.GRID_SIZE * 0.2, score_text_position[1])
+            
+            if score_text_rect.width > self.middle_width:
+                score_text = self.Fonts.hun2_bigger.render(f'{comma_separate(score)}', True, (255, 255, 255))
+                score_text_rect = score_text.get_rect()
+                score_text_position = (self.middle_width // 2 - score_text_rect.width // 2, self.middle_height // 2 - score_text_rect.height // 2)
+                
+                score_text_outline = self.Fonts.hun2_bigger.render(f'{comma_separate(score)}', True, (105, 105, 105))
+                score_text_outline_position = (score_text_position[0] + self.RenderStruct.GRID_SIZE * 0.15, score_text_position[1])
+            
+            middle_surface.blit(score_text_outline, score_text_outline_position)
+            middle_surface.blit(score_text, score_text_position)
+            middle_surface.set_alpha(88)
+            
+            surface.blit(middle_surface, slot_rect.topleft)
+            
+        else: # right aligned
+            
+            title_text = self.Fonts.slot_small.render('SCORE', True, (255, 255, 255))
+            title_text_rect = title_text.get_rect()
+            
+            score_text = self.Fonts.slot_big.render(f'{comma_separate(score)}', True, (255, 255, 255))
+            score_text_rect = score_text.get_rect()
+            
+            title_text_position = (slot_rect.topright[0] - title_text_rect.width, slot_rect.topright[1])
+            score_text_position = (slot_rect.topright[0] - score_text_rect.width, slot_rect.bottomright[1] - score_text_rect.height)
+            
+            surface.blit(title_text, title_text_position)
+            surface.blit(score_text, score_text_position)
+    
     def __draw_missing_slot(self, slot, surface, passed):
         
         slot_pos, slot_rect = self.get_slot_rects(surface, slot)

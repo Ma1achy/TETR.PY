@@ -35,22 +35,25 @@ class UIBorder():
             matrix_surface_rect (pygame.Rect): the rectangle that the matrix is drawn in
         """
         matrix_surface_rect = pygame.Rect(self.BoardConsts.matrix_rect_pos_x, self.BoardConsts.matrix_rect_pos_y, self.BoardConsts.MATRIX_SURFACE_WIDTH, self.BoardConsts.MATRIX_SURFACE_HEIGHT)
+        
+        matrix_background_surface = pygame.Surface((self.BoardConsts.MATRIX_SURFACE_WIDTH, self.BoardConsts.MATRIX_SURFACE_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        matrix_background_surface.fill((0, 0, 0))
+       
         grid_colour = lerpBlendRGBA((0, 0, 0), self.__get_border_colour(), 0.25)
         width = 1
         
-        for idx in range(self.GameInstanceStruct.matrix.HEIGHT // 2, self.GameInstanceStruct.matrix.HEIGHT):
-            pygame.draw.line(surface, grid_colour,
-                             (matrix_surface_rect.x, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConsts.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + self.GameInstanceStruct.matrix.WIDTH * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + idx * self.RenderStruct.GRID_SIZE - self.BoardConsts.MATRIX_SURFACE_HEIGHT),
-                             width
-                             )
-            
         for idx in range(self.GameInstanceStruct.matrix.WIDTH + 1):
-            pygame.draw.line(surface, grid_colour,
-                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y + self.BoardConsts.MATRIX_SURFACE_HEIGHT),
-                             (matrix_surface_rect.x + idx * self.RenderStruct.GRID_SIZE, matrix_surface_rect.y +  self.GameInstanceStruct.matrix.HEIGHT // 2 * self.RenderStruct.GRID_SIZE - self.BoardConsts.MATRIX_SURFACE_HEIGHT),
-                             width
-                             )
+            pygame.draw.line(matrix_background_surface, grid_colour, 
+                            (idx * self.RenderStruct.GRID_SIZE, 0), 
+                            (idx * self.RenderStruct.GRID_SIZE, self.BoardConsts.MATRIX_SURFACE_HEIGHT), width)
+
+        for idx in range(self.GameInstanceStruct.matrix.HEIGHT + 1):
+            pygame.draw.line(matrix_background_surface, grid_colour, 
+                            (0, idx * self.RenderStruct.GRID_SIZE), 
+                            (self.BoardConsts.MATRIX_SURFACE_WIDTH, idx * self.RenderStruct.GRID_SIZE), width)
+                           
+        matrix_background_surface.set_alpha(200)
+        surface.blit(matrix_background_surface, matrix_surface_rect.topleft)
              
     def __draw_border(self, surface):
         """
@@ -80,6 +83,13 @@ class UIBorder():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
+        garbage_rect = pygame.Rect(self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - self.RenderStruct.GRID_SIZE, self.BoardConsts.matrix_rect_pos_y, self.RenderStruct.GRID_SIZE, self.BoardConsts.MATRIX_SURFACE_HEIGHT)
+        garbage_surface = pygame.Surface((self.RenderStruct.GRID_SIZE, self.BoardConsts.MATRIX_SURFACE_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        garbage_surface.fill((0, 0, 0))
+        garbage_surface.set_alpha(200)
+        surface.blit(garbage_surface, garbage_rect.topleft)
+        
+        
         pygame.draw.line(surface, self.__get_border_colour(), # left garbage border
                         (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.BORDER_WIDTH // 2 - 1 - self.RenderStruct.GRID_SIZE, self.BoardConsts.matrix_rect_pos_y), 
                         (self.BoardConsts.matrix_rect_pos_x   - self.RenderStruct.BORDER_WIDTH // 2 - 1 - self.RenderStruct.GRID_SIZE, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT - 1), 
@@ -125,8 +135,8 @@ class UIBorder():
                 self.RenderStruct.BORDER_WIDTH)
 
         pygame.draw.line(surface, self.__get_border_colour(), # queue top border
-                        (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH + 6 * self.RenderStruct.GRID_SIZE  + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
-                        (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
+                        (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH + 6 * self.RenderStruct.GRID_SIZE  + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2),
+                        (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH // 2, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2),
                         self.RenderStruct.GRID_SIZE)
     
         text_surface = self.Fonts.hun2_big.render('NEXT', True, (0, 0, 0))
@@ -150,8 +160,8 @@ class UIBorder():
                         self.RenderStruct.BORDER_WIDTH)
 
         pygame.draw.line(surface, self.__get_border_colour(), # hold top border
-            (self.BoardConsts.matrix_rect_pos_x  - 7 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
-            (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2 - 1),
+            (self.BoardConsts.matrix_rect_pos_x  - 7 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2),
+            (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE // 2),
             self.RenderStruct.GRID_SIZE)
         
             

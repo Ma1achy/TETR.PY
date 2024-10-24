@@ -36,5 +36,5 @@ class StructRender():
     BORDER_WIDTH = 7
     
     def  __post_init__(self):
-        self.GRID_SIZE = self.WINDOW_WIDTH // 46
+        self.GRID_SIZE = self.WINDOW_WIDTH // 48
         

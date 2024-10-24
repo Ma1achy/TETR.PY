@@ -38,6 +38,7 @@ class Fonts():
         pygame.font.init()
     
         self.hun2_biggest = Font(int(self.RenderStruct.GRID_SIZE*3)).hun2()
+        self.hun2_biggerer = Font(int(self.RenderStruct.GRID_SIZE* 2.25)).hun2()
         self.hun2_bigger = Font(int(self.RenderStruct.GRID_SIZE*1.5)).hun2()
         self.hun2_big = Font(self.RenderStruct.GRID_SIZE).hun2()
         self.hun2_med = Font(3 * self.RenderStruct.GRID_SIZE // 4).hun2()

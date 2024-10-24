@@ -76,8 +76,9 @@ class UIActionText():
         mini_text_position = (spin_text_position[0] - mini_text_rect.width, spin_text_position[1] + spin_text_rect.height // 2 - mini_text_rect.height // 2)
         
         surface.blit(mini_text_surface, mini_text_position)
-        pygame.draw.rect(surface, colour, (mini_text_position[0], mini_text_position[1], mini_text_rect.width, mini_text_rect.height), 1)
-        pygame.draw.rect(surface, colour, (spin_text_position[0], spin_text_position[1], spin_text_rect.width, spin_text_rect.height), 1)
+        
+        # pygame.draw.rect(surface, colour, (mini_text_position[0], mini_text_position[1], mini_text_rect.width, mini_text_rect.height), 1)
+        # pygame.draw.rect(surface, colour, (spin_text_position[0], spin_text_position[1], spin_text_rect.width, spin_text_rect.height), 1)
         
     def draw_line_clear_action_text(self, surface):
         if self.FlagStruct.LINE_CLEAR:
@@ -90,7 +91,8 @@ class UIActionText():
             position = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - text_rect.width - self.RenderStruct.GRID_SIZE * 1.25, self.BoardConsts.matrix_rect_pos_y + text_rect.height + self.RenderStruct.GRID_SIZE * 4 + self.RenderStruct.BORDER_WIDTH)
             
             surface.blit(text_surface, position)
-            pygame.draw.rect(surface, (255, 255, 255), (position[0], position[1], text_rect.width, text_rect.height), 1)
+            
+            # pygame.draw.rect(surface, (255, 255, 255), (position[0], position[1], text_rect.width, text_rect.height), 1)
         
     def draw_back_to_back_action_text(self, surface):
         multiplier_text = 'MULTI'
@@ -113,9 +115,9 @@ class UIActionText():
         surface.blit(cross_text_surface, cross_positon)
         surface.blit(b2b_text_surface, b2b_positon)
         
-        pygame.draw.rect(surface, (253, 220, 92), (multiplier_positon[0], multiplier_positon[1], multiplier_text_rect.width, multiplier_text_rect.height), 1)
-        pygame.draw.rect(surface, (253, 220, 92), (cross_positon[0], cross_positon[1], cross_text_rect.width, cross_text_rect.height), 1)
-        pygame.draw.rect(surface, (253, 220, 92), (b2b_positon[0], b2b_positon[1], b2b_text_rect.width, b2b_text_rect.height), 1)
+        # pygame.draw.rect(surface, (253, 220, 92), (multiplier_positon[0], multiplier_positon[1], multiplier_text_rect.width, multiplier_text_rect.height), 1)
+        # pygame.draw.rect(surface, (253, 220, 92), (cross_positon[0], cross_positon[1], cross_text_rect.width, cross_text_rect.height), 1)
+        # pygame.draw.rect(surface, (253, 220, 92), (b2b_positon[0], b2b_positon[1], b2b_text_rect.width, b2b_text_rect.height), 1)
         
     def get_lines_text(self):
         if self.FlagStruct.LINE_CLEAR == 1:
@@ -157,20 +159,18 @@ class UIActionText():
         surface.blit(combo_text_surface, combo_positon)
         surface.blit(multiplier_text_surface, multiplier_positon)
         
-        pygame.draw.rect(surface, (255, 255, 255), (combo_positon[0], combo_positon[1], combo_text_rect.width, combo_text_rect.height), 1)
-        pygame.draw.rect(surface, (255, 255, 255), (multiplier_positon[0], multiplier_positon[1], multiplier_text_rect.width, multiplier_text_rect.height), 1)
+        # pygame.draw.rect(surface, (255, 255, 255), (combo_positon[0], combo_positon[1], combo_text_rect.width, combo_text_rect.height), 1)
+        # pygame.draw.rect(surface, (255, 255, 255), (multiplier_positon[0], multiplier_positon[1], multiplier_text_rect.width, multiplier_text_rect.height), 1)
     
     def draw_all_clear_action_text(self, surface):
-        
-        colour = (253, 220, 92)
-                  
+                    
         text_surface = pygame.Surface((self.middle_text_surf_width, self.middle_text_surf_height), pygame.SRCALPHA)
         text_surface_rect = text_surface.get_rect()
         
         line1_text = self.Fonts.hun2_biggest.render('ALL', True, (253, 220, 92))
         line1_text_rect = line1_text.get_rect()
         
-        line1_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width / 2 - line1_text_rect.width / 2, text_surface_rect.topleft[1])
+        line1_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width // 2 - line1_text_rect.width // 2, text_surface_rect.topleft[1])
     
         line1_text_outline = self.Fonts.hun2_biggest.render('ALL', True, (209, 129, 48))
         
@@ -179,7 +179,7 @@ class UIActionText():
         line2_text = self.Fonts.hun2_biggest.render('CLEAR', True, (253, 220, 92))
         line2_text_rect = line2_text.get_rect()
         
-        line2_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width / 2 - line2_text_rect.width / 2, text_surface_rect.bottomleft[1] - line2_text_rect.height)
+        line2_text_position = (text_surface_rect.topleft[0] + text_surface_rect.width // 2 - line2_text_rect.width // 2, text_surface_rect.bottomleft[1] - line2_text_rect.height)
         
         line2_text_outline = self.Fonts.hun2_biggest.render('CLEAR', True, (209, 129, 48))
         
@@ -192,4 +192,4 @@ class UIActionText():
         text_surface.blit(line2_text, line2_text_position)
          
         text_surface.set_alpha(256)  # (0-255, where 0 is fully transparent and 255 is fully opaque)
-        surface.blit(text_surface, (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH / 2 - self.middle_text_surf_width / 2, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT / 2 - self.middle_text_surf_height / 2))
+        surface.blit(text_surface, (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH // 2 - self.middle_text_surf_width // 2, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT / 2 - self.middle_text_surf_height // 2))

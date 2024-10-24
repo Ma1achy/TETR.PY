@@ -63,6 +63,18 @@ def get_prefix(number: float, unit: str, precision: int = 1) -> str:
         if abs(number) >= value:
             num = number / value
             return f"{num:.{precision}f} {prefix}{unit}"
+        
+def comma_separate(number: int) -> str:
+    """
+    Add commas to a number for readability.
+
+    Args:
+        number (int): The number to add commas to.
+
+    Returns:
+        str: The number with commas.
+    """
+    return "{:,}".format(number)
   
 def get_tetromino_blocks(type:str):
     """

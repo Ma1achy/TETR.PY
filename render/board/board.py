@@ -45,7 +45,7 @@ class Board():
         """
         Get the surface to draw the board onto
         """
-        return pygame.Surface((self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), pygame.SRCALPHA)
+        return pygame.Surface((self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), pygame.SRCALPHA|pygame.HWSURFACE)
     
     def draw(self, surface):
         """
@@ -55,7 +55,7 @@ class Board():
         self.HoldAndQueue.draw(surface)
         self.UI_ActionText.draw(surface)
         self.Matrix.draw(surface)
-        pygame.draw.rect(surface, (0, 0, 255), (0, 0, self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), 1)
-        pygame.draw.circle(surface, (255, 0, 0), (self.board_center_x_board_space, self.board_center_y_board_space), 5)
+       # pygame.draw.rect(surface, (0, 0, 255), (0, 0, self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), 1)
+       # pygame.draw.circle(surface, (255, 0, 0), (self.board_center_x_board_space, self.board_center_y_board_space), 5)
         self.UI_InfoText.draw(surface)
        
