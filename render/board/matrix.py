@@ -1,8 +1,6 @@
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
-from core.state.struct_timing import StructTiming
-from core.state.struct_debug import StructDebug
 from render.board.struct_board import StructBoardConsts
 import pygame
 import copy
@@ -147,11 +145,9 @@ class Matrix():
         if self.GameInstanceStruct.next_tetromino.type != self.warning_type:
             self.warning_type = self.GameInstanceStruct.next_tetromino.type
             self.warning_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+            self.__DrawWarningCrosses(self.warning_surface, self.GameInstanceStruct.next_tetromino.blocks, self.warning_surface.get_rect())
             
-        self.warning_surface.fill((0, 0, 0, 0))
-        self.__DrawWarningCrosses(self.warning_surface, self.GameInstanceStruct.next_tetromino.blocks, self.warning_surface.get_rect())
         self.warning_surface.set_alpha(128)
-        
         surface.blit(self.warning_surface, (rect.x, rect.y))
     
     def __draw_placed_blocks(self, surface, matrix_surface_rect:pygame.Rect):

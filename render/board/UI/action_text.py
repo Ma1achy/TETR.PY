@@ -149,7 +149,7 @@ class UIActionText():
         elif self.FlagStruct.LINE_CLEAR == 10:
             return 'DECUPLE'
         else:
-            return self.GameInstanceStruct.LINE_CLEAR
+            return 'LINE CLEAR'
 
     def draw_combo_action_text(self, surface):
         

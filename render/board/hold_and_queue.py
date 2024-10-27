@@ -17,7 +17,7 @@ class HoldAndQueue():
         self.background_alpha = 200
         
         self.BoardConsts.queue_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
-        self.BoardConsts.queue_rect_height = 3 * self.GameInstanceStruct.queue_previews * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2
+        self.BoardConsts.queue_rect_height = 3 * self.GameInstanceStruct.queue_previews * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2 + 1
         
         self.BoardConsts.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH 
         self.BoardConsts.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2 
@@ -25,10 +25,20 @@ class HoldAndQueue():
         if self.GameInstanceStruct.queue_previews > 0:
             self.queue_rect = self.__get_queue_rect()
             self.queue_background_Surf = pygame.Surface((self.queue_rect.width, self.queue_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+            
+            self.row_height = self.queue_rect.height // self.GameInstanceStruct.queue_previews  # split queue_rect into queue length number of rows
+            
+            self.queue_surf = pygame.Surface((self.queue_rect.width, self.queue_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+            self.queue_pieces = 'PLACEHOLDER'
+            
+        if self.GameInstanceStruct.hold:
+            self.hold_rect = self.__get_hold_rect()
+            self.hold_background_Surf = pygame.Surface((self.hold_rect.width, self.hold_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+            
+            self.hold_surf = pygame.Surface((self.hold_rect.width, self.hold_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+            self.held_piece = 'PLACEHOLDER'
+            self.can_hold = 'PLACEHOLDER'
         
-        self.hold_rect = self.__get_hold_rect()
-        self.hold_background_Surf = pygame.Surface((self.hold_rect.width, self.hold_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
-    
     def draw(self, surface):
         """
         Draw the hold and queue onto a surface
@@ -49,20 +59,25 @@ class HoldAndQueue():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
-        self.queue_background_Surf.fill((0, 0, 0, self.background_alpha))
         
-        surface.blit(self.queue_background_Surf, self.queue_rect.topleft)
+        if self.queue_pieces != self.GameInstanceStruct.queue.queue[:self.GameInstanceStruct.queue_previews]:
+            
+            self.queue_pieces = self.GameInstanceStruct.queue.queue[:self.GameInstanceStruct.queue_previews]
+            
+            self.queue_background_Surf.fill((0, 0, 0, self.background_alpha))
+            self.queue_surf.fill((0, 0, 0, 0))
+            
+            for idx, tetromino in enumerate(self.GameInstanceStruct.queue.queue):
+                if idx == self.GameInstanceStruct.queue_previews:
+                    break
+                
+                self.row_y = idx * self.row_height
+                preview_rect = pygame.Rect(0, self.row_y, self.queue_rect.width, self.row_height)
+                self.__draw_tetromino_preview(self.queue_surf, tetromino, preview_rect)
         
-        for idx, tetromino in enumerate(self.GameInstanceStruct.queue.queue):
-            if idx == self.GameInstanceStruct.queue_previews:
-                break
-            
-            row_height = self.queue_rect.height // self.GameInstanceStruct.queue_previews  # split queue_rect into queue length number of rows
-            row_y = self.queue_rect.y + idx * row_height
-            
-            preview_rect = pygame.Rect(self.queue_rect.x, row_y, self.queue_rect.width, row_height)
-            self.__draw_tetromino_preview(surface, tetromino, preview_rect)
-       
+        surface.blit(self.queue_background_Surf, self.queue_rect.topleft)  
+        surface.blit(self.queue_surf, self.queue_rect.topleft)
+
     def __get_queue_rect(self):
         """
         Get the rectangle for the queue
@@ -93,13 +108,18 @@ class HoldAndQueue():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
-        tetromino = self.GameInstanceStruct.held_tetromino    
         
-        self.hold_background_Surf.fill((0, 0, 0, self.background_alpha))
+        if self.GameInstanceStruct.held_tetromino != self.held_piece or self.GameInstanceStruct.can_hold != self.can_hold:
+            self.held_piece = self.GameInstanceStruct.held_tetromino
+            self.can_hold = self.GameInstanceStruct.can_hold
+            self.hold_background_Surf.fill((0, 0, 0, self.background_alpha))
+            self.hold_surf.fill((0, 0, 0, 0))
+            
+            preview_rect = pygame.Rect(0, 0, self.hold_rect.width, self.hold_rect.height)
+            self.__draw_tetromino_preview(self.hold_surf, self.GameInstanceStruct.held_tetromino, preview_rect, can_hold = self.GameInstanceStruct.can_hold)
         
         surface.blit(self.hold_background_Surf, self.hold_rect.topleft)
-        
-        self.__draw_tetromino_preview(surface, tetromino, self.hold_rect, can_hold = self.GameInstanceStruct.can_hold)
+        surface.blit(self.hold_surf, self.hold_rect.topleft)
         
     def __draw_tetromino_preview(self, surface, tetromino, rect, can_hold = True):
         """

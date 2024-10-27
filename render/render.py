@@ -69,7 +69,7 @@ class Render():
         """
         # self.RenderStruct.surfaces = []
 
-        #self.window.fill((255, 255, 255))
+        self.window.fill((255, 0, 255))
         self.board_surface.fill((0, 0, 0, 0))
         self.window.blit(self.image, (0, 0))
         
