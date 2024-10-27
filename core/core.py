@@ -238,7 +238,7 @@ class Core():
         Render a single frame of the game
         """
         self.RenderStruct.key_dict = self.HandlingStruct.key_dict
-        self.render.RenderFrame()
+        self.render.draw_frame()
         self.render_clock.tick()
      
     def __get_tps(self):

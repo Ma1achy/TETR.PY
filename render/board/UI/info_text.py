@@ -19,25 +19,36 @@ class UIInfoText():
         self.slot_width = self.RenderStruct.GRID_SIZE * 5
         self.slot_height =  self.RenderStruct.GRID_SIZE * 1.85
         
-        self.left_slot_1_pos = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - self.RenderStruct.GRID_SIZE * 1.25 - self.slot_width, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT + self.RenderStruct.BORDER_WIDTH - self.slot_height)
+        if self.BoardConsts.draw_garbage_bar:
+            self.left_border_offset = 1.25
+        else:
+            self.left_border_offset = 0.25
+        
+        self.left_slot_1_pos = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - self.RenderStruct.GRID_SIZE *  self.left_border_offset - self.slot_width, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT + self.RenderStruct.BORDER_WIDTH - self.slot_height)
         self.left_slot_2_pos = (self.left_slot_1_pos[0], self.left_slot_1_pos[1] - self.slot_height - self.RenderStruct.GRID_SIZE * 0.5)
         self.left_slot_3_pos = (self.left_slot_1_pos[0], self.left_slot_2_pos[1] - self.slot_height - self.RenderStruct.GRID_SIZE * 0.5)
         self.left_slot_4_pos = (self.left_slot_1_pos[0], self.left_slot_3_pos[1] - self.slot_height - self.RenderStruct.GRID_SIZE * 0.5)
-        self.right_slot_1_pos = (self.BoardConsts.matrix_rect_pos_x + self.RenderStruct.BORDER_WIDTH * 2 + self.BoardConsts.MATRIX_SURFACE_WIDTH,  self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.queue_rect_height  + self.RenderStruct.BORDER_WIDTH * 2 + self.RenderStruct.GRID_SIZE)
         
+        if self.GameInstanceStruct.queue_previews > 0:
+            self.right_slot_1_pos = (self.BoardConsts.matrix_rect_pos_x + self.RenderStruct.BORDER_WIDTH * 2 + self.BoardConsts.MATRIX_SURFACE_WIDTH,  self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.queue_rect_height  + self.RenderStruct.BORDER_WIDTH * 2 + self.RenderStruct.GRID_SIZE)
+        else:
+            self.right_slot_1_pos = (self.BoardConsts.matrix_rect_pos_x + self.RenderStruct.BORDER_WIDTH * 2 + self.BoardConsts.MATRIX_SURFACE_WIDTH,  self.left_slot_1_pos[1])
+            
         self.middle_width = self.RenderStruct.GRID_SIZE * 10
         self.middle_height = self.RenderStruct.GRID_SIZE * 5
         self.objective_slot_pos = (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH//2 - self.middle_width // 2, self.BoardConsts.matrix_rect_pos_y + 1*self.BoardConsts.MATRIX_SURFACE_HEIGHT//4 - self.middle_height // 2)
         
+        self.overlay_text_surface = pygame.Surface((self.middle_width, self.middle_height), pygame.SRCALPHA)
+        
         # TODO: create surfaces that you can choose to render different counters/timers/info onto
         # they will then be blitted onto the board surface in the correct position
         self.slots = {
-            0: 'STOPWATCH',
+            0: 'SCORE',
             1: 'SCORE',
-            2: None,
-            3: None,
+            2: 'SCORE',
+            3: 'SCORE',
             4: 'SCORE',
-            5: 'SCORE',
+            5: 'STOPWATCH',
         }
          
     def draw(self, surface):
@@ -46,9 +57,8 @@ class UIInfoText():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
+        self.overlay_text_surface.fill((0, 0, 0, 0))
         self.get_slots(surface)
-        
-        self.__format_time()
 
     def get_slot_rects(self, surface, slot):
     
@@ -87,15 +97,17 @@ class UIInfoText():
         for slot in self.slots:
             match self.slots[slot]:
                 case 'STOPWATCH':
-                    self.__draw_timer(slot, surface)
+                    time = self.TimingStruct.current_time
+                    self.__draw_timer(slot, time, surface)
                 case 'SCORE':
-                    self.draw_score(surface, slot)
+                    value_to_display = 40
+                    self.draw_commasep_number(surface, slot, value_to_display)
                 case None:
                     pass
                 case _:
                     self.__draw_missing_slot(slot, surface, self.slots[slot]) # handle case when unknown slot type is passed
         
-    def __format_time(self):
+    def __format_time(self, time):
         """
         Format the time in seconds into the format 'mm:ss' and 'ms'
         
@@ -103,164 +115,47 @@ class UIInfoText():
             time_minsec (str): the time in the format 'mm:ss'
             time_ms (str): the time in milliseconds
         """
-        minutes = int((self.TimingStruct.current_time % 3600) // 60)
-        seconds = int(self.TimingStruct.current_time % 60)
-        milliseconds = int((self.TimingStruct.current_time % 1) * 1000)
+        minutes = int((time % 3600) // 60)
+        seconds = int(time % 60)
+        milliseconds = int((time % 1) * 1000)
         time_minsec = f"{minutes}:{seconds:02}"
         time_ms = f"{milliseconds:03}"
         return time_minsec, time_ms
     
-    def __draw_timer(self, slot, surface): 
+    def __draw_timer(self, slot, time, surface): 
         """
-        Draw the timer
+        Draw a timer
         
         args:
             surface (pygame.Surface): The surface to draw
         """
-        
-        if not self.FlagStruct.GAME_OVER:
-            self.time_minsec, self.time_ms = self.__format_time()
-        
         slot_pos, slot_rect = self.get_slot_rects(surface, slot)
         
-        if slot == 4: # left aligned
-            
-            text_time_minsec = self.Fonts.slot_big.render(f'{self.time_minsec}.', True, (255, 255, 255))
-            text_time_minsec_rect = text_time_minsec.get_rect()
-            text_time_minsec_position = (slot_rect.bottomleft[0], slot_rect.bottomleft[1] - text_time_minsec_rect.height)
-            
-            text_time_ms = self.Fonts.hun2_med.render(self.time_ms, True, (255, 255, 255))
-            text_time_ms_rect = text_time_ms.get_rect()
-            text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.05, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) // 4)
-            
-            text_time = self.Fonts.slot_small.render('TIME', True, (255, 255, 255))
-            text_time_rect = text_time.get_rect()
-            text_time_position = (slot_rect.topleft[0], slot_rect.topleft[1])
-            
-            surface.blit(text_time_ms, text_time_ms_position)
-            surface.blit(text_time_minsec, text_time_minsec_position)
-            surface.blit(text_time, text_time_position)
+        time_minsec, time_ms = self.__format_time(time)
         
-        elif slot == 5: # middle
-            
-            middle_surface = pygame.Surface((self.middle_width, self.middle_height), pygame.SRCALPHA)
-            
-            text_time_minsec = self.Fonts.hun2_biggest.render(f'{self.time_minsec}.', True, (255, 255, 255))
-            text_time_minsec_rect = text_time_minsec.get_rect()
-            
-            text_time_ms = self.Fonts.hun2_med.render(self.time_ms, True, (255, 255, 255))
-            text_time_ms_rect = text_time_ms.get_rect()
-            
-            text_time_minsec_position = (self.middle_width // 2 - text_time_minsec_rect.width / 2 - text_time_ms_rect.width // 2, self.middle_height // 2 - text_time_minsec_rect.height // 2)
-            text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.2, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.hun2_biggest.get_height() - self.Fonts.hun2_med.get_height())//5)
+        if slot == 4: 
+            self.__draw_timer_left_aligned(surface, slot_rect, time_minsec, time_ms, 'TIME', colour = (255, 255, 255))
+        elif slot == 5: 
+            self.__draw_timer_overlay(time_minsec, time_ms, surface, slot_rect, main_colour = (255, 255, 255), base_colour = (105, 105, 105))
+        else: 
+            self.__draw_timer_right_aligned(surface, slot_rect, time_minsec, time_ms, 'TIME', colour = (255, 255, 255))
 
-            # self.Fonts.hun2_biggest.set_bold(True)
-            # self.Fonts.hun2_med.set_bold(True)
-            
-            text_time_minsec_outline  = self.Fonts.hun2_biggest.render(f'{self.time_minsec}.', True, (105, 105, 105))
-            text_time_ms_outline = self.Fonts.hun2_med.render(self.time_ms, True, (105, 105, 105))
-            
-            # self.Fonts.hun2_biggest.set_bold(False)
-            # self.Fonts.hun2_med.set_bold(False)
-            
-            text_time_minsec_outline_position = (text_time_minsec_position[0] + self.RenderStruct.GRID_SIZE*0.2, text_time_minsec_position[1])
-            text_time_ms_outline_position = (text_time_ms_position[0] + 3 * 0.1* self.RenderStruct.GRID_SIZE // 4, text_time_ms_position[1])
-           
-            middle_surface.blit(text_time_minsec_outline, text_time_minsec_outline_position)
-            middle_surface.blit(text_time_ms_outline, text_time_ms_outline_position)
-            
-            middle_surface.blit(text_time_ms, text_time_ms_position)
-            middle_surface.blit(text_time_minsec, text_time_minsec_position)
-            middle_surface.set_alpha(88)  # (0-255, where 0 is fully transparent and 255 is fully opaque)
-            
-            surface.blit(middle_surface, slot_rect.topleft)
-            
-        else: # right aligned 
-            
-            text_time_ms = self.Fonts.hun2_med.render(self.time_ms, True, (255, 255, 255))
-            text_time_ms_rect = text_time_ms.get_rect()
-            text_time_ms_position = (slot_rect.bottomright[0] - text_time_ms_rect.width, slot_rect.bottomright[1] - text_time_ms_rect.height)
-            
-            text_time_minsec = self.Fonts.slot_big.render(f'{self.time_minsec}.', True, (255, 255, 255))
-            text_time_minsec_rect = text_time_minsec.get_rect()
-            text_time_minsec_position = (text_time_ms_position[0] - text_time_minsec_rect.width - self.RenderStruct.GRID_SIZE * 0.05, text_time_ms_position[1] + text_time_ms_rect.height - text_time_minsec_rect.height + (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) // 4)
-            
-            text_time = self.Fonts.slot_small.render('TIME', True, (255, 255, 255))
-            text_time_rect = text_time.get_rect()
-            text_time_position = (slot_rect.bottomright[0] - text_time_rect.width, slot_rect.topright[1])
-            
-            surface.blit(text_time_ms, text_time_ms_position)
-            surface.blit(text_time_minsec, text_time_minsec_position)
-            surface.blit(text_time, text_time_position)
-        
-        # pygame.draw.rect(surface, (255, 255, 255), (text_time_ms_position[0], text_time_ms_position[1], text_time_ms_rect.width, text_time_ms_rect.height), 1)
-        # pygame.draw.rect(surface, (255, 255, 255), (text_time_minsec_position[0], text_time_minsec_position[1], text_time_minsec_rect.width, text_time_minsec_rect.height), 1)
-        # pygame.draw.rect(surface, (255, 255, 255), (text_time_position[0], text_time_position[1], text_time_rect.width, text_time_rect.height), 1)
-
-    def draw_score(self, surface, slot):
+    def draw_commasep_number(self, surface, slot, value_to_display):
         """
-        Draw the score
+        Draw a comma seperated number
         
         args:
             surface (pygame.Surface): The surface to draw onto
         """
-        score = 1934013
         slot_pos, slot_rect = self.get_slot_rects(surface, slot)
         
-        if slot == 4: # left aligned
-            
-            title_text = self.Fonts.slot_small.render('SCORE', True, (255, 255, 255))
-            title_text_rect = title_text.get_rect()
-            
-            score_text = self.Fonts.slot_big.render(f'{comma_separate(score)}', True, (255, 255, 255))
-            score_text_rect = score_text.get_rect()
-        
-            title_text_position = (slot_rect.topleft[0], slot_rect.topleft[1])
-            score_text_position = (slot_rect.topleft[0], slot_rect.bottomleft[1] - score_text_rect.height)
-            
-            surface.blit(title_text, title_text_position)
-            surface.blit(score_text, score_text_position)
-        
-        elif slot == 5: # middle
-            
-            middle_surface = pygame.Surface((self.middle_width, self.middle_height), pygame.SRCALPHA)
-            
-            score_text = self.Fonts.hun2_biggerer.render(f'{comma_separate(score)}', True, (255, 255, 255))
-            score_text_rect = score_text.get_rect()
-            
-            score_text_position = (self.middle_width // 2 - score_text_rect.width // 2, self.middle_height // 2 - score_text_rect.height // 2)
-            
-            score_text_outline = self.Fonts.hun2_biggerer.render(f'{comma_separate(score)}', True, (105, 105, 105))
-            score_text_outline_position = (score_text_position[0] + self.RenderStruct.GRID_SIZE * 0.2, score_text_position[1])
-            
-            if score_text_rect.width > self.middle_width:
-                score_text = self.Fonts.hun2_bigger.render(f'{comma_separate(score)}', True, (255, 255, 255))
-                score_text_rect = score_text.get_rect()
-                score_text_position = (self.middle_width // 2 - score_text_rect.width // 2, self.middle_height // 2 - score_text_rect.height // 2)
-                
-                score_text_outline = self.Fonts.hun2_bigger.render(f'{comma_separate(score)}', True, (105, 105, 105))
-                score_text_outline_position = (score_text_position[0] + self.RenderStruct.GRID_SIZE * 0.15, score_text_position[1])
-            
-            middle_surface.blit(score_text_outline, score_text_outline_position)
-            middle_surface.blit(score_text, score_text_position)
-            middle_surface.set_alpha(88)
-            
-            surface.blit(middle_surface, slot_rect.topleft)
-            
-        else: # right aligned
-            
-            title_text = self.Fonts.slot_small.render('SCORE', True, (255, 255, 255))
-            title_text_rect = title_text.get_rect()
-            
-            score_text = self.Fonts.slot_big.render(f'{comma_separate(score)}', True, (255, 255, 255))
-            score_text_rect = score_text.get_rect()
-            
-            title_text_position = (slot_rect.topright[0] - title_text_rect.width, slot_rect.topright[1])
-            score_text_position = (slot_rect.topright[0] - score_text_rect.width, slot_rect.bottomright[1] - score_text_rect.height)
-            
-            surface.blit(title_text, title_text_position)
-            surface.blit(score_text, score_text_position)
-    
+        if slot == 4:
+            self.__draw_commasep_number_left_aligned(surface, slot_rect, value_to_display, title = 'SCORE', colour = (255, 255, 255))
+        elif slot == 5: 
+            self.__draw_comaasep_number_overlay(surface, slot_rect, value_to_display, main_colour = (255, 255, 255), base_colour = (105, 105, 105))
+        else:
+            self.__draw_commasep_number_right_aligned(surface, slot_rect, value_to_display, title = 'SCORE', colour = (255, 255, 255))
+                               
     def __draw_missing_slot(self, slot, surface, passed):
         
         slot_pos, slot_rect = self.get_slot_rects(surface, slot)
@@ -271,5 +166,108 @@ class UIInfoText():
         text_pos = (slot_rect.centerx - text_rect.width // 2, slot_rect.centery - text_rect.height // 2)
         surface.blit(text, text_pos)
         
+    def __draw_timer_left_aligned(self, surface, slot_rect, time_minsec, time_ms, title_text, colour = (255, 255, 255)):
         
+        text_time_minsec = self.Fonts.slot_big.render(f'{time_minsec}.', True, colour)
+        text_time_minsec_rect = text_time_minsec.get_rect()
+        text_time_minsec_position = (slot_rect.bottomleft[0], slot_rect.bottomleft[1] - text_time_minsec_rect.height)
         
+        text_time_ms = self.Fonts.hun2_med.render(time_ms, True, colour)
+        text_time_ms_rect = text_time_ms.get_rect()
+        text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.05, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) // 4)
+        
+        text_time = self.Fonts.slot_small.render(title_text, True, colour)
+        text_time_rect = text_time.get_rect()
+        text_time_position = (slot_rect.topleft[0], slot_rect.topleft[1])
+        
+        surface.blit(text_time_ms, text_time_ms_position)
+        surface.blit(text_time_minsec, text_time_minsec_position)
+        surface.blit(text_time, text_time_position)
+    
+    def __draw_timer_right_aligned(self, surface, slot_rect, time_minsec, time_ms, title_text, colour):
+        
+        text_time_ms = self.Fonts.hun2_med.render(time_ms, True, colour)
+        text_time_ms_rect = text_time_ms.get_rect()
+        text_time_ms_position = (slot_rect.bottomright[0] - text_time_ms_rect.width, slot_rect.bottomright[1] - text_time_ms_rect.height)
+        
+        text_time_minsec = self.Fonts.slot_big.render(f'{time_minsec}.', True, colour)
+        text_time_minsec_rect = text_time_minsec.get_rect()
+        text_time_minsec_position = (text_time_ms_position[0] - text_time_minsec_rect.width - self.RenderStruct.GRID_SIZE * 0.05, text_time_ms_position[1] + text_time_ms_rect.height - text_time_minsec_rect.height + (self.Fonts.slot_big.get_height() - self.Fonts.hun2_med.get_height()) // 4)
+        
+        text_time = self.Fonts.slot_small.render(title_text, True, colour)
+        text_time_rect = text_time.get_rect()
+        text_time_position = (slot_rect.bottomright[0] - text_time_rect.width, slot_rect.topright[1])
+        
+        surface.blit(text_time_ms, text_time_ms_position)
+        surface.blit(text_time_minsec, text_time_minsec_position)
+        surface.blit(text_time, text_time_position)
+        
+    def __draw_timer_overlay(self, time_minsec, time_ms, surface, slot_rect, main_colour = (255, 255, 255), base_colour = (105, 105, 105)):
+            
+        text_time_minsec = self.Fonts.hun2_biggest.render(f'{time_minsec}.', True,  main_colour)
+        text_time_minsec_rect = text_time_minsec.get_rect()
+        
+        text_time_ms = self.Fonts.hun2_med.render(time_ms, True,  main_colour)
+        text_time_ms_rect = text_time_ms.get_rect()
+        
+        text_time_minsec_position = (self.middle_width // 2 - text_time_minsec_rect.width / 2 - text_time_ms_rect.width // 2, self.middle_height // 2 - text_time_minsec_rect.height // 2)
+        text_time_ms_position = (text_time_minsec_position[0] + text_time_minsec_rect.width + self.RenderStruct.GRID_SIZE * 0.2, text_time_minsec_position[1] + text_time_minsec_rect.height - text_time_ms_rect.height - (self.Fonts.hun2_biggest.get_height() - self.Fonts.hun2_med.get_height())//5)
+        
+        text_time_minsec_outline  = self.Fonts.hun2_biggest.render(f'{time_minsec}.', True, base_colour )
+        text_time_ms_outline = self.Fonts.hun2_med.render(time_ms, True, base_colour)
+ 
+        text_time_minsec_outline_position = (text_time_minsec_position[0] + self.RenderStruct.GRID_SIZE*0.2, text_time_minsec_position[1])
+        text_time_ms_outline_position = (text_time_ms_position[0] + 3 * 0.1* self.RenderStruct.GRID_SIZE // 4, text_time_ms_position[1])
+        
+        self.overlay_text_surface.blit(text_time_minsec_outline, text_time_minsec_outline_position)
+        self.overlay_text_surface.blit(text_time_ms_outline, text_time_ms_outline_position)
+        
+        self.overlay_text_surface.blit(text_time_ms, text_time_ms_position)
+        self.overlay_text_surface.blit(text_time_minsec, text_time_minsec_position)
+        self.overlay_text_surface.set_alpha(88)  #
+        
+        surface.blit(self.overlay_text_surface, slot_rect.topleft)
+        
+    def __draw_commasep_number_left_aligned(self, surface, slot_rect, value_to_display, title, colour = (255, 255, 255)):
+        
+        title_text = self.Fonts.slot_small.render(title, True, colour)
+        title_text_rect = title_text.get_rect()
+        
+        score_text = self.Fonts.slot_big.render(f'{comma_separate(value_to_display)}', True, colour)
+        score_text_rect = score_text.get_rect()
+    
+        title_text_position = (slot_rect.topleft[0], slot_rect.topleft[1])
+        score_text_position = (slot_rect.topleft[0], slot_rect.bottomleft[1] - score_text_rect.height)
+        
+        surface.blit(title_text, title_text_position)
+        surface.blit(score_text, score_text_position)
+        
+    def __draw_commasep_number_right_aligned(self, surface, slot_rect, value_to_display, title, colour = (255, 255, 255)):
+        
+        title_text = self.Fonts.slot_small.render(title, True, colour)
+        title_text_rect = title_text.get_rect()
+        
+        score_text = self.Fonts.slot_big.render(f'{comma_separate(value_to_display)}', True, colour)
+        score_text_rect = score_text.get_rect()
+        
+        title_text_position = (slot_rect.topright[0] - title_text_rect.width, slot_rect.topright[1])
+        score_text_position = (slot_rect.topright[0] - score_text_rect.width, slot_rect.bottomright[1] - score_text_rect.height)
+        
+        surface.blit(title_text, title_text_position)
+        surface.blit(score_text, score_text_position)
+        
+    def __draw_comaasep_number_overlay(self, surface, slot_rect, value_to_display, main_colour = (255, 255, 255), base_colour = (105, 105, 105)):
+            
+        score_text, score_text_rect, font = self.Fonts.dynamic_size_font(f'{comma_separate(value_to_display)}', self.overlay_text_surface, main_colour, start_font = self.Fonts.hun2_biggestest)
+        
+        score_text_position = (self.middle_width // 2 - score_text_rect.width // 2, self.middle_height // 2 - score_text_rect.height // 2)
+        
+        score_text_outline, score_text_outline_rect, font = self.Fonts.dynamic_size_font(f'{comma_separate(value_to_display)}', self.overlay_text_surface, base_colour, start_font = self.Fonts.hun2_biggestest)
+
+        score_text_outline_position = (score_text_position[0] + self.Fonts.get_size(font) * 0.0621, score_text_position[1])
+        
+        self.overlay_text_surface.blit(score_text_outline, score_text_outline_position)
+        self.overlay_text_surface.blit(score_text, score_text_position)
+        self.overlay_text_surface.set_alpha(88)
+        
+        surface.blit(self.overlay_text_surface, slot_rect.topleft)

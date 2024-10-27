@@ -21,6 +21,13 @@ class HoldAndQueue():
         
         self.BoardConsts.hold_rect_width = 6 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH 
         self.BoardConsts.hold_rect_height = 3 * self.RenderStruct.GRID_SIZE - self.RenderStruct.BORDER_WIDTH // 2 
+        
+        if self.GameInstanceStruct.queue_previews > 0:
+            self.queue_rect = self.__get_queue_rect()
+            self.queue_background_Surf = pygame.Surface((self.queue_rect.width, self.queue_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+        
+        self.hold_rect = self.__get_hold_rect()
+        self.hold_background_Surf = pygame.Surface((self.hold_rect.width, self.hold_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
     
     def draw(self, surface):
         """
@@ -29,8 +36,11 @@ class HoldAndQueue():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
-        self.__draw_queue(surface)
-        self.__draw_hold(surface)
+        if self.GameInstanceStruct.queue_previews > 0:
+            self.__draw_queue(surface)
+        
+        if self.GameInstanceStruct.hold:
+            self.__draw_hold(surface)
     
     def __draw_queue(self, surface):
         """
@@ -39,21 +49,18 @@ class HoldAndQueue():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
-        queue_rect = self.__get_queue_rect()
-        queue_background_Surf = pygame.Surface((queue_rect.width, queue_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
-        queue_background_Surf.fill((0, 0, 0))
+        self.queue_background_Surf.fill((0, 0, 0, self.background_alpha))
         
-        queue_background_Surf.set_alpha(self.background_alpha)
-        surface.blit(queue_background_Surf, queue_rect.topleft)
+        surface.blit(self.queue_background_Surf, self.queue_rect.topleft)
         
         for idx, tetromino in enumerate(self.GameInstanceStruct.queue.queue):
             if idx == self.GameInstanceStruct.queue_previews:
                 break
             
-            row_height = queue_rect.height // self.GameInstanceStruct.queue_previews  # split queue_rect into queue length number of rows
-            row_y = queue_rect.y + idx * row_height
+            row_height = self.queue_rect.height // self.GameInstanceStruct.queue_previews  # split queue_rect into queue length number of rows
+            row_y = self.queue_rect.y + idx * row_height
             
-            preview_rect = pygame.Rect(queue_rect.x, row_y, queue_rect.width, row_height)
+            preview_rect = pygame.Rect(self.queue_rect.x, row_y, self.queue_rect.width, row_height)
             self.__draw_tetromino_preview(surface, tetromino, preview_rect)
        
     def __get_queue_rect(self):
@@ -69,7 +76,12 @@ class HoldAndQueue():
         """
         Get the rectangle for the hold
         """
-        rect_x = self.BoardConsts.matrix_rect_pos_x - 7 * self.RenderStruct.GRID_SIZE
+        if self.BoardConsts.draw_garbage_bar:
+            start = 7
+        else:
+            start = 6
+            
+        rect_x = self.BoardConsts.matrix_rect_pos_x - start * self.RenderStruct.GRID_SIZE
         rect_y =  self.BoardConsts.matrix_rect_pos_y + 1 * self.RenderStruct.GRID_SIZE
     
         return pygame.Rect(rect_x, rect_y, self.BoardConsts.hold_rect_width, self.BoardConsts.hold_rect_height)
@@ -82,14 +94,12 @@ class HoldAndQueue():
             surface (pygame.Surface): The surface to draw onto
         """
         tetromino = self.GameInstanceStruct.held_tetromino    
-        hold_rect = self.__get_hold_rect()
-        hold_background_Surf = pygame.Surface((hold_rect.width, hold_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
-        hold_background_Surf.fill((0, 0, 0))
         
-        hold_background_Surf.set_alpha(self.background_alpha)
-        surface.blit(hold_background_Surf, hold_rect.topleft)
+        self.hold_background_Surf.fill((0, 0, 0, self.background_alpha))
         
-        self.__draw_tetromino_preview(surface, tetromino, hold_rect, can_hold = self.GameInstanceStruct.can_hold)
+        surface.blit(self.hold_background_Surf, self.hold_rect.topleft)
+        
+        self.__draw_tetromino_preview(surface, tetromino, self.hold_rect, can_hold = self.GameInstanceStruct.can_hold)
         
     def __draw_tetromino_preview(self, surface, tetromino, rect, can_hold = True):
         """
@@ -113,15 +123,27 @@ class HoldAndQueue():
         offset_x = (rect.width - tetromino_width) // 2
         offset_y = (rect.height - tetromino_height) // 2
 
-        for i, row in enumerate(tetromino):
-            for j, value in enumerate(row):
-                if value != 0:
-                    if can_hold:
-                        colour = self.RenderStruct.COLOUR_MAP[value]
-                    else:
-                        colour = lerpBlendRGBA(self.RenderStruct.COLOUR_MAP[value], (75, 75, 75), 0.85)
-                    
-                    pygame.gfxdraw.box(surface, 
-                                    (rect.x + offset_x + j * self.RenderStruct.GRID_SIZE, rect.y + offset_y + i * self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE),
-                                    colour
-                                    )
+        if self.RenderStruct.use_textures:
+            for i, row in enumerate(tetromino):
+                for j, value in enumerate(row):
+                    if value != 0:
+                        if can_hold:
+                            texture = self.RenderStruct.textures[value]
+                        else:
+                            texture = self.RenderStruct.textures['Locked']
+                        
+                        surface.blit(texture, (rect.x + offset_x + j * self.RenderStruct.GRID_SIZE, rect.y + offset_y + i * self.RenderStruct.GRID_SIZE))
+            
+        else:
+            for i, row in enumerate(tetromino):
+                for j, value in enumerate(row):
+                    if value != 0:
+                        if can_hold:
+                            colour = self.RenderStruct.COLOUR_MAP[value]
+                        else:
+                            colour = lerpBlendRGBA(self.RenderStruct.COLOUR_MAP[value], self.RenderStruct.COLOUR_MAP['Locked'], 0.85)
+                        
+                        pygame.gfxdraw.box(surface, 
+                                        (rect.x + offset_x + j * self.RenderStruct.GRID_SIZE, rect.y + offset_y + i * self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE),
+                                        colour
+                                        )

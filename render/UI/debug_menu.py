@@ -5,6 +5,7 @@ from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
 from utils import get_prefix
+import pygame
 
 class UIDebug():
     def __init__(self, Config:StructConfig, RenderStruct:StructRender, DebugStruct:StructDebug, FlagStruct:StructFlags, Fonts):
@@ -125,4 +126,9 @@ class UIDebug():
         self.debug_surfaces.append((self.Fonts.pfw_small.render(f'ALL_CLEAR: {self.DebugStruct.ALLCLEARFLAG} | B2B: {self.DebugStruct.BACK2BACKFLAG} | COMBO: {self.DebugStruct.COMBOFLAG}', True, (255, 255, 255)), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 18.5)))
         
         for surf, coords in self.debug_surfaces:
+            background_surface = pygame.Surface((surf.get_width(), surf.get_height()), pygame.SRCALPHA)
+            background_surface.fill((32, 32, 32, 128))
+            surface.blit(background_surface, coords)
             surface.blit(surf, coords)
+        
+    

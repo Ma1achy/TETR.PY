@@ -30,6 +30,14 @@ class Render():
         self.TimingStruct = TimingStruct
         self.DebugStruct = DebugStruct
         
+        self.RenderStruct.TEXTURE_ATLAS = pygame.image.load('render/textures.png')
+        self.RenderStruct.TEXTURES_PER_ROW = 5
+        self.RenderStruct.TEXTURES_PER_COLUMN = 5
+      
+        self.RenderStruct.use_textures = True
+        self.RenderStruct.coloured_shadow = True
+        self.RenderStruct.shadow_opacity = 200
+        
         self.angle = 0
     
         self.board_center_screen_pos_x = self.RenderStruct.WINDOW_WIDTH // 2 
@@ -41,11 +49,13 @@ class Render():
         self.Board = Board(self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct, self.Fonts)
         self.UI_Debug = UIDebug(self.Config, self.RenderStruct, self.DebugStruct, self.FlagStruct, self.Fonts)
         self.UI_KeyStates = UIKeyStates(self.RenderStruct, self.Fonts)
+        self.board_surface = self.Board.get_board_surface()
         
-        self.image_path = 'render\image.jpg'
+        self.image_path = 'render/image.jpg'
         self.image = pygame.image.load(self.image_path)
-        self.image = pygame.transform.scale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
+        self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
         
+            
     def __init_window(self):
         """
         Create the window to draw to
@@ -53,24 +63,24 @@ class Render():
         pygame.display.set_caption(self.RenderStruct.CAPTION)
         return pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF)
      
-    def RenderFrame(self):
+    def draw_frame(self):
         """
         Render the frame of the Four Instance
         """
         # self.RenderStruct.surfaces = []
 
-        self.window.fill((32, 32, 32))
+        #self.window.fill((255, 255, 255))
+        self.board_surface.fill((0, 0, 0, 0))
         self.window.blit(self.image, (0, 0))
         
-        board_surface = self.Board.get_board_surface()
-        self.Board.draw(board_surface)
+        
+        self.Board.draw(self.board_surface)
         
         self.angle = 0
         offset_x, offset_y = 0, 0
         scale = 1
         
-        transformed_surface, transformed_rect = TransformSurface(board_surface, scale, self.angle, (self.Board.board_center_x_board_space, self.Board.board_center_y_board_space), (self.board_center_screen_pos_x, self.board_center_screen_pos_y), (offset_x, offset_y))
-        
+        transformed_surface, transformed_rect = TransformSurface(self.board_surface, scale, self.angle, pygame.Vector2(self.Board.board_center_x_board_space, self.Board.board_center_y_board_space), pygame.Vector2(self.board_center_screen_pos_x, self.board_center_screen_pos_y), pygame.Vector2(offset_x, offset_y))
         self.window.blit(transformed_surface, transformed_rect.topleft)
     
         # self.angle = 0
@@ -95,5 +105,11 @@ class Render():
         self.UI_KeyStates.draw(self.window)
         
         pygame.display.update()
+        
+        
 
+    
+    
 
+        
+    

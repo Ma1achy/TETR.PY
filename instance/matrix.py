@@ -46,12 +46,6 @@ class Matrix():
             if val != 0
         ]
         
-    def clear_piece(self):
-        """
-        Remove the piece from the matrix
-        """
-        self.piece = self.empty_matrix()
-        
     def clear_lines(self):
         """
         Remove full lines from the matrix

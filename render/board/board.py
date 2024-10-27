@@ -23,6 +23,8 @@ class Board():
         self.DebugStruct = DebugStruct
         self.BoardConsts = StructBoardConsts()
         
+        self.BoardConsts.draw_garbage_bar = False
+        
         self.BoardConsts.MATRIX_SURFACE_WIDTH = self.GameInstanceStruct.matrix.WIDTH * self.RenderStruct.GRID_SIZE
         self.BoardConsts.MATRIX_SURFACE_HEIGHT = self.GameInstanceStruct.matrix.HEIGHT // 2 * self.RenderStruct.GRID_SIZE
         

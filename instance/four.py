@@ -6,7 +6,7 @@ import math
 from utils import Vec2
 
 class Four():
-    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0):
+    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True):
         """
         Create an instance of the game Four
         
@@ -40,6 +40,8 @@ class Four():
         self.RNG = RNG(self.GameInstanceStruct.seed)
         self.GameInstanceStruct.queue = Queue(self.RNG, randomiser)
         self.GameInstanceStruct.matrix = Matrix(matrix_width, matrix_height)
+        
+        self.GameInstanceStruct.hold = hold
     
     # =================================================== GAME LOGIC ===================================================
         
@@ -136,7 +138,8 @@ class Four():
                         self.__hard_drop()
                     
                 case Action.HOLD:
-                    self.__hold()
+                    if self.GameInstanceStruct.hold:
+                        self.__hold()
                 
                 case Action.SONIC_DROP:
                     self.__sonic_drop()
@@ -345,6 +348,9 @@ class Four():
         if hold is False:
             next_piece = self.GameInstanceStruct.queue.view_queue(idx = 0)
         else:
+            if self.GameInstanceStruct.current_tetromino is None: # to prevent holding during tick when current tetromino is None
+                return
+        
             if self.GameInstanceStruct.held_tetromino is None:
                 next_piece = self.GameInstanceStruct.queue.view_queue(idx = 0)
                 self.GameInstanceStruct.held_tetromino = self.GameInstanceStruct.current_tetromino.type

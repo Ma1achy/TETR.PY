@@ -88,49 +88,48 @@ def get_tetromino_blocks(type:str):
         blocks (list): The pieces blocks
     """
     blocks = {
-        'T':
-            [
-                (0, 1, 0),
-                (1, 1, 1),
-                (0, 0, 0)
-            ],
-        'S': 
-            [
-                (0, 2, 2),
-                (2, 2, 0),
-                (0, 0, 0)
-            ],
-            
         'Z':
             [
-                (3, 3, 0),
-                (0, 3, 3),
-                (0, 0, 0)
+                ('Z', 'Z',  0 ),
+                ( 0 , 'Z', 'Z'),
+                ( 0 ,  0 ,  0 )
             ],
         'L': 
             [
-                (0, 0, 4),
-                (4, 4, 4),
-                (0, 0, 0)
-            ],
-        'J':
-            [
-                (5, 0, 0),
-                (5, 5, 5),
-                (0, 0, 0)
+                ( 0 ,  0 , 'L'),
+                ('L', 'L', 'L'),
+                ( 0 ,  0 ,  0 )
             ],
         'O': 
             [
-                (6, 6), 
-                (6, 6),
+                ('O', 'O'), 
+                ('O', 'O'),
+            ],
+        'S': 
+            [
+                ( 0 , 'S', 'S'),
+                ('S', 'S',  0 ),
+                ( 0 ,  0 ,  0 )
             ],
         'I': 
             [
-                (0, 0, 0, 0),
-                (7, 7, 7, 7),
-                (0, 0, 0, 0),
-                (0, 0, 0, 0),
-            ] 
+                ( 0 ,  0 ,  0 ,  0 ),
+                ('I', 'I', 'I', 'I'),
+                ( 0 ,  0 ,  0 ,  0 ),
+                ( 0 ,  0 ,  0 ,  0 ),
+            ],
+        'J':
+            [
+                ('J',  0 ,  0 ),
+                ('J', 'J', 'J'),
+                ( 0 ,  0 ,  0 )
+            ],    
+        'T':
+            [
+                ( 0 , 'T',  0 ),
+                ('T', 'T', 'T'),
+                ( 0 ,  0 ,  0 )
+            ]     
     }
     return blocks[type]
 
@@ -188,8 +187,8 @@ def RotateSurface(surface, angle, pivot, origin):
         pygame.Rect: The rectangle of the rotated surface.
     """
     # Convert pivot and origin to pygame vectors for calculations
-    pivot = pygame.Vector2(pivot)
-    origin = pygame.Vector2(origin)
+    if angle == 0:
+        return surface, surface.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
     
     surf_rect = surface.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
     offset_center_to_pivot = pygame.math.Vector2(origin) - surf_rect.center
@@ -214,22 +213,49 @@ def ScaleSurface(surface, scale, pivot, origin):
         pygame.Surface: The scaled surface.
         pygame.Rect: The rectangle of the scaled surface.
     """
-    pivot = pygame.Vector2(pivot)
-    origin = pygame.Vector2(origin)
+    if scale == 1:
+        return surface, surface.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
+    
     surf_rect = surface.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
     offset_center_to_pivot = pygame.math.Vector2(origin) - surf_rect.center
     scaled_offset = offset_center_to_pivot * scale
     scaled_surface_center = (origin[0] - scaled_offset.x, origin[1] - scaled_offset.y)
-    scaled_surface = pygame.transform.scale(surface, (int(surface.get_width() * scale), int(surface.get_height() * scale)))
+    scaled_surface = pygame.transform.smoothscale(surface, (int(surface.get_width() * scale), int(surface.get_height() * scale)))
     scaled_surface_rect = scaled_surface.get_rect(center = scaled_surface_center)
     
     return scaled_surface, scaled_surface_rect
 
 def TransformSurface(surface, scale, angle, pivot, origin, offset):
-    pivot = pygame.Vector2(pivot)
-    origin = pygame.Vector2(origin)
-    offset = pygame.Vector2(offset)
-    
     scaled_surface, _ = ScaleSurface(surface, scale, pivot, origin + offset)
     rotated_surface, rotated_surface_rect = RotateSurface(scaled_surface, angle, pivot * scale, origin + offset)
     return rotated_surface, rotated_surface_rect
+
+def tint_texture(texture, tint_color):
+    """
+    Tint the non-transparent parts of a texture with a given color.
+    
+    Args:
+        texture (pygame.Surface): The texture to tint.
+        tint_color (tuple): The color to tint with (R, G, B).
+    
+    Returns:
+        pygame.Surface: The tinted texture.
+    """
+    tinted_texture = texture.copy()
+    tinted_texture.lock()
+    
+    for x in range(tinted_texture.get_width()):
+        for y in range(tinted_texture.get_height()):
+            pixel_color = tinted_texture.get_at((x, y))
+            if pixel_color.a != 0:  # Check if the pixel is not transparent
+                # Blend the pixel color with the tint color
+                blended_color = (
+                    (pixel_color.r * tint_color[0]) // 255,
+                    (pixel_color.g * tint_color[1]) // 255,
+                    (pixel_color.b * tint_color[2]) // 255,
+                    pixel_color.a
+                )
+                tinted_texture.set_at((x, y), blended_color)
+    
+    tinted_texture.unlock()
+    return tinted_texture
