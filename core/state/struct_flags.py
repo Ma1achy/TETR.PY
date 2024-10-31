@@ -17,10 +17,9 @@ class FLAG(Enum):
     
     SOFT_DROP = auto()
     HARD_DROP = auto()
-    
+
     IS_SPIN = auto()
-    TSPIN = auto()
-    TSPIN_MINI = auto()
+    IS_MINI = auto()
     
     ALL_CLEAR = auto()
     BACK2BACK = auto()
@@ -28,6 +27,10 @@ class FLAG(Enum):
     
     # debug
     SHOW_DEBUG_MENU = auto()
+    
+    SPIN_DIRECTION = auto()
+    SPIN_ANIMATION = auto()
+
     
 def generate_flags():
     return {flag: False for flag in FLAG}

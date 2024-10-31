@@ -4,7 +4,7 @@ from core.handling import Action
 from core.state.struct_flags import FLAG
 
 class Tetromino():
-    def __init__(self, type:str, state:int, x:int, y:int, matrix:Matrix, flags:FLAG):
+    def __init__(self, type:str, state:int, x:int, y:int, FlagStruct:FLAG, GameInstanceStruct):
         """
         Create the active Tetromino in the game of Four.
         
@@ -24,10 +24,10 @@ class Tetromino():
         self.pivot = self.__get_pivot()
         
         self.shadow_position = Vec2(self.position.x, self.position.y)
-        self.matrix = matrix
-        self.flags = flags
+        self.GameInstanceStruct = GameInstanceStruct
+        self.Flags = FlagStruct
         
-        self.lowest_pivot_position = self.matrix.HEIGHT - (self.pivot.y + self.position.y)
+        self.lowest_pivot_position = self.GameInstanceStruct.matrix.HEIGHT - (self.pivot.y + self.position.y)
         self.lock_delay_counter = 0
         self.max_moves_before_lock = 15
         
@@ -92,6 +92,7 @@ class Tetromino():
             return
 
         self.__reset_lock_delay_valid_movement()
+        self.reset_spin_flags() # spin is not valid if the piece can move after a rotation
         self.position += vector
        
     def sonic_move(self, action:Action):
@@ -115,6 +116,7 @@ class Tetromino():
         while not self.collision(self.blocks, vector + self.position):    
             self.position += vector
             self.__reset_lock_delay_valid_movement()
+            self.reset_spin_flags()
         
     def sonic_move_and_drop(self, action:Action, PrefSD:bool):
         """
@@ -142,6 +144,7 @@ class Tetromino():
             else:
                 if not self.collision(self.blocks, self.position + horizontal_vector):
                     self.__reset_lock_delay_valid_movement()
+                    self.reset_spin_flags()
                     self.position += horizontal_vector
                     self.sonic_move_and_drop(action, PrefSD)
                 else:
@@ -149,6 +152,7 @@ class Tetromino():
         else:
             if not self.collision(self.blocks, self.position + horizontal_vector): 
                 self.__reset_lock_delay_valid_movement()
+                self.reset_spin_flags()
                 self.position += horizontal_vector
                 self.sonic_move_and_drop(action, PrefSD) 
             else:
@@ -165,6 +169,7 @@ class Tetromino():
         if self.collision(self.blocks, self.position + Vec2(0, 1)):
             return
         else:
+            self.reset_spin_flags() # spin is not valid if the piece can fall
             self.position = self.position + Vec2(0, 1)
                 
     def collision(self, desired_piece_blocks:list, desired_position:Vec2):
@@ -181,9 +186,9 @@ class Tetromino():
         """
         if any (
             val != 0 and (
-                desired_position.x + x < 0 or desired_position.x + x >= self.matrix.WIDTH or 
-                desired_position.y + y <= 0 or desired_position.y + y >= self.matrix.HEIGHT or 
-                self.matrix.matrix[desired_position.y + y][desired_position.x + x] != 0
+                desired_position.x + x < 0 or desired_position.x + x >= self.GameInstanceStruct.matrix.WIDTH or 
+                desired_position.y + y <= 0 or desired_position.y + y >= self.GameInstanceStruct.matrix.HEIGHT or 
+                self.GameInstanceStruct.matrix.matrix[desired_position.y + y][desired_position.x + x] != 0
             )
             for y, row in enumerate(desired_piece_blocks)
             for x, val in enumerate(row)
@@ -202,7 +207,7 @@ class Tetromino():
             action (Action): The action to perform
             kick_table (dict): The kick table to use for the piece
         """
-        
+        self.reset_spin_flags() # reset spin flags before rotation to avoid false positives
         kick_table = self.__get_piece_kick_table(kick_table)
             
         match action:
@@ -218,7 +223,7 @@ class Tetromino():
                 desired_state = (self.state + 2) % 4
                 rotated_piece = self.__rotate_180()
         
-        self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset = 0)
+        self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset = 0, action = action)
         
     def __rotate_cw(self):
         """
@@ -259,7 +264,7 @@ class Tetromino():
     
     # ------------------------------------------------ KICK TESTS ------------------------------------------------
               
-    def __do_kick_tests(self, rotated_piece:list, desired_state:int, kick_table, offset:int):
+    def __do_kick_tests(self, rotated_piece:list, desired_state:int, kick_table, offset:int, action):
         """
         Find a valid rotation of the piece by recursively applying kick translations to it
         until a valid rotation is found or no more offsets are available (rotation is invalid).
@@ -282,18 +287,22 @@ class Tetromino():
         kick = Vec2(kick.x, -kick.y) # have to invert y as top left of the matrix is (0, 0)
          
         if self.collision(rotated_piece, self.position + kick): 
-            self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset + 1) 
+            self.__do_kick_tests(rotated_piece, desired_state, kick_table, offset + 1, action) 
         else:
             if self.type == 'T':
-                self.__Is_T_Spin(offset, desired_state, kick)
+                self.__Is_T_Spin(offset, desired_state, kick, action)
                 
             else: # all other pieces use immobility test for spin detection
-                self.__is_spin(rotated_piece, kick)
+                if not self.GameInstanceStruct.allowed_spins == 'STUPID': 
+                    self.__is_spin(rotated_piece, kick, action)
             
             self.__reset_lock_delay_valid_movement() 
             self.state = desired_state
             self.blocks = rotated_piece
             self.position += kick
+            
+            if self.GameInstanceStruct.allowed_spins == 'STUPID': # stupid mode is done at the end of the rotation since we detect if its on the floor
+                self.__is_spin(self.blocks, Vec2(0, 0), action)
               
     def __get_kick(self, kick_table, desired_state:int, offset:int):
         """
@@ -316,7 +325,7 @@ class Tetromino():
     
     # ------------------------------------------------ SPIN TESTS ------------------------------------------------
        
-    def __is_spin(self, rotated_piece:int, kick:Vec2):
+    def __is_spin(self, rotated_piece:int, kick:Vec2, action):
         """
         check if the rotation is a spin: this is when the piece rotates into an position where it is then immobile
         
@@ -324,10 +333,30 @@ class Tetromino():
             rotated_piece (list): The rotated piece
             kick (Vec2): The kick translation to apply
         """
-        if self.collision(rotated_piece, self.position + kick + Vec2(1, 0)) and self.collision(rotated_piece, self.position + kick + Vec2(-1, 0)) and self.collision(rotated_piece, self.position + kick+ Vec2(0, 1)) and self.collision(rotated_piece, self.position + kick + Vec2(0, -1)):
-            self.flags.IS_SPIN = self.type
-           
-    def __Is_T_Spin(self, offset:int, desired_state:int, kick:Vec2):
+        if self.GameInstanceStruct.allowed_spins == 'T-SPIN': # only allow T-Spins
+            return 
+        
+        if self.GameInstanceStruct.allowed_spins == 'STUPID': # anything is a spin if the piece is on the floor at the end of the rotation
+            if self.is_on_floor(): 
+                self.Flags.IS_SPIN = self.type
+                self.Flags.IS_MINI = False
+                
+                self.Flags.SPIN_DIRECTION = action
+                self.Flags.SPIN_ANIMATION = True
+        else:
+            if self.collision(rotated_piece, self.position + kick + Vec2(1, 0)) and self.collision(rotated_piece, self.position + kick + Vec2(-1, 0)) and self.collision(rotated_piece, self.position + kick+ Vec2(0, 1)) and self.collision(rotated_piece, self.position + kick + Vec2(0, -1)):
+                self.Flags.IS_SPIN = self.type
+                
+                if self.GameInstanceStruct.allowed_spins == 'ALL-MINI': # allow t spins and t spin minis, everything else is a mini
+                    self.Flags.IS_MINI = True
+                    
+                elif self.GameInstanceStruct.allowed_spins == 'ALL-SPIN': # allow t spins and t spin minis, everything else is a spin
+                    self.Flags.IS_MINI = False
+                    
+                    self.Flags.SPIN_DIRECTION = action 
+                    self.Flags.SPIN_ANIMATION = True
+                     
+    def __Is_T_Spin(self, offset:int, desired_state:int, kick:Vec2, action):
         """
         Test if the T piece rotation is a T-spin.
         
@@ -364,9 +393,21 @@ class Tetromino():
             if len(filled_corners) > 1:
                 
                 if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions & https://tetris.wiki/T-Spin
-                    self.flags.TSPIN = True
+                    self.Flags.IS_SPIN = self.type
+                    self.Flags.IS_MINI = False
+                    
+                    self.Flags.SPIN_DIRECTION = action
+                    self.Flags.SPIN_ANIMATION = True
                 else:
-                    self.flags.TSPIN_MINI = True
+                    if not self.GameInstanceStruct.allowed_spins == 'STUPID':
+                        self.Flags.IS_SPIN = self.type
+                        self.Flags.IS_MINI = True
+                    else:
+                        self.Flags.IS_SPIN = self.type
+                        self.Flags.IS_MINI = False
+                        
+                        self.Flags.SPIN_DIRECTION = action
+                        self.Flags.SPIN_ANIMATION = True
             
         elif len(filled_corners) == 2: # 2 corner test for T-Spin
         
@@ -374,11 +415,15 @@ class Tetromino():
             filled_corners = self.__test_corners(corners, kick)
             
             if len(filled_corners) >= 3: # 3 corner test for T-Spin
-                self.flags.TSPIN = True
+                self.Flags.IS_SPIN = self.type
+                self.Flags.IS_MINI = False
+                
+                self.Flags.SPIN_DIRECTION = action
+                self.Flags.SPIN_ANIMATION = True
         else:
-            self.flags.TSPIN = False
-            self.flags.TSPIN_MINI = False
-        
+            self.Flags.IS_SPIN = False
+            self.Flags.IS_MINI = False
+    
     def __test_corners(self, corners:list, kick:Vec2):
         """
         Test if the corners of the pieces bounding box are occupied
@@ -394,13 +439,13 @@ class Tetromino():
             corner for _, corner in enumerate(corners)
             if (
                 (corner_pos := self.position + kick + corner).x < 0 or 
-                corner_pos.x >= self.matrix.WIDTH or 
+                corner_pos.x >= self.GameInstanceStruct.matrix.WIDTH or 
                 corner_pos.y < 0 or 
-                corner_pos.y >= self.matrix.HEIGHT or 
-                self.matrix.matrix[corner_pos.y][corner_pos.x] != 0
+                corner_pos.y >= self.GameInstanceStruct.matrix.HEIGHT or 
+                self.GameInstanceStruct.matrix.matrix[corner_pos.y][corner_pos.x] != 0
             )
         ]
-     
+    
     # ========================================================== LOCK DELAY ============================================================
     
     def is_on_floor(self):
@@ -414,7 +459,7 @@ class Tetromino():
         Update the lowest pivot position of the piece and reset the lock delay if it is 
         lower than the previous lowest pivot position
         """
-        pivot_pos_y = self.matrix.HEIGHT - (len(self.blocks) / 2 + self.position.y)
+        pivot_pos_y = self.GameInstanceStruct.matrix.HEIGHT - (len(self.blocks) / 2 + self.position.y)
 
         if pivot_pos_y < self.lowest_pivot_position:
             self.lowest_pivot_position = pivot_pos_y
@@ -447,6 +492,5 @@ class Tetromino():
         self.shadow_position.x = self.position.x 
     
     def reset_spin_flags(self):
-        self.flags.IS_SPIN = False
-        self.flags.TSPIN = False
-        self.flags.TSPIN_MINI = False
+        self.Flags.IS_SPIN = False
+        self.Flags.IS_MINI = False

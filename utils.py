@@ -259,3 +259,8 @@ def tint_texture(texture, tint_color):
     
     tinted_texture.unlock()
     return tinted_texture
+
+def ease(current, target, t):
+    t = max(0, min(1, t))  # Clamp t to the range [0, 1]
+    t = t * t * (3 - 2 * t)  # Smoothstep interpolation
+    return current + (target - current) * t
