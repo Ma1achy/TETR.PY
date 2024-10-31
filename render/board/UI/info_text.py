@@ -38,7 +38,7 @@ class UIInfoText():
         self.middle_height = self.RenderStruct.GRID_SIZE * 5
         self.objective_slot_pos = (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH//2 - self.middle_width // 2, self.BoardConsts.matrix_rect_pos_y + 1*self.BoardConsts.MATRIX_SURFACE_HEIGHT//4 - self.middle_height // 2)
         
-        self.overlay_text_surface = pygame.Surface((self.middle_width, self.middle_height), pygame.SRCALPHA)
+        self.overlay_text_surface = pygame.Surface((self.middle_width, self.middle_height), pygame.SRCALPHA|pygame.HWSURFACE)
         
         # TODO: create surfaces that you can choose to render different counters/timers/info onto
         # they will then be blitted onto the board surface in the correct position

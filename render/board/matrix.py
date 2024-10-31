@@ -23,19 +23,19 @@ class Matrix():
         
         self.RNG = RNG(seed = 0)
         
-        self.piece_surface = pygame.Surface((1, 1), pygame.SRCALPHA) # these surfaces have to be recreated as the size of the tetromino changes
+        self.piece_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE) # these surfaces have to be recreated as the size of the tetromino changes
         self.piece_blocks = 'PLACEHOLDER'
         
-        self.blocks_surface = self.blocks_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH, self.BoardConts.MATRIX_SURFACE_HEIGHT * 2), pygame.SRCALPHA)
+        self.blocks_surface = self.blocks_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH, self.BoardConts.MATRIX_SURFACE_HEIGHT * 2), pygame.SRCALPHA|pygame.HWSURFACE)
         self.placed_blocks = 'PLACEHOLDER'
         
-        self.shadow_surface = pygame.Surface((1, 1), pygame.SRCALPHA)  
+        self.shadow_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE)
         self.shadow_blocks = 'PLACEHOLDER'
         
-        self.warning_surface = pygame.Surface((1, 1), pygame.SRCALPHA) 
+        self.warning_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE)
         self.warning_type = 'PLACEHOLDER'
         
-        self.line_clear_animation_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH * 4, self.BoardConts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA)
+        self.line_clear_animation_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH * 4, self.BoardConts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA|pygame.HWSURFACE)
         
         self.RenderStruct.textures = {
             'Z': None,
@@ -453,7 +453,7 @@ class Matrix():
                     y_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 7 * self.RenderStruct.lines_cleared
 
                     scale = (1 - self.RNG.next_float()) + 0.15
-                    max_time = self.RNG.next_float() * 2 + 1.75
+                    max_time = self.RNG.next_float() * 2 + 1.75 + 1/self.RenderStruct.lines_cleared
                     time = max_time
                     
                     line_clear_particles.append((x, y, x_vel, y_vel, scale, block[0], time, max_time))

@@ -29,7 +29,7 @@ class UIActionText():
         else:
             self.left_border_offset = 0.25
             
-        self.overlay_text_surface = pygame.Surface((self.middle_text_surf_width, self.middle_text_surf_height), pygame.SRCALPHA)
+        self.overlay_text_surface = pygame.Surface((self.middle_text_surf_width, self.middle_text_surf_height), pygame.SRCALPHA|pygame.HWSURFACE)
             
     def draw(self, surface):
         self.overlay_text_surface.fill((0, 0, 0, 0))
