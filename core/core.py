@@ -214,6 +214,10 @@ class Core():
             
             if self.Config.UNCAPPED_FPS:
                 
+                self.TimingStruct.current_frame_time = self.TimingStruct.elapsed_times["render_loop"]
+                self.TimingStruct.delta_frame_time = (self.TimingStruct.current_frame_time - self.TimingStruct.last_frame_time) / self.frame_time
+                self.TimingStruct.last_frame_time = self.TimingStruct.current_frame_time
+                
                 self.__do_render()
                 
             else:

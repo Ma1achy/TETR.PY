@@ -6,7 +6,7 @@ import math
 from utils import Vec2
 
 class Four():
-    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True):
+    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True, allowed_spins = 'ALL-MINI'):
         """
         Create an instance of the game Four
         
@@ -28,6 +28,9 @@ class Four():
         self.GameInstanceStruct.rotation_system_type = rotation_system
         self.GameInstanceStruct.rotation_system = RotationSystem(rotation_system)
         self.GameInstanceStruct.kick_table = self.GameInstanceStruct.rotation_system.kick_table
+        self.GameInstanceStruct.allowed_spins = allowed_spins
+        
+        
         
         self.GameInstanceStruct.randomiser = randomiser
         self.GameInstanceStruct.seed = seed
@@ -240,7 +243,7 @@ class Four():
         if self.GameInstanceStruct.current_tetromino is not None:
             self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.matrix)
             self.GameInstanceStruct.current_tetromino = None
-    
+            
     def __move_to_floor(self):
         """
         Move the current tetromino to the floor
@@ -255,14 +258,10 @@ class Four():
         """
         Clear full lines from the matrix
         """
-        self.FlagStruct.LINE_CLEAR = self.GameInstanceStruct.matrix.clear_lines()
+        lines_cleared, cleared_blocks, cleared_idxs = self.GameInstanceStruct.matrix.clear_lines()
         
-  
-            
-            
-            
-        # TODO: Implement scoring logic / t spin line clear detection
-    
+        if lines_cleared is not None:
+            self.core_instance.RenderStruct.lines_cleared, self.core_instance.RenderStruct.cleared_blocks, self.core_instance.RenderStruct.cleared_idxs = lines_cleared, cleared_blocks, cleared_idxs
     # --------------------------------------------------- GRAVITY ---------------------------------------------------
     
     def __perform_gravity(self):
@@ -375,24 +374,27 @@ class Four():
         
         self.spawn_pos = Vec2(math.floor((self.GameInstanceStruct.matrix.WIDTH - 1) / 2), self.GameInstanceStruct.matrix.HEIGHT // 2 - 2)
         
-        spawning_tetromino = Tetromino(next_piece, 0,  self.spawn_pos.x,  self.spawn_pos.y, self.GameInstanceStruct.matrix, self.FlagStruct)
+        spawning_tetromino = Tetromino(next_piece, 0,  self.spawn_pos.x,  self.spawn_pos.y, self.FlagStruct, self.GameInstanceStruct)
         self.GameInstanceStruct.lock_delay_counter = 0
         
         if hold_spawn == 'swap': # if the piece is being swapped in, insert the blocks before checking if it can spawn (visual consistency otherwise will look like you die for no reason)
             self.GameInstanceStruct.current_tetromino = None
             self.GameInstanceStruct.current_tetromino = spawning_tetromino
             self.__check_spawn(spawning_tetromino)
+            self.reset_flags()
         
         elif hold_spawn == 'hold': # if the current piece is being held, normal behaviour
             self.GameInstanceStruct.current_tetromino = None
             if self.__check_spawn(spawning_tetromino):
                 self.GameInstanceStruct.queue.get_next_piece()
                 self.GameInstanceStruct.current_tetromino = spawning_tetromino
+                self.reset_flags()
         else:
             self.GameInstanceStruct.current_tetromino = None
             if self.__check_spawn(spawning_tetromino):
                 self.GameInstanceStruct.queue.get_next_piece()
                 self.GameInstanceStruct.current_tetromino = spawning_tetromino
+                self.reset_flags()
     
     def __check_spawn(self, spawning_tetromino):
         """
@@ -487,7 +489,7 @@ class Four():
             return
         
         next_piece = self.GameInstanceStruct.queue.view_queue(idx = 0)
-        self.GameInstanceStruct.next_tetromino =  Tetromino(next_piece, 0, self.spawn_pos.x, self.spawn_pos.y , self.GameInstanceStruct.matrix, self.FlagStruct)
+        self.GameInstanceStruct.next_tetromino =  Tetromino(next_piece, 0, self.spawn_pos.x, self.spawn_pos.y , self.FlagStruct, self.GameInstanceStruct)
         
     def __event_danger(self, val:bool):
         """
@@ -503,9 +505,8 @@ class Four():
     
     def reset_flags(self):
         self.FlagStruct.IS_SPIN = False
-        self.FlagStruct.TSPIN = False
-        self.FlagStruct.TSPIN_MINI = False
-    
+        self.FlagStruct_IS_MINI = False
+        self.FlagStruct.LINE_CLEAR = False
 class Queue():
     def __init__(self, RNG, randomiser = '7BAG'):
         """

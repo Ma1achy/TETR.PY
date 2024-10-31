@@ -64,6 +64,13 @@ class StructRender():
         'Warning': 11
     })
     
+    spin_type: str = None
+    is_mini: bool = False
+    
+    lines_cleared: bool = False
+    cleared_blocks: list = None
+    cleared_idxs: list = None
+    
     CAPTION = 'Four'
     WINDOW_WIDTH = 1500
     WINDOW_HEIGHT = 900

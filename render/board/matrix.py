@@ -5,14 +5,23 @@ from render.board.struct_board import StructBoardConsts
 import pygame
 import copy
 from utils import lerpBlendRGBA, smoothstep, tint_texture
+from instance.four import RNG
 
 class Matrix():
-    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, BoardConsts:StructBoardConsts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct, BoardConsts:StructBoardConsts):
         
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct
         self.GameInstanceStruct = GameInstanceStruct
+        self.TimingStruct = TimingStruct
         self.BoardConts = BoardConsts
+        
+        self.current_time = 0
+        self.previous_time = 0
+        self.dt = 0
+        self.line_clear_particles = []
+        
+        self.RNG = RNG(seed = 0)
         
         self.piece_surface = pygame.Surface((1, 1), pygame.SRCALPHA) # these surfaces have to be recreated as the size of the tetromino changes
         self.piece_blocks = 'PLACEHOLDER'
@@ -25,6 +34,8 @@ class Matrix():
         
         self.warning_surface = pygame.Surface((1, 1), pygame.SRCALPHA) 
         self.warning_type = 'PLACEHOLDER'
+        
+        self.line_clear_animation_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH * 4, self.BoardConts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA)
         
         self.RenderStruct.textures = {
             'Z': None,
@@ -63,12 +74,15 @@ class Matrix():
         """
         matrix_rect = pygame.Rect(self.BoardConts.matrix_rect_pos_x, self.BoardConts.matrix_rect_pos_y, self.BoardConts.MATRIX_SURFACE_WIDTH, self.BoardConts.MATRIX_SURFACE_HEIGHT)
         
+        self.dt = self.TimingStruct.delta_frame_time / 1000
+     
         self.__draw_current_tetromino_shadow(surface, matrix_rect)
         self.__draw_placed_blocks(surface, matrix_rect)
         self.__draw_current_tetromino(surface, matrix_rect)
+        self.__do_line_clear_animation(surface, matrix_rect)
         
         if self.FlagStruct.DANGER:
-            self.__draw_next_tetromino_warning(surface, matrix_rect) 
+            self.__draw_next_tetromino_warning(surface, matrix_rect)
         
     def __draw_current_tetromino(self, surface, matrix_surface_rect:pygame.Rect):
         """
@@ -341,7 +355,107 @@ class Matrix():
             texture = self.get_texture(self.RenderStruct.TEXTURE_MAP['Shadow'])
             texture = pygame.transform.smoothscale(texture, (self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE))
             self.tinted_shadow_textures[t] = tint_texture(texture, self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR[t])
-            
     
-
+    def __do_line_clear_animation(self, surface, matrix_rect):
+        
+        self.line_clear_animation_surface.fill((0, 0, 0, 0)) 
+        self.play_line_clear_animation(surface, matrix_rect)
+        self.get_line_clear_particles()
+        
+        if self.RenderStruct.lines_cleared is None:
+            return
+       
+        self.RenderStruct.lines_cleared = None
+        self.RenderStruct.cleared_blocks = None
+        self.RenderStruct.cleared_idxs = None
+        
+    def play_line_clear_animation(self, surface, matrix_rect):
+        
+        if len(self.line_clear_particles) == 0:
+            return
+        
+        updated_particles = [] 
+        
+        for particle in self.line_clear_particles:
             
+            g = 98100
+            d = 0.9
+
+            x, y, x_vel, y_vel, scale, block, time, max_time = particle
+            time -= self.dt
+
+            if time <= 0:
+                continue  
+
+            # Apply drag
+            x_dir = (x_vel / abs(x_vel)) if x_vel != 0 else 0
+            x_vel -= abs(x_vel) * d * self.dt * x_dir
+
+            # Apply gravity
+            y_vel += g * self.dt
+
+            # Apply velocity
+            x += x_vel * self.dt
+            y += y_vel * self.dt 
+
+            prog = 1 - (max_time - time) / max_time
+            scale = scale * smoothstep(prog)
+            
+            if scale < 0.01:
+                continue  
+
+            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time))
+            
+            self.draw_block(
+                self.line_clear_animation_surface,
+                block,
+                x + self.line_clear_animation_surface.get_width() // 2 - matrix_rect.width // 2,
+                y + matrix_rect.height // 2 + self.RenderStruct.GRID_SIZE * 6,
+                scale,
+                matrix_rect
+            )
+            
+        self.line_clear_particles = updated_particles
+        self.line_clear_animation_surface.set_alpha(200)
+        
+        surface.blit(
+            self.line_clear_animation_surface,
+            (matrix_rect.x - self.line_clear_animation_surface.get_width() // 2 + matrix_rect.width // 2,
+            matrix_rect.y - matrix_rect.height)
+        )
+    
+    def draw_block(self, surface, block, x, y, scale, matrix_rect):
+                texture = self.RenderStruct.textures[block]
+                texture = pygame.transform.scale(texture, (int(self.RenderStruct.GRID_SIZE * scale), int(self.RenderStruct.GRID_SIZE * scale)))
+                rect = texture.get_rect(center = (x, y))
+                surface.blit(texture, (rect.x, rect.y - matrix_rect.y))
+                    
+    def get_line_clear_particles(self):
+        
+        line_clear_particles = []
+        
+        if self.RenderStruct.cleared_blocks is None or self.RenderStruct.cleared_idxs is None:
+            return
+        
+        for idx in self.RenderStruct.cleared_idxs:
+            for line in self.RenderStruct.cleared_blocks:
+                for pos, block in enumerate(line):
+                    offset_x = self.RNG.next_float() * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE //4
+                    offset_y = self.RNG.next_float() * self.RenderStruct.GRID_SIZE - self.RenderStruct.GRID_SIZE //4
+                    
+                    x = pos * self.RenderStruct.GRID_SIZE + offset_x
+                    y = idx * self.RenderStruct.GRID_SIZE + offset_y
+                    
+                    x_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 75 * self.RenderStruct.lines_cleared
+                    y_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 50 * self.RenderStruct.lines_cleared
+
+                    scale = (1 - self.RNG.next_float()) + 0.1
+                    max_time = self.RNG.next_float()
+                    time = max_time
+                    
+                    line_clear_particles.append((x, y, x_vel, y_vel, scale, block[0], time, max_time))
+        
+        self.line_clear_particles = line_clear_particles 
+       
+        
+        

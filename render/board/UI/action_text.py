@@ -20,6 +20,10 @@ class UIActionText():
         self.middle_text_surf_width = self.RenderStruct.GRID_SIZE * 10
         self.middle_text_surf_height = self.RenderStruct.GRID_SIZE * 6
         
+        self.spin_text = None
+        self.mini_text = None
+        self.spin_text_colour = (255, 255, 255)
+        
         if self.BoardConsts.draw_garbage_bar:
             self.left_border_offset = 1.25
         else:
@@ -33,57 +37,30 @@ class UIActionText():
         self.draw_line_clear_action_text(surface)
         self.draw_back_to_back_action_text(surface)
         self.draw_combo_action_text(surface)
-        self.draw_all_clear_action_text(surface)
+        # self.draw_all_clear_action_text(surface)
     
     def draw_spin_action_text(self, surface):
-        if self.FlagStruct.TSPIN:
-            text = 'T-SPIN'
-            mini_text = None
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['T']
-        elif self.FlagStruct.TSPIN_MINI:
-            text = 'T-SPIN'
-            mini_text = 'MINI '
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['T']
-        elif self.FlagStruct.IS_SPIN == 'Z':
-            text = 'Z-SPIN'
-            mini_text = 'MINI '
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['Z']
-        elif self.FlagStruct.IS_SPIN == 'L':
-            text = 'L-SPIN'
-            mini_text = 'MINI '
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['L']
-        elif self.FlagStruct.IS_SPIN == 'O':
-            text = 'O-SPIN'
-            mini_text = 'MINI '
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['O']
-        elif self.FlagStruct.IS_SPIN == 'S':
-            text = 'S-SPIN'
-            mini_text = 'MINI '
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['S']
-        elif self.FlagStruct.IS_SPIN == 'I':
-            text = 'I-SPIN'
-            mini_text = 'MINI '
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['I']
-        elif self.FlagStruct.IS_SPIN == 'J':
-            text = 'J-SPIN'
-            mini_text = 'MINI '
-            colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR['J']
-        else:
-            text = 'SPIN TYPE'
-            mini_text = 'MINI '
-            colour = (255, 255, 255)
-            
-        spin_text = self.Fonts.hun2_big.render(text, True, colour)
-        spin_text_rect = spin_text.get_rect()
+        
+        if self.RenderStruct.spin_type:
+            self.spin_text = f'{self.RenderStruct.spin_type}-SPIN'
+            self.spin_text_colour = self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR[self.RenderStruct.spin_type]
+        
+        spin_action_text = self.Fonts.hun2_big.render(self.spin_text, True, self.spin_text_colour)
+        spin_text_rect = spin_action_text.get_rect()
         spin_text_position = (self.BoardConsts.matrix_rect_pos_x - self.RenderStruct.BORDER_WIDTH - spin_text_rect.width - self.RenderStruct.GRID_SIZE * self.left_border_offset, self.BoardConsts.matrix_rect_pos_y + spin_text_rect.height + self.RenderStruct.GRID_SIZE * 3.5 + self.RenderStruct.BORDER_WIDTH)
         
-        surface.blit(spin_text, spin_text_position)
+        surface.blit(spin_action_text, spin_text_position)
         
-        mini_text_surface = self.Fonts.hun2_med.render(mini_text, True, colour)
-        mini_text_rect = mini_text_surface.get_rect()
+        if self.RenderStruct.is_mini:
+            self.mini_text = 'MINI '
+        else:
+            self.mini_text = None
+            
+        self.mini_action_text = self.Fonts.hun2_med.render(self.mini_text, True, self.spin_text_colour)
+        mini_text_rect = self.mini_action_text.get_rect()
         mini_text_position = (spin_text_position[0] - mini_text_rect.width, spin_text_position[1] + spin_text_rect.height // 2 - mini_text_rect.height // 2)
         
-        surface.blit(mini_text_surface, mini_text_position)
+        surface.blit(self.mini_action_text, mini_text_position)
         
         # pygame.draw.rect(surface, colour, (mini_text_position[0], mini_text_position[1], mini_text_rect.width, mini_text_rect.height), 1)
         # pygame.draw.rect(surface, colour, (spin_text_position[0], spin_text_position[1], spin_text_rect.width, spin_text_rect.height), 1)

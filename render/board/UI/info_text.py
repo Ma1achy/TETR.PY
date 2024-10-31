@@ -43,12 +43,12 @@ class UIInfoText():
         # TODO: create surfaces that you can choose to render different counters/timers/info onto
         # they will then be blitted onto the board surface in the correct position
         self.slots = {
-            0: 'SCORE',
-            1: 'SCORE',
-            2: 'SCORE',
-            3: 'SCORE',
+            0: 'STOPWATCH',
+            1: None,
+            2: None,
+            3: None,
             4: 'SCORE',
-            5: 'STOPWATCH',
+            5: None,
         }
          
     def draw(self, surface):
@@ -100,7 +100,7 @@ class UIInfoText():
                     time = self.TimingStruct.current_time
                     self.__draw_timer(slot, time, surface)
                 case 'SCORE':
-                    value_to_display = 40
+                    value_to_display = 4358790
                     self.draw_commasep_number(surface, slot, value_to_display)
                 case None:
                     pass

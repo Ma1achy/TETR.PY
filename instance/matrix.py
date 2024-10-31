@@ -48,16 +48,17 @@ class Matrix():
         
     def clear_lines(self):
         """
-        Remove full lines from the matrix
+        Remove full lines from the matrix and return the number of lines cleared,
+        the full lines, and their indices.
         """
-        full_lines = [row for row in self.matrix if all(val != 0 for val in row)]
-        
+        full_idxs = [idx for idx, row in enumerate(self.matrix) if all(val != 0 for val in row)]
+        full_lines = [self.matrix[idx] for idx in full_idxs]
         [self.matrix.insert(0, [0 for _ in range(self.WIDTH)]) for row in full_lines if self.matrix.remove(row) is None]
-
+        
         if len(full_lines) > 0:
-            return len(full_lines)
+            return len(full_idxs), full_lines, full_idxs
         else:
-            return False
+            return None, None, None
     
     def __str__(self):
         """
