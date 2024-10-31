@@ -86,10 +86,11 @@ class Board():
     def board_spin_animation(self):
         
         spin_speed = 2048 * self.dt
+        max_speed = spin_speed
         
-        if abs(self.spin_velocity) >= spin_speed:
-            self.spin_velocity = self.spin_velocity / abs(self.spin_velocity) * spin_speed
-            
+        if abs(self.spin_velocity) >= max_speed:
+            self.spin_velocity = self.spin_velocity / abs(self.spin_velocity) * max_speed
+               
         if self.FlagStruct.SPIN_DIRECTION == Action.ROTATE_CLOCKWISE:
             if self.spin_velocity > 0:
                 self.spin_velocity = 0

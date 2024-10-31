@@ -386,10 +386,7 @@ class Matrix():
 
             x, y, x_vel, y_vel, scale, block, time, max_time = particle
             time -= self.dt
-
-            if time <= 0:
-                continue  
-
+            
             # Apply drag
             x_dir = (x_vel / abs(x_vel)) if x_vel != 0 else 0
             x_vel -= abs(x_vel) * d * self.dt * x_dir
@@ -404,10 +401,11 @@ class Matrix():
             prog = 1 - (max_time - time) / max_time
             scale = scale * smoothstep(prog)
             
-            if scale < 0.01:
-                continue  
+            
+            if scale < 0.1:
+                scale = 0.1
 
-            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time))
+            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.01 else None
             
             self.draw_block(
                 self.line_clear_animation_surface,
