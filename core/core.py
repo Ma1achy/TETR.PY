@@ -40,7 +40,7 @@ class Core():
         self.frame_time = 1 / self.Config.FPS
         
         self.exited = False
-        
+         
     def __initialise(self):
         """
         Initalise the instance of the game
@@ -91,13 +91,8 @@ class Core():
         self.TimingStruct.start_times[name] = time.perf_counter()
         
         async def monitor():
-            while True:
-                
-                previous = self.TimingStruct.elapsed_times[name]
-                self.TimingStruct.elapsed_times[name] = time.perf_counter() - self.TimingStruct.start_times[name]
-                self.TimingStruct.iter_times[name] = self.TimingStruct.elapsed_times[name] - previous
-                
-                await asyncio.sleep(0) 
+            pass
+            await asyncio.sleep(0) 
         
         monitor_task = asyncio.create_task(monitor())
         
@@ -114,7 +109,9 @@ class Core():
         """
         while not self.exited:
                 
-                self.HandlingStruct.current_time = self.TimingStruct.elapsed_times["handle_events"]
+                self.HandlingStruct.current_time = time.perf_counter() - self.TimingStruct.start_times["handle_events"] 
+                self.TimingStruct.elapsed_times["handle_events"] = self.HandlingStruct.current_time
+                
                 self.HandlingStruct.delta_time += (self.handling.HandlingStruct.current_time - self.handling.HandlingStruct.last_tick_time) / self.handling.polling_tick_time
                 self.HandlingStruct.last_tick_time = self.handling.HandlingStruct.current_time
               
@@ -137,6 +134,7 @@ class Core():
         """
         Handle pygame key events
         """
+        iter_start = time.perf_counter()
         
         self.HandlingStruct.poll_tick_counter += 1
         self.handling.get_key_dict()
@@ -163,6 +161,9 @@ class Core():
                 
             elif event.type == pygame.KEYUP:
                 self.handling.on_key_release(event.key)
+        
+        iter_end = time.perf_counter()
+        self.TimingStruct.iter_times["handle_events"] = iter_end - iter_start
     
     # ------------------------------------------- GAME LOOP -------------------------------------------
     
@@ -175,7 +176,9 @@ class Core():
         """
         while not self.exited:
          
-            self.TimingStruct.current_time = self.TimingStruct.elapsed_times["game_loop"]
+            self.TimingStruct.current_time = time.perf_counter() - self.TimingStruct.start_times["game_loop"]
+            self.TimingStruct.elapsed_times["game_loop"] = self.TimingStruct.current_time
+            
             self.TimingStruct.delta_time += (self.TimingStruct.current_time - self.TimingStruct.last_tick_time) / self.time_per_tick
             self.TimingStruct.last_tick_time = self.TimingStruct.current_time
              
@@ -201,8 +204,13 @@ class Core():
         args:
         (Four) four: the instance of the game
         """
+        iter_start = time.perf_counter()
+        
         four.loop()
         self.TimingStruct.tick_counter += 1
+        
+        iter_end = time.perf_counter()
+        self.TimingStruct.iter_times["game_loop"] = iter_end - iter_start
     
     # ------------------------------------------- RENDER LOOP -------------------------------------------
        
@@ -214,14 +222,18 @@ class Core():
             
             if self.Config.UNCAPPED_FPS:
                 
-                self.TimingStruct.current_frame_time = self.TimingStruct.elapsed_times["render_loop"]
+                self.TimingStruct.current_frame_time = time.perf_counter() - self.TimingStruct.start_times["render_loop"]
+                self.TimingStruct.elapsed_times["render_loop"] = self.TimingStruct.current_frame_time
+                
                 self.TimingStruct.delta_frame_time = (self.TimingStruct.current_frame_time - self.TimingStruct.last_frame_time) / self.frame_time
                 self.TimingStruct.last_frame_time = self.TimingStruct.current_frame_time
                 
                 self.__do_render()
                 
             else:
-                self.TimingStruct.current_frame_time = self.TimingStruct.elapsed_times["render_loop"]
+                self.TimingStruct.current_frame_time = time.perf_counter() - self.TimingStruct.start_times["render_loop"]
+                self.TimingStruct.elapsed_times["render_loop"] = self.TimingStruct.current_frame_time
+                
                 self.TimingStruct.delta_frame_time += (self.TimingStruct.current_frame_time - self.TimingStruct.last_frame_time) / self.frame_time
                 self.TimingStruct.last_frame_time = self.TimingStruct.current_frame_time
                 
@@ -241,9 +253,14 @@ class Core():
         """
         Render a single frame of the game
         """
+        iter_start = time.perf_counter()
+        
         self.RenderStruct.key_dict = self.HandlingStruct.key_dict
         self.render.draw_frame()
         self.render_clock.tick()
+        
+        iter_end = time.perf_counter()
+        self.TimingStruct.iter_times["render_loop"] = iter_end - iter_start
      
     def __get_tps(self):
         """
@@ -257,6 +274,7 @@ class Core():
         Update the stored FPS value
         """
         self.DebugStruct.FPS = self.render_clock.get_fps()
+        self.TimingStruct.FPS = self.DebugStruct.FPS
         
     def __get_polling_rate(self):
         """

@@ -261,6 +261,21 @@ def tint_texture(texture, tint_color):
     return tinted_texture
 
 def ease(current, target, t):
-    t = max(0, min(1, t))  # Clamp t to the range [0, 1]
-    t = t * t * (3 - 2 * t)  # Smoothstep interpolation
+    t = max(0, min(1, t)) 
+    t = t * t * (3 - 2 * t)  
     return current + (target - current) * t
+
+def ease_in_out_quad(start, end, t):
+    change = end - start
+    if t < 0.5:
+        return start + change * (2 * t ** 2)
+    else:
+        return start + change * (-1 + (4 - 2 * t) * t)
+    
+def ease_out_cubic(start, end, t):
+    change = end - start
+    t -= 1
+    return start + change * (t ** 3 + 1) 
+
+def lerp(current, target, t):
+    return current + (target - current) * t 
