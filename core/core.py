@@ -50,7 +50,12 @@ class Core():
         """
         set_flag_attr() # set the flag attributes
         self.render = Render(self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct)
-        self.start_time = time.perf_counter()
+        
+        self.TimingStruct.start_times["handle_events"] = time.perf_counter()
+        self.TimingStruct.start_times["game_loop"] = time.perf_counter()
+        self.TimingStruct.start_times["get_debug_info"] = time.perf_counter()
+        self.TimingStruct.start_times["render_loop"] = time.perf_counter()
+        
         pygame.init()
         
     def __exit(self):
@@ -72,35 +77,12 @@ class Core():
         self.__initialise()
         
         await asyncio.gather(
-            self.__timing_wrapper("handle_events", self.__handling_loop()),
-            self.__timing_wrapper("game_loop", self.__game_loop(four)),
-            self.__timing_wrapper("get_debug_info", self.__get_debug_info()),
-            self.__timing_wrapper("render_loop", self.__render_loop()),
+            self.__handling_loop(),
+            self.__game_loop(four),
+            self.__get_debug_info(),
+            self.__render_loop(),
         )
-
-    async def __timing_wrapper(self, name, coro):
-        """
-        Wrapper function to time coroutines of the game, 
-        used to time the game loop, render loop and event handling loop
-        
-        args:
-        (str) name: the name of the coroutine
-        (coro) coro: the coroutine to time
-        """
-        
-        self.TimingStruct.start_times[name] = time.perf_counter()
-        
-        async def monitor():
-            pass
-            await asyncio.sleep(0) 
-        
-        monitor_task = asyncio.create_task(monitor())
-        
-        try:
-            await coro
-        finally:
-            monitor_task.cancel()  
-            
+      
     # ------------------------------------------- HANDLING LOOP -------------------------------------------
     
     async def __handling_loop(self):
