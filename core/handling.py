@@ -443,7 +443,7 @@ class Handling():
         If the Left DAS timer is charged, the Left ARR timer will be incremented until it reaches the ARR threshold (ms).
         Once charged, the action will be performed and the Left ARR timer will be reset.
         """ 
-        if self.Config.HANDLING_SETTINGS['ARR'] == 0: # to avoid modulo by zero
+        if self.Config.HANDLING_SETTINGS['ARR'] == 0: # inf repeat rate behaviour
             self.HandlingStruct.DO_MOVEMENT_LEFT = True
             if self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS'] and self.HandlingStruct.dir_priority == 'left':
                 if self.__is_action_down(Action.SONIC_LEFT_DROP) and self.Config.HANDLING_SETTINGS['SDF'] == 'inf':

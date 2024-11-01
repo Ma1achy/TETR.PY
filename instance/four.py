@@ -72,9 +72,7 @@ class Four():
             if relative_tick <= 0 and abs(relative_tick) <= self.HandlingStruct.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
                 self.core_instance.handling.consume_action()
-        
-        print(self.actions_this_tick)
-                
+                                
     # --------------------------------------------------- UPDATE ORDER ---------------------------------------------------
        
     def __get_next_state(self):
