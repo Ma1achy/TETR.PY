@@ -8,7 +8,7 @@ from utils import lerpBlendRGBA, smoothstep, tint_texture
 from instance.four import RNG
 
 class Matrix():
-    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct, BoardConsts:StructBoardConsts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct, BoardConsts:StructBoardConsts, RNG):
         
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct
@@ -21,9 +21,10 @@ class Matrix():
         self.dt = 0
         self.line_clear_particles = []
         
-        self.RNG = RNG(seed = 0)
+        self.RNG = RNG
         
         self.piece_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE) # these surfaces have to be recreated as the size of the tetromino changes
+        self.lock_delay_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE)
         self.piece_blocks = 'PLACEHOLDER'
         
         self.blocks_surface = self.blocks_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH, self.BoardConts.MATRIX_SURFACE_HEIGHT * 2), pygame.SRCALPHA|pygame.HWSURFACE)
@@ -35,7 +36,7 @@ class Matrix():
         self.warning_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE)
         self.warning_type = 'PLACEHOLDER'
         
-        self.line_clear_animation_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH * 4, self.BoardConts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.line_clear_animation_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH * 4, self.BoardConts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA|pygame.HWSURFACE|pygame.BLEND_RGB_ADD)
         
         self.RenderStruct.textures = {
             'Z': None,
@@ -61,7 +62,7 @@ class Matrix():
             'J': None,
             'T': None,
         }
-        
+                
         self.pre_scale_textures()
         self.pre_tint_textures()
     
@@ -103,11 +104,12 @@ class Matrix():
         if self.GameInstanceStruct.current_tetromino.blocks != self.piece_blocks: # only draw if the blocks have changed
             self.blocks = self.GameInstanceStruct.current_tetromino.blocks
             self.piece_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+            self.lock_delay_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
         
-            blend_colour = (0, 0, 0)
             piece_alpha = self.__get_lock_delay_alpha(self.GameInstanceStruct.current_tetromino.lock_delay_counter, self.GameInstanceStruct.lock_delay_in_ticks)
             
-            self.__draw_tetromino_blocks(self.piece_surface, self.GameInstanceStruct.current_tetromino.blocks, self.piece_surface.get_rect(), blend_colour, piece_alpha) 
+            self.__draw_tetromino_blocks(self.piece_surface, self.GameInstanceStruct.current_tetromino.blocks, self.piece_surface.get_rect(), (0, 0, 0), piece_alpha) 
+            self.lockdelay_animation(self.GameInstanceStruct.current_tetromino.blocks, self.piece_surface.get_rect())
             
         self.piece_surface.set_alpha(255)
         surface.blit(self.piece_surface, (rect.x, rect.y))
@@ -358,7 +360,7 @@ class Matrix():
             texture = self.get_texture(self.RenderStruct.TEXTURE_MAP['Shadow'])
             texture = pygame.transform.smoothscale(texture, (self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE))
             self.tinted_shadow_textures[t] = tint_texture(texture, self.RenderStruct.COLOUR_MAP_AVG_TEXTURE_COLOUR[t])
-    
+      
     def __do_line_clear_animation(self, surface, matrix_rect):
         
         self.line_clear_animation_surface.fill((0, 0, 0, 0)) 
@@ -401,11 +403,7 @@ class Matrix():
             prog = 1 - (max_time - time) / max_time
             scale = scale * smoothstep(prog)
             
-            
-            if scale < 0.1:
-                scale = 0.1
-
-            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.01 else None
+            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.001 else None
             
             self.draw_block(
                 self.line_clear_animation_surface,
@@ -430,7 +428,7 @@ class Matrix():
                 texture = pygame.transform.scale(texture, (int(self.RenderStruct.GRID_SIZE * scale), int(self.RenderStruct.GRID_SIZE * scale)))
                 rect = texture.get_rect(center = (x, y))
                 surface.blit(texture, (rect.x, rect.y - matrix_rect.y))
-                    
+               
     def get_line_clear_particles(self):
         
         line_clear_particles = []
@@ -456,7 +454,41 @@ class Matrix():
                     
                     line_clear_particles.append((x, y, x_vel, y_vel, scale, block[0], time, max_time))
         
-        self.line_clear_particles = line_clear_particles 
-       
+        self.line_clear_particles.extend(line_clear_particles)
         
+    def lockdelay_animation(self, tetromino_blocks, rect):
+        """
+        Animate the lock delay
+        """  
+        if not self.RenderStruct.use_textures:
+            return 
         
+        if self.GameInstanceStruct.current_tetromino.is_on_floor():
+            for i, row in enumerate(tetromino_blocks):
+                for j, value in enumerate(row):
+                    if value != 0:
+                        pygame.draw.rect(
+                            self.lock_delay_surface, 
+                            (0, 0, 0),
+                            (rect.x + j * self.RenderStruct.GRID_SIZE, rect.y + i * self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE)
+                        )
+
+            alpha = 1 - self.__get_lock_delay_alpha(self.GameInstanceStruct.current_tetromino.lock_delay_counter, self.GameInstanceStruct.lock_delay_in_ticks)
+            self.lock_delay_surface.set_alpha(255 * alpha)
+            self.piece_surface.blit(self.lock_delay_surface, (rect.x, rect.y))
+    
+    def piece_placement_animation(self, tetromino_blocks, rect):
+        # if the blocks are on the board, draw an overlay on them that then disappears after a short time
+        # if the blocks are removed by a line clear dont draw the overlay
+        
+        if not self.RenderStruct.use_textures:
+            return
+        
+        if self.RenderStruct.lines_cleared is not None: # logic to check if to move the animated cells down
+      
+        
+        # need to track the blocks that are placed, want it so multiple pieces being placed at the same time don't interfere with each other
+        
+            pass
+    
+
