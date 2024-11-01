@@ -34,3 +34,6 @@ class StructHandling():
     PREV_ACC_HD_COUNTER: int = 0
 
     key_dict = None # dict of keys that are currently pressed
+    
+    DONE_TAP_LEFT: bool = False
+    DONE_TAP_RIGHT: bool = False

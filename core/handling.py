@@ -399,6 +399,7 @@ class Handling():
         
         else:
             self.__reset_DAS_ARR('left')
+            self.HandlingStruct.DONE_TAP_LEFT = False
     
     def __DAS_RIGHT(self):
         """
@@ -423,6 +424,7 @@ class Handling():
                
         else:
             self.__reset_DAS_ARR('right')
+            self.HandlingStruct.DONE_TAP_RIGHT = False
 
     def __DAS_cancel(self):
         """
@@ -448,8 +450,9 @@ class Handling():
                     self.__queue_action(Action.SONIC_LEFT_DROP)
                 else:
                     self.__queue_action(Action.SONIC_LEFT)  
-        else:
-            if self.HandlingStruct.ARR_LEFT_COUNTER % self.Config.HANDLING_SETTINGS['ARR'] == 0 or self.HandlingStruct.ARR_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
+        else:       
+            if not self.HandlingStruct.DONE_TAP_LEFT or self.HandlingStruct.ARR_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
+                self.HandlingStruct.DONE_TAP_LEFT = True # to allow tapping of the key, modulo was removed to prevent incosistent behaviour where one tick the counter could be >= ARR and the next tick it could be: counter % ARR == 0 leading to the action being performed twice in a row
                 self.HandlingStruct.DO_MOVEMENT_LEFT = True  
                 self.HandlingStruct.ARR_LEFT_COUNTER = 0
             
@@ -471,7 +474,8 @@ class Handling():
                 else:
                     self.__queue_action(Action.SONIC_RIGHT)    
         else:
-            if self.HandlingStruct.ARR_RIGHT_COUNTER % self.Config.HANDLING_SETTINGS['ARR'] == 0 or self.HandlingStruct.ARR_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
+            if not self.HandlingStruct.DONE_TAP_RIGHT or self.HandlingStruct.ARR_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
+                self.HandlingStruct.DONE_TAP_RIGHT = True
                 self.HandlingStruct.DO_MOVEMENT_RIGHT = True
                 self.HandlingStruct.ARR_RIGHT_COUNTER = 0
                 
