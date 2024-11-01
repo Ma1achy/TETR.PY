@@ -13,6 +13,7 @@ from render.board.UI.info_text import UIInfoText
 from render.board.UI.action_text import UIActionText
 from core.handling import Action
 from utils import ease_out_cubic, ease_in_out_quad 
+from instance.four import RNG
 
 class Board():
     def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug, Fonts):
@@ -36,7 +37,9 @@ class Board():
         self.BoardConsts.matrix_rect_pos_x = self.BoardConsts.board_rect_width // 2 - self.BoardConsts.MATRIX_SURFACE_WIDTH // 2 
         self.BoardConsts.matrix_rect_pos_y = self.BoardConsts.MATRIX_SURFACE_HEIGHT - self.RenderStruct.GRID_SIZE * 4 - self.RenderStruct.BORDER_WIDTH 
         
-        self.Matrix = Matrix(RenderStruct, FlagStruct, GameInstanceStruct, TimingStruct, self.BoardConsts)
+        self.RNG = RNG(seed = 0)
+        
+        self.Matrix = Matrix(RenderStruct, FlagStruct, GameInstanceStruct, TimingStruct, self.BoardConsts, self.RNG)
         self.HoldAndQueue = HoldAndQueue(RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConsts)
         self.UI_Border = UIBorder(RenderStruct, FlagStruct, GameInstanceStruct, Fonts, self.BoardConsts)
         self.UI_InfoText = UIInfoText(RenderStruct, FlagStruct, GameInstanceStruct, TimingStruct,  Fonts, self.BoardConsts)
@@ -48,6 +51,7 @@ class Board():
         self.angle = 0
         self.max_angle = 3
         self.spin_velocity = 0 
+        self.spin_direction  = 0
         self.spin_in_progress = False
         
         self.scale = 1
@@ -92,23 +96,26 @@ class Board():
             self.spin_velocity = self.spin_velocity / abs(self.spin_velocity) * max_speed
                
         if self.FlagStruct.SPIN_DIRECTION == Action.ROTATE_CLOCKWISE:
-            if self.spin_velocity > 0:
-                self.spin_velocity = 0
-            self.spin_velocity += - spin_speed 
+            self.spin_direction = - 1
+            self.spin_velocity += spin_speed * self.spin_direction
+            
+        elif self.FlagStruct.SPIN_DIRECTION == Action.ROTATE_COUNTERCLOCKWISE:        
+            self.spin_direction = 1
+            self.spin_velocity += spin_speed * self.spin_direction
+            
+        elif self.FlagStruct.SPIN_DIRECTION == Action.ROTATE_180: 
+            if not self.spin_in_progress:       
+                f = self.RNG.next_float()
+                if f < 0.5:
+                    self.spin_direction = -1
+                else:
+                    self.spin_direction = 1
+
+            self.spin_velocity += spin_speed * self.spin_direction
         
-        elif self.FlagStruct.SPIN_DIRECTION == Action.ROTATE_COUNTERCLOCKWISE:
-            if self.spin_velocity < 0:
-                self.spin_velocity = 0
-            self.spin_velocity += spin_speed 
-            
-        elif self.FlagStruct.SPIN_DIRECTION == Action.ROTATE_180:
-            if self.spin_velocity > 0:
-                self.spin_velocity = 0
-            self.spin_velocity += - spin_speed 
-            
         if self.FlagStruct.SPIN_ANIMATION:
             self.__do_board_spin()
-            
+        
         self.__update_board_spin()
              
     def __update_board_spin(self):

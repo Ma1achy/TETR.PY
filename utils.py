@@ -260,6 +260,26 @@ def tint_texture(texture, tint_color):
     tinted_texture.unlock()
     return tinted_texture
 
+def to_grey_scale(image):
+    """
+    convert a RGBA image to greyscale
+    """
+    width, height = image.get_size()
+    grey_image = pygame.Surface((width, height), flags=pygame.SRCALPHA)
+    image.lock()
+    grey_image.lock()
+
+    for x in range(width):
+        for y in range(height):
+            r, g, b, a = image.get_at((x, y))
+            grey = int(0.299 * r + 0.587 * g + 0.114 * b)
+            grey_image.set_at((x, y), (grey, grey, grey, a))
+
+    image.unlock()
+    grey_image.unlock()
+    
+    return grey_image
+
 def ease(current, target, t):
     t = max(0, min(1, t)) 
     t = t * t * (3 - 2 * t)  
