@@ -387,9 +387,8 @@ class Matrix():
             d = 0.85
 
             x, y, x_vel, y_vel, scale, block, time, max_time = particle
-            time -= self.dt
-            
-            # Apply drag
+           # time -= self.dt
+        
             x_dir = (x_vel / abs(x_vel)) if x_vel != 0 else 0
             x_vel -= abs(x_vel) * d * self.dt * x_dir
 
@@ -402,8 +401,8 @@ class Matrix():
 
             prog = 1 - (max_time - time) / max_time
             scale = scale * smoothstep(prog)
-            
-            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.001 else None
+           
+            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.001 and self.in_y_bounds(matrix_rect, y, scale) else None
             
             self.draw_block(
                 self.line_clear_animation_surface,
@@ -428,7 +427,13 @@ class Matrix():
                 texture = pygame.transform.scale(texture, (int(self.RenderStruct.GRID_SIZE * scale), int(self.RenderStruct.GRID_SIZE * scale)))
                 rect = texture.get_rect(center = (x, y))
                 surface.blit(texture, (rect.x, rect.y - matrix_rect.y))
-               
+    
+    def in_y_bounds(self, matrix_rect, y, scale):
+        if y < self.line_clear_animation_surface.get_height() - matrix_rect.height + self.RenderStruct.GRID_SIZE * 5 + scale * self.RenderStruct.GRID_SIZE:
+            return True
+        else:
+            return False
+                
     def get_line_clear_particles(self):
         
         line_clear_particles = []
