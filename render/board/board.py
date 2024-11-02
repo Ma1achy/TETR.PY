@@ -233,7 +233,7 @@ class Board():
                 self.offset_y = ease_out_cubic(self.offset_y, -self.offset_y, self.dt)
             pass
         else:
-            self.offset_y = ease_out_cubic(self.offset_y, s, self.dt * s)
+            self.offset_y = ease_out_cubic(self.offset_y, s * 4, self.dt)
             
             if self.offset_y >= s:
                 self.bounce_in_progress = False
