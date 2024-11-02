@@ -251,10 +251,8 @@ class Board():
         return scale
     
     def board_scale_push_in_animation(self):
-    
-        if self.GameInstanceStruct.current_tetromino.is_on_floor():
-            self.__do_lock_delay_animation()
-            
+        
+        self.__do_lock_delay_animation()
         self.__update_lock_delay_animation()
         
     def __do_lock_delay_animation(self):
