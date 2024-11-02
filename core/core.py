@@ -32,7 +32,7 @@ class Core():
         self.render_clock = Clock()
         
         self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
-        self.handling = Handling(self.Config, self.HandlingStruct)
+        self.handling = Handling(self.Config, self.HandlingStruct, self.FlagStruct)
           
         self.TPS = self.Config.TPS
         self.FPS = self.Config.FPS

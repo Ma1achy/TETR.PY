@@ -30,7 +30,13 @@ class FLAG(Enum):
     
     SPIN_DIRECTION = auto()
     SPIN_ANIMATION = auto()
+    
+    PUSH_HORIZONTAL = auto()
+    PUSH_VERTICAL = auto()
+    CANNOT_FALL = auto()
 
+    HARD_DROP_BOUNCE = auto()
+    AUTO_LOCK_SCALE = auto()
     
 def generate_flags():
     return {flag: False for flag in FLAG}

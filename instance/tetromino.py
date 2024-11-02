@@ -89,8 +89,10 @@ class Tetromino():
                 raise ValueError(f"\033[31mInvalid movement action provided!: {action} \033[31m\033[0m")
             
         if self.collision(self.blocks, vector + self.position): # validate movement
+            self.Flags.PUSH_HORIZONTAL = vector
             return
 
+        self.Flags.PUSH_HORIZONTAL = False
         self.__reset_lock_delay_valid_movement()
         self.reset_spin_flags() # spin is not valid if the piece can move after a rotation
         self.position += vector
@@ -117,6 +119,10 @@ class Tetromino():
             self.position += vector
             self.__reset_lock_delay_valid_movement()
             self.reset_spin_flags()
+            self.Flags.PUSH_HORIZONTAL = False
+        
+        if self.collision(self.blocks, self.position + vector):
+            self.Flags.PUSH_HORIZONTAL = vector
         
     def sonic_move_and_drop(self, action:Action, PrefSD:bool):
         """
@@ -141,13 +147,17 @@ class Tetromino():
             if not self.collision(self.blocks, self.position + Vec2(0, 1)):
                 self.position += Vec2(0, 1)
                 self.sonic_move_and_drop(action, PrefSD)
+                self.Flags.PUSH_VERTICAL = False
             else:
+                self.Flags.PUSH_VERTICAL = Vec2(0, 1)
                 if not self.collision(self.blocks, self.position + horizontal_vector):
                     self.__reset_lock_delay_valid_movement()
                     self.reset_spin_flags()
                     self.position += horizontal_vector
                     self.sonic_move_and_drop(action, PrefSD)
+                    self.Flags.PUSH_HORIZONTAL = False
                 else:
+                    self.Flags.PUSH_HORIZONTAL = horizontal_vector
                     return
         else:
             if not self.collision(self.blocks, self.position + horizontal_vector): 
@@ -155,11 +165,15 @@ class Tetromino():
                 self.reset_spin_flags()
                 self.position += horizontal_vector
                 self.sonic_move_and_drop(action, PrefSD) 
+                self.Flags.PUSH_HORIZONTAL = False
             else:
+                self.Flags.PUSH_HORIZONTAL = horizontal_vector
                 if not self.collision(self.blocks, self.position + Vec2(0, 1)):
                     self.position += Vec2(0, 1)
                     self.sonic_move_and_drop(action, PrefSD) 
+                    self.Flags.PUSH_VERTICAL = False
                 else:
+                    self.Flags.PUSH_VERTICAL = Vec2(0, 1)
                     return
     
     def attempt_to_move_downwards(self):
@@ -392,7 +406,7 @@ class Tetromino():
             
             if len(filled_corners) > 1:
                 
-                if (self.state == 0 and desired_state == 3 and offset == 4) or (self.state == 2 and desired_state == 1 and offset == 4): # exception to T-Spin Mini https://four.lol/srs/t-spin#exceptions & https://tetris.wiki/T-Spin
+                if offset == 4: # exception to T-Spin Mini (https://tetris.wiki/T-Spin) if the last kick offset was used it is a full t spin
                     self.Flags.IS_SPIN = self.type
                     self.Flags.IS_MINI = False
                     

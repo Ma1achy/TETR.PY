@@ -27,7 +27,7 @@ class Action(Enum):
     SONIC_RIGHT_DROP = auto()
     
 class Handling():
-    def __init__(self, Config, HandlingStruct):
+    def __init__(self, Config, HandlingStruct, FlagStruct):
         """
         Handle the key inputs and provide the actions to the game loop in a queue.
         
@@ -43,6 +43,7 @@ class Handling():
         
         self.Config = Config
         self.HandlingStruct = HandlingStruct
+        self.FlagStruct = FlagStruct
         self.polling_tick_time = 1 / self.Config.POLLING_RATE
      
         self.actions = self.__GetEmptyActions()
@@ -130,6 +131,12 @@ class Handling():
         self.__get_action_buffer() # add actions to buffer
         
         self.HandlingStruct.prev_time = self.HandlingStruct.current_time
+        
+        if not self.__is_direction_down('left') and not self.__is_direction_down('right'):
+            self.FlagStruct.PUSH_HORIZONTAL = False
+        
+        if not self.__is_action_down(Action.SOFT_DROP):
+            self.FlagStruct.PUSH_VERTICAL = False
     
     def __is_action_toggled(self, action:Action):
         """

@@ -103,9 +103,9 @@ class Four():
         """
         if self.GameInstanceStruct.current_tetromino is None:
             return
-        else:
-            self.GameInstanceStruct.current_tetromino.shadow()
-            self.GameInstanceStruct.current_tetromino.reset_lock_delay_lower_pivot()
+        
+        self.GameInstanceStruct.current_tetromino.shadow()
+        self.GameInstanceStruct.current_tetromino.reset_lock_delay_lower_pivot()
                 
     # ---------------------------------------------------- ACTIONS ---------------------------------------------------
     
@@ -167,6 +167,9 @@ class Four():
         args:
             action (Action): The action to perform
         """
+        if self.GameInstanceStruct.current_tetromino is None:
+            return
+        
         self.GameInstanceStruct.current_tetromino.rotate(action, self.GameInstanceStruct.kick_table['90'])
         
     def __rotate180(self, action):
@@ -176,12 +179,19 @@ class Four():
         args:
             action (Action): The action to perform
         """
+        if self.GameInstanceStruct.current_tetromino is None:
+            return
+        
         self.GameInstanceStruct.current_tetromino.rotate(action, self.GameInstanceStruct.kick_table['180'])
   
     def __hard_drop(self):
         """
         Hard drop the current tetromino
         """
+        if self.GameInstanceStruct.current_tetromino is None:
+            return
+        
+        self.FlagStruct.HARD_DROP_BOUNCE = True
         self.__move_to_floor()
         self.__lock()
         
@@ -189,6 +199,9 @@ class Four():
         """
         Soft drop the current tetromino
         """
+        if self.GameInstanceStruct.current_tetromino is None:
+            return
+        
         self.GameInstanceStruct.soft_dropping = True
         self.GameInstanceStruct.soft_drop_factor = self.Config.HANDLING_SETTINGS['SDF']
         self.__update_current_tetromino()
@@ -213,6 +226,7 @@ class Four():
             return
         
         self.__move_to_floor()
+        self.FlagStruct.HARD_DROP_BOUNCE  = True
         
     def __sonic_move_and_drop(self, action):
         """
@@ -238,9 +252,11 @@ class Four():
         """
         Lock the current tetromino
         """
-        if self.GameInstanceStruct.current_tetromino is not None:
-            self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.matrix)
-            self.GameInstanceStruct.current_tetromino = None
+        if self.GameInstanceStruct.current_tetromino is None:
+            return
+        
+        self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.matrix)
+        self.GameInstanceStruct.current_tetromino = None
             
     def __move_to_floor(self):
         """
@@ -265,13 +281,22 @@ class Four():
     def __perform_gravity(self):
         """
         Perform gravity on the current tetromino
-        """               
+        """  
+        if self.GameInstanceStruct.current_tetromino is None:
+            return
+                     
         for action_dict in self.actions_this_tick:
             action = action_dict['action']
             
             if action == Action.SOFT_DROP:
                 self.__soft_drop()
-            
+                if self.GameInstanceStruct.current_tetromino.is_on_floor():
+                    self.FlagStruct.PUSH_VERTICAL = Vec2(0, 1)
+                else:
+                    self.FlagStruct.PUSH_VERTICAL = False
+            else:
+                self.FlagStruct.PUSH_VERTICAL = False
+                    
         self.__apply_gravity(self.GameInstanceStruct.gravity, self.GameInstanceStruct.soft_drop_factor)     
         
     def __apply_gravity(self, G, soft_drop_factor = 1):

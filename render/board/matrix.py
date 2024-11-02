@@ -106,9 +106,7 @@ class Matrix():
             self.piece_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
             self.lock_delay_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
         
-            piece_alpha = self.__get_lock_delay_alpha(self.GameInstanceStruct.current_tetromino.lock_delay_counter, self.GameInstanceStruct.lock_delay_in_ticks)
-            
-            self.__draw_tetromino_blocks(self.piece_surface, self.GameInstanceStruct.current_tetromino.blocks, self.piece_surface.get_rect(), (0, 0, 0), piece_alpha) 
+            self.__draw_tetromino_blocks(self.piece_surface, self.GameInstanceStruct.current_tetromino.blocks, self.piece_surface.get_rect())
             self.lockdelay_animation(self.GameInstanceStruct.current_tetromino.blocks, self.piece_surface.get_rect())
             
         self.piece_surface.set_alpha(255)
@@ -185,7 +183,7 @@ class Matrix():
                                                                                       # this doesn't work properly and nothing renders?????? neither does self.GameInstanceStruct.matrix.matrix.copy() ???????
                                                                                       # WTF is deepcopy ???? This has given me an aneurysm
             self.blocks_surface.fill((0, 0, 0, 0))
-            self.__draw_tetromino_blocks(self.blocks_surface, self.GameInstanceStruct.matrix.matrix, self.blocks_surface.get_rect(), (0, 0, 0), 1)
+            self.__draw_tetromino_blocks(self.blocks_surface, self.GameInstanceStruct.matrix.matrix, self.blocks_surface.get_rect())
         
         self.blocks_surface.set_alpha(255)  
         surface.blit(self.blocks_surface, (rect.x, rect.y - rect.height//2)) # since matrix is double the board height, we need to shift it up
@@ -207,7 +205,7 @@ class Matrix():
         
         return pygame.Rect(tetromino_position_x, tetromino_position_y , tetromino_rect_length, tetromino_rect_width)    
     
-    def __draw_tetromino_blocks(self, surface, tetromino_blocks, rect, blend_colour, alpha):
+    def __draw_tetromino_blocks(self, surface, tetromino_blocks, rect):
         """
         Draw the blocks of a tetromino
         
@@ -230,10 +228,9 @@ class Matrix():
             for i, row in enumerate(tetromino_blocks):
                 for j, value in enumerate(row):
                     if value != 0:
-                        colour = self.RenderStruct.COLOUR_MAP[value]
                         pygame.draw.rect(
                             surface, 
-                            lerpBlendRGBA(blend_colour, colour, alpha),
+                            self.RenderStruct.COLOUR_MAP[value],
                             (rect.x + j * self.RenderStruct.GRID_SIZE, rect.y + i * self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE)
                         )
     
@@ -423,10 +420,15 @@ class Matrix():
         )
     
     def draw_block(self, surface, block, x, y, scale, matrix_rect):
-                texture = self.RenderStruct.textures[block]
-                texture = pygame.transform.scale(texture, (int(self.RenderStruct.GRID_SIZE * scale), int(self.RenderStruct.GRID_SIZE * scale)))
-                rect = texture.get_rect(center = (x, y))
-                surface.blit(texture, (rect.x, rect.y - matrix_rect.y))
+        if self.RenderStruct.use_textures:
+            texture = self.RenderStruct.textures[block]
+        else:
+            texture = pygame.Surface((self.RenderStruct.GRID_SIZE, self.RenderStruct.GRID_SIZE), pygame.SRCALPHA)
+            texture.fill(self.RenderStruct.COLOUR_MAP[block])    
+        
+        texture = pygame.transform.scale(texture, (int(self.RenderStruct.GRID_SIZE * scale), int(self.RenderStruct.GRID_SIZE * scale)))
+        rect = texture.get_rect(center = (x, y))
+        surface.blit(texture, (rect.x, rect.y - matrix_rect.y))
     
     def in_y_bounds(self, matrix_rect, y, scale):
         if y < self.line_clear_animation_surface.get_height() - matrix_rect.height + self.RenderStruct.GRID_SIZE * 5 + scale * self.RenderStruct.GRID_SIZE:
@@ -464,10 +466,7 @@ class Matrix():
     def lockdelay_animation(self, tetromino_blocks, rect):
         """
         Animate the lock delay
-        """  
-        if not self.RenderStruct.use_textures:
-            return 
-        
+        """        
         if self.GameInstanceStruct.current_tetromino.is_on_floor():
             for i, row in enumerate(tetromino_blocks):
                 for j, value in enumerate(row):
