@@ -26,7 +26,7 @@ class Board():
         self.DebugStruct = DebugStruct
         self.BoardConsts = StructBoardConsts()
         
-        self.BoardConsts.draw_garbage_bar = False
+        self.BoardConsts.draw_garbage_bar = True
         
         self.BoardConsts.MATRIX_SURFACE_WIDTH = self.GameInstanceStruct.matrix.WIDTH * self.RenderStruct.GRID_SIZE
         self.BoardConsts.MATRIX_SURFACE_HEIGHT = self.GameInstanceStruct.matrix.HEIGHT // 2 * self.RenderStruct.GRID_SIZE
@@ -48,7 +48,14 @@ class Board():
         self.board_center_x_board_space = self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH // 2
         self.board_center_y_board_space = self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT // 2
 
-        self.board_stifness = 1
+        self.board_stifness = 1 # "spring constant" of board
+        
+        # base strength of the board animations
+        self.spin_strength = 2048
+        self.board_push_horizontal_strength = 100
+        self.hard_drop_bounce_strength = 100
+        self.board_push_down_strength = 100
+        self.lock_delay_strength = 100
         
         self.angle = 0
         self.max_angle = 3 * 1/self.board_stifness
@@ -102,7 +109,7 @@ class Board():
             
     def board_spin_animation(self):
         
-        spin_speed = 2048 * 1 / self.board_stifness * self.dt 
+        spin_speed = self.spin_strength * 1 / self.board_stifness * self.dt 
         max_speed = spin_speed
         
         if abs(self.spin_velocity) >= max_speed:
@@ -153,7 +160,7 @@ class Board():
         
         k = 10 * self.board_stifness
         dir = 0
-        f = 100
+        f = self.board_push_horizontal_strength
        
         if self.FlagStruct.PUSH_HORIZONTAL:
             dir = self.FlagStruct.PUSH_HORIZONTAL.x
@@ -176,7 +183,7 @@ class Board():
         
         k = 10 * self.board_stifness
         dir = 0
-        f = 100
+        f = self.board_push_down_strength
         
         if self.FlagStruct.PUSH_VERTICAL:
             dir = self.FlagStruct.PUSH_VERTICAL.y
@@ -196,15 +203,7 @@ class Board():
         
         if self.FlagStruct.PUSH_VERTICAL:
             return
-        
-        bounce_speed = 2048 * self.dt
-        max_speed = bounce_speed
-        
-        if abs(self.bounce_velocity) >= max_speed * 1.5:
-            self.bounce_velocity = self.bounce_velocity / abs(self.bounce_velocity) * max_speed    
-        
-        self.bounce_velocity += bounce_speed 
-        
+               
         if self.FlagStruct.HARD_DROP_BOUNCE:
             self.__do_bounce()
         
@@ -217,8 +216,7 @@ class Board():
     def __update_bounce(self):
         
         k = 10 * self.board_stifness
-        dir = 1
-        f = self.bounce_velocity * dir * 4
+        f = self.hard_drop_bounce_strength
         s = f/k
 
         if not self.bounce_in_progress and self.offset_y == 0:
@@ -247,7 +245,7 @@ class Board():
         
         progress = self.GameInstanceStruct.current_tetromino.lock_delay_counter / self.GameInstanceStruct.lock_delay_in_ticks
         smooth_progress = smoothstep(progress)
-        scale = min(1, 1 - max(0, min(0.0333 * 1/self.board_stifness, smooth_progress)))
+        scale = min(1, 1 - max(0, min(0.000333 * self.lock_delay_strength/self.board_stifness, smooth_progress)))
         return scale
     
     def board_scale_push_in_animation(self):
@@ -272,7 +270,6 @@ class Board():
             if self.scale > 0.999:
                 self.scale = 1
                 return
-        
         else:
             self.scale = ease_out_cubic(self.scale, self.__lock_delay_to_scale(), self.dt)
             

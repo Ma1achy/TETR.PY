@@ -30,7 +30,7 @@ class StructConfig():
     })
     
     
-    UNCAPPED_FPS: bool =  True
+    UNCAPPED_FPS: bool =  False
     FPS: int = 144
     TPS: int = 256
     POLLING_RATE: int = 1000
