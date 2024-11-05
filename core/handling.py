@@ -337,6 +337,9 @@ class Handling():
             self.__DAS_LEFT()
             self.__DAS_RIGHT()
             
+        if self.FlagStruct.GAME_OVER:
+            self.__reset_DAS_ARR()
+            
     def __do_DAS_ARR_LEFT(self, action:Action):
         """
         Perform the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR) for the left direction

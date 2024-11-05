@@ -14,7 +14,8 @@ from render.board.UI.action_text import UIActionText
 from core.handling import Action
 from utils import ease_out_cubic, ease_in_out_quad, smoothstep
 from instance.four import RNG
-
+import math
+ 
 class Board():
     def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug, Fonts):
             
@@ -27,6 +28,19 @@ class Board():
         self.BoardConsts = StructBoardConsts()
         
         self.BoardConsts.draw_garbage_bar = True
+        
+        if self.BoardConsts.draw_garbage_bar:
+            self.BoardConsts.GarbageWidth = self.RenderStruct.GRID_SIZE
+        else:
+            self.BoardConsts.GarbageWidth = 0
+            
+        if self.GameInstanceStruct.top_out_ok:
+            self.BoardConsts.game_over_type =  'ZOOMOUT'
+        else:
+            self.BoardConsts.game_over_type = 'FALL' # 'FALL' -> shakes then falls away rotating to the right, 'ZOOMOUT' -> shakes then zooms & fades out, 'FIZZLE' -> board shakes, tetrominoes become smoke particles and fizzle away and float up (board then looks empty)
+        
+        if self.GameInstanceStruct.reset_on_top_out:
+            self.BoardConsts.game_over_type = 'FIZZLE'
         
         self.BoardConsts.MATRIX_SURFACE_WIDTH = self.GameInstanceStruct.matrix.WIDTH * self.RenderStruct.GRID_SIZE
         self.BoardConsts.MATRIX_SURFACE_HEIGHT = self.GameInstanceStruct.matrix.HEIGHT // 2 * self.RenderStruct.GRID_SIZE
@@ -48,6 +62,8 @@ class Board():
         self.board_center_x_board_space = self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH // 2
         self.board_center_y_board_space = self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT // 2
 
+        self.alpha = 255
+        
         self.board_stifness = 1 # "spring constant" of board
         
         # base strength of the board animations
@@ -63,6 +79,7 @@ class Board():
         self.spin_direction  = 0
         self.spin_in_progress = False
         
+        self.default_scale = 1
         self.scale = 1
         
         self.offset_x, self.offset_y = 0, 0
@@ -71,6 +88,13 @@ class Board():
         
         self.bounce_velocity = 0
         self.bounce_in_progress = False
+        
+        self.game_over_animation_in_progress = False
+        self.fall_y_vel = 0
+        self.gravity = 300 * self.RenderStruct.GRID_SIZE  * self.default_scale
+        self.fall_rot_vel = 0
+        self.shake_time = 0.5
+        self.done_fizzle = False
         
     def get_board_surface(self):
         """
@@ -98,6 +122,7 @@ class Board():
         self.board_push_down_animation()
         self.harddrop_bounce_animation()
         self.board_scale_push_in_animation()
+        self.game_over_animation()
         
         if self.RenderStruct.draw_guide_lines:
             pygame.draw.rect(surface, (0, 0, 255), (0, 0, self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), 1)
@@ -108,6 +133,9 @@ class Board():
         self.FlagStruct.SPIN_ANIMATION = False
             
     def board_spin_animation(self):
+        
+        if self.game_over_animation_in_progress:
+            return
         
         spin_speed = self.spin_strength * 1 / self.board_stifness * self.dt 
         max_speed = spin_speed
@@ -161,7 +189,10 @@ class Board():
         k = 10 * self.board_stifness
         dir = 0
         f = self.board_push_horizontal_strength
-       
+        
+        if self.game_over_animation_in_progress:
+            return
+        
         if self.FlagStruct.PUSH_HORIZONTAL:
             dir = self.FlagStruct.PUSH_HORIZONTAL.x
             self.push_direction = dir
@@ -170,10 +201,10 @@ class Board():
             self.push_direction = 0
             self.horizontal_push = 0
         
-        s = self.horizontal_push/k
+        s = self.horizontal_push/k * self.default_scale
         self.offset_x = ease_out_cubic(self.offset_x, s, self.dt)
         
-        if abs(self.offset_x) < self.RenderStruct.GRID_SIZE * 1E-9:
+        if abs(self.offset_x) < self.RenderStruct.GRID_SIZE * 1E-9 * self.default_scale:
             self.offset_x = 0
    
     def board_push_down_animation(self):
@@ -193,10 +224,10 @@ class Board():
             self.push_direction = 0
             self.vertical_push = 0
         
-        s = self.vertical_push/k
+        s = self.vertical_push/k * self.default_scale
         self.offset_y = ease_out_cubic(self.offset_y, s, self.dt)
         
-        if abs(self.offset_y) < self.RenderStruct.GRID_SIZE * 1E-9:
+        if abs(self.offset_y) < self.RenderStruct.GRID_SIZE * 1E-9 * self.default_scale:
             self.offset_y = 0
     
     def harddrop_bounce_animation(self):
@@ -217,13 +248,13 @@ class Board():
         
         k = 10 * self.board_stifness
         f = self.hard_drop_bounce_strength
-        s = f/k
+        s = f/k * self.default_scale
 
         if not self.bounce_in_progress and self.offset_y == 0:
             return
         
         elif not self.bounce_in_progress and self.offset_y != 0:
-            if abs(self.offset_y) < 0.001:
+            if abs(self.offset_y) < 0.001 * self.default_scale:
                 self.bounce_velocity = 0
                 self.offset_y = 0
                 return
@@ -245,7 +276,7 @@ class Board():
         
         progress = self.GameInstanceStruct.current_tetromino.lock_delay_counter / self.GameInstanceStruct.lock_delay_in_ticks
         smooth_progress = smoothstep(progress)
-        scale = min(1, 1 - max(0, min(0.000333 * self.lock_delay_strength/self.board_stifness, smooth_progress)))
+        scale = min(self.default_scale, self.default_scale - max(0, min(0.000333 * self.lock_delay_strength/self.board_stifness * self.default_scale, smooth_progress)))
         return scale
     
     def board_scale_push_in_animation(self):
@@ -258,26 +289,100 @@ class Board():
         
     def __update_lock_delay_animation(self):
         
+        if self.game_over_animation_in_progress:
+            return
+        
         if self.GameInstanceStruct.current_tetromino is None or not self.GameInstanceStruct.current_tetromino.is_on_floor():
             self.lock_delay_scale_in_progress = False
                 
-        if not self.lock_delay_scale_in_progress and self.scale == 1:
+        if not self.lock_delay_scale_in_progress and self.scale == self.default_scale:
             return
         
-        if not self.lock_delay_scale_in_progress and self.scale != 1:
-            self.scale = ease_out_cubic(self.scale, 1, self.dt)
+        if not self.lock_delay_scale_in_progress and self.scale != self.default_scale:
+            self.scale = ease_out_cubic(self.scale, self.default_scale, self.dt)
      
-            if self.scale > 0.999:
-                self.scale = 1
+            if self.scale > 0.999 * self.default_scale:
+                self.scale = self.default_scale
                 return
         else:
             self.scale = ease_out_cubic(self.scale, self.__lock_delay_to_scale(), self.dt)
             
-            if self.scale < 0.98:
+            if self.scale < 0.98 * self.default_scale:
                 self.lock_delay_scale_in_progress = False
-                self.scale = ease_out_cubic(self.scale, 1, self.dt)
+                self.scale = ease_out_cubic(self.scale, self.default_scale, self.dt)
+                
+    def game_over_animation(self):
+        
+        if self.FlagStruct.GAME_OVER and not self.game_over_animation_in_progress:
+            self.__do_game_over_animation()
+    
+        self.__update_game_over_animation()
+        
+    def __do_game_over_animation(self):
+        self.game_over_animation_in_progress = True
+        self.f = self.RNG.next_float()
 
+    def __do_shake(self):
+        if self.shake_time <= 0:
+            return
+
+        self.scale = self.default_scale
+        self.shake_time -= self.dt
+        
+        amplitude = self.shake_time * self.RenderStruct.GRID_SIZE * 3 * self.default_scale 
+        frequency = 64 
+
+        self.offset_x = amplitude * math.sin(self.shake_time * frequency) * (0.5 + self.RNG.next_float() * 0.5)
+        self.offset_y = amplitude * math.sin(self.shake_time * frequency * 1.5) * (0.5 + self.RNG.next_float() * 0.5)
+        
+    def __update_game_over_animation(self):
+        
+        if not self.game_over_animation_in_progress:
+            return
+        
+        if self.shake_time > 0:
+            self.__do_shake()
+            return
             
-            
+        if self.BoardConsts.game_over_type == 'FALL':
+
+            if self.f < 0.5:
+                dir = 1
+            else:
+                dir = -1
+                
+            self.angle = ease_in_out_quad(self.angle, dir * 720, self.dt)
            
+            self.fall_y_vel += self.gravity * self.dt 
+            self.offset_y += self.fall_y_vel * self.dt
+            
+            if (self.offset_y - self.BoardConsts.MATRIX_SURFACE_HEIGHT * 3 * self.default_scale) > self.RenderStruct.WINDOW_HEIGHT:
+                self.game_over_animation_in_progress = False
+                self.angle = 0 
+        
+        elif self.BoardConsts.game_over_type == 'ZOOMOUT':
+            
+            self.scale = ease_out_cubic(self.scale, self.scale * 0.97, self.dt)
+                
+            if self.scale < self.default_scale * 0.6:
+                self.alpha = ease_out_cubic(self.alpha, 0, self.dt)
+                
+                if self.alpha <= 1:
+                    self.game_over_animation_in_progress = False
+                    self.alpha = 0
+        
+        elif self.BoardConsts.game_over_type == 'FIZZLE':
+            
+            if not self.done_fizzle:
+                self.Matrix.do_fizzle_game_over = True
+                self.done_fizzle = True
+            
+            if not self.Matrix.do_fizzle_game_over:
+                self.shake_time = 0.5
+                self.game_over_animation_in_progress = False
+                self.Matrix.do_fizzle_game_over = False
+                self.done_fizzle = False
+                self.GameInstanceStruct.reset = True # after animation is done allow the game to reset
+        
+            
         

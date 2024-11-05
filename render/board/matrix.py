@@ -14,12 +14,13 @@ class Matrix():
         self.FlagStruct = FlagStruct
         self.GameInstanceStruct = GameInstanceStruct
         self.TimingStruct = TimingStruct
-        self.BoardConts = BoardConsts
+        self.BoardConsts = BoardConsts
         
         self.current_time = 0
         self.previous_time = 0
         self.dt = 0
         self.line_clear_particles = []
+        self.game_over_fizzle_particles = []
         
         self.RNG = RNG
         
@@ -27,7 +28,8 @@ class Matrix():
         self.lock_delay_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE)
         self.piece_blocks = 'PLACEHOLDER'
         
-        self.blocks_surface = self.blocks_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH, self.BoardConts.MATRIX_SURFACE_HEIGHT * 2), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.blocks_surface_alpha = 255
+        self.blocks_surface = self.blocks_surface = pygame.Surface((self.BoardConsts.MATRIX_SURFACE_WIDTH, self.BoardConsts.MATRIX_SURFACE_HEIGHT * 2), pygame.SRCALPHA|pygame.HWSURFACE)
         self.placed_blocks = 'PLACEHOLDER'
         
         self.shadow_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE)
@@ -36,7 +38,12 @@ class Matrix():
         self.warning_surface = pygame.Surface((1, 1), pygame.SRCALPHA|pygame.HWSURFACE)
         self.warning_type = 'PLACEHOLDER'
         
-        self.line_clear_animation_surface = pygame.Surface((self.BoardConts.MATRIX_SURFACE_WIDTH * 4, self.BoardConts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA|pygame.HWSURFACE|pygame.BLEND_RGB_ADD)
+        self.line_clear_animation_surface = pygame.Surface((self.BoardConsts.MATRIX_SURFACE_WIDTH * 4, self.BoardConsts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.game_over_fizzle_animation_surface = pygame.Surface((self.BoardConsts.MATRIX_SURFACE_WIDTH * 4, self.BoardConsts.MATRIX_SURFACE_HEIGHT * 3 + self.RenderStruct.GRID_SIZE * 5), pygame.SRCALPHA|pygame.HWSURFACE)
+        
+        self.got_fizzle_particles = False
+        self.do_fizzle_game_over = False
+        self.wait_time = 1
         
         self.RenderStruct.textures = {
             'Z': None,
@@ -73,7 +80,7 @@ class Matrix():
         args:
             surface (pygame.Surface): The surface to draw onto
         """
-        matrix_rect = pygame.Rect(self.BoardConts.matrix_rect_pos_x, self.BoardConts.matrix_rect_pos_y, self.BoardConts.MATRIX_SURFACE_WIDTH, self.BoardConts.MATRIX_SURFACE_HEIGHT)
+        matrix_rect = pygame.Rect(self.BoardConsts.matrix_rect_pos_x, self.BoardConsts.matrix_rect_pos_y, self.BoardConsts.MATRIX_SURFACE_WIDTH, self.BoardConsts.MATRIX_SURFACE_HEIGHT)
         
         if self.TimingStruct.FPS == 0:
             self.dt = 1
@@ -84,6 +91,9 @@ class Matrix():
         self.__draw_placed_blocks(surface, matrix_rect)
         self.__draw_current_tetromino(surface, matrix_rect)
         self.__do_line_clear_animation(surface, matrix_rect)
+        
+        if self.do_fizzle_game_over:
+            self.__do_fizzle_animation(surface, matrix_rect)
         
         if self.FlagStruct.DANGER:
             self.__draw_next_tetromino_warning(surface, matrix_rect)
@@ -185,7 +195,7 @@ class Matrix():
             self.blocks_surface.fill((0, 0, 0, 0))
             self.__draw_tetromino_blocks(self.blocks_surface, self.GameInstanceStruct.matrix.matrix, self.blocks_surface.get_rect())
         
-        self.blocks_surface.set_alpha(255)  
+        self.blocks_surface.set_alpha(self.blocks_surface_alpha)  
         surface.blit(self.blocks_surface, (rect.x, rect.y - rect.height//2)) # since matrix is double the board height, we need to shift it up
         
     def __get_rect(self, blocks, position, matrix_surface_rect):
@@ -415,7 +425,7 @@ class Matrix():
         
         surface.blit(
             self.line_clear_animation_surface,
-            (matrix_rect.x - self.line_clear_animation_surface.get_width() // 2 + matrix_rect.width // 2,
+            (matrix_rect.x - self.line_clear_animation_surface.get_width() // 2 + matrix_rect.width // 2 + self.BoardConsts.GarbageWidth // 2,
             matrix_rect.y - matrix_rect.height)
         )
     
@@ -494,5 +504,131 @@ class Matrix():
         # need to track the blocks that are placed, want it so multiple pieces being placed at the same time don't interfere with each other
         
             pass
+    
+    def __do_fizzle_animation(self, surface, rect):
+        
+        if not self.FlagStruct.GAME_OVER:
+            return
+        
+        self.game_over_fizzle_animation_surface.fill((0, 0, 0, 0))
+        
+        if not self.got_fizzle_particles:
+            self.get_fizzle_particles()
+            
+        if self.wait_time > 0:
+            self.wait_time -= self.dt
+            return
+        else:
+            self.GameInstanceStruct.matrix.matrix = self.GameInstanceStruct.matrix.empty_matrix() # clear the matrix
+            self.GameInstanceStruct.current_tetromino = None 
+        
+        self.play_fizzle_animation(surface, rect)
+        
+        if len(self.game_over_fizzle_particles) == 0:
+            self.got_fizzle_particles = False
+            self.do_fizzle_game_over = False
+            self.wait_time = 1
+            return
+      
+    def play_fizzle_animation(self, surface, rect):
+        
+        if len(self.game_over_fizzle_particles) == 0:
+            return
+        
+        updated_particles = []
+
+        for particle in self.game_over_fizzle_particles:
+            
+            d = 0.3
+
+            x, y, x_vel, y_vel, scale, block, time, max_time = particle
+            time -= self.dt
+
+            x_dir = (x_vel / abs(x_vel)) if x_vel != 0 else 0
+            x_vel -= abs(x_vel) * d * self.dt * x_dir
+            
+            y_vel -= self.RenderStruct.GRID_SIZE  * self.dt
+            
+            y_dir = (y_vel / abs(y_vel)) if y_vel != 0 else 0
+            y_vel -= abs(y_vel) * d * self.dt * y_dir
+                        
+            if x - scale <= 0 or x - scale + self.BoardConsts.GarbageWidth >= rect.width:
+                x_vel *= -1
+            
+            if y + scale >= rect.height * 2 - self.RenderStruct.GRID_SIZE  + self.RenderStruct.BORDER_WIDTH + 1:
+                a = abs(y_vel)
+                y_vel = -a
+                
+            x += x_vel * self.dt
+            y += y_vel * self.dt 
+                 
+            prog = 1 - (max_time - time) / max_time
+            scale *= smoothstep(prog)
+                
+            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.001 and self.in_y_bounds(rect, y, scale) else None
+            
+            self.draw_block(
+                self.game_over_fizzle_animation_surface,
+                block,
+                x + self.game_over_fizzle_animation_surface.get_width() // 2 - rect.width // 2,
+                y + rect.height // 2 + self.RenderStruct.GRID_SIZE * 6,
+                scale,
+                rect
+            )
+            
+            self.game_over_fizzle_particles = updated_particles
+            
+            surface.blit(
+                self.game_over_fizzle_animation_surface,
+                (rect.x - self.game_over_fizzle_animation_surface.get_width() // 2 + rect.width // 2 + self.BoardConsts.GarbageWidth // 2,
+                rect.y - rect.height + self.RenderStruct.GRID_SIZE // 2 - self.RenderStruct.BORDER_WIDTH)
+            )
+        
+    def get_fizzle_particles(self):
+        
+        fizzle_particles = []
+        
+        for idx, row in enumerate(self.GameInstanceStruct.matrix.matrix):
+            for pos, block in enumerate(row):
+                if block != 0:
+                    self.generate_fizzle_particles(pos, idx, block, fizzle_particles)
+                     
+        if self.GameInstanceStruct.current_tetromino is not None:
+            for i, row in enumerate(self.GameInstanceStruct.current_tetromino.blocks):
+                for j, value in enumerate(row):
+                    if value != 0:
+                        self.generate_fizzle_particles(self.GameInstanceStruct.current_tetromino.position.x + j, self.GameInstanceStruct.current_tetromino.position.y + i, value, fizzle_particles)
+                    
+        self.game_over_fizzle_particles.extend(fizzle_particles)
+        self.got_fizzle_particles = True
+        
+        
+    def generate_fizzle_particles(self, pos, idx, block, fizzle_particles):
+        
+        x = pos * self.RenderStruct.GRID_SIZE 
+        y = idx * self.RenderStruct.GRID_SIZE 
+        
+        f = self.RNG.next_float()
+        
+        if f < 0.5:
+            x_dir = -1
+        else:
+            x_dir = 1
+        
+        f = self.RNG.next_float()
+        
+        if f < 0.5:
+            y_dir = -1
+        else:
+            y_dir = 1
+            
+        x_vel = (self.RNG.next_float()) * self.RenderStruct.GRID_SIZE * x_dir
+        y_vel = (self.RNG.next_float()) * self.RenderStruct.GRID_SIZE * y_dir
+
+        scale = 1
+        max_time = (self.RNG.next_float() + 0.5) * 2 + 15
+        time = max_time
+        
+        fizzle_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time))
     
 

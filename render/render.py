@@ -70,6 +70,7 @@ class Render():
         self.Board.draw(self.board_surface)
         
         transformed_surface, transformed_rect = TransformSurface(self.board_surface, self.Board.scale, self.Board.angle, pygame.Vector2(self.Board.board_center_x_board_space, self.Board.board_center_y_board_space), pygame.Vector2(self.board_center_screen_pos_x, self.board_center_screen_pos_y), pygame.Vector2(self.Board.offset_x, self.Board.offset_y))
+        transformed_surface.set_alpha(self.Board.alpha)
         self.window.blit(transformed_surface, transformed_rect.topleft)
     
         self.draw_guidline_debug()

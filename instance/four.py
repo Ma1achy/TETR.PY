@@ -6,7 +6,7 @@ import math
 from utils import Vec2
 
 class Four():
-    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True, allowed_spins = 'ALL-MINI'):
+    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True, allowed_spins = 'ALL-MINI', top_out_ok = False, reset_on_top_out = False):
         """
         Create an instance of the game Four
         
@@ -29,6 +29,10 @@ class Four():
         self.GameInstanceStruct.rotation_system = RotationSystem(rotation_system)
         self.GameInstanceStruct.kick_table = self.GameInstanceStruct.rotation_system.kick_table
         self.GameInstanceStruct.allowed_spins = allowed_spins
+        self.GameInstanceStruct.top_out_ok = top_out_ok
+        self.GameInstanceStruct.reset_on_top_out = reset_on_top_out
+        
+        self.GameInstanceStruct.reset = False
         
         self.GameInstanceStruct.randomiser = randomiser
         self.GameInstanceStruct.seed = seed
@@ -89,13 +93,16 @@ class Four():
             if self.GameInstanceStruct.current_tetromino is None:
                 self.__get_next_piece(hold = False)
             
-            if self.__is_row_17_empty():
-                self.__event_danger(False)
-            else:
-                self.__top_out_warn()
-                self.__event_danger(True)
+            self.__do_top_out_warning()
 
             self.__update_current_tetromino()
+        
+        else:
+            if self.GameInstanceStruct.reset_on_top_out:
+                self.__do_top_out_warning()
+                
+                if self.GameInstanceStruct.reset:
+                    self.__topout_ok_reset_game()
     
     def __update_current_tetromino(self):
         """
@@ -490,6 +497,16 @@ class Four():
             
     # --------------------------------------------------- EVENTS ---------------------------------------------------
     
+    def __do_top_out_warning(self):
+        """
+        Activate the top out warning
+        """
+        if self.__is_row_17_empty():
+            self.__event_danger(False)
+        else:
+            self.__get_next_piece_warn()
+            self.__event_danger(True)
+                
     def __is_row_17_empty(self):
         """
         Test if the 17th row is empty for top out warning
@@ -504,7 +521,7 @@ class Four():
         else:
             return True
                          
-    def __top_out_warn(self):
+    def __get_next_piece_warn(self):
         """
         Activate the top out warning
         """
@@ -530,6 +547,11 @@ class Four():
         self.FlagStruct.IS_SPIN = False
         self.FlagStruct_IS_MINI = False
         self.FlagStruct.LINE_CLEAR = False
+        
+    def __topout_ok_reset_game(self):
+        self.FlagStruct.GAME_OVER = False
+        self.GameInstanceStruct.reset = False
+       
 class Queue():
     def __init__(self, RNG, randomiser = '7BAG'):
         """
