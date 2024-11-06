@@ -71,7 +71,7 @@ class Render():
         self.window.fill((0, 0, 0))
         self.window.blit(self.image, (0, 0))
         
-        if self.FlagStruct.DANGER:
+        if self.Board.top_out_surface_alpha > 1:
             self.window.blit(self.Board.top_out_surface, (0, 0))
         
         self.board_surface.fill((0, 0, 0, 0))
