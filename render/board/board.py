@@ -405,12 +405,13 @@ class Board():
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
             self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 512, self.dt)
-                
+        
         if self.FlagStruct.DANGER:
             self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 180, self.dt)
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
             self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 128, self.dt)
+        
         else:
             self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 0, self.dt)
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 255, self.dt)
