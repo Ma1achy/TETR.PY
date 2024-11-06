@@ -174,7 +174,7 @@ class Matrix():
             self.warning_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
             self.__DrawWarningCrosses(self.warning_surface, self.GameInstanceStruct.next_tetromino.blocks, self.warning_surface.get_rect())
             
-        self.warning_surface.set_alpha(128)
+        self.warning_surface.set_alpha(self.BoardConsts.warning_cross_opacity)
         surface.blit(self.warning_surface, (rect.x, rect.y))
     
     def __draw_placed_blocks(self, surface, matrix_surface_rect:pygame.Rect):

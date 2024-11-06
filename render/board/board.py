@@ -12,7 +12,7 @@ from render.board.UI.border import UIBorder
 from render.board.UI.info_text import UIInfoText
 from render.board.UI.action_text import UIActionText
 from core.handling import Action
-from utils import ease_out_cubic, ease_in_out_quad, smoothstep
+from utils import ease_out_cubic, ease_in_out_quad, smoothstep, get_tetromino_blocks
 from instance.four import RNG
 import math
  
@@ -59,6 +59,12 @@ class Board():
         self.UI_InfoText = UIInfoText(RenderStruct, FlagStruct, GameInstanceStruct, TimingStruct,  Fonts, self.BoardConsts)
         self.UI_ActionText = UIActionText(GameInstanceStruct, RenderStruct, FlagStruct, TimingStruct, Fonts, self.BoardConsts)
         
+        self.top_out_surface = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.top_out_surface_alpha = 0
+        self.top_out_colour_bg = 255
+        self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
+        self.BoardConsts.warning_cross_opacity = 0
+        
         self.board_center_x_board_space = self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH // 2
         self.board_center_y_board_space = self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT // 2
 
@@ -101,7 +107,7 @@ class Board():
         Get the surface to draw the board onto
         """
         return pygame.Surface((self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), pygame.SRCALPHA|pygame.HWSURFACE)
-    
+        
     def draw(self, surface):
         """
         Draw the board onto a surface
@@ -123,6 +129,7 @@ class Board():
         self.harddrop_bounce_animation()
         self.board_scale_push_in_animation()
         self.game_over_animation()
+        self.top_out_darken_animation()
         
         if self.RenderStruct.draw_guide_lines:
             pygame.draw.rect(surface, (0, 0, 255), (0, 0, self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), 1)
@@ -384,5 +391,68 @@ class Board():
                 self.done_fizzle = False
                 self.GameInstanceStruct.reset = True # after animation is done allow the game to reset
         
-            
+    def top_out_darken_animation(self):
         
+        self.top_out_surface.fill((0, 0, 0))
+        self.top_out_surface.set_alpha(self.top_out_surface_alpha)
+        
+        self.__update_top_out_darken()
+        
+    def __update_top_out_darken(self):
+        
+        if self.__check_spawn_overlap():
+            self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 255, self.dt)
+            self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
+            self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
+            self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 512, self.dt)
+                
+        if self.FlagStruct.DANGER:
+            self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 180, self.dt)
+            self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
+            self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
+            self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 128, self.dt)
+        else:
+            self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 0, self.dt)
+            self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 255, self.dt)
+            self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
+            self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 0, self.dt)
+        
+    def __check_spawn_overlap(self):
+        
+        if self.GameInstanceStruct.current_tetromino is None:
+            return False
+        
+        if not self.GameInstanceStruct.current_tetromino.is_on_floor():
+            return False
+        
+        position = self.GameInstanceStruct.current_tetromino.position
+        blocks = self.GameInstanceStruct.current_tetromino.blocks
+        array = self.GameInstanceStruct.matrix.spawn_overlap
+        
+        return self.check_overlap(position, blocks, array)
+        
+    def check_overlap(self, position, blocks, array):
+        if any (
+            val != 0 and (
+                position.x + x < 0 or position.x + x >= self.GameInstanceStruct.matrix.WIDTH or 
+                position.y + y <= 0 or position.y + y >= self.GameInstanceStruct.matrix.HEIGHT or 
+                array[position.y + y][position.x + x] != 0
+            )
+            for y, row in enumerate(blocks)
+            for x, val in enumerate(row)
+        ):
+            return True         
+        else:
+            return False
+        
+                
+        
+        
+        
+        
+        
+        
+            
+ 
+                
+    

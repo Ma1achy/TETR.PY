@@ -7,7 +7,7 @@ from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
-from utils import lerpBlendRGBA, get_tetromino_blocks, get_prefix, smoothstep, TransformSurface, RotateSurface, ScaleSurface
+from utils import lerpBlendRGBA, get_tetromino_blocks, get_prefix, smoothstep, TransformSurface, RotateSurface, ScaleSurface, ease_in_out_quad, ease_out_cubic
 from render.UI.debug_menu import UIDebug
 from render.UI.key_states_overlay import UIKeyStates
 from render.board.board import Board
@@ -63,16 +63,25 @@ class Render():
         """
         Render the frame of the Four Instance
         """
-    
+        if self.TimingStruct.FPS == 0:
+            self.dt = 1
+        else:
+            self.dt = 1 / self.TimingStruct.FPS
+            
         self.window.fill((0, 0, 0))
         self.window.blit(self.image, (0, 0))
+        
+        if self.FlagStruct.DANGER:
+            self.window.blit(self.Board.top_out_surface, (0, 0))
+        
         self.board_surface.fill((0, 0, 0, 0))
         self.Board.draw(self.board_surface)
         
         transformed_surface, transformed_rect = TransformSurface(self.board_surface, self.Board.scale, self.Board.angle, pygame.Vector2(self.Board.board_center_x_board_space, self.Board.board_center_y_board_space), pygame.Vector2(self.board_center_screen_pos_x, self.board_center_screen_pos_y), pygame.Vector2(self.Board.offset_x, self.Board.offset_y))
         transformed_surface.set_alpha(self.Board.alpha)
         self.window.blit(transformed_surface, transformed_rect.topleft)
-    
+
+        
         self.draw_guidline_debug()
         self.UI_Debug.draw(self.window)
         self.UI_KeyStates.draw(self.window)
@@ -87,4 +96,3 @@ class Render():
             pygame.draw.line(self.window, (0, 255, 0), (0, self.RenderStruct.WINDOW_HEIGHT // 4), (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT // 4), 1)
             pygame.draw.line(self.window, (0, 255, 0), (self.RenderStruct.WINDOW_WIDTH // 4 * 3, 0), (self.RenderStruct.WINDOW_WIDTH // 4 * 3, self.RenderStruct.WINDOW_HEIGHT), 1)
             pygame.draw.line(self.window, (0, 255, 0), (0, self.RenderStruct.WINDOW_HEIGHT // 4 * 3), (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT // 4 * 3), 1)
-

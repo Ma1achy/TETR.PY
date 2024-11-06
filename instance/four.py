@@ -501,20 +501,21 @@ class Four():
         """
         Activate the top out warning
         """
-        if self.__is_row_17_empty():
+        if self.__is_top_empty():
             self.__event_danger(False)
         else:
             self.__get_next_piece_warn()
             self.__event_danger(True)
                 
-    def __is_row_17_empty(self):
+    def __is_top_empty(self):
         """
         Test if the 17th row is empty for top out warning
         """
         non_zero_idx = []
-        for idx in self.GameInstanceStruct.matrix.matrix[22]:
-            if idx != 0:
-                non_zero_idx.append(idx)
+        for row in range(0, self.GameInstanceStruct.matrix.HEIGHT // 2 + 3):
+            for idx in self.GameInstanceStruct.matrix.matrix[row]:
+                if idx != 0:
+                    non_zero_idx.append(idx)
                 
         if len(non_zero_idx) != 0:
             return False
@@ -528,8 +529,10 @@ class Four():
         if self.FlagStruct.GAME_OVER:
             return
         
+        self.GameInstanceStruct.matrix.spawn_overlap = self.GameInstanceStruct.matrix.empty_matrix()
         next_piece = self.GameInstanceStruct.queue.view_queue(idx = 0)
         self.GameInstanceStruct.next_tetromino =  Tetromino(next_piece, 0, self.spawn_pos.x, self.spawn_pos.y , self.FlagStruct, self.GameInstanceStruct)
+        self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.next_tetromino.blocks, self.GameInstanceStruct.next_tetromino.position, self.GameInstanceStruct.matrix.spawn_overlap)
         
     def __event_danger(self, val:bool):
         """
