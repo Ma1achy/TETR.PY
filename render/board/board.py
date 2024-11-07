@@ -307,16 +307,22 @@ class Board():
         
         if not self.lock_delay_scale_in_progress and self.scale != self.default_scale:
             self.scale = ease_out_cubic(self.scale, self.default_scale, self.dt)
-     
-            if self.scale > 0.999 * self.default_scale:
+
+            if abs(self.scale - self.default_scale) < 0.001:
                 self.scale = self.default_scale
-                return
         else:
-            self.scale = ease_out_cubic(self.scale, self.__lock_delay_to_scale(), self.dt)
-            
-            if self.scale < 0.98 * self.default_scale:
-                self.lock_delay_scale_in_progress = False
-                self.scale = ease_out_cubic(self.scale, self.default_scale, self.dt)
+            if self.__check_spawn_overlap(): # if the tetromino is overlapping with the spawn area then scale up instead
+                self.scale = ease_out_cubic(self.scale, self.__lock_delay_to_scale() * 1.06, self.dt)
+
+                if self.scale > 1.05 * self.default_scale:
+                    self.lock_delay_scale_in_progress = False
+                    self.scale = ease_out_cubic(self.scale, self.default_scale, self.dt)
+            else:
+                self.scale = ease_out_cubic(self.scale, self.__lock_delay_to_scale(), self.dt)
+                
+                if self.scale < 0.98 * self.default_scale:
+                    self.lock_delay_scale_in_progress = False
+                    self.scale = ease_out_cubic(self.scale, self.default_scale, self.dt)
                 
     def game_over_animation(self):
         
@@ -411,7 +417,7 @@ class Board():
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
             self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 128, self.dt)
-        
+            
         else:
             self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 0, self.dt)
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 255, self.dt)
