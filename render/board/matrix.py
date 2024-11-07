@@ -426,7 +426,7 @@ class Matrix():
         surface.blit(
             self.line_clear_animation_surface,
             (matrix_rect.x - self.line_clear_animation_surface.get_width() // 2 + matrix_rect.width // 2 + self.BoardConsts.GarbageWidth // 2,
-            matrix_rect.y - matrix_rect.height)
+            matrix_rect.y - matrix_rect.height + self.RenderStruct.GRID_SIZE // 2 - self.RenderStruct.BORDER_WIDTH)
         )
     
     def draw_block(self, surface, block, x, y, scale, matrix_rect):
@@ -456,8 +456,8 @@ class Matrix():
         for idx in self.RenderStruct.cleared_idxs:
             for line in self.RenderStruct.cleared_blocks:
                 for pos, block in enumerate(line):
-                    offset_x = self.RNG.next_float() * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE //4
-                    offset_y = self.RNG.next_float() * self.RenderStruct.GRID_SIZE - self.RenderStruct.GRID_SIZE //4
+                    offset_x = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE //4
+                    offset_y = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE - self.RenderStruct.GRID_SIZE //4
                     
                     x = pos * self.RenderStruct.GRID_SIZE + offset_x
                     y = idx * self.RenderStruct.GRID_SIZE + offset_y
