@@ -26,7 +26,7 @@ class Board():
         self.TimingStruct = TimingStruct
         self.DebugStruct = DebugStruct
         self.BoardConsts = StructBoardConsts()
-        
+        self.Fonts = Fonts
         self.BoardConsts.draw_garbage_bar = True
         
         if self.BoardConsts.draw_garbage_bar:
@@ -51,15 +51,19 @@ class Board():
         self.BoardConsts.matrix_rect_pos_x = self.BoardConsts.board_rect_width // 2 - self.BoardConsts.MATRIX_SURFACE_WIDTH // 2 
         self.BoardConsts.matrix_rect_pos_y = self.BoardConsts.MATRIX_SURFACE_HEIGHT - self.RenderStruct.GRID_SIZE * 4 - self.RenderStruct.BORDER_WIDTH 
         
+        self.BoardConsts.top_out_colour = (255, 0, 0)
+        self.BoardConsts.board_glow_surface = self.get_board_surface()
+        self.glow_alpha = 0
         self.RNG = RNG(seed = 0)
         
         self.Matrix = Matrix(RenderStruct, FlagStruct, GameInstanceStruct, TimingStruct, self.BoardConsts, self.RNG)
-        self.HoldAndQueue = HoldAndQueue(RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConsts)
         self.UI_Border = UIBorder(RenderStruct, FlagStruct, GameInstanceStruct, Fonts, self.BoardConsts)
+        self.HoldAndQueue = HoldAndQueue(RenderStruct, FlagStruct, GameInstanceStruct, self.BoardConsts)
         self.UI_InfoText = UIInfoText(RenderStruct, FlagStruct, GameInstanceStruct, TimingStruct,  Fonts, self.BoardConsts)
         self.UI_ActionText = UIActionText(GameInstanceStruct, RenderStruct, FlagStruct, TimingStruct, Fonts, self.BoardConsts)
         
         self.top_out_surface = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+         
         self.top_out_surface_alpha = 0
         self.top_out_colour_bg = 255
         self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
@@ -122,6 +126,13 @@ class Board():
         self.UI_ActionText.draw(surface)
         self.Matrix.draw(surface)
         self.UI_InfoText.draw(surface)
+        
+        if self.glow_alpha > 0:
+            self.BoardConsts.board_glow_surface.set_alpha(self.glow_alpha)
+            surface.blit(self.BoardConsts.board_glow_surface, (0, 0))
+            
+        self.draw_hold_text(surface)
+        self.draw_queue_text(surface)
         
         self.board_spin_animation()
         self.board_push_horizontal_animation()
@@ -411,19 +422,25 @@ class Board():
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
             self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 512, self.dt)
-        
+            self.glow_alpha = ease_out_cubic(self.glow_alpha, 270, self.dt)
+            
         if self.FlagStruct.DANGER:
             self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 180, self.dt)
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
-            self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 128, self.dt)
-            
+            self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 100, self.dt)
+            self.glow_alpha = ease_out_cubic(self.glow_alpha, 128, self.dt)
+
         else:
             self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 0, self.dt)
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 255, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
             self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 0, self.dt)
-        
+            self.glow_alpha = ease_out_cubic(self.glow_alpha, 0, self.dt)
+             
+            if self.glow_alpha < 1:
+                self.glow_alpha = 0
+                
     def __check_spawn_overlap(self):
         
         if self.GameInstanceStruct.current_tetromino is None:
@@ -451,9 +468,27 @@ class Board():
             return True         
         else:
             return False
+    
+    def draw_hold_text(self, surface):
+        if not self.GameInstanceStruct.hold:  
+            return
         
+        text = self.Fonts.hun2_big.render('NEXT', True, (0, 0, 0))
+        surface.blit(text, (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 0.15))
                 
+    def draw_queue_text(self, surface):
+        if not self.GameInstanceStruct.queue_previews > 0:
+            return
         
+        if self.BoardConsts.draw_garbage_bar:
+            start = 7
+            end = - self.RenderStruct.GRID_SIZE
+        else:
+            start = 6
+            end = 0
+            
+        text = self.Fonts.hun2_big.render('HOLD', True, (0, 0, 0))
+        surface.blit(text, (self.BoardConsts.matrix_rect_pos_x  - (start + 0.25) * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE * 0.25, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 0.15))
         
         
         

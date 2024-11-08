@@ -81,7 +81,6 @@ class Render():
         transformed_surface.set_alpha(self.Board.alpha)
         self.window.blit(transformed_surface, transformed_rect.topleft)
 
-        
         self.draw_guidline_debug()
         self.UI_Debug.draw(self.window)
         self.UI_KeyStates.draw(self.window)
