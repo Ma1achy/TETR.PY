@@ -58,7 +58,7 @@ class UIBorder():
             grid_colour = lerpBlendRGBA((0, 0, 0), self.BoardConsts.top_out_colour, 0.25)
         else:
             grid_colour = colour
-        
+                    
         for idx in range(self.GameInstanceStruct.matrix.WIDTH + 1):
             pygame.draw.line(self.matrix_background_surface, grid_colour, 
                             (idx * self.RenderStruct.GRID_SIZE, 0), 
@@ -91,6 +91,11 @@ class UIBorder():
                         (self.BoardConsts.matrix_rect_pos_x  - self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT + self.RenderStruct.BORDER_WIDTH // 2), 
                         (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH - 1, self.BoardConsts.matrix_rect_pos_y + self.BoardConsts.MATRIX_SURFACE_HEIGHT + self.RenderStruct.BORDER_WIDTH // 2), 
                         self.RenderStruct.BORDER_WIDTH)
+        
+        if not self.GameInstanceStruct.lock_out_ok: # matrix top border
+            pygame.draw.line(surface, self.BoardConsts.top_out_colour,
+                    (self.BoardConsts.matrix_rect_pos_x, self.BoardConsts.matrix_rect_pos_y),
+                    (self.BoardConsts.matrix_rect_pos_x + self.BoardConsts.MATRIX_SURFACE_WIDTH - self.RenderStruct.BORDER_WIDTH // 4 + 1, self.BoardConsts.matrix_rect_pos_y), self.RenderStruct.BORDER_WIDTH // 2)
 
     def __draw_garbage_border(self, surface, draw_background = True):
         """
@@ -214,5 +219,8 @@ class UIBorder():
         self.__draw_matrix_grid(surf, False,  width = 5, colour = (255, 0, 0))
         
         blurr = apply_gaussian_blur_with_alpha(surf, sigma)
+                
         self.BoardConsts.matrix_line_glow_surface.blit(blurr, (0, 0))
+        
+      
         

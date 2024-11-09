@@ -6,7 +6,7 @@ import math
 from utils import Vec2
 
 class Four():
-    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True, allowed_spins = 'ALL-MINI', top_out_ok = False, reset_on_top_out = False):
+    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True, allowed_spins = 'ALL-MINI', lock_out_ok = True, top_out_ok = False, reset_on_top_out = False):
         """
         Create an instance of the game Four
         
@@ -29,6 +29,7 @@ class Four():
         self.GameInstanceStruct.rotation_system = RotationSystem(rotation_system)
         self.GameInstanceStruct.kick_table = self.GameInstanceStruct.rotation_system.kick_table
         self.GameInstanceStruct.allowed_spins = allowed_spins
+        self.GameInstanceStruct.lock_out_ok = lock_out_ok
         self.GameInstanceStruct.top_out_ok = top_out_ok
         self.GameInstanceStruct.reset_on_top_out = reset_on_top_out
         
@@ -90,16 +91,16 @@ class Four():
             self.__do_lock_delay()
             self.__clear_lines()
             
-            if self.GameInstanceStruct.current_tetromino is None:
+            if self.GameInstanceStruct.current_tetromino is None and not self.FlagStruct.GAME_OVER:
                 self.__get_next_piece(hold = False)
             
-            self.__do_top_out_warning()
+            self.__do_block_out_warning()
 
             self.__update_current_tetromino()
         
         else:
             if self.GameInstanceStruct.reset_on_top_out:
-                self.__do_top_out_warning()
+                self.__do_block_out_warning()
                 
                 if self.GameInstanceStruct.reset:
                     self.__topout_ok_reset_game()
@@ -263,6 +264,7 @@ class Four():
             return
         
         self.GameInstanceStruct.matrix.insert_blocks(self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.matrix.matrix)
+        self.__do_lock_out()
         self.GameInstanceStruct.current_tetromino = None
             
     def __move_to_floor(self):
@@ -433,7 +435,7 @@ class Four():
         if not spawning_tetromino.collision(spawning_tetromino.blocks, spawning_tetromino.position):
             return True
         else:
-            self.FlagStruct.GAME_OVER = True
+            self.__do_block_out()
             print("Game Over")
             return False
                                 
@@ -497,7 +499,32 @@ class Four():
             
     # --------------------------------------------------- EVENTS ---------------------------------------------------
     
-    def __do_top_out_warning(self):
+    def __do_lock_out(self):
+        """
+        Lockout is when a piece is placed entirely outside of the visible matrix in the buffer zone
+        """
+        if self.GameInstanceStruct.current_tetromino is None:
+            return
+        
+        if self.GameInstanceStruct.lock_out_ok:
+            return
+                
+        # check if all blocks are in the buffer zone
+        if all(
+            self.GameInstanceStruct.current_tetromino.position.y + y <= self.GameInstanceStruct.matrix.HEIGHT//2 - 1
+            for y, row in enumerate(self.GameInstanceStruct.current_tetromino.blocks)
+            for x, val in enumerate(row)
+            if val != 0
+        ):
+            self.FlagStruct.GAME_OVER = True
+    
+    def __do_block_out(self):
+        """
+        Blockout is when a piece cannot spawn
+        """
+        self.FlagStruct.GAME_OVER = True
+    
+    def __do_block_out_warning(self):
         """
         Activate the top out warning
         """
@@ -509,7 +536,7 @@ class Four():
                 
     def __is_top_empty(self):
         """
-        Test if the 17th row is empty for top out warning
+        Test if any rows above and including the 18th row are empty
         """
         non_zero_idx = []
         for row in range(0, self.GameInstanceStruct.matrix.HEIGHT // 2 + 3):

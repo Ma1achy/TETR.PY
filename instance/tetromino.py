@@ -459,6 +459,9 @@ class Tetromino():
                 self.GameInstanceStruct.matrix.matrix[corner_pos.y][corner_pos.x] != 0
             )
         ]
+
+    def get_height(self):
+        return sum(1 for row in self.blocks if any(cell != 0 for cell in row))
     
     # ========================================================== LOCK DELAY ============================================================
     

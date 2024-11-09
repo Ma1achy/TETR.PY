@@ -17,7 +17,7 @@ from instance.four import Four
 
 async def main():
     game_instance = Core()
-    four = Four(game_instance, matrix_width = 10, matrix_height = 20, rotation_system = 'SRS', randomiser = '7BAG', queue_previews = 5,  seed = 0, hold = True, allowed_spins = 'ALL-MINI', top_out_ok = False, reset_on_top_out = False)
+    four = Four(game_instance, matrix_width = 10, matrix_height = 20, rotation_system = 'SRS', randomiser = '7BAG', queue_previews = 5,  seed = 0, hold = True, allowed_spins = 'ALL-MINI', lock_out_ok = True, top_out_ok = False, reset_on_top_out = False)
     await game_instance.run(four)
 
 if __name__ == "__main__":

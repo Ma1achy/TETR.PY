@@ -136,7 +136,7 @@ class Board():
         if self.glow_alpha > 0:
             self.BoardConsts.board_glow_surface.set_alpha(self.glow_alpha)
             surface.blit(self.BoardConsts.board_glow_surface, (0, 0))
-            
+                
         self.draw_hold_text(surface)
         self.draw_queue_text(surface)
         
