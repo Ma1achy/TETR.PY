@@ -29,7 +29,7 @@ class Render():
         self.TimingStruct = TimingStruct
         self.DebugStruct = DebugStruct
         
-        self.RenderStruct.TEXTURE_ATLAS = pygame.image.load('render/textures.png')
+        self.RenderStruct.TEXTURE_ATLAS = pygame.image.load('resources/block/blocks.png')
         self.RenderStruct.TEXTURES_PER_ROW = 5
         self.RenderStruct.TEXTURES_PER_COLUMN = 5
       
@@ -40,6 +40,7 @@ class Render():
         self.board_center_screen_pos_x = self.RenderStruct.WINDOW_WIDTH // 2 
         self.board_center_screen_pos_y = self.RenderStruct.WINDOW_HEIGHT // 2
       
+        self.icon = pygame.image.load('resources/icon.png')
         self.window = self.__init_window()
         self.Fonts = Fonts(self.RenderStruct)
         
@@ -48,7 +49,7 @@ class Render():
         self.UI_KeyStates = UIKeyStates(self.RenderStruct, self.Fonts)
         self.board_surface = self.Board.get_board_surface()
         
-        self.image_path = 'render/image.jpg'
+        self.image_path = 'resources/background/b1.jpg'
         self.image = pygame.image.load(self.image_path)
         self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
         
@@ -56,6 +57,7 @@ class Render():
         """
         Create the window to draw to
         """
+        pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
         return pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF)
      

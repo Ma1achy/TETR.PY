@@ -11,7 +11,7 @@ class Font():
             size (int): The size of the font
         """
         self.size = size
-        self.base_path = os.path.join(os.path.dirname(__file__), 'font')
+        self.base_path = 'resources/font'
     
     def hun2(self):
         font_path = os.path.join(self.base_path, 'hun2.ttf')

@@ -1,6 +1,7 @@
 import pygame
 import os
 import numpy as np
+from scipy.ndimage import gaussian_filter, binary_dilation
 
 def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     """
@@ -299,3 +300,25 @@ def ease_out_cubic(start, end, t):
 
 def lerp(current, target, t):
     return current + (target - current) * t 
+
+def apply_gaussian_blur_with_alpha(surface, sigma):
+    # straight alpha
+    pixel_array = pygame.surfarray.array3d(surface).astype(np.float32)
+    alpha_channel = pygame.surfarray.pixels_alpha(surface).astype(np.float32) / 255.0
+
+    # convert to pre-multiplied alpha
+    rgba_array = np.dstack([pixel_array * alpha_channel[:, :, None], alpha_channel])
+
+    # apply a gaussian blur to each RGB channel and the alpha channel separately
+    blurred_rgba_array = np.dstack([gaussian_filter(rgba_array[:, :, i], sigma=sigma) for i in range(4)])
+
+    # convert back to straight alpha by dividing the RGB channels by the alpha matte
+    nonzero_alpha = np.maximum(blurred_rgba_array[:, :, 3], 1e-32) # to avoid division by zero
+    final_rgb = (blurred_rgba_array[:, :, :3] / nonzero_alpha[:, :, None]).clip(0, 255).astype(np.uint8)
+    final_alpha = (blurred_rgba_array[:, :, 3] * 255).clip(0, 255).astype(np.uint8)
+
+    blurred_surface = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
+    pygame.surfarray.blit_array(blurred_surface, final_rgb)
+    pygame.surfarray.pixels_alpha(blurred_surface)[:, :] = final_alpha
+
+    return blurred_surface

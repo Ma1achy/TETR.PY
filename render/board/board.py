@@ -53,6 +53,7 @@ class Board():
         
         self.BoardConsts.top_out_colour = (255, 0, 0)
         self.BoardConsts.board_glow_surface = self.get_board_surface()
+        self.BoardConsts.matrix_line_glow_surface = self.get_board_surface()
         self.glow_alpha = 0
         self.RNG = RNG(seed = 0)
         
@@ -122,6 +123,11 @@ class Board():
             self.dt = 1 / self.TimingStruct.FPS
         
         self.UI_Border.draw(surface) 
+        
+        if self.alpha > 0:
+            self.BoardConsts.matrix_line_glow_surface.set_alpha(self.glow_alpha//2)
+            surface.blit(self.BoardConsts.matrix_line_glow_surface, (0, 0))
+            
         self.HoldAndQueue.draw(surface)
         self.UI_ActionText.draw(surface)
         self.Matrix.draw(surface)
@@ -428,7 +434,7 @@ class Board():
             self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 180, self.dt)
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
-            self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 100, self.dt)
+            self.BoardConsts.warning_cross_opacity = ease_out_cubic(self.BoardConsts.warning_cross_opacity, 200, self.dt)
             self.glow_alpha = ease_out_cubic(self.glow_alpha, 128, self.dt)
 
         else:
