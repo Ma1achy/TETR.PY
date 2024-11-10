@@ -558,7 +558,6 @@ class Matrix():
         x_dir = np.sign(self.game_over_fizzle_particles['x_vel'])
         y_dir = np.sign(self.game_over_fizzle_particles['y_vel'])
         
-       # Check boundaries and update velocities
         x_boundary = (self.game_over_fizzle_particles['x'] - self.game_over_fizzle_particles['scale'] <= 0) | \
                     (self.game_over_fizzle_particles['x'] - self.game_over_fizzle_particles['scale'] + self.BoardConsts.GarbageWidth >= rect.width)
         y_boundary = self.game_over_fizzle_particles['y'] + self.game_over_fizzle_particles['scale'] >= rect.height * 2 - self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH + 1
