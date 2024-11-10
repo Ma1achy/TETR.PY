@@ -1,13 +1,11 @@
 import pygame.gfxdraw
-import pygame, math
-import numpy as np
 from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
-from utils import lerpBlendRGBA, get_tetromino_blocks, get_prefix, smoothstep, TransformSurface, RotateSurface, ScaleSurface, ease_in_out_quad, ease_out_cubic
+from utils import TransformSurface
 from render.UI.debug_menu import UIDebug
 from render.UI.key_states_overlay import UIKeyStates
 from render.board.board import Board
@@ -28,8 +26,11 @@ class Render():
         self.GameInstanceStruct = GameInstanceStruct
         self.TimingStruct = TimingStruct
         self.DebugStruct = DebugStruct
+        self.icon = pygame.image.load('resources/icon.png')
+        self.window = self.__init_window()
+        self.Fonts = Fonts(self.RenderStruct)
         
-        self.RenderStruct.TEXTURE_ATLAS = pygame.image.load('resources/block/blocks.png')
+        self.RenderStruct.TEXTURE_ATLAS = pygame.image.load('resources/block/blocks.png').convert_alpha()
         self.RenderStruct.TEXTURES_PER_ROW = 5
         self.RenderStruct.TEXTURES_PER_COLUMN = 5
       
@@ -39,10 +40,6 @@ class Render():
         
         self.board_center_screen_pos_x = self.RenderStruct.WINDOW_WIDTH // 2 
         self.board_center_screen_pos_y = self.RenderStruct.WINDOW_HEIGHT // 2
-      
-        self.icon = pygame.image.load('resources/icon.png')
-        self.window = self.__init_window()
-        self.Fonts = Fonts(self.RenderStruct)
         
         self.Board = Board(self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct, self.Fonts)
         self.UI_Debug = UIDebug(self.Config, self.RenderStruct, self.DebugStruct, self.FlagStruct, self.Fonts)
@@ -50,7 +47,7 @@ class Render():
         self.board_surface = self.Board.get_board_surface()
         
         self.image_path = 'resources/background/b1.jpg'
-        self.image = pygame.image.load(self.image_path)
+        self.image = pygame.image.load(self.image_path).convert_alpha()
         self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
         
     def __init_window(self):

@@ -6,6 +6,7 @@ import pygame
 import copy
 from utils import lerpBlendRGBA, smoothstep, tint_texture
 from instance.four import RNG
+import numpy as np
 
 class Matrix():
     def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct, BoardConsts:StructBoardConsts, RNG):
@@ -19,8 +20,14 @@ class Matrix():
         self.current_time = 0
         self.previous_time = 0
         self.dt = 0
-        self.line_clear_particles = []
-        self.game_over_fizzle_particles = []
+        
+        self.line_clear_particles = np.zeros(0, dtype = [
+            ('x', 'f4'), ('y', 'f4'), ('x_vel', 'f4'), ('y_vel', 'f4'), ('scale', 'f4'), ('block', 'O'), ('time', 'f4'), ('max_time', 'f4')
+        ])
+        
+        self.game_over_fizzle_particles = np.zeros(0, dtype = [
+            ('x', 'f4'), ('y', 'f4'), ('x_vel', 'f4'), ('y_vel', 'f4'), ('scale', 'f4'), ('block', 'O'), ('time', 'f4'), ('max_time', 'f4')
+        ]) 
         
         self.RNG = RNG
         
@@ -383,44 +390,42 @@ class Matrix():
         
     def play_line_clear_animation(self, surface, matrix_rect):
         
-        if len(self.line_clear_particles) == 0:
+        if self.line_clear_particles.size == 0:
             return
         
-        updated_particles = [] 
+        g = 60 * self.RenderStruct.GRID_SIZE
+        d = 0.85
         
-        for particle in self.line_clear_particles:
-            
-            g = 60 * self.RenderStruct.GRID_SIZE
-            d = 0.85
-
-            x, y, x_vel, y_vel, scale, block, time, max_time = particle
-           # time -= self.dt
+        self.line_clear_particles['time'] -= self.dt
+        x_dirs = -np.sign(self.line_clear_particles['x_vel'])
+        self.line_clear_particles['x_vel'] += np.abs(self.line_clear_particles['x_vel']) * d * self.dt * x_dirs
+        self.line_clear_particles['y_vel'] += g * self.dt
         
-            x_dir = (x_vel / abs(x_vel)) if x_vel != 0 else 0
-            x_vel -= abs(x_vel) * d * self.dt * x_dir
+        self.line_clear_particles['x'] += self.line_clear_particles['x_vel'] * self.dt
+        self.line_clear_particles['y'] += self.line_clear_particles['y_vel'] * self.dt
+        
+        prog = 1 - (self.line_clear_particles['max_time'] - self.line_clear_particles['time']) / self.line_clear_particles['max_time']
+        self.line_clear_particles['scale'] = self.line_clear_particles['scale'] * smoothstep(prog)
+        
+        valid = (self.line_clear_particles['time'] > 0) & (self.line_clear_particles['scale'] > 0.001) & self.in_y_bounds(matrix_rect, self.line_clear_particles['y'], self.line_clear_particles['scale'])
+        updated_particles = self.line_clear_particles[valid]
+        self.line_clear_particles = updated_particles
+        
+        x_positions = updated_particles['x'] + self.line_clear_animation_surface.get_width() // 2 - matrix_rect.width // 2
+        y_positions = updated_particles['y'] + matrix_rect.height // 2 + self.RenderStruct.GRID_SIZE * 6
+        scales = updated_particles['scale']
+        blocks = updated_particles['block']
 
-            # Apply gravity
-            y_vel += g * self.dt
-
-            # Apply velocity
-            x += x_vel * self.dt
-            y += y_vel * self.dt 
-
-            prog = 1 - (max_time - time) / max_time
-            scale = scale * smoothstep(prog)
-           
-            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.001 and self.in_y_bounds(matrix_rect, y, scale) else None
-            
+        for x, y, scale, block in zip(x_positions, y_positions, scales, blocks):
             self.draw_block(
                 self.line_clear_animation_surface,
                 block,
-                x + self.line_clear_animation_surface.get_width() // 2 - matrix_rect.width // 2,
-                y + matrix_rect.height // 2 + self.RenderStruct.GRID_SIZE * 6,
+                x,
+                y,
                 scale,
                 matrix_rect
-            )
-            
-        self.line_clear_particles = updated_particles
+    )
+        
         self.line_clear_animation_surface.set_alpha(200)
         
         surface.blit(
@@ -441,38 +446,52 @@ class Matrix():
         surface.blit(texture, (rect.x, rect.y - matrix_rect.y))
     
     def in_y_bounds(self, matrix_rect, y, scale):
-        if y < self.line_clear_animation_surface.get_height() - matrix_rect.height + self.RenderStruct.GRID_SIZE * 5 + scale * self.RenderStruct.GRID_SIZE:
-            return True
-        else:
-            return False
+        return np.any(y < self.line_clear_animation_surface.get_height() - matrix_rect.height + self.RenderStruct.GRID_SIZE * 5 + scale * self.RenderStruct.GRID_SIZE)
                 
     def get_line_clear_particles(self):
-        
-        line_clear_particles = []
         
         if self.RenderStruct.cleared_blocks is None or self.RenderStruct.cleared_idxs is None or self.RenderStruct.lines_cleared is None:
             return
         
-        for idx in self.RenderStruct.cleared_idxs:
-            for line in self.RenderStruct.cleared_blocks:
-                for pos, block in enumerate(line):
-                    offset_x = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE //4
-                    offset_y = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE - self.RenderStruct.GRID_SIZE //4
-                    
-                    x = pos * self.RenderStruct.GRID_SIZE + offset_x
-                    y = idx * self.RenderStruct.GRID_SIZE + offset_y
-                    
-                    x_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 10 * self.RenderStruct.lines_cleared
-                    y_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 7 * self.RenderStruct.lines_cleared
+        num_particles = sum(sum(1 for _ in line) for line in self.RenderStruct.cleared_blocks)
+  
+        line_clear_particles = np.zeros(num_particles, dtype=[
+            ('x', 'f4'), ('y', 'f4'), ('x_vel', 'f4'), ('y_vel', 'f4'), ('scale', 'f4'), ('block', 'O'), ('time', 'f4'), ('max_time', 'f4')
+        ])
+        
+        particle_index = 0
 
-                    scale = (1 - self.RNG.next_float()) + 0.15
-                    max_time = self.RNG.next_float() * 2 + 1.75 + 1/self.RenderStruct.lines_cleared
-                    time = max_time
+        for idx, line in zip(self.RenderStruct.cleared_idxs, self.RenderStruct.cleared_blocks):
+            for pos, block in enumerate(line):
+                if particle_index >= num_particles:
+                    break
+                
+                particle_index = self.__generate_line_clear_particles(pos, idx, block, line_clear_particles, particle_index)
                     
-                    line_clear_particles.append((x, y, x_vel, y_vel, scale, block[0], time, max_time))
+        self.line_clear_particles = np.concatenate((self.line_clear_particles, line_clear_particles))
+      
         
-        self.line_clear_particles.extend(line_clear_particles)
+    def __generate_line_clear_particles(self, pos, idx, block, line_clear_particles, particle_index):	
+    
+        offset_x = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE // 4
+        offset_y = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE - self.RenderStruct.GRID_SIZE // 4
         
+        x = pos * self.RenderStruct.GRID_SIZE + offset_x
+        y = idx * self.RenderStruct.GRID_SIZE + offset_y
+        
+        x_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 10 * self.RenderStruct.lines_cleared
+        y_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 7 * self.RenderStruct.lines_cleared
+        
+        scale = (1 - self.RNG.next_float()) + 0.15
+        scale = 1
+        max_time = self.RNG.next_float() * 2 + 1.75 + 1 / self.RenderStruct.lines_cleared
+        max_time = 10.0
+        time = max_time
+        
+        line_clear_particles[particle_index] = (x, y, x_vel, y_vel, scale, block[0], time, max_time)
+        
+        return particle_index + 1 
+                  
     def lockdelay_animation(self, tetromino_blocks, rect):
         """
         Animate the lock delay
@@ -523,60 +542,57 @@ class Matrix():
             self.GameInstanceStruct.current_tetromino = None 
         
         self.play_fizzle_animation(surface, rect)
-        
-        if len(self.game_over_fizzle_particles) == 0:
+      
+    def play_fizzle_animation(self, surface, rect):
+       
+        if self.game_over_fizzle_particles.size == 0:
             self.got_fizzle_particles = False
             self.do_fizzle_game_over = False
             self.wait_time = 1
             return
-      
-    def play_fizzle_animation(self, surface, rect):
+    
+        d = 0.3
+        g = -self.RenderStruct.GRID_SIZE 
         
-        if len(self.game_over_fizzle_particles) == 0:
-            return
+        self.game_over_fizzle_particles['time'] -= self.dt
+        x_dir = np.sign(self.game_over_fizzle_particles['x_vel'])
+        y_dir = np.sign(self.game_over_fizzle_particles['y_vel'])
         
-        updated_particles = []
+       # Check boundaries and update velocities
+        x_boundary = (self.game_over_fizzle_particles['x'] - self.game_over_fizzle_particles['scale'] <= 0) | \
+                    (self.game_over_fizzle_particles['x'] - self.game_over_fizzle_particles['scale'] + self.BoardConsts.GarbageWidth >= rect.width)
+        y_boundary = self.game_over_fizzle_particles['y'] + self.game_over_fizzle_particles['scale'] >= rect.height * 2 - self.RenderStruct.GRID_SIZE + self.RenderStruct.BORDER_WIDTH + 1
 
-        for particle in self.game_over_fizzle_particles:
-            
-            d = 0.3
-
-            x, y, x_vel, y_vel, scale, block, time, max_time = particle
-            time -= self.dt
-
-            x_dir = (x_vel / abs(x_vel)) if x_vel != 0 else 0
-            x_vel -= abs(x_vel) * d * self.dt * x_dir
-            
-            y_vel -= self.RenderStruct.GRID_SIZE  * self.dt
-            
-            y_dir = (y_vel / abs(y_vel)) if y_vel != 0 else 0
-            y_vel -= abs(y_vel) * d * self.dt * y_dir
-                        
-            if x - scale <= 0 or x - scale + self.BoardConsts.GarbageWidth >= rect.width:
-                x_vel *= -1
-            
-            if y + scale >= rect.height * 2 - self.RenderStruct.GRID_SIZE  + self.RenderStruct.BORDER_WIDTH + 1:
-                a = abs(y_vel)
-                y_vel = -a
+        self.game_over_fizzle_particles['x_vel'][x_boundary] *= -1
+        self.game_over_fizzle_particles['y_vel'][y_boundary] = -abs(self.game_over_fizzle_particles['y_vel'][y_boundary])
                 
-            x += x_vel * self.dt
-            y += y_vel * self.dt 
-                 
-            prog = 1 - (max_time - time) / max_time
-            scale *= smoothstep(prog)
-                
-            updated_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time)) if time > 0 and scale > 0.001 and self.in_y_bounds(rect, y, scale) else None
-            
+        self.game_over_fizzle_particles['x_vel'] -= np.abs(self.game_over_fizzle_particles['x_vel']) * d * self.dt * x_dir
+        self.game_over_fizzle_particles['y_vel'] += g * self.dt - np.abs(self.game_over_fizzle_particles['y_vel']) * d * self.dt * y_dir
+        
+        self.game_over_fizzle_particles['x'] += self.game_over_fizzle_particles['x_vel'] * self.dt
+        self.game_over_fizzle_particles['y'] += self.game_over_fizzle_particles['y_vel'] * self.dt
+        
+        prog = 1 - (self.game_over_fizzle_particles['max_time'] - self.game_over_fizzle_particles['time']) / self.game_over_fizzle_particles['max_time']
+        self.game_over_fizzle_particles['scale'] = self.game_over_fizzle_particles['scale'] * smoothstep(prog)
+        
+        valid = (self.game_over_fizzle_particles['time'] > 0) & (self.game_over_fizzle_particles['scale'] > 0.001) & self.in_y_bounds(rect, self.game_over_fizzle_particles['y'], self.game_over_fizzle_particles['scale'])
+        updated_particles = self.game_over_fizzle_particles[valid]
+        self.game_over_fizzle_particles = updated_particles
+        
+        x_positions = updated_particles['x'] + self.game_over_fizzle_animation_surface.get_width() // 2 - rect.width // 2
+        y_positions = updated_particles['y'] + rect.height // 2 + self.RenderStruct.GRID_SIZE * 6
+        scales = updated_particles['scale']
+        blocks = updated_particles['block']
+        
+        for x, y, scale, block in zip(x_positions, y_positions, scales, blocks):
             self.draw_block(
                 self.game_over_fizzle_animation_surface,
                 block,
-                x + self.game_over_fizzle_animation_surface.get_width() // 2 - rect.width // 2,
-                y + rect.height // 2 + self.RenderStruct.GRID_SIZE * 6,
+                x,
+                y,
                 scale,
                 rect
             )
-            
-            self.game_over_fizzle_particles = updated_particles
             
             surface.blit(
                 self.game_over_fizzle_animation_surface,
@@ -586,49 +602,53 @@ class Matrix():
         
     def get_fizzle_particles(self):
         
-        fizzle_particles = []
+        num_particles = sum(sum(1 for block in row if block != 0) for row in self.GameInstanceStruct.matrix.matrix)
+        
+        if self.GameInstanceStruct.current_tetromino is not None:
+            num_particles += sum(sum(1 for value in row if value != 0) for row in self.GameInstanceStruct.current_tetromino.blocks)
+            
+        fizzle_particles = np.zeros(num_particles, dtype=[
+        ('x', 'f4'), ('y', 'f4'), ('x_vel', 'f4'), ('y_vel', 'f4'),
+        ('scale', 'f4'), ('block', 'O'), ('time', 'f4'), ('max_time', 'f4')
+        ])
+        
+        particle_index = 0
         
         for idx, row in enumerate(self.GameInstanceStruct.matrix.matrix):
             for pos, block in enumerate(row):
                 if block != 0:
-                    self.generate_fizzle_particles(pos, idx, block, fizzle_particles)
-                     
+                    particle_index = self.generate_fizzle_particles(pos, idx, block, fizzle_particles, particle_index)
+                    
         if self.GameInstanceStruct.current_tetromino is not None:
             for i, row in enumerate(self.GameInstanceStruct.current_tetromino.blocks):
                 for j, value in enumerate(row):
                     if value != 0:
-                        self.generate_fizzle_particles(self.GameInstanceStruct.current_tetromino.position.x + j, self.GameInstanceStruct.current_tetromino.position.y + i, value, fizzle_particles)
-                    
-        self.game_over_fizzle_particles.extend(fizzle_particles)
-        self.got_fizzle_particles = True
+                        particle_index = self.generate_fizzle_particles(
+                            self.GameInstanceStruct.current_tetromino.position.x + j,
+                            self.GameInstanceStruct.current_tetromino.position.y + i,
+                            value,
+                            fizzle_particles,
+                            particle_index
+                        )    
         
+        self.game_over_fizzle_particles = np.concatenate((self.game_over_fizzle_particles, fizzle_particles))
+        self.got_fizzle_particles = True             
+                        
         
-    def generate_fizzle_particles(self, pos, idx, block, fizzle_particles):
-        
-        x = pos * self.RenderStruct.GRID_SIZE 
-        y = idx * self.RenderStruct.GRID_SIZE 
-        
-        f = self.RNG.next_float()
-        
-        if f < 0.5:
-            x_dir = -1
-        else:
-            x_dir = 1
-        
-        f = self.RNG.next_float()
-        
-        if f < 0.5:
-            y_dir = -1
-        else:
-            y_dir = 1
-            
-        x_vel = (self.RNG.next_float()) * self.RenderStruct.GRID_SIZE * x_dir
-        y_vel = (self.RNG.next_float()) * self.RenderStruct.GRID_SIZE * y_dir
+    def generate_fizzle_particles(self, pos, idx, block, fizzle_particles, particle_index):
+        x = pos * self.RenderStruct.GRID_SIZE
+        y = idx * self.RenderStruct.GRID_SIZE
 
+        x_dir = -1 if self.RNG.next_float() < 0.5 else 1
+        y_dir = -1 if self.RNG.next_float() < 0.5 else 1
+
+        x_vel = self.RNG.next_float() * self.RenderStruct.GRID_SIZE * x_dir
+        y_vel = self.RNG.next_float() * self.RenderStruct.GRID_SIZE * y_dir
         scale = 1
         max_time = (self.RNG.next_float() + 0.5) * 2 + 15
         time = max_time
-        
-        fizzle_particles.append((x, y, x_vel, y_vel, scale, block, time, max_time))
+
+        fizzle_particles[particle_index] = (x, y, x_vel, y_vel, scale, block, time, max_time)
+        return particle_index + 1    
     
 

@@ -12,7 +12,7 @@ from render.board.UI.border import UIBorder
 from render.board.UI.info_text import UIInfoText
 from render.board.UI.action_text import UIActionText
 from core.handling import Action
-from utils import ease_out_cubic, ease_in_out_quad, smoothstep, get_tetromino_blocks
+from utils import ease_out_cubic, ease_in_out_quad, smoothstep
 from instance.four import RNG
 import math
  
@@ -416,9 +416,7 @@ class Board():
         
     def top_out_darken_animation(self):
         
-        self.top_out_surface.fill((0, 0, 0))
-        self.top_out_surface.set_alpha(self.top_out_surface_alpha)
-        
+        self.top_out_surface.fill((0, 0, 0, self.top_out_surface_alpha))
         self.__update_top_out_darken()
         
     def __update_top_out_darken(self):
