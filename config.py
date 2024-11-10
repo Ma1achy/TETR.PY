@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 import pygame
 from core.handling import Action
-from typing import Dict, Tuple
+from typing import Dict 
 @dataclass
 class StructConfig():
     

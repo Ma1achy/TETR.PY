@@ -455,7 +455,7 @@ class Matrix():
         
         num_particles = sum(sum(1 for _ in line) for line in self.RenderStruct.cleared_blocks)
   
-        line_clear_particles = np.zeros(num_particles, dtype=[
+        line_clear_particles = np.zeros(num_particles, dtype = [
             ('x', 'f4'), ('y', 'f4'), ('x_vel', 'f4'), ('y_vel', 'f4'), ('scale', 'f4'), ('block', 'O'), ('time', 'f4'), ('max_time', 'f4')
         ])
         
@@ -483,9 +483,7 @@ class Matrix():
         y_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 7 * self.RenderStruct.lines_cleared
         
         scale = (1 - self.RNG.next_float()) + 0.15
-        scale = 1
         max_time = self.RNG.next_float() * 2 + 1.75 + 1 / self.RenderStruct.lines_cleared
-        max_time = 10.0
         time = max_time
         
         line_clear_particles[particle_index] = (x, y, x_vel, y_vel, scale, block[0], time, max_time)
@@ -622,13 +620,7 @@ class Matrix():
             for i, row in enumerate(self.GameInstanceStruct.current_tetromino.blocks):
                 for j, value in enumerate(row):
                     if value != 0:
-                        particle_index = self.generate_fizzle_particles(
-                            self.GameInstanceStruct.current_tetromino.position.x + j,
-                            self.GameInstanceStruct.current_tetromino.position.y + i,
-                            value,
-                            fizzle_particles,
-                            particle_index
-                        )    
+                        particle_index = self.generate_fizzle_particles(self.GameInstanceStruct.current_tetromino.position.x + j, self.GameInstanceStruct.current_tetromino.position.y + i, value, fizzle_particles, particle_index)    
         
         self.game_over_fizzle_particles = np.concatenate((self.game_over_fizzle_particles, fizzle_particles))
         self.got_fizzle_particles = True             

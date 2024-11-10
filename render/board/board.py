@@ -37,7 +37,7 @@ class Board():
         if self.GameInstanceStruct.top_out_ok:
             self.BoardConsts.game_over_type =  'ZOOMOUT'
         else:
-            self.BoardConsts.game_over_type = 'FALL' # 'FALL' -> shakes then falls away rotating to the right, 'ZOOMOUT' -> shakes then zooms & fades out, 'FIZZLE' -> board shakes, tetrominoes become smoke particles and fizzle away and float up (board then looks empty)
+            self.BoardConsts.game_over_type = 'FALL'
         
         if self.GameInstanceStruct.reset_on_top_out:
             self.BoardConsts.game_over_type = 'FIZZLE'
@@ -123,40 +123,47 @@ class Board():
             self.dt = 1 / self.TimingStruct.FPS
         
         self.UI_Border.draw(surface) 
-        
-        if self.alpha > 0:
-            self.BoardConsts.matrix_line_glow_surface.set_alpha(self.glow_alpha//2)
-            surface.blit(self.BoardConsts.matrix_line_glow_surface, (0, 0))
-            
+        self.__draw_matrix_grid_glow(surface)
+
         self.HoldAndQueue.draw(surface)
         self.UI_ActionText.draw(surface)
         self.Matrix.draw(surface)
         self.UI_InfoText.draw(surface)
         
-        if self.glow_alpha > 0:
-            self.BoardConsts.board_glow_surface.set_alpha(self.glow_alpha)
-            surface.blit(self.BoardConsts.board_glow_surface, (0, 0))
-                
-        self.draw_hold_text(surface)
-        self.draw_queue_text(surface)
+        self.__draw_board_glow(surface)
+        self.__draw_hold_text(surface)
+        self.__draw_queue_text(surface)
         
-        self.board_spin_animation()
-        self.board_push_horizontal_animation()
-        self.board_push_down_animation()
-        self.harddrop_bounce_animation()
-        self.board_scale_push_in_animation()
-        self.game_over_animation()
-        self.top_out_darken_animation()
+        self.__do_animations()
         
         if self.RenderStruct.draw_guide_lines:
             pygame.draw.rect(surface, (0, 0, 255), (0, 0, self.BoardConsts.board_rect_width, self.BoardConsts.board_rect_height), 1)
             pygame.draw.circle(surface, (255, 0, 0), (self.board_center_x_board_space, self.board_center_y_board_space), 5)
+    
+    def __do_animations(self):
+        self.__board_spin_animation()
+        self.__board_push_horizontal_animation()
+        self.__board_push_down_animation()
+        self.__harddrop_bounce_animation()
+        self.__board_scale_push_in_animation()
+        self.__game_over_animation()
+        self.__top_out_darken_animation()
         
+    def __draw_matrix_grid_glow(self, surface):
+        if self.alpha > 0:
+            self.BoardConsts.matrix_line_glow_surface.set_alpha(self.glow_alpha//2)
+            surface.blit(self.BoardConsts.matrix_line_glow_surface, (0, 0))
+    
+    def __draw_board_glow(self, surface):
+        if self.glow_alpha > 0:
+            self.BoardConsts.board_glow_surface.set_alpha(self.glow_alpha)
+            surface.blit(self.BoardConsts.board_glow_surface, (0, 0))
+              
     def __do_board_spin(self):
         self.spin_in_progress = True
         self.FlagStruct.SPIN_ANIMATION = False
             
-    def board_spin_animation(self):
+    def __board_spin_animation(self):
         
         if self.game_over_animation_in_progress:
             return
@@ -208,7 +215,7 @@ class Board():
                 self.spin_in_progress = False
                 self.angle = max(min(self.angle, self.max_angle), -self.max_angle)
                 
-    def board_push_horizontal_animation(self):
+    def __board_push_horizontal_animation(self):
         
         k = 10 * self.board_stifness
         dir = 0
@@ -231,7 +238,7 @@ class Board():
         if abs(self.offset_x) < self.RenderStruct.GRID_SIZE * 1E-9 * self.default_scale:
             self.offset_x = 0
    
-    def board_push_down_animation(self):
+    def __board_push_down_animation(self):
         
         if self.bounce_in_progress:
             return
@@ -254,7 +261,7 @@ class Board():
         if abs(self.offset_y) < self.RenderStruct.GRID_SIZE * 1E-9 * self.default_scale:
             self.offset_y = 0
     
-    def harddrop_bounce_animation(self):
+    def __harddrop_bounce_animation(self):
         
         if self.FlagStruct.PUSH_VERTICAL:
             return
@@ -303,7 +310,7 @@ class Board():
         scale = min(self.default_scale, self.default_scale - max(0, min(0.000333 * self.lock_delay_strength/self.board_stifness * self.default_scale, smooth_progress)))
         return scale
     
-    def board_scale_push_in_animation(self):
+    def __board_scale_push_in_animation(self):
         
         self.__do_lock_delay_animation()
         self.__update_lock_delay_animation()
@@ -341,7 +348,7 @@ class Board():
                     self.lock_delay_scale_in_progress = False
                     self.scale = ease_out_cubic(self.scale, self.default_scale, self.dt)
                 
-    def game_over_animation(self):
+    def __game_over_animation(self):
         
         if self.FlagStruct.GAME_OVER and not self.game_over_animation_in_progress:
             self.__do_game_over_animation()
@@ -414,7 +421,7 @@ class Board():
                 self.done_fizzle = False
                 self.GameInstanceStruct.reset = True # after animation is done allow the game to reset
         
-    def top_out_darken_animation(self):
+    def __top_out_darken_animation(self):
         
         self.top_out_surface.fill((0, 0, 0, self.top_out_surface_alpha))
         self.__update_top_out_darken()
@@ -449,7 +456,8 @@ class Board():
         if self.__check_spawn_overlap() or self.__check_buffer_overlap():
             return True
         else:
-            return False          
+            return False 
+                 
     def __check_spawn_overlap(self):
         
         if self.GameInstanceStruct.current_tetromino is None:
@@ -462,7 +470,7 @@ class Board():
         blocks = self.GameInstanceStruct.current_tetromino.blocks
         array = self.GameInstanceStruct.matrix.spawn_overlap
         
-        return self.check_overlap(position, blocks, array)
+        return self.__check_overlap(position, blocks, array)
     
     def __check_buffer_overlap(self):
         if self.GameInstanceStruct.current_tetromino is None or self.GameInstanceStruct.lock_out_ok:
@@ -473,7 +481,7 @@ class Board():
         else:
             return False
         
-    def check_overlap(self, position, blocks, array):
+    def __check_overlap(self, position, blocks, array):
         if any (
             val != 0 and (
                 position.x + x < 0 or position.x + x >= self.GameInstanceStruct.matrix.WIDTH or 
@@ -487,24 +495,21 @@ class Board():
         else:
             return False
     
-    def draw_hold_text(self, surface):
+    def __draw_hold_text(self, surface):
         if not self.GameInstanceStruct.hold:  
             return
         
         text = self.Fonts.hun2_big.render('NEXT', True, (0, 0, 0))
         surface.blit(text, (self.BoardConsts.matrix_rect_pos_x  + self.BoardConsts.MATRIX_SURFACE_WIDTH + self.RenderStruct.BORDER_WIDTH, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 0.15))
                 
-    def draw_queue_text(self, surface):
+    def __draw_queue_text(self, surface):
         if not self.GameInstanceStruct.queue_previews > 0:
             return
         
         if self.BoardConsts.draw_garbage_bar:
             start = 7
-            end = - self.RenderStruct.GRID_SIZE
         else:
             start = 6
-            end = 0
-            
         text = self.Fonts.hun2_big.render('HOLD', True, (0, 0, 0))
         surface.blit(text, (self.BoardConsts.matrix_rect_pos_x  - (start + 0.25) * self.RenderStruct.GRID_SIZE + self.RenderStruct.GRID_SIZE * 0.25, self.BoardConsts.matrix_rect_pos_y + self.RenderStruct.GRID_SIZE * 0.15))
         
