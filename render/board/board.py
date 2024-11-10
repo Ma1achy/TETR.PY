@@ -328,7 +328,7 @@ class Board():
             if abs(self.scale - self.default_scale) < 0.001:
                 self.scale = self.default_scale
         else:
-            if self.__check_spawn_overlap(): # if the tetromino is overlapping with the spawn area then scale up instead
+            if self.__placement_will_gameover(): # if the placement will cause a game over, scale up instead
                 self.scale = ease_out_cubic(self.scale, self.__lock_delay_to_scale() * 1.06, self.dt)
 
                 if self.scale > 1.05 * self.default_scale:
@@ -423,7 +423,7 @@ class Board():
         
     def __update_top_out_darken(self):
         
-        if self.__check_spawn_overlap():
+        if self.__placement_will_gameover():
             self.top_out_surface_alpha = ease_out_cubic(self.top_out_surface_alpha, 255, self.dt)
             self.top_out_colour_bg = ease_out_cubic(self.top_out_colour_bg, 0, self.dt)
             self.BoardConsts.top_out_colour = (255, self.top_out_colour_bg, self.top_out_colour_bg)
@@ -446,7 +446,12 @@ class Board():
              
             if self.glow_alpha < 1:
                 self.glow_alpha = 0
-                
+    
+    def __placement_will_gameover(self):
+        if self.__check_spawn_overlap() or self.__check_buffer_overlap():
+            return True
+        else:
+            return False          
     def __check_spawn_overlap(self):
         
         if self.GameInstanceStruct.current_tetromino is None:
@@ -460,6 +465,15 @@ class Board():
         array = self.GameInstanceStruct.matrix.spawn_overlap
         
         return self.check_overlap(position, blocks, array)
+    
+    def __check_buffer_overlap(self):
+        if self.GameInstanceStruct.current_tetromino is None or self.GameInstanceStruct.lock_out_ok:
+            return False
+        
+        if self.GameInstanceStruct.current_tetromino.is_in_buffer_zone(self.GameInstanceStruct.matrix) and self.GameInstanceStruct.current_tetromino.is_on_floor():
+            return True
+        else:
+            return False
         
     def check_overlap(self, position, blocks, array):
         if any (
