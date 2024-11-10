@@ -463,6 +463,17 @@ class Tetromino():
     def get_height(self):
         return sum(1 for row in self.blocks if any(cell != 0 for cell in row))
     
+    def is_in_buffer_zone(self, matrix):
+        if all(
+            self.position.y + y <= matrix.HEIGHT//2 - 1
+            for y, row in enumerate(self.blocks)
+            for x, val in enumerate(row)
+            if val != 0
+        ):
+            return True
+        else:
+            return False
+    
     # ========================================================== LOCK DELAY ============================================================
     
     def is_on_floor(self):

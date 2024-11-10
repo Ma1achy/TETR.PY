@@ -503,19 +503,11 @@ class Four():
         """
         Lockout is when a piece is placed entirely outside of the visible matrix in the buffer zone
         """
-        if self.GameInstanceStruct.current_tetromino is None:
-            return
-        
-        if self.GameInstanceStruct.lock_out_ok:
+        if self.GameInstanceStruct.current_tetromino is None or self.GameInstanceStruct.lock_out_ok:
             return
                 
         # check if all blocks are in the buffer zone
-        if all(
-            self.GameInstanceStruct.current_tetromino.position.y + y <= self.GameInstanceStruct.matrix.HEIGHT//2 - 1
-            for y, row in enumerate(self.GameInstanceStruct.current_tetromino.blocks)
-            for x, val in enumerate(row)
-            if val != 0
-        ):
+        if self.GameInstanceStruct.current_tetromino.is_in_buffer_zone(self.GameInstanceStruct.matrix):
             self.FlagStruct.GAME_OVER = True
     
     def __do_block_out(self):
