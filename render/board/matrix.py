@@ -5,7 +5,6 @@ from render.board.struct_board import StructBoardConsts
 import pygame
 import copy
 from utils import lerpBlendRGBA, smoothstep, tint_texture
-from instance.four import RNG
 import numpy as np
 
 class Matrix():

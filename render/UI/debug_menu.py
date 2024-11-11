@@ -1,8 +1,6 @@
 from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_flags import StructFlags
-from core.state.struct_gameinstance import StructGameInstance
-from core.state.struct_timing import StructTiming
 from core.state.struct_debug import StructDebug
 from utils import get_prefix
 import pygame

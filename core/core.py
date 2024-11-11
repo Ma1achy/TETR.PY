@@ -144,6 +144,7 @@ class Core():
             elif event.type == pygame.KEYUP:
                 self.handling.on_key_release(event.key)
         
+        self.handling.do_tick()
         iter_end = time.perf_counter()
         self.TimingStruct.iter_times["handle_events"] = iter_end - iter_start
     

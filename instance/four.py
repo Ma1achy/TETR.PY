@@ -56,7 +56,6 @@ class Four():
         The main game loop
         """
         self.actions_this_tick = []
-        self.core_instance.handling.before_loop_hook()
         
         self.__action_dequeuer()
         self.__get_next_state()
@@ -85,7 +84,7 @@ class Four():
         Get the next state of the game
         """
         if not self.FlagStruct.GAME_OVER:
-        
+            print(self.actions_this_tick)
             self.__perform_actions()
             self.__perform_gravity()
             self.__do_lock_delay()
@@ -155,6 +154,9 @@ class Four():
                 
                 case Action.SONIC_LEFT_DROP | Action.SONIC_RIGHT_DROP:
                     self.__sonic_move_and_drop(action)
+                
+                case Action.SOFT_DROP_RELEASE:
+                    self.__reset_gravity_after_soft_drop()
     
     def __move(self, action):
         """
@@ -319,10 +321,7 @@ class Four():
         if self.GameInstanceStruct.current_tetromino is None or self.GameInstanceStruct.current_tetromino.is_on_floor():
             self.GameInstanceStruct.gravity_counter = 0
             return
-        
-        if self.GameInstanceStruct.soft_dropping:
-            self.__reset_gravity_after_soft_drop()
-            
+                    
         if soft_drop_factor == 'inf' or G == 20: # instant gravity
             self.__move_to_floor()
             return
@@ -357,12 +356,9 @@ class Four():
         Reset the gravity counter after a soft drop so there is no extra time left on the gravity counter,
         and reset the soft drop factor back
         """
-        actions = [ac['action'] for ac in self.actions_this_tick]
-        
-        if Action.SOFT_DROP not in actions:
-            self.GameInstanceStruct.soft_dropping = False
-            self.GameInstanceStruct.soft_drop_factor = 1 # reset the soft drop factor to handle softdrop release
-            self.GameInstanceStruct.gravity_counter = 0
+        self.GameInstanceStruct.soft_dropping = False
+        self.GameInstanceStruct.soft_drop_factor = 1 # reset the soft drop factor to handle softdrop release
+        self.GameInstanceStruct.gravity_counter = 0
     
     # --------------------------------------------------- PIECE SPAWNING ---------------------------------------------------   
                    
