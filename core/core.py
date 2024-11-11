@@ -5,7 +5,6 @@ from core.debug import Debug
 from render.render import Render
 import time
 import asyncio
-from collections import deque 
 from core.state.struct_debug import StructDebug
 from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance

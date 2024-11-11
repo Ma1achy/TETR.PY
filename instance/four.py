@@ -84,7 +84,6 @@ class Four():
         Get the next state of the game
         """
         if not self.FlagStruct.GAME_OVER:
-            print(self.actions_this_tick)
             self.__perform_actions()
             self.__perform_gravity()
             self.__do_lock_delay()
@@ -432,7 +431,6 @@ class Four():
             return True
         else:
             self.__do_block_out()
-            print("Game Over")
             return False
                                 
     # --------------------------------------------------- LOCK DELAY ---------------------------------------------------
