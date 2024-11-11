@@ -29,3 +29,6 @@ class StructGameInstance():
     
     lowest_pivot_position: int = 0
     
+    cleared_blocks: list = None
+    cleared_idxs: list = None
+    lines_cleared: int = None

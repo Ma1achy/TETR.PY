@@ -36,6 +36,7 @@ class StructConfig():
     POLLING_RATE: int = 1000
 
     def __post_init__(self):
+        self.key_bindings[Action.SOFT_DROP_RELEASE] = self.key_bindings[Action.SOFT_DROP]
         self.key_bindings[Action.SONIC_LEFT] = self.key_bindings[Action.MOVE_LEFT]
         self.key_bindings[Action.SONIC_RIGHT] = self.key_bindings[Action.MOVE_RIGHT]
         self.key_bindings[Action.SONIC_DROP] = self.key_bindings[Action.HARD_DROP]

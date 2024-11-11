@@ -12,7 +12,10 @@ class Action(Enum):
     ROTATE_COUNTERCLOCKWISE = auto()
     ROTATE_180 = auto()
     HARD_DROP = auto()
+    
     SOFT_DROP = auto()
+    SOFT_DROP_RELEASE = auto()
+    
     HOLD = auto()
     
     # ARR == 0 behaviour
@@ -49,7 +52,7 @@ class Handling():
         self.actions = self.__GetEmptyActions()
         self.action_queue = deque()
         
-        self.key_states = {
+        self.HandlingStruct.key_states = {
             key: {'current': False, 'previous': False}
             for action, keys in self.Config.key_bindings.items()
             for key in keys
@@ -78,6 +81,7 @@ class Handling():
             Action.ROTATE_180:                  {'state': False, 'timestamp': 0},
             Action.HARD_DROP:                   {'state': False, 'timestamp': 0},
             Action.SOFT_DROP:                   {'state': False, 'timestamp': 0},
+            Action.SOFT_DROP_RELEASE:           {'state': False, 'timestamp': 0},
             Action.HOLD:                        {'state': False, 'timestamp': 0},
             Action.SONIC_LEFT:                  {'state': False, 'timestamp': 0},
             Action.SONIC_RIGHT:                 {'state': False, 'timestamp': 0},
@@ -86,20 +90,19 @@ class Handling():
             Action.SONIC_RIGHT_DROP:            {'state': False, 'timestamp': 0}
         }
     
-    def before_loop_hook(self):
+    def do_tick(self):
         """
-        Hook that is called within the game loop before the tick is executed to obtain the current action states to be used in the game loop
+        Perform a tick of the handling logic
         """
         self.__get_actions()
         self.__forward_key_states()     
-        return self.action_queue
     
     def __forward_key_states(self):
         """
         Forward the key states for comaprison in the future (allows for toggle/hold detection)
         """
-        for k in self.key_states:
-            self.key_states[k]['previous'] = self.key_states[k]['current']
+        for k in self.HandlingStruct.key_states:
+            self.HandlingStruct.key_states[k]['previous'] = self.HandlingStruct.key_states[k]['current']
     
     # ------------------------------------------- ACTION TESTING -------------------------------------------
     
@@ -110,6 +113,8 @@ class Handling():
         self.__do_DAS_tick()
         
         self.__test_actions(Action.SOFT_DROP, self.__is_action_down)
+        
+        self.__test_actions(Action.SOFT_DROP_RELEASE, self.__is_action_released)
                 
         self.__test_actions(Action.MOVE_LEFT, self.__is_action_down)
         
@@ -145,7 +150,7 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        return all(self.key_states[key]['current'] and not self.key_states[key]['previous'] for key in self.Config.key_bindings[action])
+        return all(self.HandlingStruct.key_states[key]['current'] and not self.HandlingStruct.key_states[key]['previous'] for key in self.Config.key_bindings[action])
     
     def __is_action_down(self, action:Action):
         """
@@ -156,7 +161,16 @@ class Handling():
         returns:
             bool: True if the action is down, False otherwise
         """
-        return all(self.key_states[key]['current'] for key in self.Config.key_bindings[action])
+        return all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[action])
+    
+    def __is_action_released(self, action:Action):
+        """
+        Test if the action is released (not pressed)
+        
+        args:
+            action (Action): The action to be performed
+        """
+        return all(self.HandlingStruct.key_states[key]['previous'] and not self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[action])
     
     def __is_direction_down(self, direction: str) -> bool:
         """
@@ -267,7 +281,7 @@ class Handling():
         """
         keyinfo = self.__get_key_info(key)
         try:
-            KeyEntry = self.key_states[keyinfo]
+            KeyEntry = self.HandlingStruct.key_states[keyinfo]
             if KeyEntry:
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = True
@@ -283,7 +297,7 @@ class Handling():
         """
         keyinfo = self.__get_key_info(key)
         try:
-            KeyEntry = self.key_states[keyinfo]
+            KeyEntry = self.HandlingStruct.key_states[keyinfo]
             if KeyEntry:
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = False
@@ -498,12 +512,12 @@ class Handling():
     
     def get_key_dict(self):
         self.HandlingStruct.key_dict = {
-                'KEY_LEFT': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_LEFT]),
-                'KEY_RIGHT': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_RIGHT]),
-                'KEY_CLOCKWISE': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_CLOCKWISE]),
-                'KEY_COUNTERCLOCKWISE': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]),
-                'KEY_180': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_180]),
-                'KEY_HARD_DROP' : all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.HARD_DROP]),
-                'KEY_SOFT_DROP': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.SOFT_DROP]),
-                'KEY_HOLD': all(self.key_states[key]['current'] for key in self.Config.key_bindings[Action.HOLD]),
+                'KEY_LEFT': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_LEFT]),
+                'KEY_RIGHT': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_RIGHT]),
+                'KEY_CLOCKWISE': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_CLOCKWISE]),
+                'KEY_COUNTERCLOCKWISE': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]),
+                'KEY_180': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_180]),
+                'KEY_HARD_DROP' : all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.HARD_DROP]),
+                'KEY_SOFT_DROP': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.SOFT_DROP]),
+                'KEY_HOLD': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.HOLD]),
             }

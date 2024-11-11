@@ -79,4 +79,3 @@ class StructRender():
         
         self.GRID_SIZE = int(self.WINDOW_WIDTH / 48)
         self.BORDER_WIDTH = int(self.GRID_SIZE / 6)
-        
