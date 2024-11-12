@@ -11,7 +11,7 @@ from render.board.hold_and_queue import HoldAndQueue
 from render.board.UI.border import UIBorder
 from render.board.UI.info_text import UIInfoText
 from render.board.UI.action_text import UIActionText
-from core.handling import Action
+from input.handling.handling import Action
 from utils import ease_out_cubic, ease_in_out_quad, smoothstep
 from instance.four import RNG
 import math
@@ -102,7 +102,7 @@ class Board():
         
         self.game_over_animation_in_progress = False
         self.fall_y_vel = 0
-        self.gravity = 300 * self.RenderStruct.GRID_SIZE  * self.default_scale
+        self.gravity = 300 * self.RenderStruct.GRID_SIZE
         self.fall_rot_vel = 0
         self.shake_time = 0.5
         self.done_fizzle = False

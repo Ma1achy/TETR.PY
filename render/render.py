@@ -38,7 +38,7 @@ class Render():
         self.RenderStruct.coloured_shadow = True
         self.RenderStruct.shadow_opacity = 200
         
-        self.board_center_screen_pos_x = self.RenderStruct.WINDOW_WIDTH // 2 
+        self.board_center_screen_pos_x = self.RenderStruct.WINDOW_WIDTH // 2
         self.board_center_screen_pos_y = self.RenderStruct.WINDOW_HEIGHT // 2
         
         self.Board = Board(self.Config, self.RenderStruct, self.FlagStruct, self.GameInstanceStruct, self.TimingStruct, self.DebugStruct, self.Fonts)

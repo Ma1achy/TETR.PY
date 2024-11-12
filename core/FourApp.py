@@ -15,3 +15,16 @@ class FourApp():
     #              - UI
     #              - Board(s) to draw
     # 
+
+class InputManager():
+    def __init__(self):
+        pass
+
+class GameInstanceManager():
+    def __init__(self):
+        pass
+
+class GameInstance():
+    def __init__(self):
+        pass
+    

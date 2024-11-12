@@ -1,10 +1,11 @@
 import pygame
 from config import StructConfig
-from core.handling import Handling
+from input.handling.handling import Handling
 from core.debug import Debug
 from render.render import Render
 import time
 import asyncio
+from input.handling.handling_config import HandlingConfig
 from core.state.struct_debug import StructDebug
 from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance
@@ -28,11 +29,12 @@ class Core():
         self.FlagStruct = StructFlags()
         self.RenderStruct = StructRender()
         self.DebugStruct = StructDebug()
+        self.HandlingConfig = HandlingConfig()
         
         self.render_clock = Clock()
         
-        self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
-        self.handling = Handling(self.Config, self.HandlingStruct, self.FlagStruct)
+        self.Debug = Debug(self.Config, self.TimingStruct, self.HandlingConfig, self.HandlingStruct, self.GameInstanceStruct, self.FlagStruct, self.RenderStruct, self.DebugStruct)
+        self.handling = Handling(self.Config, self.HandlingConfig, self.HandlingStruct, self.FlagStruct)
           
         self.TPS = self.Config.TPS
         self.FPS = self.Config.FPS

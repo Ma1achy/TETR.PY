@@ -30,7 +30,7 @@ class Action(Enum):
     SONIC_RIGHT_DROP = auto()
     
 class Handling():
-    def __init__(self, Config, HandlingStruct, FlagStruct):
+    def __init__(self, Config, HandlingConfig, HandlingStruct, FlagStruct):
         """
         Handle the key inputs and provide the actions to the game loop in a queue.
         
@@ -45,6 +45,7 @@ class Handling():
         """
         
         self.Config = Config
+        self.HandlingConfig = HandlingConfig
         self.HandlingStruct = HandlingStruct
         self.FlagStruct = FlagStruct
         self.polling_tick_time = 1 / self.Config.POLLING_RATE
@@ -54,7 +55,7 @@ class Handling():
         
         self.HandlingStruct.key_states = {
             key: {'current': False, 'previous': False}
-            for action, keys in self.Config.key_bindings.items()
+            for action, keys in self.HandlingConfig.key_bindings.items()
             for key in keys
         }
         
@@ -126,7 +127,7 @@ class Handling():
         
         self.__test_actions(Action.ROTATE_180, self.__is_action_toggled)
         
-        if self.Config.HANDLING_SETTINGS['SonicDrop']:
+        if self.HandlingConfig.HANDLING_SETTINGS['SonicDrop']:
             self.__test_actions(Action.SONIC_DROP, self.__is_action_toggled)
         else:
             self.__test_actions(Action.HARD_DROP, self.__is_action_toggled)
@@ -150,7 +151,7 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        return all(self.HandlingStruct.key_states[key]['current'] and not self.HandlingStruct.key_states[key]['previous'] for key in self.Config.key_bindings[action])
+        return all(self.HandlingStruct.key_states[key]['current'] and not self.HandlingStruct.key_states[key]['previous'] for key in self.HandlingConfig.key_bindings[action])
     
     def __is_action_down(self, action:Action):
         """
@@ -161,7 +162,7 @@ class Handling():
         returns:
             bool: True if the action is down, False otherwise
         """
-        return all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[action])
+        return all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[action])
     
     def __is_action_released(self, action:Action):
         """
@@ -170,7 +171,7 @@ class Handling():
         args:
             action (Action): The action to be performed
         """
-        return all(self.HandlingStruct.key_states[key]['previous'] and not self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[action])
+        return all(self.HandlingStruct.key_states[key]['previous'] and not self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[action])
     
     def __is_direction_down(self, direction: str) -> bool:
         """
@@ -231,7 +232,7 @@ class Handling():
         direction_2 = self.direction_of_action[action_2]
 
         if self.__is_direction_down(direction_1) and self.__is_direction_down(direction_2):
-            if self.Config.HANDLING_SETTINGS['PrioriDir']:  # if the setting is true, the most recent key will be prioritised
+            if self.HandlingConfig.HANDLING_SETTINGS['PrioriDir']:  # if the setting is true, the most recent key will be prioritised
                 if self.HandlingStruct.current_direction == direction_1:
                     self.__set_action_state(action_2, True)
                     self.__set_action_state(action_1, False)
@@ -342,7 +343,7 @@ class Handling():
         """
         Do a tick of the Delayed Auto Shift (DAS) and Auto Repeat Rate (ARR) logic
         """
-        if self.Config.HANDLING_SETTINGS['DASCancel']:
+        if self.HandlingConfig.HANDLING_SETTINGS['DASCancel']:
             if self.HandlingStruct.dir_priority == 'left':
                 self.__DAS_LEFT()
             if self.HandlingStruct.dir_priority == 'right':
@@ -405,16 +406,16 @@ class Handling():
         If the Left movement keys are held down, the Left DAS timer will be incremented until it reaches the DAS threshold (ms). 
         Once charged, the Left ARR will be performed at the set rate (ms).
         """
-        if self.Config.HANDLING_SETTINGS['DASCancel']: # if the opposite direction is pressed, the DAS timer will reset for the previous direction
+        if self.HandlingConfig.HANDLING_SETTINGS['DASCancel']: # if the opposite direction is pressed, the DAS timer will reset for the previous direction
             self.__DAS_cancel()
       
         if self.__is_direction_down('left'):
            
-            if self.HandlingStruct.DAS_LEFT_COUNTER % self.Config.HANDLING_SETTINGS['DAS'] == 0 or self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
+            if self.HandlingStruct.DAS_LEFT_COUNTER % self.HandlingConfig.HANDLING_SETTINGS['DAS'] == 0 or self.HandlingStruct.DAS_LEFT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS']:
                 self.__ARR_LEFT()
                      
-            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
-                self.HandlingStruct.DAS_LEFT_COUNTER = self.Config.HANDLING_SETTINGS['DAS']
+            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS']:
+                self.HandlingStruct.DAS_LEFT_COUNTER = self.HandlingConfig.HANDLING_SETTINGS['DAS']
                 
             else:
                 q, r = divmod((self.HandlingStruct.current_time - self.HandlingStruct.prev_time) + self.HandlingStruct.DAS_LEFT_COUNTER_REMAINDER, self.polling_tick_time)
@@ -430,16 +431,16 @@ class Handling():
         If the Right movement keys are held down, the Right DAS timer will be incremented until it reaches the DAS threshold (ms). 
         Once charged, the Right ARR will be performed at the set rate (ms).
         """
-        if self.Config.HANDLING_SETTINGS['DASCancel']:
+        if self.HandlingConfig.HANDLING_SETTINGS['DASCancel']:
             self.__DAS_cancel()
             
         if self.__is_direction_down('right'):
             
-            if self.HandlingStruct.DAS_RIGHT_COUNTER % self.Config.HANDLING_SETTINGS['DAS'] == 0 or self.HandlingStruct.DAS_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
+            if self.HandlingStruct.DAS_RIGHT_COUNTER % self.HandlingConfig.HANDLING_SETTINGS['DAS'] == 0 or self.HandlingStruct.DAS_RIGHT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS']:
                 self.__ARR_RIGHT()
             
-            if self.HandlingStruct.DAS_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
-                self.HandlingStruct.DAS_RIGHT_COUNTER = self.Config.HANDLING_SETTINGS['DAS']
+            if self.HandlingStruct.DAS_RIGHT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS']:
+                self.HandlingStruct.DAS_RIGHT_COUNTER = self.HandlingConfig.HANDLING_SETTINGS['DAS']
             
             else:
                 q, r = divmod((self.HandlingStruct.current_time - self.HandlingStruct.prev_time) + self.HandlingStruct.DAS_RIGHT_COUNTER_REMAINDER, self.polling_tick_time)
@@ -467,20 +468,20 @@ class Handling():
         If the Left DAS timer is charged, the Left ARR timer will be incremented until it reaches the ARR threshold (ms).
         Once charged, the action will be performed and the Left ARR timer will be reset.
         """ 
-        if self.Config.HANDLING_SETTINGS['ARR'] == 0: # inf repeat rate behaviour
+        if self.HandlingConfig.HANDLING_SETTINGS['ARR'] == 0: # inf repeat rate behaviour
             self.HandlingStruct.DO_MOVEMENT_LEFT = True
-            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS'] and self.HandlingStruct.dir_priority == 'left':
-                if self.__is_action_down(Action.SONIC_LEFT_DROP) and self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS'] and self.HandlingStruct.dir_priority == 'left':
+                if self.__is_action_down(Action.SONIC_LEFT_DROP) and self.HandlingConfig.HANDLING_SETTINGS['SDF'] == 'inf':
                     self.__queue_action(Action.SONIC_LEFT_DROP)
                 else:
                     self.__queue_action(Action.SONIC_LEFT)  
         else:       
-            if not self.HandlingStruct.DONE_TAP_LEFT or self.HandlingStruct.ARR_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
+            if not self.HandlingStruct.DONE_TAP_LEFT or self.HandlingStruct.ARR_LEFT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['ARR']:
                 self.HandlingStruct.DONE_TAP_LEFT = True # to allow tapping of the key, modulo was removed to prevent incosistent behaviour where one tick the counter could be >= ARR and the next tick it could be: counter % ARR == 0 leading to the action being performed twice in a row
                 self.HandlingStruct.DO_MOVEMENT_LEFT = True  
                 self.HandlingStruct.ARR_LEFT_COUNTER = 0
             
-            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
+            if self.HandlingStruct.DAS_LEFT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS']:
                 q, r = divmod((self.HandlingStruct.current_time - self.HandlingStruct.prev_time) + self.HandlingStruct.ARR_LEFT_COUNTER_REMAINDER, self.polling_tick_time)
                 self.HandlingStruct.ARR_LEFT_COUNTER_REMAINDER = r  
                 self.HandlingStruct.ARR_LEFT_COUNTER += int(q)
@@ -490,20 +491,20 @@ class Handling():
         If the Right DAS timer is charged, the Right ARR timer will be incremented until it reaches the ARR threshold (ms).
         Once charged, the action will be performed and the Right ARR timer will be reset.
         """ 
-        if self.Config.HANDLING_SETTINGS['ARR'] == 0:
+        if self.HandlingConfig.HANDLING_SETTINGS['ARR'] == 0:
             self.HandlingStruct.DO_MOVEMENT_RIGHT = True
-            if self.HandlingStruct.DAS_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS'] and self.HandlingStruct.dir_priority == 'right':
-                if self.__is_action_down(Action.SONIC_RIGHT_DROP) and self.Config.HANDLING_SETTINGS['SDF'] == 'inf':
+            if self.HandlingStruct.DAS_RIGHT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS'] and self.HandlingStruct.dir_priority == 'right':
+                if self.__is_action_down(Action.SONIC_RIGHT_DROP) and self.HandlingConfig.HANDLING_SETTINGS['SDF'] == 'inf':
                     self.__queue_action(Action.SONIC_RIGHT_DROP)
                 else:
                     self.__queue_action(Action.SONIC_RIGHT)    
         else:
-            if not self.HandlingStruct.DONE_TAP_RIGHT or self.HandlingStruct.ARR_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['ARR']:
+            if not self.HandlingStruct.DONE_TAP_RIGHT or self.HandlingStruct.ARR_RIGHT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['ARR']:
                 self.HandlingStruct.DONE_TAP_RIGHT = True
                 self.HandlingStruct.DO_MOVEMENT_RIGHT = True
                 self.HandlingStruct.ARR_RIGHT_COUNTER = 0
                 
-            if self.HandlingStruct.DAS_RIGHT_COUNTER >= self.Config.HANDLING_SETTINGS['DAS']:
+            if self.HandlingStruct.DAS_RIGHT_COUNTER >= self.HandlingConfig.HANDLING_SETTINGS['DAS']:
                 q, r = divmod((self.HandlingStruct.current_time - self.HandlingStruct.prev_time) + self.HandlingStruct.ARR_RIGHT_COUNTER_REMAINDER, self.polling_tick_time)
                 self.HandlingStruct.ARR_RIGHT_COUNTER_REMAINDER = r
                 self.HandlingStruct.ARR_RIGHT_COUNTER += int(q)
@@ -512,12 +513,12 @@ class Handling():
     
     def get_key_dict(self):
         self.HandlingStruct.key_dict = {
-                'KEY_LEFT': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_LEFT]),
-                'KEY_RIGHT': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.MOVE_RIGHT]),
-                'KEY_CLOCKWISE': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_CLOCKWISE]),
-                'KEY_COUNTERCLOCKWISE': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]),
-                'KEY_180': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.ROTATE_180]),
-                'KEY_HARD_DROP' : all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.HARD_DROP]),
-                'KEY_SOFT_DROP': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.SOFT_DROP]),
-                'KEY_HOLD': all(self.HandlingStruct.key_states[key]['current'] for key in self.Config.key_bindings[Action.HOLD]),
+                'KEY_LEFT': all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.MOVE_LEFT]),
+                'KEY_RIGHT': all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.MOVE_RIGHT]),
+                'KEY_CLOCKWISE': all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.ROTATE_CLOCKWISE]),
+                'KEY_COUNTERCLOCKWISE': all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.ROTATE_COUNTERCLOCKWISE]),
+                'KEY_180': all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.ROTATE_180]),
+                'KEY_HARD_DROP' : all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.HARD_DROP]),
+                'KEY_SOFT_DROP': all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.SOFT_DROP]),
+                'KEY_HOLD': all(self.HandlingStruct.key_states[key]['current'] for key in self.HandlingConfig.key_bindings[Action.HOLD]),
             }

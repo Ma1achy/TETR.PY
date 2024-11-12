@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from core.handling import Action
+from input.handling.handling import Action
 
 @dataclass
 class StructHandling():

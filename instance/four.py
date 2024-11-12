@@ -1,6 +1,6 @@
 from instance.tetromino import Tetromino
 from instance.matrix import Matrix
-from core.handling import Action
+from input.handling.handling import Action
 from instance.rotation import RotationSystem
 import math
 from utils import Vec2
@@ -24,6 +24,7 @@ class Four():
         self.GameInstanceStruct = core_instance.GameInstanceStruct
         self.TimingStruct = core_instance.TimingStruct
         self.HandlingStruct = core_instance.HandlingStruct
+        self.HandlingConfig = core_instance.HandlingConfig
 
         self.GameInstanceStruct.rotation_system_type = rotation_system
         self.GameInstanceStruct.rotation_system = RotationSystem(rotation_system)
@@ -212,7 +213,7 @@ class Four():
             return
         
         self.GameInstanceStruct.soft_dropping = True
-        self.GameInstanceStruct.soft_drop_factor = self.Config.HANDLING_SETTINGS['SDF']
+        self.GameInstanceStruct.soft_drop_factor = self.HandlingConfig.HANDLING_SETTINGS['SDF']
         self.__update_current_tetromino()
     
     def __sonic_move(self, action):
@@ -248,7 +249,7 @@ class Four():
         if self.GameInstanceStruct.current_tetromino is None:
             return
         
-        self.GameInstanceStruct.current_tetromino.sonic_move_and_drop(action, self.Config.HANDLING_SETTINGS['PrefSD'])
+        self.GameInstanceStruct.current_tetromino.sonic_move_and_drop(action, self.HandlingConfig.HANDLING_SETTINGS['PrefSD'])
     
     def __hold(self):
         """
@@ -475,7 +476,7 @@ class Four():
         """
         Set the prevent accidental hard drop flag if the setting is enabled
         """
-        if self.Config.HANDLING_SETTINGS['PrevAccHD']:
+        if self.HandlingConfig.HANDLING_SETTINGS['PrevAccHD']:
             self.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP = True
                     
     def __prevent_accidental_hard_drop(self):
@@ -487,7 +488,7 @@ class Four():
         
         self.HandlingStruct.PREV_ACC_HD_COUNTER += 1
         
-        if self.HandlingStruct.PREV_ACC_HD_COUNTER >= int(self.Config.HANDLING_SETTINGS['PrevAccHDTime']/60*self.Config.TPS):
+        if self.HandlingStruct.PREV_ACC_HD_COUNTER >= int(self.HandlingConfig.HANDLING_SETTINGS['PrevAccHDTime']/60*self.Config.TPS):
             self.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP = False
             self.HandlingStruct.PREV_ACC_HD_COUNTER = 0
             

@@ -1,5 +1,5 @@
 class Debug():
-    def __init__(self, Config, TimingStruct, HandlingStruct, GameInstanceStruct, FlagStruct, RenderStruct, DebugStruct):
+    def __init__(self, Config, TimingStruct, HandlingConfig, HandlingStruct, GameInstanceStruct, FlagStruct, RenderStruct, DebugStruct):
         """
         Manage the debug information for the game
         
@@ -14,6 +14,7 @@ class Debug():
         """
         self.Config = Config
         self.TimingStruct = TimingStruct
+        self.HandlingConfig = HandlingConfig
         self.HandlingStruct = HandlingStruct
         self.GameInstanceStruct = GameInstanceStruct
         self.FlagStruct = FlagStruct
@@ -111,22 +112,22 @@ class Debug():
         # DAS
         self.DebugStruct.DAS_Left_Counter = self.HandlingStruct.DAS_LEFT_COUNTER
         self.DebugStruct.DAS_Right_Counter = self.HandlingStruct.DAS_RIGHT_COUNTER
-        self.DebugStruct.DAS_Threshold = self.Config.HANDLING_SETTINGS['DAS']
-        self.DebugStruct.DAS_Cancel = self.Config.HANDLING_SETTINGS['DASCancel']
-        self.DebugStruct.DCD = self.Config.HANDLING_SETTINGS['DCD']
+        self.DebugStruct.DAS_Threshold = self.HandlingConfig.HANDLING_SETTINGS['DAS']
+        self.DebugStruct.DAS_Cancel = self.HandlingConfig.HANDLING_SETTINGS['DASCancel']
+        self.DebugStruct.DCD = self.HandlingConfig.HANDLING_SETTINGS['DCD']
         
         # ARR
         self.DebugStruct.ARR_Left_Counter = self.HandlingStruct.ARR_LEFT_COUNTER
         self.DebugStruct.ARR_Right_Counter = self.HandlingStruct.ARR_RIGHT_COUNTER
-        self.DebugStruct.ARR_Threshold = self.Config.HANDLING_SETTINGS['ARR']
+        self.DebugStruct.ARR_Threshold = self.HandlingConfig.HANDLING_SETTINGS['ARR']
         
         # direction prioritisation
-        self.DebugStruct.Prioritise_Direction = self.Config.HANDLING_SETTINGS['PrioriDir']
+        self.DebugStruct.Prioritise_Direction = self.HandlingConfig.HANDLING_SETTINGS['PrioriDir']
         self.DebugStruct.Direction = self.HandlingStruct.dir_priority
         
         # soft drop
-        self.DebugStruct.Soft_Drop_Factor = self.Config.HANDLING_SETTINGS['SDF']
-        self.DebugStruct.Prefer_Soft_Drop = self.Config.HANDLING_SETTINGS['PrefSD']
+        self.DebugStruct.Soft_Drop_Factor = self.HandlingConfig.HANDLING_SETTINGS['SDF']
+        self.DebugStruct.Prefer_Soft_Drop = self.HandlingConfig.HANDLING_SETTINGS['PrefSD']
         
         # gravity
         self.DebugStruct.Gravity = self.GameInstanceStruct.gravity
@@ -143,9 +144,9 @@ class Debug():
         self.DebugStruct.Lowest_Pivot = self.GameInstanceStruct.current_tetromino.lowest_pivot_position if self.GameInstanceStruct.current_tetromino else 0
         
         # prevent accidental hard drop
-        self.DebugStruct.Prevent_Accidental_Hard_Drop = self.Config.HANDLING_SETTINGS['PrevAccHD']
+        self.DebugStruct.Prevent_Accidental_Hard_Drop = self.HandlingConfig.HANDLING_SETTINGS['PrevAccHD']
         self.DebugStruct.Prevent_Accidental_Hard_Drop_Flag = self.FlagStruct.DO_PREVENT_ACCIDENTAL_HARD_DROP
-        self.DebugStruct.Prevent_Accidental_Hard_Drop_Time = int(self.Config.HANDLING_SETTINGS['PrevAccHDTime'] / 60 * self.Config.TPS)
+        self.DebugStruct.Prevent_Accidental_Hard_Drop_Time = int(self.HandlingConfig.HANDLING_SETTINGS['PrevAccHDTime'] / 60 * self.Config.TPS)
         self.DebugStruct.Prevent_Accidental_Hard_Drop_Counter = self.HandlingStruct.PREV_ACC_HD_COUNTER
         
         self.DebugStruct.Seed = self.GameInstanceStruct.seed
