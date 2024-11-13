@@ -380,12 +380,12 @@ class Matrix():
         self.play_line_clear_animation(surface, matrix_rect)
         self.get_line_clear_particles()
         
-        if self.RenderStruct.lines_cleared is None:
+        if self.GameInstanceStruct.lines_cleared is None:
             return
        
-        self.RenderStruct.lines_cleared = None
-        self.RenderStruct.cleared_blocks = None
-        self.RenderStruct.cleared_idxs = None
+        self.GameInstanceStruct.lines_cleared = None
+        self.GameInstanceStruct.cleared_blocks = None
+        self.GameInstanceStruct.cleared_idxs = None
         
     def play_line_clear_animation(self, surface, matrix_rect):
         
@@ -449,10 +449,10 @@ class Matrix():
                 
     def get_line_clear_particles(self):
         
-        if self.RenderStruct.cleared_blocks is None or self.RenderStruct.cleared_idxs is None or self.RenderStruct.lines_cleared is None:
+        if self.GameInstanceStruct.cleared_blocks is None or self.GameInstanceStruct.cleared_idxs is None or self.GameInstanceStruct.lines_cleared is None:
             return
         
-        num_particles = sum(sum(1 for _ in line) for line in self.RenderStruct.cleared_blocks)
+        num_particles = sum(sum(1 for _ in line) for line in self.GameInstanceStruct.cleared_blocks)
   
         line_clear_particles = np.zeros(num_particles, dtype = [
             ('x', 'f4'), ('y', 'f4'), ('x_vel', 'f4'), ('y_vel', 'f4'), ('scale', 'f4'), ('block', 'O'), ('time', 'f4'), ('max_time', 'f4')
@@ -460,7 +460,7 @@ class Matrix():
         
         particle_index = 0
 
-        for idx, line in zip(self.RenderStruct.cleared_idxs, self.RenderStruct.cleared_blocks):
+        for idx, line in zip(self.GameInstanceStruct.cleared_idxs, self.GameInstanceStruct.cleared_blocks):
             for pos, block in enumerate(line):
                 if particle_index >= num_particles:
                     break
@@ -478,11 +478,11 @@ class Matrix():
         x = pos * self.RenderStruct.GRID_SIZE + offset_x
         y = idx * self.RenderStruct.GRID_SIZE + offset_y
         
-        x_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 10 * self.RenderStruct.lines_cleared
-        y_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 7 * self.RenderStruct.lines_cleared
+        x_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 10 * self.GameInstanceStruct.lines_cleared
+        y_vel = (self.RNG.next_float() - 0.5) * self.RenderStruct.GRID_SIZE * 7 * self.GameInstanceStruct.lines_cleared
         
         scale = (1 - self.RNG.next_float()) + 0.15
-        max_time = self.RNG.next_float() * 2 + 1.75 + 1 / self.RenderStruct.lines_cleared
+        max_time = self.RNG.next_float() * 2 + 1.75 + 1 / self.GameInstanceStruct.lines_cleared
         time = max_time
         
         line_clear_particles[particle_index] = (x, y, x_vel, y_vel, scale, block[0], time, max_time)
@@ -514,7 +514,7 @@ class Matrix():
         if not self.RenderStruct.use_textures:
             return
         
-        if self.RenderStruct.lines_cleared is not None: # logic to check if to move the animated cells down
+        if self.GameInstanceStruct.lines_cleared is not None: # logic to check if to move the animated cells down
       
         
         # need to track the blocks that are placed, want it so multiple pieces being placed at the same time don't interfere with each other

@@ -69,21 +69,21 @@ class Matrix():
         
         color_map = {
             0: "\033[30m",  # black
-            1: "\033[35m",  # purple
-            2: "\033[32m",  # lime
-            3: "\033[31m",  # red
-            4: "\033[33m",  # orange
-            5: "\033[34m",  # blue
-            6: "\033[93m",  # yellow
-            7: "\033[36m",  # cyan
+            'T': "\033[35m",  # purple
+            'S': "\033[32m",  # lime
+            'Z': "\033[31m",  # red
+            'L': "\033[33m",  # orange
+            'J': "\033[34m",  # blue
+            'O': "\033[93m",  # yellow
+            'I': "\033[36m",  # cyan
         }
 
         display_matrix = [row[:] for row in self.matrix]
                     
         rows = [
             "| " + " ".join(
-                f"{color_map[abs(val)]}#\033[0m" if 1 <= val <= 7 else
-                f"{color_map[abs(val)]}.\033[0m" if val < 0 else
+                f"{color_map[val]}#\033[0m" if val != 0 else
+                f"{color_map[val]}.\033[0m" if val < 0 else
                 f"{color_map[0]}.\033[0m" for val in row
             ) + " |"
             for row in display_matrix[20:40]

@@ -15,7 +15,8 @@ class Tetromino():
             State (int): Rotation state of the piece: [0, 1, 2, 3]
             x (int): x position of the piece
             y (int): y position of the piece
-            matrix (Matrix): The matrix object that contains the blocks that are already placed
+            FlagStruct (FLAG): Flags of the game instance
+            GameInstanceStruct (StructGameInstance): The game instance struct
         """
         self.type = type
         self.state = state
@@ -217,7 +218,7 @@ class Tetromino():
         """
         return sum(1 for row in self.blocks if any(cell != 0 for cell in row))
     
-    def is_in_buffer_zone(self, matrix):
+    def is_in_buffer_zone(self, matrix:Matrix):
         """
         Test if the piece is in the buffer zone of the matrix, this is the top half of the matrix that does not have a grid background
         

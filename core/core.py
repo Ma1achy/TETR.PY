@@ -146,7 +146,7 @@ class Core():
             elif event.type == pygame.KEYUP:
                 self.handling.on_key_release(event.key)
         
-        self.handling.do_tick()
+        self.handling.tick()
         iter_end = time.perf_counter()
         self.TimingStruct.iter_times["handle_events"] = iter_end - iter_start
     
@@ -191,9 +191,8 @@ class Core():
         """
         iter_start = time.perf_counter()
         
-        four.loop()
+        four.tick()
         self.TimingStruct.tick_counter += 1
-        
         iter_end = time.perf_counter()
         self.TimingStruct.iter_times["game_loop"] = iter_end - iter_start
     
@@ -243,7 +242,6 @@ class Core():
         self.RenderStruct.key_dict = self.HandlingStruct.key_dict
         self.render.draw_frame()
         self.render_clock.tick()
-        
         iter_end = time.perf_counter()
         self.TimingStruct.iter_times["render_loop"] = iter_end - iter_start
      

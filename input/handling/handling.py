@@ -51,7 +51,7 @@ class Handling():
         self.polling_tick_time = 1 / self.Config.POLLING_RATE
      
         self.actions = self.__GetEmptyActions()
-        self.action_queue = deque()
+        self.HandlingStruct.action_queue = deque()
         
         self.HandlingStruct.key_states = {
             key: {'current': False, 'previous': False}
@@ -91,7 +91,7 @@ class Handling():
             Action.SONIC_RIGHT_DROP:            {'state': False, 'timestamp': 0}
         }
     
-    def do_tick(self):
+    def tick(self):
         """
         Perform a tick of the handling logic
         """
@@ -319,15 +319,7 @@ class Handling():
                     self.__do_DAS_ARR_RIGHT(action)
                 else:
                     self.__queue_action(action)
-                                 
-    def consume_action(self):
-        """
-        Consume the oldset action from the queue
-        """
-        if self.action_queue:
-            return self.action_queue.popleft()  
-        return None
-    
+                                     
     def __queue_action(self, action:Action):
         """
         Add an action to the queue
@@ -335,7 +327,7 @@ class Handling():
         args:
             action (Action): The action to add to the queue
         """
-        self.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
+        self.HandlingStruct.action_queue.append(({'action': action, 'timestamp': self.actions[action]['timestamp']}))
     
     # ============================================== DAS AND ARR LOGIC ==============================================
     

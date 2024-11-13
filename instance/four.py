@@ -6,7 +6,7 @@ import math
 from utils import Vec2
 
 class Four():
-    def __init__(self, core_instance, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True, allowed_spins = 'ALL-MINI', lock_out_ok = True, top_out_ok = False, reset_on_top_out = False):
+    def __init__(self, Config, FlagStruct, GameInstanceStruct, TimingStruct, HandlingStruct, HandlingConfig, matrix_width, matrix_height, rotation_system:str = 'SRS', randomiser = '7BAG', queue_previews = 5, seed = 0, hold = True, allowed_spins = 'ALL-MINI', lock_out_ok = True, top_out_ok = False, reset_on_top_out = False):
         """
         Create an instance of the game Four
         
@@ -16,15 +16,13 @@ class Four():
             
         methods:
             loop(): The main game loop
-            forward_state(): Forward the state of the game to allow for async rendering
         """
-        self.core_instance = core_instance
-        self.Config = core_instance.Config
-        self.FlagStruct = core_instance.FlagStruct
-        self.GameInstanceStruct = core_instance.GameInstanceStruct
-        self.TimingStruct = core_instance.TimingStruct
-        self.HandlingStruct = core_instance.HandlingStruct
-        self.HandlingConfig = core_instance.HandlingConfig
+        self.Config = Config
+        self.FlagStruct = FlagStruct
+        self.GameInstanceStruct = GameInstanceStruct
+        self.TimingStruct = TimingStruct
+        self.HandlingStruct = HandlingStruct
+        self.HandlingConfig = HandlingConfig
 
         self.GameInstanceStruct.rotation_system_type = rotation_system
         self.GameInstanceStruct.rotation_system = RotationSystem(rotation_system)
@@ -52,7 +50,7 @@ class Four():
     
     # =================================================== GAME LOGIC ===================================================
         
-    def loop(self):
+    def tick(self):
         """
         The main game loop
         """
@@ -65,19 +63,26 @@ class Four():
         """
         Consume the actions from the action queue to be performed in the current tick
         """
-        if self.core_instance.TPS != 0:
-            tick_duration = 1000 / self.core_instance.TPS # ms per tick
+        if self.TimingStruct.TPS != 0:
+            tick_duration = 1000 / self.TimingStruct.TPS # ms per tick
         else:
             tick_duration = 1000/ self.Config.TPS
             
-        for action_dict in list(self.core_instance.handling.action_queue):
+        for action_dict in list(self.HandlingStruct.action_queue):
            
             relative_tick = int((action_dict['timestamp'] - self.TimingStruct.current_time) / tick_duration)
 
             if relative_tick <= 0 and abs(relative_tick) <= self.HandlingStruct.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
-                self.core_instance.handling.consume_action()
-                                
+                self.consume_action()
+    
+    def consume_action(self):
+        """
+        Consume the oldset action from the queue
+        """
+        if self.HandlingStruct.action_queue:
+            return self.HandlingStruct.action_queue.popleft()  
+        return None
     # --------------------------------------------------- UPDATE ORDER ---------------------------------------------------
        
     def __get_next_state(self):
@@ -286,7 +291,7 @@ class Four():
         lines_cleared, cleared_blocks, cleared_idxs = self.GameInstanceStruct.matrix.clear_lines()
         
         if lines_cleared is not None:
-            self.core_instance.RenderStruct.lines_cleared, self.core_instance.RenderStruct.cleared_blocks, self.core_instance.RenderStruct.cleared_idxs = lines_cleared, cleared_blocks, cleared_idxs
+            self.GameInstanceStruct.lines_cleared, self.GameInstanceStruct.cleared_blocks, self.GameInstanceStruct.cleared_idxs = lines_cleared, cleared_blocks, cleared_idxs
     # --------------------------------------------------- GRAVITY ---------------------------------------------------
     
     def __perform_gravity(self):
