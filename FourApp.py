@@ -15,6 +15,7 @@ import pygame
 import queue
 from dataclasses import dataclass, field
 from typing import Dict
+import sys
 
 # plan:
 # have pygame only deal with rendering on its own thread
@@ -24,6 +25,10 @@ from typing import Dict
 
 # need to change handling to take in key_states
 
+#TODO: change renderer methods to NOT use methods ASSOCIATED WITH A GAME INSTANCE
+#      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
+#      GameInstanceStruct will have to be contained in a Queue or something so that the renderer can access it in a thread safe way
+#      Debug Menu will have to be changed in a similar way but ALSO, there will have to be per game instance debug info
 class FourApp():
     def __init__(self):
         self.game_instances = []
@@ -45,6 +50,8 @@ class FourApp():
         
         self.TPS = self.Config.TPS
         self.FPS = self.Config.FPS
+        self.POLLING_RATE = self.Config.POLLING_RATE
+        
         self.frame_interval = 1 / self.Config.FPS
         self.tick_interval = 1 / self.Config.TPS
         self.poll_interval = 1 / self.Config.POLLING_RATE
@@ -77,122 +84,161 @@ class FourApp():
         self.Timing.start_times['input_loop'] = time.perf_counter()
         self.Timing.start_times['main_loop'] = time.perf_counter()
         self.Timing.start_times['render_loop'] = time.perf_counter()
-        
+    
+    def __init_pygame(self):
+        pygame.init()
+    
     def run(self):
         self.__initalise()
         
         self.InputManager.start_keyboard_hook()
         self.input_thread.start()
         self.render_thread.start()
-        
         self.main_loop() 
-                
-    def exit(self):
+        
+        self.__exit()
+             
+    def __exit(self):
         self.exited = True
         self.input_thread.join()
         self.render_thread.join()
+        pygame.quit()
+        sys.exit()
         
     def main_loop(self):
-        while not self.exited:
-            iteration_start_time = time.perf_counter()
-            
-            self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['main_loop']
-            self.Timing.elapsed_times['main_loop'] = self.Timing.current_main_tick_time
-            
-            self.Timing.main_tick_delta_time += (self.Timing.current_main_tick_time - self.Timing.last_main_tick_time) / self.tick_interval
-            self.Timing.last_main_tick_time = self.Timing.current_main_tick_time
-            
-            if self.Timing.do_first_main_tick:
-                self.do_main_tick()
-                self.Timing.do_first_main_tick = False
+        try:
+            while not self.exited:
+                iteration_start_time = time.perf_counter()
                 
-            while self.Timing.main_tick_delta_time >= 1:
-                self.do_main_tick()
-                self.Timing.main_tick_delta_time -= 1
-            
-            if self.Timing.current_main_tick_time > self.Timing.main_tick_counter_last_cleared + 1:
-                self.Timing.main_tick_counter = 0
-                self.Timing.main_tick_counter_last_cleared += 1
-            
-            iteration_end_time = time.perf_counter()
-            
-            iteration_time = iteration_end_time - iteration_start_time
-            
-            if iteration_time < self.tick_interval:
-                time.sleep(self.tick_interval - iteration_time)
-            else:
-                if self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Main loop iteration took too long! [{iteration_time:.6f} seconds]\033[0m")
-                    
-    def render_loop(self):
-    
-        while not self.exited:
-            
-            iteration_start_time = time.perf_counter()
-            
-            self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
-            self.Timing.elapsed_times['render_loop'] = self.Timing.current_frame_time
-            
-            self.Timing.frame_delta_time += (self.Timing.current_frame_time - self.Timing.last_frame_time) / self.frame_interval
-            self.Timing.last_frame_time = self.Timing.current_frame_time
-            
-            self.do_render_tick()
+                self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['main_loop']
+                self.Timing.elapsed_times['main_loop'] = self.Timing.current_main_tick_time
+                
+                self.Timing.main_tick_delta_time += (self.Timing.current_main_tick_time - self.Timing.last_main_tick_time) / self.tick_interval
+                self.Timing.last_main_tick_time = self.Timing.current_main_tick_time
+                
+                if self.Timing.do_first_main_tick:
 
-            iteration_end_time = time.perf_counter()
-            iteration_time = iteration_end_time - iteration_start_time
-            
-            if iteration_time < self.frame_interval:
-                time.sleep(self.frame_interval - iteration_time)
-            else:
-                if self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Render loop iteration took too long! [{iteration_time:.6f} seconds]\033[0m")
+                    self.do_main_tick()
+                    self.Timing.do_first_main_tick = False
+                    
+                while self.Timing.main_tick_delta_time >= 1:
+                    self.do_main_tick()
+                    self.Timing.main_tick_delta_time -= 1
+                
+                if self.Timing.current_main_tick_time > self.Timing.main_tick_counter_last_cleared + 1:
+                    self.get_tps()
+                    self.Timing.main_tick_counter = 0
+                    self.Timing.main_tick_counter_last_cleared += 1
+                
+                iteration_end_time = time.perf_counter()
+                elapsed_time = iteration_end_time - iteration_start_time
+    
+                if elapsed_time < self.tick_interval:
+                    time.sleep(self.tick_interval - elapsed_time)
+                else:
+                    if self.PRINT_WARNINGS:
+                        print(f"\033[93mWARNING: Main loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                        
+        except Exception as e:
+            print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
+            self.__exit()
+              
+    def render_loop(self):
+        
+        try:
+            while not self.exited:
+                
+                iteration_start_time = time.perf_counter()
+                
+                self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
+                self.Timing.elapsed_times['render_loop'] = self.Timing.current_frame_time
+                
+                self.Timing.frame_delta_time += (self.Timing.current_frame_time - self.Timing.last_frame_time) / self.frame_interval
+                self.Timing.last_frame_time = self.Timing.current_frame_time
+                
+                if self.Timing.do_first_frame:
+                    self.__init_pygame()
+                    self.do_render_tick()
+                    self.Timing.do_first_frame = False
+                    
+                self.do_render_tick()
+
+                iteration_end_time = time.perf_counter()
+                elapsed_time = iteration_end_time - iteration_start_time
+                
+                if elapsed_time < self.frame_interval:
+                    time.sleep(self.frame_interval - elapsed_time)
+                else:
+                    if self.PRINT_WARNINGS:
+                        print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                        
+        except Exception as e:
+            print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
+            self.__exit()
             
     def input_loop(self):
     
-        while not self.InputManager.stop_event.is_set() and not self.exited:
-            
-            iteration_start_time = time.perf_counter()
-            
-            self.Timing.current_input_tick_time = time.perf_counter() - self.Timing.start_times['input_loop']
-            self.Timing.elapsed_times['input_loop'] = self.Timing.current_input_tick_time
-            
-            self.Timing.input_tick_delta_time += (self.Timing.current_input_tick_time - self.Timing.last_input_tick_time) / self.poll_interval
-            self.Timing.last_input_tick_time = self.Timing.current_input_tick_time
-            
-            if self.Timing.do_first_input_tick:
-                self.do_input_tick()
-                self.Timing.do_first_input_tick = False
-            
-            while self.Timing.input_tick_delta_time >= 1:
-                self.do_input_tick()
-                self.Timing.input_tick_delta_time -= 1
-            
-            if self.Timing.current_input_tick_time > self.Timing.input_tick_counter_last_cleared + 1:
-                self.Timing.input_tick_counter = 0
-                self.Timing.input_tick_counter_last_cleared += 1
+        try:
+            while not self.InputManager.stop_event.is_set() and not self.exited:
+                
+                iteration_start_time = time.perf_counter()
+                
+                self.Timing.current_input_tick_time = time.perf_counter() - self.Timing.start_times['input_loop']
+                self.Timing.elapsed_times['input_loop'] = self.Timing.current_input_tick_time
+                
+                self.Timing.input_tick_delta_time += (self.Timing.current_input_tick_time - self.Timing.last_input_tick_time) / self.poll_interval
+                self.Timing.last_input_tick_time = self.Timing.current_input_tick_time
+                
+                if self.Timing.do_first_input_tick:
+                    self.do_input_tick()
+                    self.Timing.do_first_input_tick = False
+                
+                while self.Timing.input_tick_delta_time >= 1:
+                    self.do_input_tick()
+                    self.Timing.input_tick_delta_time -= 1
+                
+                if self.Timing.current_input_tick_time > self.Timing.input_tick_counter_last_cleared + 1:
+                    self.get_poll_rate()
+                    self.Timing.input_tick_counter = 0
+                    self.Timing.input_tick_counter_last_cleared += 1
 
-            iteration_end_time = time.perf_counter()
-            iteration_time = iteration_end_time - iteration_start_time
+                iteration_end_time = time.perf_counter()
+                elapsed_time = iteration_end_time - iteration_start_time
+                
+                if elapsed_time < self.poll_interval:
+                    time.sleep(self.poll_interval - elapsed_time)
+                else:
+                    if self.PRINT_WARNINGS:
+                        print(f"\033[93mWARNING: Input loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                        
+        except Exception as e:
+            print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
+            self.__exit()
             
-            if iteration_time < self.poll_interval:
-                time.sleep(self.poll_interval - iteration_time)
-            else:
-                if self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Input loop iteration took too long! [{iteration_time:.6f} seconds]\033[0m")
-
     def do_main_tick(self):
-    
+        print(self.TPS, self.POLLING_RATE)
         self.Timing.main_tick_counter += 1
-        time.sleep(self.tick_interval*0.25) # temp to simulate work
-        
+       
     def do_render_tick(self):
-        time.sleep(self.frame_interval*0.25) # temp to simulate work
-    
+        
+        pygame.event.pump() # the pygame event queue must be called or the os will think the app is not responding
+                    
     def do_input_tick(self):
+        
         if self.InputManager.wait_for_input_event(timeout = self.poll_interval):
+           
             self.key_states = self.key_states_queue.get()
             print(self.key_states)
-    
+            
+        self.Timing.input_tick_counter += 1
+        
+    def get_tps(self):
+        self.TPS = self.Timing.main_tick_counter
+        self.Timing.TPS = self.TPS
+        
+    def get_poll_rate(self):
+        self.poll_rate = self.Timing.input_tick_counter
+        self.Timing.POLLING_RATE = self.poll_rate
 class InputManager:
     def __init__(self, key_states_queue):
         self.key_states = {}
