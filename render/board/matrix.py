@@ -6,7 +6,7 @@ import pygame
 import copy
 from utils import lerpBlendRGBA, smoothstep, tint_texture
 import numpy as np
-
+# FIXME: line clear particles dont draw always since I will need to add the cleared lines/blocks to a queue in the game instance and then draw them
 class Matrix():
     def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct, BoardConsts:StructBoardConsts, RNG):
         
@@ -382,11 +382,7 @@ class Matrix():
         
         if self.GameInstanceStruct.lines_cleared is None:
             return
-       
-        self.GameInstanceStruct.lines_cleared = None
-        self.GameInstanceStruct.cleared_blocks = None
-        self.GameInstanceStruct.cleared_idxs = None
-        
+
     def play_line_clear_animation(self, surface, matrix_rect):
         
         if self.line_clear_particles.size == 0:

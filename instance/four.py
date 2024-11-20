@@ -55,7 +55,7 @@ class Four():
         The main game loop
         """
         self.actions_this_tick = []
-        
+
         self.__action_dequeuer()
         self.__get_next_state()
            
@@ -290,8 +290,8 @@ class Four():
         """
         lines_cleared, cleared_blocks, cleared_idxs = self.GameInstanceStruct.matrix.clear_lines()
         
-        if lines_cleared is not None:
-            self.GameInstanceStruct.lines_cleared, self.GameInstanceStruct.cleared_blocks, self.GameInstanceStruct.cleared_idxs = lines_cleared, cleared_blocks, cleared_idxs
+        
+        self.GameInstanceStruct.lines_cleared, self.GameInstanceStruct.cleared_blocks, self.GameInstanceStruct.cleared_idxs = lines_cleared, cleared_blocks, cleared_idxs
     # --------------------------------------------------- GRAVITY ---------------------------------------------------
     
     def __perform_gravity(self):
