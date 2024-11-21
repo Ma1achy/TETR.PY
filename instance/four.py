@@ -75,7 +75,11 @@ class Four():
             if relative_tick <= 0 and abs(relative_tick) <= self.HandlingStruct.buffer_threshold: # only perform past actions that haven't been performed that are within the buffer threshold or actions that are on this tick
                 self.actions_this_tick.append(action_dict)
                 self.consume_action()
-    
+        
+        # FIXME: change actions this tick to still use the action queue but only consume the actions that are on this tick, otherwise problem is what have now:
+        # i.e [right, rotatecw, hard_drop, left, left] in this tick but the last two left, left will be consumed but not performed since the current piece will become None.
+        # so the actions_this_tick should be [right, rotatecw, hard_drop] and then [left, left] will be consumed in the next tick.
+        
     def consume_action(self):
         """
         Consume the oldset action from the queue
@@ -119,7 +123,6 @@ class Four():
         
         self.GameInstanceStruct.current_tetromino.shadow()
         self.GameInstanceStruct.current_tetromino.reset_lock_delay_lower_pivot()
-                
     # ---------------------------------------------------- ACTIONS ---------------------------------------------------
     
     def __perform_actions(self):

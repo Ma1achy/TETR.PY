@@ -32,3 +32,6 @@ class StructGameInstance():
     cleared_blocks: list = None
     cleared_idxs: list = None
     lines_cleared: int = None
+
+    is_on_floor: bool = False
+    is_in_buffer_zone: bool = False

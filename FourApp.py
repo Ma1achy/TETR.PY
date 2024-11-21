@@ -11,19 +11,16 @@ from core.state.struct_flags import StructFlags, set_flag_attr
 from core.state.struct_handling import StructHandling
 from core.state.struct_render import StructRender
 from instance.four import Four
+from core.clock import Clock
 import pygame
 import queue
 from dataclasses import dataclass, field
 from typing import Dict
-import sys
+import os, sys
 
-# plan:
-# have pygame only deal with rendering on its own thread
-# each game instance will have its own thread and will have async methods for handling and game logic
-# main thread will handle game instance creation and deletion and things like menu logic
-# input will be handled on its own thread
-
-# need to change handling to take in key_states
+# render loop will do frame based updates, so drawing & ui logic
+# input loop will do polling based updates, so getting inputs & ticking input handlers of game instances
+# main loop will do game logic updates, so ticking game instances
 
 #TODO: change renderer methods to NOT use methods ASSOCIATED WITH A GAME INSTANCE
 #      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
@@ -41,6 +38,7 @@ class FourApp():
         self.TimingStruct = StructTiming()
         
         self.Timing = Timing()
+        self.FrameClock = Clock()
         
         self.GameInstanceStruct = StructGameInstance()
         self.FlagStruct = StructFlags()
@@ -57,6 +55,7 @@ class FourApp():
         self.poll_interval = 1 / self.Config.POLLING_RATE
         
         self.max_main_ticks_per_iteration = 256
+        self.max_poll_ticks_per_iteration = 1000
         
         self.GameInstanceManager = GameInstanceManager(self.Config, self.TimingStruct, self.HandlingConfig, self.game_instances)
         
@@ -102,18 +101,23 @@ class FourApp():
              
     def __exit(self):
         self.exited = True
-        self.input_thread.join()
-        self.render_thread.join()
-        
-        keyboard.unhook_all()
+        self.InputManager.exit()
         pygame.quit()
-        sys.exit()
         
+        # safely join threads
+        if self.input_thread.is_alive():
+            self.input_thread.join(timeout = self.poll_interval)
+
+        if self.render_thread.is_alive():
+            self.render_thread.join(timeout = self.frame_interval)
+
+        os._exit(0)
+      
     def main_loop(self):
         try:
             while not self.exited:
                 iteration_start_time = time.perf_counter()
-                ticks_done = 0
+                ticks_this_iteration = 0
                 
                 self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['main_loop']
                 self.Timing.elapsed_times['main_loop'] = self.Timing.current_main_tick_time
@@ -125,14 +129,15 @@ class FourApp():
 
                     self.do_main_tick()
                     self.Timing.do_first_main_tick = False
+                    ticks_this_iteration += 1
                     
-                while self.Timing.main_tick_delta_time >= 1 and ticks_done < self.max_main_ticks_per_iteration: # only process a certain number of ticks per iteration otherwise drop the extra ticks to catch up
+                while self.Timing.main_tick_delta_time >= 1 and ticks_this_iteration < self.max_main_ticks_per_iteration: # only process a certain number of ticks per iteration otherwise drop the extra ticks to catch up
                     self.do_main_tick()
                     self.Timing.main_tick_delta_time -= 1
-                    ticks_done += 1
+                    ticks_this_iteration += 1
                 
                 # recalibrate if too many ticks are processed in one iteration
-                if ticks_done > self.max_main_ticks_per_iteration:
+                if ticks_this_iteration > self.max_main_ticks_per_iteration:
                     if self.PRINT_WARNINGS:
                         print("\033[93mWARNING: Too many ticks processed in one iteration of Main Loop, recalibrating...\033[0m")
                         
@@ -150,16 +155,24 @@ class FourApp():
                     print(f"\033[93mWARNING: Main loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
                         
                 time.sleep(max(0, self.tick_interval - elapsed_time))
-                        
+                                 
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            self.__exit()
-              
-    def render_loop(self):
+            return
         
+        finally:
+            print(f"Main loop exited in {threading.current_thread().name}")
+            self.exited = True
+            return
+            
+    def render_loop(self):
+        """
+        Render loop handles frame based updates, so drawing frames and the UI logic and handle window events.
+        Tick rate is as a fast as possible.
+        """
         try:
             while not self.exited:
-                
+         
                 iteration_start_time = time.perf_counter()
                 
                 self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
@@ -178,24 +191,30 @@ class FourApp():
                 iteration_end_time = time.perf_counter()
                 elapsed_time = iteration_end_time - iteration_start_time
                 
-                if elapsed_time < self.frame_interval:
-                    time.sleep(0)
-                else:
-                    if self.PRINT_WARNINGS:
+                if elapsed_time > self.frame_interval and self.PRINT_WARNINGS:
                         print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
-                    time.sleep(0)
+                
+                self.get_fps()
+                
+                time.sleep(max(0, self.frame_interval - elapsed_time))
                         
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            self.__exit()
+            return
+        
+        finally: 
+            print(f"Render loop exited in {threading.current_thread().name}")  
+            self.exited = True
+            return
             
     def input_loop(self):
-    
+        
         try:
-            while not self.InputManager.stop_event.is_set() and not self.exited:
+            while not self.exited:
                 
+                ticks_this_iteration = 0
                 iteration_start_time = time.perf_counter()
-                
+            
                 self.Timing.current_input_tick_time = time.perf_counter() - self.Timing.start_times['input_loop']
                 self.Timing.elapsed_times['input_loop'] = self.Timing.current_input_tick_time
                 
@@ -205,10 +224,18 @@ class FourApp():
                 if self.Timing.do_first_input_tick:
                     self.do_input_tick()
                     self.Timing.do_first_input_tick = False
+                    ticks_this_iteration += 1
                 
-                while self.Timing.input_tick_delta_time >= 1:
+                while self.Timing.input_tick_delta_time >= 1 and ticks_this_iteration < self.max_poll_ticks_per_iteration:
                     self.do_input_tick()
                     self.Timing.input_tick_delta_time -= 1
+                    ticks_this_iteration += 1
+                    
+                if ticks_this_iteration > self.max_poll_ticks_per_iteration:
+                    if self.PRINT_WARNINGS:
+                        print("\033[93mWARNING: Too many ticks processed in one iteration of Input Loop, recalibrating...\033[0m")
+                        
+                    self.Timing.input_tick_delta_time = 1
                 
                 if self.Timing.current_input_tick_time > self.Timing.input_tick_counter_last_cleared + 1:
                     self.get_poll_rate()
@@ -218,31 +245,42 @@ class FourApp():
                 iteration_end_time = time.perf_counter()
                 elapsed_time = iteration_end_time - iteration_start_time
                 
-                if elapsed_time < self.poll_interval:
-                    time.sleep(0)
-                else:
-                    if self.PRINT_WARNINGS:
-                        print(f"\033[93mWARNING: Input loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
-                    time.sleep(0)
-            else:
-                time.sleep(0)
-                         
+                if elapsed_time > self.poll_interval and self.PRINT_WARNINGS:
+                    print(f"\033[93mWARNING: Input loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                
+                time.sleep(max(0, self.poll_interval - elapsed_time))
+                   
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            self.__exit()
+            return
+        
+        finally:
+            print(f"Input loop exited in {threading.current_thread().name}")
+            self.exited = True
+            return
             
     def do_main_tick(self):
-        print(self.TPS, self.POLLING_RATE)
-        time.sleep(self.tick_interval)
+        if self.exited:
+            return
+        
+        print(self.TPS, self.FPS, self.POLLING_RATE)
+        time.sleep(self.tick_interval*0.1)
         self.Timing.main_tick_counter += 1
        
     def do_render_tick(self):
         
+        if self.exited:
+            return
+        
         pygame.event.pump() # the pygame event queue must be called or the os will think the app is not responding
-                    
+        self.FrameClock.tick()
+        
     def do_input_tick(self):
         
-        if self.InputManager.wait_for_input_event(timeout = self.poll_interval):
+        if self.exited:
+            return
+        
+        if self.InputManager.wait_for_input_event():
            
             self.key_states = self.key_states_queue.get()
             print(self.key_states)
@@ -252,6 +290,10 @@ class FourApp():
     def get_tps(self):
         self.TPS = self.Timing.main_tick_counter
         self.Timing.TPS = self.TPS
+    
+    def get_fps(self):
+        self.FPS = self.FrameClock.get_fps()
+        self.Timing.FPS = self.FPS
         
     def get_poll_rate(self):
         self.poll_rate = self.Timing.input_tick_counter
@@ -260,14 +302,29 @@ class InputManager:
     def __init__(self, key_states_queue):
         self.key_states = {}
         self.key_states_queue = key_states_queue
+        self.exited = False
         self.input_event = threading.Event()
-        self.stop_event = threading.Event()
         
     def start_keyboard_hook(self):
-        keyboard.hook(self.get_key_events)
+        self.keyboard_hook = keyboard.hook(self.get_key_events)
     
+    def stop_keyboard_hook(self):
+        if self.keyboard_hook:
+            keyboard.unhook(self.keyboard_hook)
+            self.keyboard_hook = None
+    
+    def exit(self):
+        """
+        Stops the InputManager and cleans up resources.
+        """
+        self.exited = True
+        self.stop_keyboard_hook()
+        
     def get_key_events(self, key_event):
-    
+        
+        if self.exited:
+            return
+        
         if key_event.event_type == keyboard.KEY_DOWN:
             self.on_key_press(key_event)
             
@@ -310,9 +367,6 @@ class InputManager:
     def __get_key_info(self, key):
         return key if isinstance(key, str) else key.name
 
-    def stop(self):
-        self.stop_event.set()
-    
     def wait_for_input_event(self, timeout = None):
         if self.input_event.wait(timeout = timeout):
             self.input_event.clear()  

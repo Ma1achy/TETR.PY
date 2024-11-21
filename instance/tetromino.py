@@ -231,8 +231,10 @@ class Tetromino():
             for x, val in enumerate(row)
             if val != 0
         ):
+            self.GameInstanceStruct.is_in_buffer_zone = True
             return True
         else:
+            self.GameInstanceStruct.is_in_buffer_zone = False
             return False
     
     # ========================================================== ROTATION ============================================================
@@ -490,7 +492,12 @@ class Tetromino():
         """
         Check if the piece is on the floor
         """
-        return self.collision(self.blocks, self.position + Vec2(0, 1))
+        if self.collision(self.blocks, self.position + Vec2(0, 1)):
+            self.GameInstanceStruct.is_on_floor = True
+            return True
+        else:
+            self.GameInstanceStruct.is_on_floor = False
+            return False
     
     def reset_lock_delay_lower_pivot(self):
         """
