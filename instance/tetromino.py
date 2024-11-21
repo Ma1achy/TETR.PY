@@ -341,7 +341,7 @@ class Tetromino():
             self.blocks = rotated_piece
             self.position += kick
             
-            if self.GameInstanceStruct.allowed_spins == 'STUPID': # stupid mode is done at the end of the rotation since we detect if its on the floor
+            if self.GameInstanceStruct.allowed_spins == 'STUPID': # stupid mode is done at the end of the rotation since we detect if its on the floor otherwise rotating in the air would be a spin which is straight up retarded
                 self.__is_spin(self.blocks, Vec2(0, 0), action)
               
     def __get_kick(self, kick_table, desired_state:int, offset:int):

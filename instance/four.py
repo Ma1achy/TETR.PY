@@ -76,7 +76,7 @@ class Four():
                 self.actions_this_tick.append(action_dict)
                 self.consume_action()
         
-        # FIXME: change actions this tick to still use the action queue but only consume the actions that are on this tick, otherwise problem is what have now:
+        # FIXME: change actions this tick to still use the action queue but only consume the actions that are on this tick, what i do rn is 1head:
         # i.e [right, rotatecw, hard_drop, left, left] in this tick but the last two left, left will be consumed but not performed since the current piece will become None.
         # so the actions_this_tick should be [right, rotatecw, hard_drop] and then [left, left] will be consumed in the next tick.
         
@@ -164,7 +164,7 @@ class Four():
                 case Action.SONIC_LEFT_DROP | Action.SONIC_RIGHT_DROP:
                     self.__sonic_move_and_drop(action)
                 
-                case Action.SOFT_DROP_RELEASE:
+                case Action.SOFT_DROP_RELEASE: # FIXME: cursed as hell ????????????? but otherwise sdf wont reset on key release
                     self.__reset_gravity_after_soft_drop()
     
     def __move(self, action):
