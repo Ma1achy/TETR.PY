@@ -161,7 +161,8 @@ class FourApp():
             return
         
         finally:
-            print(f"Main loop exited in {threading.current_thread().name}")
+            if self.PRINT_WARNINGS:
+                print(f"\033[92mMain loop exited in {threading.current_thread().name}\033[0m")
             self.exited = True
             return
             
@@ -192,7 +193,7 @@ class FourApp():
                 elapsed_time = iteration_end_time - iteration_start_time
                 
                 if elapsed_time > self.frame_interval and self.PRINT_WARNINGS:
-                        print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                    print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
                 
                 self.get_fps()
                 
@@ -203,7 +204,8 @@ class FourApp():
             return
         
         finally: 
-            print(f"Render loop exited in {threading.current_thread().name}")  
+            if self.PRINT_WARNINGS:
+                print(f"\033[92mRender loop exited in {threading.current_thread().name}\033[0m")  
             self.exited = True
             return
             
@@ -255,7 +257,8 @@ class FourApp():
             return
         
         finally:
-            print(f"Input loop exited in {threading.current_thread().name}")
+            if self.PRINT_WARNINGS:
+                print(f"\033[92mInput loop exited in {threading.current_thread().name}\033[0m")
             self.exited = True
             return
             
@@ -264,7 +267,6 @@ class FourApp():
             return
         
         print(self.TPS, self.FPS, self.POLLING_RATE)
-        time.sleep(self.tick_interval*0.1)
         self.Timing.main_tick_counter += 1
        
     def do_render_tick(self):
