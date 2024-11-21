@@ -56,6 +56,8 @@ class FourApp():
         self.tick_interval = 1 / self.Config.TPS
         self.poll_interval = 1 / self.Config.POLLING_RATE
         
+        self.max_main_ticks_per_iteration = 256
+        
         self.GameInstanceManager = GameInstanceManager(self.Config, self.TimingStruct, self.HandlingConfig, self.game_instances)
         
         self.GameParameters = { # temp, will be pased to game instance upon creation. This dict will be created by the menu manager
@@ -102,6 +104,8 @@ class FourApp():
         self.exited = True
         self.input_thread.join()
         self.render_thread.join()
+        
+        keyboard.unhook_all()
         pygame.quit()
         sys.exit()
         
@@ -109,6 +113,7 @@ class FourApp():
         try:
             while not self.exited:
                 iteration_start_time = time.perf_counter()
+                ticks_done = 0
                 
                 self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['main_loop']
                 self.Timing.elapsed_times['main_loop'] = self.Timing.current_main_tick_time
@@ -121,10 +126,18 @@ class FourApp():
                     self.do_main_tick()
                     self.Timing.do_first_main_tick = False
                     
-                while self.Timing.main_tick_delta_time >= 1:
+                while self.Timing.main_tick_delta_time >= 1 and ticks_done < self.max_main_ticks_per_iteration: # only process a certain number of ticks per iteration otherwise drop the extra ticks to catch up
                     self.do_main_tick()
                     self.Timing.main_tick_delta_time -= 1
+                    ticks_done += 1
                 
+                # recalibrate if too many ticks are processed in one iteration
+                if ticks_done > self.max_main_ticks_per_iteration:
+                    if self.PRINT_WARNINGS:
+                        print("\033[93mWARNING: Too many ticks processed in one iteration of Main Loop, recalibrating...\033[0m")
+                        
+                    self.Timing.main_tick_delta_time = 1
+                    
                 if self.Timing.current_main_tick_time > self.Timing.main_tick_counter_last_cleared + 1:
                     self.get_tps()
                     self.Timing.main_tick_counter = 0
@@ -133,11 +146,10 @@ class FourApp():
                 iteration_end_time = time.perf_counter()
                 elapsed_time = iteration_end_time - iteration_start_time
     
-                if elapsed_time < self.tick_interval:
-                    time.sleep(self.tick_interval - elapsed_time)
-                else:
-                    if self.PRINT_WARNINGS:
-                        print(f"\033[93mWARNING: Main loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                if elapsed_time > self.tick_interval and self.PRINT_WARNINGS:
+                    print(f"\033[93mWARNING: Main loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                        
+                time.sleep(max(0, self.tick_interval - elapsed_time))
                         
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
@@ -167,10 +179,11 @@ class FourApp():
                 elapsed_time = iteration_end_time - iteration_start_time
                 
                 if elapsed_time < self.frame_interval:
-                    time.sleep(self.frame_interval - elapsed_time)
+                    time.sleep(0)
                 else:
                     if self.PRINT_WARNINGS:
                         print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                    time.sleep(0)
                         
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
@@ -206,17 +219,21 @@ class FourApp():
                 elapsed_time = iteration_end_time - iteration_start_time
                 
                 if elapsed_time < self.poll_interval:
-                    time.sleep(self.poll_interval - elapsed_time)
+                    time.sleep(0)
                 else:
                     if self.PRINT_WARNINGS:
                         print(f"\033[93mWARNING: Input loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
-                        
+                    time.sleep(0)
+            else:
+                time.sleep(0)
+                         
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
             self.__exit()
             
     def do_main_tick(self):
         print(self.TPS, self.POLLING_RATE)
+        time.sleep(self.tick_interval)
         self.Timing.main_tick_counter += 1
        
     def do_render_tick(self):
@@ -348,7 +365,7 @@ class GameInstance():
             self.HandlingConfig, 
             matrix_width = self.GameParameters['MATRIX_WIDTH'], 
             matrix_height = self.GameParameters['MATRIX_HEIGHT'],
-            rotation_system = self.GameParameters['ROTATION_SYSTEM'],
+            rotation_system = self.GameParameters['ROTATION_ SYSTEM'],
             randomiser = self.GameParameters['RANDOMISER'], 
             queue_previews = self.GameParameters['QUEUE_PREVIEWS'], 
             seed = self.GameParameters['SEED'], 

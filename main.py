@@ -11,7 +11,11 @@ from instance.four import Four
 # - COMBO DETECTION
 # - SCORING
 # - LEVELS
-# - GAME OVER CONDITIONS
+
+# ARE - entry delay 
+# line clear delay
+# -> when blocks r attempted to be pushed up into line -1  (from garbage or whatever) -> game over ('top out' condition)
+# basically to prevent out of index error lmao, but also can just disable this and just delete rows when they are pushed up from line 0
 
 # TODO: implement das cut delay
 

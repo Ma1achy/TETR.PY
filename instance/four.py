@@ -90,8 +90,9 @@ class Four():
         Get the next state of the game
         """
         if not self.FlagStruct.GAME_OVER:
-            self.__perform_actions()
+            
             self.__perform_gravity()
+            self.__perform_actions()
             self.__do_lock_delay()
             self.__clear_lines()
             
