@@ -1,4 +1,4 @@
-import keyboard
+import pynput.keyboard as keyboard
 import threading
 from config import StructConfig
 from input.handling.handling import Handling
@@ -80,10 +80,10 @@ class FourApp():
         set_flag_attr()
         
         self.input_thread = threading.Thread(target = self.input_loop)
-        self.render_thread = threading.Thread(target = self.render_loop)
+        self.logic_thread = threading.Thread(target = self.logic_loop)
         
         self.Timing.start_times['input_loop'] = time.perf_counter()
-        self.Timing.start_times['main_loop'] = time.perf_counter()
+        self.Timing.start_times['logic_loop'] = time.perf_counter()
         self.Timing.start_times['render_loop'] = time.perf_counter()
     
     def __init_pygame(self):
@@ -94,8 +94,8 @@ class FourApp():
         
         self.InputManager.start_keyboard_hook()
         self.input_thread.start()
-        self.render_thread.start()
-        self.main_loop() 
+        self.logic_thread.start()
+        self.render_loop()
         
         self.__exit()
              
@@ -113,14 +113,14 @@ class FourApp():
 
         os._exit(0)
       
-    def main_loop(self):
+    def logic_loop(self):
         try:
             while not self.exited:
                 iteration_start_time = time.perf_counter()
                 ticks_this_iteration = 0
                 
-                self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['main_loop']
-                self.Timing.elapsed_times['main_loop'] = self.Timing.current_main_tick_time
+                self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['logic_loop']
+                self.Timing.elapsed_times['logic_loop'] = self.Timing.current_main_tick_time
                 
                 self.Timing.main_tick_delta_time += (self.Timing.current_main_tick_time - self.Timing.last_main_tick_time) / self.tick_interval
                 self.Timing.last_main_tick_time = self.Timing.current_main_tick_time
@@ -139,7 +139,7 @@ class FourApp():
                 # recalibrate if too many ticks are processed in one iteration
                 if ticks_this_iteration > self.max_main_ticks_per_iteration:
                     if self.PRINT_WARNINGS:
-                        print("\033[93mWARNING: Too many ticks processed in one iteration of Main Loop, recalibrating...\033[0m")
+                        print("\033[93mWARNING: Too many ticks processed in one iteration of Logic Loop, recalibrating...\033[0m")
                         
                     self.Timing.main_tick_delta_time = 1
                     
@@ -152,7 +152,7 @@ class FourApp():
                 elapsed_time = iteration_end_time - iteration_start_time
     
                 if elapsed_time > self.tick_interval and self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Main loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                    print(f"\033[93mWARNING: Logic loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
                         
                 time.sleep(max(0, self.tick_interval - elapsed_time))
                                  
@@ -266,7 +266,7 @@ class FourApp():
         if self.exited:
             return
         
-        print(self.TPS, self.FPS, self.POLLING_RATE)
+       # print(self.TPS, self.FPS, self.POLLING_RATE)
         self.Timing.main_tick_counter += 1
        
     def do_render_tick(self):
@@ -275,6 +275,7 @@ class FourApp():
             return
         
         pygame.event.pump() # the pygame event queue must be called or the os will think the app is not responding
+            
         self.FrameClock.tick()
         
     def do_input_tick(self):
@@ -308,11 +309,15 @@ class InputManager:
         self.input_event = threading.Event()
         
     def start_keyboard_hook(self):
-        self.keyboard_hook = keyboard.hook(self.get_key_events)
+        self.keyboard_listener = keyboard.Listener(
+            on_press = self.on_key_press,
+            on_release = self.on_key_release
+        )
+        self.keyboard_listener.start()
     
     def stop_keyboard_hook(self):
-        if self.keyboard_hook:
-            keyboard.unhook(self.keyboard_hook)
+        if self.keyboard_listener:
+            self.keyboard_listener.stop()
             self.keyboard_hook = None
     
     def exit(self):
@@ -322,20 +327,6 @@ class InputManager:
         self.exited = True
         self.stop_keyboard_hook()
         
-    def get_key_events(self, key_event):
-        
-        if self.exited:
-            return
-        
-        if key_event.event_type == keyboard.KEY_DOWN:
-            self.on_key_press(key_event)
-            
-        elif key_event.event_type == keyboard.KEY_UP:
-            self.on_key_release(key_event)
-        
-        self.queue_key_states()
-        self.input_event.set()
-
     def queue_key_states(self):
         self.key_states_queue.put(self.key_states)
 
@@ -352,6 +343,9 @@ class InputManager:
             KeyEntry['previous'] = KeyEntry['current']
             KeyEntry['current'] = True
         
+        self.queue_key_states()
+        self.input_event.set()
+         
     def on_key_release(self, key):
         keyinfo = self.__get_key_info(key)
         
@@ -366,8 +360,14 @@ class InputManager:
             KeyEntry['previous'] = KeyEntry['current']
             KeyEntry['current'] = False
         
+        self.queue_key_states()
+        self.input_event.set()
+         
     def __get_key_info(self, key):
-        return key if isinstance(key, str) else key.name
+        try:
+            return key.name
+        except AttributeError:
+            return key
 
     def wait_for_input_event(self, timeout = None):
         if self.input_event.wait(timeout = timeout):
@@ -482,19 +482,19 @@ class Timing():
     
     start_times: Dict[str, float] = field(default_factory = lambda: {
     'input_loop': 0,
-    'main_loop': 0,
+    'logic_loop': 0,
     'render_loop': 0
     })
     
     elapsed_times: Dict[str, float] = field(default_factory = lambda: {
         'input_loop': 0,
-        'main_loop': 0,
+        'logic_loop': 0,
         'render_loop': 0
     })
     
     iteration_times: Dict[str, float] = field(default_factory = lambda: {
         'input_loop': 1,
-        'main_loop': 1,
+        'logic_loop': 1,
         'render_loop': 1
     })
     
