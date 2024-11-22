@@ -1,4 +1,4 @@
-import pynput.keyboard as keyboard
+import pynput.keyboard as keyboard # cannot use keyboard module as it is not supported in macOS :-)
 import threading
 from config import StructConfig
 from input.handling.handling import Handling
@@ -16,7 +16,7 @@ import pygame
 import queue
 from dataclasses import dataclass, field
 from typing import Dict
-import os, sys
+import os
 
 # render loop will do frame based updates, so drawing & ui logic
 # input loop will do polling based updates, so getting inputs & ticking input handlers of game instances
@@ -92,11 +92,11 @@ class FourApp():
     def run(self):
         self.__initalise()
         
-        self.InputManager.start_keyboard_hook()
+        self.InputManager.start_keyboard_hook() 
         self.input_thread.start()
         self.logic_thread.start()
-        self.render_loop()
-        
+        self.render_loop() # render loop has to be in main thread because calling pygame events in a seperate thread isn't allowed in macOS, stupid as fuck
+
         self.__exit()
              
     def __exit(self):
@@ -108,8 +108,8 @@ class FourApp():
         if self.input_thread.is_alive():
             self.input_thread.join(timeout = self.poll_interval)
 
-        if self.render_thread.is_alive():
-            self.render_thread.join(timeout = self.frame_interval)
+        if self.logic_thread.is_alive():
+            self.logic_thread.join(timeout = self.tick_interval)
 
         os._exit(0)
       
@@ -162,7 +162,7 @@ class FourApp():
         
         finally:
             if self.PRINT_WARNINGS:
-                print(f"\033[92mMain loop exited in {threading.current_thread().name}\033[0m")
+                print(f"\033[92mLogic loop exited in {threading.current_thread().name}\033[0m")
             self.exited = True
             return
             
@@ -266,7 +266,7 @@ class FourApp():
         if self.exited:
             return
         
-       # print(self.TPS, self.FPS, self.POLLING_RATE)
+        print(self.TPS, self.FPS, self.POLLING_RATE)
         self.Timing.main_tick_counter += 1
        
     def do_render_tick(self):
