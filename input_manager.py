@@ -4,10 +4,10 @@ import time
 
 class InputManager:
     def __init__(self, key_states_queue, Timing, PRINT_WARNINGS):
+        
         self.key_states = {}
         self.Timing = Timing
         self.key_states_queue = key_states_queue
-        self.exited = False
         self.input_event = threading.Event()
         self.PRINT_WARNINGS = PRINT_WARNINGS
         self.max_poll_ticks_per_iteration = 1000
@@ -28,7 +28,7 @@ class InputManager:
         """
         Stops the InputManager and cleans up resources.
         """
-        self.exited = True
+        self.Timing.exited = True
         self.stop_keyboard_hook()
         
     def queue_key_states(self):
@@ -82,7 +82,7 @@ class InputManager:
     def input_loop(self):
         
         try:
-            while not self.exited:
+            while not self.Timing.exited:
                 
                 ticks_this_iteration = 0
                 iteration_start_time = time.perf_counter()
@@ -128,13 +128,13 @@ class InputManager:
         
         finally:
             if self.PRINT_WARNINGS:
-                print(f"\033[92mInput loop exited in {threading.current_thread().name}\033[0m")
-            self.exited = True
+                print(f"\033[92mInput loop Timing.exited in {threading.current_thread().name}\033[0m")
+            self.Timing.exited = True
             return
         
     def do_input_tick(self):
         
-        if self.exited:
+        if self.Timing.exited:
             return
         
         if self.wait_for_input_event():
@@ -145,5 +145,4 @@ class InputManager:
         self.Timing.input_tick_counter += 1
         
     def get_poll_rate(self):
-        self.poll_rate = self.Timing.input_tick_counter
-        self.Timing.POLLING_RATE = self.poll_rate
+        self.Timing.POLLING_RATE = self.Timing.input_tick_counter
