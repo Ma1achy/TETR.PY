@@ -12,12 +12,14 @@ from core.state.struct_render import StructRender
 from instance.four import Four
 from core.clock import Clock
 import pygame
+import pygame_gui as gui
 import queue
 from dataclasses import dataclass, field
 from typing import Dict
 import os
 from render.render_new import Render
 from input_manager import InputManager
+from game_instance_manager import GameInstanceManager
 
 # render loop will do frame based updates, so drawing & ui logic
 # input loop will do polling based updates, so getting inputs & ticking input handlers of game instances
@@ -27,41 +29,28 @@ from input_manager import InputManager
 #      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
 #      GameInstanceStruct will have to be contained in a Queue or something so that the renderer can access it in a thread safe way
 #      Debug Menu will have to be changed in a similar way but ALSO, there will have to be per game instance debug info
-class FourApp():
+
+class App():
     def __init__(self):
-        self.exited = False
+        
+        self.is_focused = False
         self.PRINT_WARNINGS = True
         
         self.game_instances = []
-        
         self.key_states_queue = queue.Queue() 
-            
      
-        self.Config = StructConfig()
-        #self.TimingStruct = StructTiming()
-        
+        self.Config = StructConfig()    
         self.Timing = Timing()
         self.FrameClock = Clock()
         
-        self.GameInstanceStruct = StructGameInstance()
-        self.FlagStruct = StructFlags()
         self.RenderStruct = StructRender()
         self.DebugStruct = StructDebug()
         self.HandlingConfig = HandlingConfig()
         
-        self.TPS = self.Config.TPS
-        self.FPS = self.Config.FPS
-        self.POLLING_RATE = self.Config.POLLING_RATE
-        
-        self.Timing.frame_interval = 1 / self.Config.FPS
-        self.Timing.tick_interval = 1 / self.Config.TPS
-        self.Timing.poll_interval = 1 / self.Config.POLLING_RATE
-        
-        self.max_main_ticks_per_iteration = 256
-        self.max_poll_ticks_per_iteration = 1000
-        
+        self.EventHandler = EventHandler()
+        self.__register_event_handlers()
         self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
-        self.GameInstanceManager = GameInstanceManager(self.Config, self.Timing, self.HandlingConfig, self.game_instances)
+        self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
         self.Render = Render(self.Config, self.Timing, self.DebugStruct, self.game_instances)
         
         self.GameParameters = { # temp, will be pased to game instance upon creation. This dict will be created by the menu manager
@@ -82,11 +71,19 @@ class FourApp():
         set_flag_attr()
         
         self.input_thread = threading.Thread(target = self.InputManager.input_loop)
-        self.logic_thread = threading.Thread(target = self.logic_loop)
+        self.logic_thread = threading.Thread(target = self.GameInstanceManager.logic_loop)
         
         self.Timing.start_times['input_loop'] = time.perf_counter()
         self.Timing.start_times['logic_loop'] = time.perf_counter()
         self.Timing.start_times['render_loop'] = time.perf_counter()
+    
+    def __register_event_handlers(self):
+        self.EventHandler.register(pygame.WINDOWCLOSE)(self.__exit)
+       
+        self.EventHandler.register(pygame.WINDOWFOCUSLOST)(self.__is_focused)
+        self.EventHandler.register(pygame.WINDOWFOCUSGAINED)(self.__is_focused)
+        self.EventHandler.register(pygame.VIDEOEXPOSE)(self.__is_focused)
+        self.EventHandler.register(pygame.WINDOWMINIMIZED)(self.__is_focused)
     
     def __init_pygame(self):
         pygame.init()
@@ -129,12 +126,11 @@ class FourApp():
 
         self.__exit()
              
-    def __exit(self):
-        self.exited = True
+    def __exit(self, event = None):
+        self.Timing.exited = True
         self.InputManager.exit()
         pygame.quit()
         
-        # safely join threads
         if self.input_thread.is_alive():
             self.input_thread.join(timeout = self.Timing.poll_interval)
 
@@ -142,67 +138,14 @@ class FourApp():
             self.logic_thread.join(timeout = self.Timing.tick_interval)
 
         os._exit(0)
-      
-    def logic_loop(self):
-        try:
-            while not self.exited:
-                iteration_start_time = time.perf_counter()
-                ticks_this_iteration = 0
-                
-                self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['logic_loop']
-                self.Timing.elapsed_times['logic_loop'] = self.Timing.current_main_tick_time
-                
-                self.Timing.main_tick_delta_time += (self.Timing.current_main_tick_time - self.Timing.last_main_tick_time) / self.Timing.tick_interval
-                self.Timing.last_main_tick_time = self.Timing.current_main_tick_time
-                
-                if self.Timing.do_first_main_tick:
-
-                    self.do_main_tick()
-                    self.Timing.do_first_main_tick = False
-                    ticks_this_iteration += 1
-                    
-                while self.Timing.main_tick_delta_time >= 1 and ticks_this_iteration < self.max_main_ticks_per_iteration: # only process a certain number of ticks per iteration otherwise drop the extra ticks to catch up
-                    self.do_main_tick()
-                    self.Timing.main_tick_delta_time -= 1
-                    ticks_this_iteration += 1
-                
-                # recalibrate if too many ticks are processed in one iteration
-                if ticks_this_iteration > self.max_main_ticks_per_iteration:
-                    if self.PRINT_WARNINGS:
-                        print("\033[93mWARNING: Too many ticks processed in one iteration of Logic Loop, recalibrating...\033[0m")
-                        
-                    self.Timing.main_tick_delta_time = 1
-                    
-                if self.Timing.current_main_tick_time > self.Timing.main_tick_counter_last_cleared + 1:
-                    self.get_tps()
-                    self.Timing.main_tick_counter = 0
-                    self.Timing.main_tick_counter_last_cleared += 1
-                
-                iteration_end_time = time.perf_counter()
-                elapsed_time = iteration_end_time - iteration_start_time
-    
-                if elapsed_time > self.Timing.tick_interval and self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Logic loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
-                        
-                time.sleep(max(0, self.Timing.tick_interval - elapsed_time))
-                                 
-        except Exception as e:
-            print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            return
-        
-        finally:
-            if self.PRINT_WARNINGS:
-                print(f"\033[92mLogic loop exited in {threading.current_thread().name}\033[0m")
-            self.exited = True
-            return
-            
+              
     def render_loop(self):
         """
         Render loop handles frame based updates, so drawing frames and the UI logic and handle window events.
         Tick rate is as a fast as possible.
         """
         try:
-            while not self.exited:
+            while not self.Timing.exited:
          
                 iteration_start_time = time.perf_counter()
                 
@@ -223,8 +166,8 @@ class FourApp():
                 elapsed_time = iteration_end_time - iteration_start_time
                 
                 if elapsed_time > self.Timing.frame_interval and self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
-                
+                    #print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
+                    pass
                 self.get_fps()
                 
                 time.sleep(max(0, self.Timing.frame_interval - elapsed_time))
@@ -235,50 +178,50 @@ class FourApp():
         
         finally: 
             if self.PRINT_WARNINGS:
-                print(f"\033[92mRender loop exited in {threading.current_thread().name}\033[0m")  
-            self.exited = True
+                print(f"\033[92mRender loop Timing.exited in {threading.current_thread().name}\033[0m")  
+            self.Timing.exited = True
             return
-            
-    def do_main_tick(self):
-        if self.exited:
-            return
-        
-        self.Timing.main_tick_counter += 1
-       
+                
     def do_render_tick(self):
         
-        if self.exited:
+        if self.Timing.exited:
             return
         
-        pygame.event.pump() # the pygame event queue must be called or the os will think the app is not responding
+        for event in pygame.event.get():
+            EventHandler.notify(event)
         
         self.Render.draw_frame()
-        
         self.FrameClock.tick()
-                
-    def get_tps(self):
-        self.TPS = self.Timing.main_tick_counter
-        self.Timing.TPS = self.TPS
-    
+                 
     def get_fps(self):
-        self.FPS = self.FrameClock.get_fps()
-        self.Timing.FPS = self.FPS
-                
-class GameInstanceManager():
-    def __init__(self, Config, TimingStruct, HandlingConfig, game_instances):
-        
-        self.game_instances = game_instances
+        self.Timing.FPS = self.FrameClock.get_fps()
+    
+    def __is_focused(self, event):
+        match event.type:
+            case pygame.WINDOWFOCUSGAINED:
+                self.is_focused = True
+            case pygame.WINDOWFOCUSLOST:
+                self.is_focused = False
+            case pygame.VIDEOEXPOSE:
+                self.is_focused = True
+            case pygame.WINDOWMINIMIZED:
+                self.is_focused = False
+class EventHandler:
+    targets = {}
 
-        self.Config = Config
-        self.TimingStruct = TimingStruct
-        self.HandlingConfig = HandlingConfig
-        
-    def create_instance(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
-        self.game_instances.append(GameInstance(ID, Config, TimingStruct, HandlingConfig, GameParameters))
-        
-    def remove_instance(self, ID):
-        self.game_instances = [instance for instance in self.game_instances if instance.ID != ID]
-           
+    @staticmethod
+    def register(event_type):
+        def decorator(fn):
+            EventHandler.targets.setdefault(event_type, []).append(fn)
+            return fn
+        return decorator
+
+    @staticmethod
+    def notify(event):
+        fn_list = EventHandler.targets.get(event.type, [])
+        for fn in fn_list:
+            fn(event)
+    
 class GameInstance():
     def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
         
@@ -320,23 +263,7 @@ class GameInstance():
             top_out_ok = self.GameParameters['TOP_OUT_OK'],
             reset_on_top_out = self.GameParameters['RESET_ON_TOP_OUT']
         )
-        
-    def start_game_tick_thread(self):
-        self.game_thread = threading.Thread(target=self.game_loop, daemon = True)
-        self.game_thread.start()
-    
-    def start_handling_tick_thread(self):
-        self.handling_thread = threading.Thread(target=self.handling_loop, daemon = True)
-        self.handling_thread.start()
-        
-    def game_loop(self):
-        while True:
-            self.do_game_tick()
-            
-    def handling_loop(self):
-        while True:
-            self.do_handling_tick()
-
+             
     def do_game_tick(self):
         self.GameLogic.tick()
     
@@ -346,6 +273,7 @@ class GameInstance():
 @dataclass
 class Timing():
     
+    exited = False
     FPS: int = 144
     TPS: int = 256
     POLLING_RATE: int = 1000
@@ -387,8 +315,13 @@ class Timing():
         'render_loop': 1
     })
     
+    def __post_init__(self):
+        self.tick_interval = 1 / self.TPS
+        self.poll_interval = 1 / self.POLLING_RATE
+        self.frame_interval = 1 / self.FPS
+    
 def main():
-    app = FourApp()
+    app = App()
     app.run()
 
 if __name__ == "__main__":
