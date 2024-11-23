@@ -489,7 +489,7 @@ class Matrix():
         """
         Animate the lock delay
         """        
-        if self.GameInstanceStruct.current_tetromino.is_on_floor():
+        if self.GameInstanceStruct.is_on_floor:
             for i, row in enumerate(tetromino_blocks):
                 for j, value in enumerate(row):
                     if value != 0:

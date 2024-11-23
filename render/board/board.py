@@ -323,7 +323,7 @@ class Board():
         if self.game_over_animation_in_progress:
             return
         
-        if self.GameInstanceStruct.current_tetromino is None or not self.GameInstanceStruct.current_tetromino.is_on_floor():
+        if self.GameInstanceStruct.current_tetromino is None or not self.GameInstanceStruct.is_on_floor:
             self.lock_delay_scale_in_progress = False
                 
         if not self.lock_delay_scale_in_progress and self.scale == self.default_scale:
@@ -453,48 +453,15 @@ class Board():
                 self.glow_alpha = 0
     
     def __placement_will_gameover(self):
-        if self.__check_spawn_overlap() or self.__check_buffer_overlap():
-            return True
-        else:
-            return False 
-                 
-    def __check_spawn_overlap(self):
-        
+       
         if self.GameInstanceStruct.current_tetromino is None:
             return False
-        
-        if not self.GameInstanceStruct.current_tetromino.is_on_floor():
-            return False
-        
-        position = self.GameInstanceStruct.current_tetromino.position
-        blocks = self.GameInstanceStruct.current_tetromino.blocks
-        array = self.GameInstanceStruct.matrix.spawn_overlap
-        
-        return self.__check_overlap(position, blocks, array)
-    
-    def __check_buffer_overlap(self):
-        if self.GameInstanceStruct.current_tetromino is None or self.GameInstanceStruct.lock_out_ok:
-            return False
-        
-        if self.GameInstanceStruct.current_tetromino.is_in_buffer_zone(self.GameInstanceStruct.matrix) and self.GameInstanceStruct.current_tetromino.is_on_floor():
-            return True
+         
+        if self.GameInstanceStruct.is_in_buffer_zone or self.GameInstanceStruct.is_in_spawn_overlap:
+            return True  
         else:
-            return False
-        
-    def __check_overlap(self, position, blocks, array):
-        if any (
-            val != 0 and (
-                position.x + x < 0 or position.x + x >= self.GameInstanceStruct.matrix.WIDTH or 
-                position.y + y <= 0 or position.y + y >= self.GameInstanceStruct.matrix.HEIGHT or 
-                array[position.y + y][position.x + x] != 0
-            )
-            for y, row in enumerate(blocks)
-            for x, val in enumerate(row)
-        ):
-            return True         
-        else:
-            return False
-    
+            return False 
+                  
     def __draw_hold_text(self, surface):
         if not self.GameInstanceStruct.hold:  
             return

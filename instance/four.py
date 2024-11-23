@@ -123,6 +123,10 @@ class Four():
         
         self.GameInstanceStruct.current_tetromino.shadow()
         self.GameInstanceStruct.current_tetromino.reset_lock_delay_lower_pivot()
+        
+        self.GameInstanceStruct.is_on_floor = self.GameInstanceStruct.current_tetromino.is_on_floor()
+        self.GameInstanceStruct.is_in_buffer_zone = self.__is_in_buffer_zone()
+        self.GameInstanceStruct.is_in_spawn_overlap = self.__is_in_vanish_zone()
     # ---------------------------------------------------- ACTIONS ---------------------------------------------------
     
     def __perform_actions(self):
@@ -577,7 +581,64 @@ class Four():
     def __topout_ok_reset_game(self):
         self.FlagStruct.GAME_OVER = False
         self.GameInstanceStruct.reset = False
-       
+
+    def __is_in_vanish_zone(self):
+        """
+        Check if the tetromino is in the spawn overlap
+        """
+        if self.GameInstanceStruct.current_tetromino is None:
+            return False
+        
+        if not self.GameInstanceStruct.current_tetromino.is_on_floor():
+            return False
+        
+        return self.__check_vanish_zone_overlap(self.GameInstanceStruct.current_tetromino.position, self.GameInstanceStruct.current_tetromino.blocks, self.GameInstanceStruct.matrix.spawn_overlap)
+        
+    def __check_vanish_zone_overlap(self, position, blocks, array):
+        if any (
+            val != 0 and (
+                position.x + x < 0 or position.x + x >= self.GameInstanceStruct.matrix.WIDTH or 
+                position.y + y <= 0 or position.y + y >= self.GameInstanceStruct.matrix.HEIGHT or 
+                array[position.y + y][position.x + x] != 0
+            )
+            for y, row in enumerate(blocks)
+            for x, val in enumerate(row)
+        ):
+            return True         
+        else:
+            return False
+        
+    def __is_in_buffer_zone(self):
+        """
+        Test if the piece is in the buffer zone of the matrix, this is the top half of the matrix that does not have a grid background
+        
+        args:
+            matrix (Matrix): The matrix object that contains the blocks that are already placed
+        """
+        if self.GameInstanceStruct.current_tetromino is None:
+            return False
+        
+        if not self.GameInstanceStruct.current_tetromino.is_on_floor():
+            return False
+        
+        if self.GameInstanceStruct.lock_out_ok:
+            return False
+        
+        return self.__check_buffer_zone_overlap()
+    
+    def __check_buffer_zone_overlap(self):
+        if all(
+            self.GameInstanceStruct.current_tetromino.position.y + y <= self.GameInstanceStruct.matrix.HEIGHT//2 - 1
+            for y, row in enumerate(self.GameInstanceStruct.current_tetromino.blocks)
+            for _, val in enumerate(row)
+            if val != 0
+        ):
+            self.GameInstanceStruct.is_in_buffer_zone = True
+            return True
+        else:
+            self.GameInstanceStruct.is_in_buffer_zone = False
+            return False
+        
 class Queue():
     def __init__(self, RNG, randomiser = '7BAG'):
         """
