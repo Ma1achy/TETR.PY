@@ -1,9 +1,10 @@
 import pygame
 from utils import hex_to_rgb
 import os
+import json
 
 class Menu():
-    def __init__(self, surface, Config, Timing):
+    def __init__(self, surface, Config, Timing, menu_definition):
         self.surface = surface
         self.Config = Config
         self.Timing = Timing
@@ -11,160 +12,11 @@ class Menu():
         self.header_height = 0
         self.footer_height = 0
         
-        self.definition = {
-            'menu_header': {
-                    'background': {
-                    'style': 'linear_gradient', 
-                    'colours': ('#272931', '#17191d')
-                },
-                'border': {
-                    'bottom': (2, '#343642'),
-                },
-                'text': {
-                    'colour': '#767d97', 
-                    'display_text': 'HOME'
-                },
-            },
-            'menu_body': {
-                'logo' : {
-                    'image': 'resources/logos/LogoLightGlow.png',
-                    'alignment': 'bottom_left',
-                    'padding': (20, 20),
-                    'scale': 0.25,
-                    'opacity': 32
-                },
-                'menu': {'scrollable': True, 'elements': [
-                        {
-                            'type': 'bar_button',
-                            'function': 'go_to_multi',
-                            'main_text': {
-                                'colour': '#e9bed9',
-                                'display_text': 'MULTIPLAYER'
-                            },
-                            'sub_text': {
-                                'colour': '#c09ab3',
-                                'display_text':'Play with friends and foes'
-                            },
-                            'image': 'resources/buttons/multi.svg',
-                            'background': {
-                                'style': 'solid',
-                                'colour': '#34222d',
-                            },
-                            'border': {
-                                'left': (3, '#3c2734'),
-                                'top': (3, '#472d3c'),
-                                'bottom': (3, '#271b22')
-                            }
-                        },
-                        {
-                            'type': 'bar_button',
-                            'function': 'go_to_solo',
-                            'main_text': {
-                                'colour': '#bab8dc',
-                                'display_text': 'SOLO'
-                            },
-                            'sub_text': {
-                                'colour': '#8b88bc',
-                                'display_text': 'Challenge yourself and top the leaderboards'
-                            },
-                            'image': 'resources/buttons/solo.svg',
-                            'background': {
-                                'style': 'solid',
-                                'colour': '#1e1d2d',
-                            },
-                            'border': {
-                                'left': (3, '#272639'),
-                                'top': (3, '#2e2d42'),
-                                'bottom': (3, '#12111b')
-                            }
-                        },
-                        {
-                            'type': 'bar_button',
-                            'function': 'go_to_channel',
-                            'main_text': {
-                                'colour': '#a6fca3',
-                                'display_text': 'RECORDS'
-                            },
-                            'sub_text': {
-                                'colour': '#70be6d',
-                                'display_text': 'Leaderboards, Replays and more'
-                                },
-                            'image': 'resources/buttons/records.svg',
-                            'background': {
-                                'style': 'solid',
-                                'colour': '#1c3e2a',
-                            },
-                            'border': {
-                                'left': (3, '#1e4822'),
-                                'top': (3, '#1d6429'),
-                                'bottom': (3, '#0e130f')
-                            }
-                        },
-                        {
-                            'type': 'bar_button',
-                            'function': 'go_to_config',
-                            'main_text': {
-                                'colour': '#90aef9',
-                                'display_text': 'CONFIG'
-                            },
-                            'sub_text': {
-                                'colour': '#5668ba',
-                                'display_text': 'Tweak your TETR.PY experience'
-                            },
-                            'image': 'resources/buttons/config.svg',
-                            'background': {
-                                'style': 'solid',
-                                'colour': '#1c263e',
-                            },
-                            'border': {
-                                'left': (3, '#1e2a48'),
-                                'top': (3, '#1d3164'),
-                                'bottom': (3, '#0e0f13')
-                            }
-                        },
-                        {
-                            'type': 'bar_button',
-                            'function': 'go_to_about',
-                            'main_text': {
-                                'colour': '#c0c0c0',
-                                'display_text': 'ABOUT'
-                            },
-                            'sub_text': {
-                                'colour': '#a0a0a0',
-                                'display_text': 'All about TETR.PY'
-                            },
-                            'image': 'resources/buttons/about.png',
-                            'background': {
-                                'style': 'solid',
-                                'colour': '#222222',
-                            },
-                            'border': {
-                                'left': (3, '#262626'),
-                                'top': (3, '#2a2a2a'),
-                                'bottom': (3, '#131313')
-                            }
-                        },
-                    ]
-                },
-            },      
-            'menu_footer': {
-                'background': {
-                    'style': 'linear_gradient', 
-                    'colours': ('#17191d', '#272931')
-                },
-                'border': {
-                    'top': (2, '#343642'),
-                },
-                'text': {
-                    'colour': '#8a8fa0', 
-                    'display_text': 'Welcome to TETR.PY!'
-                },
-            }
-        }
-        
+        self.open_definition(menu_definition)
         self.__init_elements()
         
     def __init_elements(self):
+        
         if 'menu_header' in self.definition:
             self.header_height = 70
             self.menu_header = Header(self.surface.get_rect(), self.header_height, self.definition['menu_header']['text'], self.definition['menu_header']['background'], self.definition['menu_header']['border'])
@@ -175,11 +27,20 @@ class Menu():
             self.menu_body = self.definition['menu_body']
             self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
             self.main_body = MainBody(self.main_body_rect.width, self.main_body_rect.height, self.main_body_rect.topleft, self.menu_body)
-        
+      
     def draw(self):
         self.main_body.draw(self.surface)
         self.menu_header.draw(self.surface)
         self.menu_footer.draw(self.surface)
+        
+    def definition_to_json(self, path):
+        with open(path, 'w') as f:
+            json.dump(self.definition, f, indent = 4)
+            
+    def open_definition(self, path):
+        with open(path, 'r') as f:
+            self.definition = json.load(f)
+            
         
 def align_top_edge(container, element_width, element_height, h_padding = 0, v_padding = 0):
     return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
@@ -198,6 +59,23 @@ def align_centre(container, element_width, element_height, h_padding = 0, v_padd
 
 def align_bottom_left(container, element_width, element_height, h_padding = 0, v_padding = 0):
     return pygame.Rect(container.left + h_padding, container.bottom - element_height - v_padding, element_width, element_height)
+
+def align_bottom_right(container, element_width, element_height, h_padding = 0, v_padding = 0):
+    return pygame.Rect(container.right - element_width - h_padding, container.bottom - element_height - v_padding, element_width, element_height)
+
+def align_top_right(container, element_width, element_height, h_padding = 0, v_padding = 0):
+    return pygame.Rect(container.right - element_width - h_padding, container.top + v_padding, element_width, element_height)
+
+def align_top_left(container, element_width, element_height, h_padding = 0, v_padding = 0):
+    return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
+
+def load_image(image_path):
+    try:
+        image = pygame.image.load(image_path).convert_alpha()
+    except FileNotFoundError:
+        image = pygame.surface.Surface((1024, 768), pygame.HWSURFACE|pygame.SRCALPHA)
+        pygame.draw.rect(image, (255, 0, 0), image.get_rect(), 20)
+    return image
 
 def draw_linear_gradient(surface, start_colour, end_colour, rect):
     start_colour = hex_to_rgb(start_colour)
@@ -368,10 +246,9 @@ class Logo():
         
         self.container = container
         self.definition = definition
+        self.image = load_image(self.definition['image'])  
+        self.image = pygame.transform.smoothscale(self.image, (int(self.image.get_width() * self.definition['scale']), int(self.image.get_height() * self.definition['scale'])))
         
-        self.image = pygame.image.load(self.definition['image']).convert_alpha()
-        self.image = pygame.transform.smoothscale(self.image, (int(self.image.get_width() * self.definition['scale']), int(self.image.get_height() * self.definition['scale']))
-        )
         if self.definition['alignment'] == 'bottom_left':
             self.rect = align_bottom_left(self.container, self.image.get_width(), self.image.get_height(), self.definition['padding'][0], self.definition['padding'][1])
             
@@ -385,12 +262,10 @@ class ButtonBar():
         self.surface = surface
         self.container = container
         self.definition = definition
-        
         self.width = self.container.width
         self.height = height 
         
         self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
-        
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.main_font = Font('hun2', 50)
         self.sub_font = Font('hun2', 25)
@@ -403,17 +278,21 @@ class ButtonBar():
     def render_button(self):
         draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)
         draw_border(self.button_surface, self.definition['border'], self.rect)
-         
+        self.render_image()
+        self.render_text()
+       
+    def render_image(self):
+        image = load_image(self.definition['image'])
         scale = 0.145
-        image = pygame.image.load(self.definition['image']).convert_alpha()
         image = pygame.transform.smoothscale(image, (int(image.get_width() * scale), int(image.get_height() * scale)))
         image_rect = align_bottom_left(self.rect, image.get_width(), image.get_height(), 20, 3)
         self.button_surface.blit(image, image_rect.topleft)
-        
-        self.main_font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 250, - self.main_font.font.get_ascent()//2)
-        self.sub_font.draw(self.button_surface, self.definition['sub_text']['display_text'], self.definition['sub_text']['colour'], 'left', 250, self.main_font.font.get_ascent()//2 + 10)
     
+    def render_text(self):
+        self.main_font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 250, - self.main_font.font.get_ascent()//2 + 3)
+        self.sub_font.draw(self.button_surface, self.definition['sub_text']['display_text'], self.definition['sub_text']['colour'], 'left', 250, self.main_font.font.get_ascent()//2 + 7)
+        
     def draw(self):
         self.surface.blit(self.button_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
 
-
+    
