@@ -12,7 +12,6 @@ from core.state.struct_render import StructRender
 from instance.four import Four
 from core.clock import Clock
 import pygame
-import pygame_gui as gui
 import queue
 from dataclasses import dataclass, field
 from typing import Dict
@@ -20,6 +19,7 @@ import os
 from render.render_new import Render
 from input_manager import InputManager
 from game_instance_manager import GameInstanceManager
+import json
 
 # render loop will do frame based updates, so drawing & ui logic
 # input loop will do polling based updates, so getting inputs & ticking input handlers of game instances
@@ -38,7 +38,7 @@ class App():
         
         self.game_instances = []
         self.key_states_queue = queue.Queue() 
-     
+
         self.Config = StructConfig()    
         self.Timing = Timing()
         self.FrameClock = Clock()
@@ -47,8 +47,9 @@ class App():
         self.DebugStruct = StructDebug()
         self.HandlingConfig = HandlingConfig()
         
-        self.EventHandler = EventHandler()
+        self.__init_pygame()
         self.__register_event_handlers()
+            
         self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
         self.Render = Render(self.Config, self.Timing, self.DebugStruct, self.game_instances)
@@ -66,7 +67,7 @@ class App():
             'TOP_OUT_OK': False,
             'RESET_ON_TOP_OUT': False
         }
-                
+               
     def __initalise(self):
         set_flag_attr()
         
@@ -78,15 +79,17 @@ class App():
         self.Timing.start_times['render_loop'] = time.perf_counter()
     
     def __register_event_handlers(self):
-        self.EventHandler.register(pygame.WINDOWCLOSE)(self.__exit)
+        EventHandler.register(pygame.WINDOWCLOSE)(self.__exit)
        
-        self.EventHandler.register(pygame.WINDOWFOCUSLOST)(self.__is_focused)
-        self.EventHandler.register(pygame.WINDOWFOCUSGAINED)(self.__is_focused)
-        self.EventHandler.register(pygame.VIDEOEXPOSE)(self.__is_focused)
-        self.EventHandler.register(pygame.WINDOWMINIMIZED)(self.__is_focused)
+        EventHandler.register(pygame.WINDOWFOCUSLOST)(self.__is_focused)
+        EventHandler.register(pygame.WINDOWFOCUSGAINED)(self.__is_focused)
+        EventHandler.register(pygame.VIDEOEXPOSE)(self.__is_focused)
+        EventHandler.register(pygame.WINDOWMINIMIZED)(self.__is_focused)
     
     def __init_pygame(self):
         pygame.init()
+        pygame.font.init()
+        
         pygame.event.set_allowed([
             pygame.QUIT,
             pygame.ACTIVEEVENT,
@@ -129,6 +132,7 @@ class App():
     def __exit(self, event = None):
         self.Timing.exited = True
         self.InputManager.exit()
+        pygame.font.quit()
         pygame.quit()
         
         if self.input_thread.is_alive():
@@ -154,12 +158,7 @@ class App():
                 
                 self.Timing.frame_delta_time = (self.Timing.current_frame_time - self.Timing.last_frame_time)
                 self.Timing.last_frame_time = self.Timing.current_frame_time
-                
-                if self.Timing.do_first_frame:
-                    self.__init_pygame()
-                    self.do_render_tick()
-                    self.Timing.do_first_frame = False
-                    
+                  
                 self.do_render_tick()
 
                 iteration_end_time = time.perf_counter()
@@ -189,7 +188,7 @@ class App():
         
         for event in pygame.event.get():
             EventHandler.notify(event)
-        
+            
         self.Render.draw_frame()
         self.FrameClock.tick()
                  

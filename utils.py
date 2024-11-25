@@ -322,3 +322,8 @@ def apply_gaussian_blur_with_alpha(surface, sigma):
     pygame.surfarray.pixels_alpha(blurred_surface)[:, :] = final_alpha
 
     return blurred_surface
+
+def hex_to_rgb(hex_color):
+    hex_color = hex_color.lstrip('#')
+    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
