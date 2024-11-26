@@ -3,19 +3,19 @@
         "background": {
             "style": "linear_gradient",
             "colours": [
-                "#272931",
-                "#17191d"
+                "2a284a",
+                "#181726"
             ]
         },
         "border": {
             "bottom": [
                 2,
-                "#343642"
+                "#3d3a67"
             ]
         },
         "text": {
-            "colour": "#767d97",
-            "display_text": "HOME"
+            "colour": "#9d97f3",
+            "display_text": "SOLO"
         }
     },
     "menu_body": {
@@ -30,10 +30,10 @@
             "opacity": 32
         },
         "back_button": {
-            "function": "go_to_exit",
+            "function": "go_to_home",
             "main_text": {
                 "colour": "#c9c9c9",
-                "display_text": "EXIT"
+                "display_text": "BACK"
             },
             "background": {
                 "style": "solid",
@@ -59,59 +59,133 @@
             "elements": [
                 {
                     "type": "bar_button",
-                    "function": "go_to_multi",
+                    "function": "go_to_40_lines",
                     "main_text": {
-                        "colour": "#e9bed9",
-                        "display_text": "MULTIPLAYER"
+                        "colour": "#ffba88",
+                        "display_text": "40 LINES"
                     },
                     "sub_text": {
-                        "colour": "#c09ab3",
-                        "display_text": "play with friends or against foes"
+                        "colour": "#c08051",
+                        "display_text": "complete 40 lines as quickly as possible"
                     },
                     "image": {
-                        "path": "resources/buttons/multi.png",
+                        "path": "resources/buttons/40_lines.png",
                         "padding": [
                             20,
                             20
                         ]
-                    },
+                   },
                     "background": {
                         "style": "solid",
-                        "colour": "#34222d"
+                        "colour": "#2a211b"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#3c2734"
+                            "#48301e"
                         ],
                         "top": [
                             3,
-                            "#472d3c"
+                            "#643b1dc"
                         ],
                         "bottom": [
                             3,
-                            "#271b22"
+                            "#13100e"
                         ]
                     }
                 },
                 {
                     "type": "bar_button",
-                    "function": "go_to_solo",
+                    "function": "go_to_blitz",
                     "main_text": {
-                        "colour": "#bab8dc",
-                        "display_text": "SOLO"
+                        "colour": "#ffb9b9",
+                        "display_text": "BLITZ"
                     },
                     "sub_text": {
-                        "colour": "#8b88bc",
-                        "display_text": "challenge yourself and top the leaderboards"
+                        "colour": "#cc9393",
+                        "display_text": "a two-minute race against the clock"
                     },
                     "image": {
-                        "path": "resources/buttons/solo.png",
+                        "path": "resources/buttons/blitz.png",
                         "padding": [
                             20,
                             20
                         ]
+                   },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#3e1c1c"
                     },
+                    "border": {
+                        "left": [
+                            3,
+                            "#582929"
+                        ],
+                        "top": [
+                            3,
+                            "#6b2b2b"
+                        ],
+                        "bottom": [
+                            3,
+                            "#2e1616"
+                        ]
+                    }
+                },
+                {
+                    "type": "bar_button",
+                    "function": "go_to_zen",
+                    "main_text": {
+                        "colour": "#fdb9ff",
+                        "display_text": "ZEN"
+                    },
+                    "sub_text": {
+                        "colour": "#c993cc",
+                        "display_text": "relax or train in this neverending mode"
+                    },
+                    "image": {
+                        "path": "resources/buttons/zen.png",
+                        "padding": [
+                            20,
+                            20
+                        ]
+                   },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#331933"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#582957"
+                        ],
+                        "top": [
+                            3,
+                            "#6b2b69"
+                        ],
+                        "bottom": [
+                            3,
+                            "#2e162e"
+                        ]
+                    }
+                },
+                {
+                    "type": "bar_button",
+                    "function": "go_to_custom",
+                    "main_text": {
+                        "colour": "#bab8df",
+                        "display_text": "CUSTOM"
+                    },
+                    "sub_text": {
+                        "colour": "#8c88c0",
+                        "display_text": "play, train, and experiment by your rules"
+                    },
+                    "image": {
+                        "path": "resources/buttons/custom_solo.png",
+                        "padding": [
+                            20,
+                            20
+                        ]
+                   },
                     "background": {
                         "style": "solid",
                         "colour": "#1e1d2d"
@@ -130,118 +204,8 @@
                             "#12111b"
                         ]
                     }
-                },
-                {
-                    "type": "bar_button",
-                    "function": "go_to_channel",
-                    "main_text": {
-                        "colour": "#a6fca3",
-                        "display_text": "RECORDS"
-                    },
-                    "sub_text": {
-                        "colour": "#70be6d",
-                        "display_text": "leaderboards, replays and more"
-                    },
-                    "image": {
-                        "path": "resources/buttons/records.png",
-                        "padding": [
-                            20,
-                            20
-                        ]
-                    },
-                    "background": {
-                        "style": "solid",
-                        "colour": "#1c3e2a"
-                    },
-                    "border": {
-                        "left": [
-                            3,
-                            "#1e4822"
-                        ],
-                        "top": [
-                            3,
-                            "#1d6429"
-                        ],
-                        "bottom": [
-                            3,
-                            "#0e130f"
-                        ]
-                    }
-                },
-                {
-                    "type": "bar_button",
-                    "function": "go_to_config",
-                    "main_text": {
-                        "colour": "#90aef9",
-                        "display_text": "CONFIG"
-                    },
-                    "sub_text": {
-                        "colour": "#5668ba",
-                        "display_text": "tweak your TETR.PY experience"
-                    },
-                    "image": {
-                        "path": "resources/buttons/config.png",
-                        "padding": [
-                            20,
-                            20
-                        ]
-                    },
-                    "background": {
-                        "style": "solid",
-                        "colour": "#1c263e"
-                    },
-                    "border": {
-                        "left": [
-                            3,
-                            "#1e2a48"
-                        ],
-                        "top": [
-                            3,
-                            "#1d3164"
-                        ],
-                        "bottom": [
-                            3,
-                            "#0e0f13"
-                        ]
-                    }
-                },
-                {
-                    "type": "bar_button",
-                    "function": "go_to_about",
-                    "main_text": {
-                        "colour": "#c0c0c0",
-                        "display_text": "ABOUT"
-                    },
-                    "sub_text": {
-                        "colour": "#a0a0a0",
-                        "display_text": "all about TETR.PY"
-                    },
-                    "image": {
-                        "path": "resources/buttons/about.png",
-                        "padding": [
-                            20,
-                            20
-                        ]
-                    },
-                    "background": {
-                        "style": "solid",
-                        "colour": "#222222"
-                    },
-                    "border": {
-                        "left": [
-                            3,
-                            "#262626"
-                        ],
-                        "top": [
-                            3,
-                            "#2a2a2a"
-                        ],
-                        "bottom": [
-                            3,
-                            "#131313"
-                        ]
-                    }
                 }
+                
             ]
         }
     },
@@ -249,19 +213,19 @@
         "background": {
             "style": "linear_gradient",
             "colours": [
-                "#17191d",
-                "#272931"
+                "#181726",
+                "2a284a"
             ]
         },
         "border": {
             "top": [
                 2,
-                "#343642"
+                "#3d3a67"
             ]
         },
         "text": {
-            "colour": "#8a8fa0",
-            "display_text": "Welcome to TETR.PY!"
+            "colour": "#9d97f3",
+            "display_text": "pick a game mode"
         }
     }
 }

@@ -28,8 +28,9 @@ class Render():
         
         self.darken_overlay_layer = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA)
         self.darken_overlay_layer_alpha = 200
-                
-        self.main_menu = Menu(self.window, self.Config, self.Timing, menu_definition = 'render/GUI/menus/home_menu.json')
+        
+        self.path = 'render/GUI/menus/solo_menu.json'
+        self.main_menu = Menu(self.window, self.Config, self.Timing, menu_definition = self.path)
 
     def __init_window(self):
         """

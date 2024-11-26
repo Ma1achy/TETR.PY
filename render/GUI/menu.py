@@ -177,7 +177,11 @@ class MainBody():
             for idx, element in enumerate(self.definition['menu']['elements']):
                 if element['type'] == 'bar_button':
                     button = ButtonBar(self.body_surface, self.main_body_container, element, idx, height = 120)
-                    button.draw()
+                    button.update_image()
+        
+        if 'back_button' in self.definition:
+            self.back_button = BackButton(self.body_surface, self.main_body_container, self.definition['back_button'])
+            self.back_button.update_image()
         
     def draw(self, surface):
         surface.blit(self.body_surface, self.topleft)
@@ -268,7 +272,7 @@ class ButtonBar():
         self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.main_font = Font('hun2', 50)
-        self.sub_font = Font('hun2', 25)
+        self.sub_font = Font('hun2', 23)
         
         self.y_offset = list_index * (self.height + 20) + 30
         self.start = self.container.width // 4
@@ -282,17 +286,65 @@ class ButtonBar():
         self.render_text()
        
     def render_image(self):
-        image = load_image(self.definition['image'])
-        scale = 0.145
-        image = pygame.transform.smoothscale(image, (int(image.get_width() * scale), int(image.get_height() * scale)))
-        image_rect = align_bottom_left(self.rect, image.get_width(), image.get_height(), 20, 3)
+           
+        x_padding = self.definition['image']['padding'][0]
+        y_padding = self.definition['image']['padding'][1]
+        button_height = self.rect.height - y_padding
+        
+        image = load_image(self.definition['image']['path'])     
+        
+        aspect_ratio = image.get_width() / image.get_height()
+        new_width = int(button_height * aspect_ratio)
+
+        image = pygame.transform.smoothscale(image, (new_width, button_height))
+        image_rect = align_left_edge(self.rect, image.get_width(), image.get_height(), x_padding, y_padding)
+        
         self.button_surface.blit(image, image_rect.topleft)
     
     def render_text(self):
-        self.main_font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 250, - self.main_font.font.get_ascent()//2 + 3)
-        self.sub_font.draw(self.button_surface, self.definition['sub_text']['display_text'], self.definition['sub_text']['colour'], 'left', 250, self.main_font.font.get_ascent()//2 + 7)
+        self.main_font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 275, - self.main_font.font.get_ascent()//2 + 3)
+        self.sub_font.draw(self.button_surface, self.definition['sub_text']['display_text'], self.definition['sub_text']['colour'], 'left', 275, self.main_font.font.get_ascent()//2 + 10)
         
-    def draw(self):
+    def update_image(self):
         self.surface.blit(self.button_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+    
+    def check_hover(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            return True
+        return False
+    
+    def update(self, surface):
+        self.hover = self.check_hover(pygame.mouse.get_pos())
+        self.update_image(surface)
 
+class BackButton():
+    def __init__(self, surface, container, definition):
+        self.surface = surface
+        self.container = container
+        self.definition = definition
+        self.width = 150
+        self.height = 65
+        
+        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
+        self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.font = Font('hun2', 35)
+        
+        self.render_button()
+    
+    def render_button(self):
+        draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)
+        draw_border(self.button_surface, self.definition['border'], self.rect)
+        self.render_text()
+    
+    def render_text(self):
+        self.font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'right', 20, 0)
+        
+    def update_image(self):
+        self.surface.blit(self.button_surface, (self.rect.left, self.rect.top + 30))
+    
+    def check_hover(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            return True
+        return False
+    
     
