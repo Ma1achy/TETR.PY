@@ -50,58 +50,8 @@ class Render():
         self.window.blit(self.image, (0, 0))
         self.darken_overlay_layer.fill((0, 0, 0, self.darken_overlay_layer_alpha))
         self.window.blit(self.darken_overlay_layer, (0, 0))
-        # self.play_multi_button.update(self.window)
-        # self.play_solo_button.update(self.window)
-        # self.channel_button.update(self.window)
-        # self.config_button.update(self.window)
-        # self.about_button.update(self.window)
         self.main_menu.draw()
         pygame.display.flip()
-
-import pygame
-
-# class Button:
-#     def __init__(self, type, tl_pos_x, tl_pos_y, width, height, display_text, object_id, background_colour, left_border, right_border, top_border, bottom_border, Timing):
-#         self.type = type       
-#         self.rect = pygame.Rect(tl_pos_x, tl_pos_y, width, height)
-#         self.display_text = display_text
-#         self.object_id = object_id
-        
-#         self.background_colour = background_colour
-#         self.left_border_width, self.left_colour = left_border
-#         self.right_border_width, self.right_colour = right_border
-#         self.top_border_width, self.top_colour = top_border
-#         self.bottom_border_width, self.bottom_colour = bottom_border
-        
-#         self.Timing = Timing
-#         self.hover = False
-        
-#     def draw(self, surface):
-        
-#         pygame.draw.rect(surface, hex_to_rgb(self.background_colour), (self.rect.x, self.rect.y, self.rect.width, self.rect.height))
-#         pygame.draw.line(surface, hex_to_rgb(self.left_colour), (self.rect.x + self.left_border_width // 2, self.rect.y), (self.rect.x + self.left_border_width // 2, self.rect.y + self.rect.height), self.left_border_width)
-#         pygame.draw.line(surface, hex_to_rgb(self.right_colour), (self.rect.x + self.rect.width - self.right_border_width // 2, self.rect.y), (self.rect.x + self.rect.width - self.right_border_width // 2, self.rect.y + self.rect.height), self.right_border_width)
-#         pygame.draw.line(surface, hex_to_rgb(self.top_colour), (self.rect.x, self.rect.y + self.top_border_width // 2), (self.rect.x + self.rect.width, self.rect.y + self.top_border_width // 2), self.top_border_width)
-#         pygame.draw.line(surface, hex_to_rgb(self.bottom_colour), (self.rect.x, self.rect.y + self.rect.height - self.bottom_border_width // 2), (self.rect.x + self.rect.width, self.rect.y + self.rect.height - self.bottom_border_width // 2), self.bottom_border_width)
-
-#     def update_image(self, surface):
-#         self.draw(surface)
-      
-#     def get_relative_rect(self):
-#         return self.rect
-    
-#     def check_hover(self, mouse_pos):
-#         if self.rect.collidepoint(mouse_pos):
-#             return True
-#         return False
-    
-#     def update(self, surface):
-#         self.hover = self.check_hover(pygame.mouse.get_pos())
-#         self.update_image(surface)
-
-
-    
-        
     
 @dataclass
 class StructRender():

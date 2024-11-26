@@ -73,8 +73,8 @@ def load_image(image_path):
     try:
         image = pygame.image.load(image_path).convert_alpha()
     except FileNotFoundError:
-        image = pygame.surface.Surface((1024, 768), pygame.HWSURFACE|pygame.SRCALPHA)
-        pygame.draw.rect(image, (255, 0, 0), image.get_rect(), 20)
+        image = pygame.surface.Surface((128, 128), pygame.HWSURFACE|pygame.SRCALPHA)
+        image.fill((255, 0, 255))
     return image
 
 def draw_linear_gradient(surface, start_colour, end_colour, rect):
