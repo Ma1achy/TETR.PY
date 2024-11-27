@@ -113,10 +113,14 @@ def draw_border(surface, border, rect):
             pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.right - width, rect.top, width, rect.height))
 
 def brightness(surface, brightness_factor):
-    rgb_array = pygame.surfarray.array3d(surface).astype(np.float32)
-    rgb_array *= brightness_factor
-    np.clip(rgb_array, 0, 255, out = rgb_array)  
-    pygame.surfarray.blit_array(surface, rgb_array.astype(np.uint8))
+    """Adjust the brightness of a surface
+    
+    args:
+        surface (pygame.Surface): The surface to adjust the brightness of
+        brightness_factor (float): The factor to adjust the brightness by (< 1 = darken, > 1 = brighten)
+    """
+    array = pygame.surfarray.array3d(surface).astype(np.float32) * brightness_factor
+    pygame.surfarray.blit_array(surface,  np.clip(array, 0, 255, out = array).astype(np.uint8))
     
 class Header:
     def __init__(self, container, height, text, background, border):
@@ -355,8 +359,8 @@ class ButtonBar():
         
     def update_image(self):
         self.surface.blit(self.button_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+        # self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+        # self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
     
     def check_hover(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
@@ -380,17 +384,29 @@ class BackButton():
         self.font = Font('hun2', 35)
         
         self.render_button()
+        self.get_hovered_image()
+        self.get_pressed_image()
     
     def render_button(self):
         draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)
         draw_border(self.button_surface, self.definition['border'], self.rect)
         self.render_text()
     
+    def get_hovered_image(self):
+        self.hovered_surface = self.button_surface.copy()
+        brightness(self.hovered_surface, 1.2)
+    
+    def get_pressed_image(self):
+        self.pressed_surface = self.button_surface.copy()
+        brightness(self.pressed_surface, 1.5)
+    
     def render_text(self):
         self.font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'right', 20, 0)
         
     def update_image(self):
         self.surface.blit(self.button_surface, (self.rect.left, self.rect.top + 15))
+        # self.surface.blit(self.hovered_surface, (self.rect.left, self.rect.top + 15))
+        # self.surface.blit(self.pressed_surface, (self.rect.left, self.rect.top + 15))
     
     def check_hover(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
@@ -410,6 +426,8 @@ class FooterButton():
         self.y_offset = 35
         self.render_button()
         self.render_image()
+        self.get_hovered_image()
+        self.get_pressed_image()
     
     def render_button(self):
         draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)
@@ -430,8 +448,18 @@ class FooterButton():
         
         self.button_surface.blit(image, image_rect.topleft)
     
+    def get_hovered_image(self):
+        self.hovered_surface = self.button_surface.copy()
+        brightness(self.hovered_surface, 1.2)
+    
+    def get_pressed_image(self):
+        self.pressed_surface = self.button_surface.copy()
+        brightness(self.pressed_surface, 1.5)
+        
     def update_image(self):
         self.surface.blit(self.button_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset))
+        # self.surface.blit(self.hovered_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset))
+        # self.surface.blit(self.pressed_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset))
     
     def check_hover(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
