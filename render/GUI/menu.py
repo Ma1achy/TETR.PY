@@ -113,14 +113,21 @@ def draw_border(surface, border, rect):
             pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.right - width, rect.top, width, rect.height))
 
 def brightness(surface, brightness_factor):
-    """Adjust the brightness of a surface
+    """
+    Adjust the brightness of a surface
     
     args:
         surface (pygame.Surface): The surface to adjust the brightness of
         brightness_factor (float): The factor to adjust the brightness by (< 1 = darken, > 1 = brighten)
     """
-    array = pygame.surfarray.array3d(surface).astype(np.float32) * brightness_factor
-    pygame.surfarray.blit_array(surface,  np.clip(array, 0, 255, out = array).astype(np.uint8))
+    pygame.surfarray.blit_array(
+        surface,  
+        np.clip(
+            (np.multiply(pygame.surfarray.array3d(surface), brightness_factor)),  
+            0, 
+            255
+        )
+    )
     
 class Header:
     def __init__(self, container, height, text, background, border):
@@ -359,8 +366,8 @@ class ButtonBar():
         
     def update_image(self):
         self.surface.blit(self.button_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        # self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        # self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+        self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+        self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
     
     def check_hover(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
