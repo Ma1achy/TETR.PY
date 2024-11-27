@@ -262,6 +262,47 @@
         "text": {
             "colour": "#8a8fa0",
             "display_text": "Welcome to TETR.PY!"
+        },
+        "image": {
+            "path": "resources/logos/mal.png",
+            "padding": [
+                20,
+                20
+            ]
         }
+    },
+    "footer_widgets": {
+        "elements": [
+        {
+            "type": "footer_button",
+            "function": "go_to_github",
+            "background": {
+                "style": "solid",
+                "colour": "#1a1b1f"
+            },
+            "image": {
+                "path": "resources/buttons/github.png",
+                "padding": [
+                    35,
+                    35
+                ]
+            },
+            "border": {
+                "top": [
+                    3,
+                    "#373a45"
+                ],
+                "right": [
+                    3,
+                    "#0e0f11"
+                ],
+                "left": [
+                    3,
+                    "#24262c"
+                ]
+            }
+        }]
+
     }
 }
+ 
