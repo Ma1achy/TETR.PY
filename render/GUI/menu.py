@@ -2,8 +2,7 @@ import pygame
 from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colour, draw_border, brightness, align_top_edge, align_bottom_edge, align_right_edge, align_left_edge, align_centre, align_bottom_left, align_bottom_right, align_top_right, align_top_left
 import os
 import json
-import numpy as np
-import time
+
 class Menu():
     def __init__(self, surface, Config, Timing, menu_definition):
         self.surface = surface
