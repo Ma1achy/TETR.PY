@@ -1,5 +1,5 @@
 import pygame
-from utils import hex_to_rgb
+from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colour, draw_border, brightness, align_top_edge, align_bottom_edge, align_right_edge, align_left_edge, align_centre, align_bottom_left, align_bottom_right, align_top_right, align_top_left
 import os
 import json
 import numpy as np
@@ -22,6 +22,7 @@ class Menu():
         if 'menu_header' in self.definition:
             self.header_height = 70
             self.menu_header = Header(self.surface.get_rect(), self.header_height, self.definition['menu_header']['text'], self.definition['menu_header']['background'], self.definition['menu_header']['border'])
+            
         if 'menu_footer' in self.definition:
             self.footer_height = 55
             if 'image' in self.definition['menu_footer']:
@@ -29,10 +30,11 @@ class Menu():
             else:
                 image = None
             self.menu_footer = Footer(self.surface.get_rect(), self.footer_height, self.definition['menu_footer']['text'], self.definition['menu_footer']['background'], self.definition['menu_footer']['border'], image)
+            
         if 'menu_body' in self.definition:
-            self.menu_body = self.definition['menu_body']
             self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-            self.main_body = MainBody(self.main_body_rect.width, self.main_body_rect.height, self.main_body_rect.topleft, self.menu_body)
+            self.main_body = MainBody(self.main_body_rect.width, self.main_body_rect.height, self.main_body_rect.topleft, self.definition['menu_body'])
+            
         if "footer_widgets" in self.definition:
             for element in self.definition["footer_widgets"]['elements']:
                 if element['type'] == 'footer_button':
@@ -53,86 +55,7 @@ class Menu():
     def open_definition(self, path):
         with open(path, 'r') as f:
             self.definition = json.load(f)
-            
-        
-def align_top_edge(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
-
-def align_bottom_edge(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.left + h_padding, container.bottom - element_height - v_padding, element_width, element_height)
-
-def align_right_edge(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.right - element_width - h_padding, container.top + v_padding, element_width, element_height)
-
-def align_left_edge(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
-
-def align_centre(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.left + (container.width - element_width) // 2 + h_padding, container.top + (container.height - element_height)//2 + v_padding, element_width, element_height)
-
-def align_bottom_left(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.left + h_padding, container.bottom - element_height - v_padding, element_width, element_height)
-
-def align_bottom_right(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.right - element_width - h_padding, container.bottom - element_height - v_padding, element_width, element_height)
-
-def align_top_right(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.right - element_width - h_padding, container.top + v_padding, element_width, element_height)
-
-def align_top_left(container, element_width, element_height, h_padding = 0, v_padding = 0):
-    return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
-
-def load_image(image_path):
-    try:
-        image = pygame.image.load(image_path).convert_alpha()
-    except FileNotFoundError:
-        image = pygame.surface.Surface((128, 128), pygame.HWSURFACE|pygame.SRCALPHA)
-        image.fill((255, 0, 255))
-    return image
-
-def draw_linear_gradient(surface, start_colour, end_colour, rect):
-    start_colour = hex_to_rgb(start_colour)
-    end_colour = hex_to_rgb(end_colour)
-    for y in range(rect.height):
-        colour = [int(start_colour[i] + (y / rect.height) * (end_colour[i] - start_colour[i])) for i in range(3)]
-        pygame.draw.line(surface, colour, (rect.left, rect.top + y), (rect.right, rect.top + y))
-
-def draw_solid_colour(surface, colour, rect):
-    pygame.draw.rect(surface, hex_to_rgb(colour), rect)
-
-def draw_border(surface, border, rect):
-    for side, value in border.items():
-        width, colour = value
-        if side == 'top':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.left, rect.top, rect.width, width))
-        elif side == 'bottom':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.left, rect.bottom - width, rect.width, width))
-        elif side == 'left':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.left, rect.top, width, rect.height))
-        elif side == 'right':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.right - width, rect.top, width, rect.height))
-
-def brightness(surface, brightness_factor):
-    """
-    Adjust the brightness of a surface
-    
-    args:
-        surface (pygame.Surface): The surface to adjust the brightness of
-        brightness_factor (float): The factor to adjust the brightness by (< 1 = darken, > 1 = brighten)
-    """
-    pygame.surfarray.blit_array(
-        surface,  
-        np.clip(
-            (np.multiply(
-                pygame.surfarray.array3d(surface), 
-                brightness_factor
-                )
-            ),  
-            0, 
-            255
-        )
-    )
-    
+                
 class Header:
     def __init__(self, container, height, text, background, border):
         self.container = container
@@ -370,8 +293,8 @@ class ButtonBar():
         
     def update_image(self):
         self.surface.blit(self.button_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+        # self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+        # self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
     
     def check_hover(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
