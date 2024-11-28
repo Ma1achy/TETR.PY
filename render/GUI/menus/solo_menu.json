@@ -3,7 +3,7 @@
         "background": {
             "style": "linear_gradient",
             "colours": [
-                "2a284a",
+                "#2a284a",
                 "#181726"
             ]
         },
@@ -26,7 +26,7 @@
                 20,
                 20
             ],
-            "scale": 0.25,
+            "scale": 0.23,
             "opacity": 32
         },
         "back_button": {
@@ -214,13 +214,13 @@
             "style": "linear_gradient",
             "colours": [
                 "#181726",
-                "2a284a"
+                "#2a284a"
             ]
         },
         "border": {
             "top": [
                 2,
-                "#3d3a67"
+                "#282646"
             ]
         },
         "text": {

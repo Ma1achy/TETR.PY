@@ -1,0 +1,77 @@
+{
+    "menu_header": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#334534",
+                "#212f22"
+            ]
+        },
+        "border": {
+            "bottom": [
+                2,
+                "#3d6f41"
+            ]
+        },
+        "text": {
+            "colour": "#b8f0bc",
+            "display_text": "RECORDS"
+        }
+    },
+    "menu_body": {
+        "logo": {
+            "image": "resources/logos/LogoLightGlow.png",
+            "alignment": "bottom_left",
+            "padding": [
+                20,
+                20
+            ],
+            "scale": 0.23,
+            "opacity": 32
+        },
+        "back_button": {
+            "function": "go_to_home",
+            "main_text": {
+                "colour": "#c9c9c9",
+                "display_text": "BACK"
+            },
+            "background": {
+                "style": "solid",
+                "colour": "#242424"
+            },
+            "border": {
+                "top": [
+                    3,
+                    "#3d3d3d"
+                ],
+                "bottom": [
+                    3,
+                    "#0e0e0e"
+                ],
+                "right": [
+                    3,
+                    "#181818"
+                ]
+            }
+        }
+    },
+    "menu_footer": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#212b22",
+                "#314c34"
+            ]
+        },
+        "border": {
+            "top": [
+                2,
+                "#3a603f"
+            ]
+        },
+        "text": {
+            "colour": "#a6ddac",
+            "display_text": "welcome to records!"
+        }
+    }
+}
