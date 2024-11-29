@@ -394,8 +394,7 @@ def brightness(surface, brightness_factor):
     """
     pygame.surfarray.blit_array(
         surface,  
-        np.clip( 
-            (np.multiply(
+        np.clip((np.multiply(
                 pygame.surfarray.array3d(surface), 
                 brightness_factor
                 )
