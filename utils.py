@@ -227,6 +227,16 @@ def ScaleSurface(surface, scale, pivot, origin):
     return scaled_surface, scaled_surface_rect
 
 def TransformSurface(surface, scale, angle, pivot, origin, offset):
+    """
+    Transform a surface by scaling and rotating it around a pivot point.
+    
+    args:
+        surface (pygame.Surface): The surface to transform.
+        scale (float): The scale factor.
+        angle (float): The angle to rotate the surface.
+        pivot (tuple): The pivot point to rotate around.
+        origin (tuple): The origin point of the surface.
+        offset (tuple): The offset of the surface."""
     scaled_surface, _ = ScaleSurface(surface, scale, pivot, origin + offset)
     rotated_surface, rotated_surface_rect = RotateSurface(scaled_surface, angle, pivot * scale, origin + offset)
     return rotated_surface, rotated_surface_rect
@@ -282,11 +292,27 @@ def to_grey_scale(image):
     return grey_image
 
 def ease(current, target, t):
+    """
+    Easing function to interpolate between two values
+    
+    args:
+        current (float): The current value
+        target (float): The target value
+        t (float): The interpolation factor
+    """
     t = max(0, min(1, t)) 
     t = t * t * (3 - 2 * t)  
     return current + (target - current) * t
 
 def ease_in_out_quad(start, end, t):
+    """
+    Ease in out quad function to interpolate between two values
+    
+    args:
+        start (float): The start value
+        end (float): The end value
+        t (float): The interpolation factor
+    """
     change = end - start
     if t < 0.5:
         return start + change * (2 * t ** 2)
@@ -294,14 +320,37 @@ def ease_in_out_quad(start, end, t):
         return start + change * (-1 + (4 - 2 * t) * t)
     
 def ease_out_cubic(start, end, t):
+    """
+    Ease out cubic function to interpolate between two values
+    
+    args:
+        start (float): The start value
+        end (float): The end value
+        t (float): The interpolation factor
+    """
     change = end - start
     t -= 1
     return start + change * (t ** 3 + 1) 
 
 def lerp(current, target, t):
+    """
+    Linear interpolation between two values
+    
+    args:
+        current (float): The current value
+        target (float): The target value
+        t (float): The interpolation factor
+    """
     return current + (target - current) * t 
 
 def apply_gaussian_blur_with_alpha(surface, sigma):
+    """	
+    Apply a gaussian blur to a surface with an alpha channel
+    
+    args:
+        surface (pygame.Surface): The surface to blur
+        sigma (float): The standard deviation of the gaussian blur kernel
+    """
     # straight alpha
     pixel_array = pygame.surfarray.array3d(surface).astype(np.float32)
     alpha_channel = pygame.surfarray.pixels_alpha(surface).astype(np.float32) / 255.0
@@ -324,6 +373,7 @@ def apply_gaussian_blur_with_alpha(surface, sigma):
     return blurred_surface
 
 def hex_to_rgb(hex_color):
+    """Convert a hex colour to an RGB tuple"""
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
@@ -355,6 +405,12 @@ def align_top_left(container, element_width, element_height, h_padding = 0, v_pa
     return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
 
 def load_image(image_path):
+    """
+    Load an image from a file path
+    
+    args:
+        image_path (str): The path to the image file
+    """
     try:
         image = pygame.image.load(image_path).convert_alpha()
     except FileNotFoundError:
@@ -363,6 +419,15 @@ def load_image(image_path):
     return image
 
 def draw_linear_gradient(surface, start_colour, end_colour, rect):
+    """
+    Draw a linear gradient on a rectangle
+    
+    args:
+        surface (pygame.Surface): The surface to draw the gradient on
+        start_colour (str): The start colour of the gradient
+        end_colour (str): The end colour of the gradient
+        rect (pygame.Rect): The rectangle to draw the gradient
+    """
     start_colour = hex_to_rgb(start_colour)
     end_colour = hex_to_rgb(end_colour)
     for y in range(rect.height):
@@ -370,9 +435,25 @@ def draw_linear_gradient(surface, start_colour, end_colour, rect):
         pygame.draw.line(surface, colour, (rect.left, rect.top + y), (rect.right, rect.top + y))
 
 def draw_solid_colour(surface, colour, rect):
+    """
+    Draw a solid colour rectangle
+    
+    args:
+        surface (pygame.Surface): The surface to draw the rectangle on
+        colour (str): The colour of the rectangle
+        rect (pygame.Rect): The rectangle to draw
+    """
     pygame.draw.rect(surface, hex_to_rgb(colour), rect)
 
 def draw_border(surface, border, rect):
+    """
+    Draw a border around a rectangle
+    
+    args:
+        surface (pygame.Surface): The surface to draw the border on
+        border (dict): The border to draw
+        rect (pygame.Rect): The rectangle to draw the border around
+    """
     for side, value in border.items():
         width, colour = value
         if side == 'top':
@@ -398,8 +479,8 @@ def brightness(surface, brightness_factor):
                 pygame.surfarray.array3d(surface), 
                 brightness_factor
                 )
-            ),  
-            0, 
+            ),
+            0,
             255
         )
     )

@@ -206,6 +206,7 @@ class App():
                 self.is_focused = True
             case pygame.WINDOWMINIMIZED:
                 self.is_focused = False
+                
 class EventHandler:
     targets = {}
 
