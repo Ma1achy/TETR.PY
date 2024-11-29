@@ -4,7 +4,6 @@ from input.handling.handling import Handling
 import time
 from input.handling.handling_config import HandlingConfig
 from core.state.struct_debug import StructDebug
-from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_flags import StructFlags, set_flag_attr
 from core.state.struct_handling import StructHandling
