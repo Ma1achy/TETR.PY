@@ -1,7 +1,6 @@
 import pygame
-import os
 import numpy as np
-from scipy.ndimage import gaussian_filter, binary_dilation
+from scipy.ndimage import gaussian_filter
 
 def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     """
@@ -11,7 +10,7 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
         base (triple): a RGB colour to blend with the transparent overlay colour
         overlay (triple): a RGB colour to simulate the transparency of 
         alpha (float): 0 - 1, to simulate transparency of overlay colour
-    
+    .
     returns
         (triple) a RGB colour
     """
