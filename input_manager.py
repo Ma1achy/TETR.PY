@@ -117,9 +117,6 @@ class InputManager:
                 iteration_end_time = time.perf_counter()
                 elapsed_time = iteration_end_time - iteration_start_time
                 
-                if elapsed_time > self.Timing.poll_interval and self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Input loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
-                
                 time.sleep(max(0, self.Timing.poll_interval - elapsed_time))
                    
         except Exception as e:
@@ -134,15 +131,18 @@ class InputManager:
         
     def do_input_tick(self):
         
+        start = time.perf_counter()
+        
         if self.Timing.exited:
             return
         
-        if self.wait_for_input_event():
+        if self.wait_for_input_event(timeout = self.Timing.poll_interval/1000):
            
             self.key_states = self.key_states_queue.get()
             print(self.key_states)
-            
+        
         self.Timing.input_tick_counter += 1
+        self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
         
     def get_poll_rate(self):
         self.Timing.POLLING_RATE = self.Timing.input_tick_counter

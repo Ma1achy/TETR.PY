@@ -45,9 +45,6 @@ class GameInstanceManager():
                 
                 iteration_end_time = time.perf_counter()
                 elapsed_time = iteration_end_time - iteration_start_time
-    
-                if elapsed_time > self.Timing.tick_interval and self.PRINT_WARNINGS:
-                    print(f"\033[93mWARNING: Logic loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
                         
                 time.sleep(max(0, self.Timing.tick_interval - elapsed_time))
                                  
@@ -62,10 +59,12 @@ class GameInstanceManager():
             return
     
     def do_main_tick(self):
+        start = time.perf_counter()
         if self.Timing.exited:
             return
         
         self.Timing.main_tick_counter += 1
+        self.Timing.iteration_times['logic_loop'] = time.perf_counter() - start
         
     def get_tps(self):
         self.Timing.TPS = self.Timing.main_tick_counter

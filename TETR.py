@@ -19,7 +19,6 @@ import os
 from render.render_new import Render
 from input_manager import InputManager
 from game_instance_manager import GameInstanceManager
-import json
 
 # render loop will do frame based updates, so drawing & ui logic
 # input loop will do polling based updates, so getting inputs & ticking input handlers of game instances
@@ -53,6 +52,7 @@ class App():
         self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
         self.Render = Render(self.Config, self.Timing, self.DebugStruct, self.game_instances)
+        self.Debug = Debug(self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
         
         self.GameParameters = { # temp, will be pased to game instance upon creation. This dict will be created by the menu manager
             'MATRIX_WIDTH': 10,
@@ -164,9 +164,6 @@ class App():
                 iteration_end_time = time.perf_counter()
                 elapsed_time = iteration_end_time - iteration_start_time
                 
-                if elapsed_time > self.Timing.frame_interval and self.PRINT_WARNINGS:
-                    #print(f"\033[93mWARNING: Render loop iteration took too long! [{elapsed_time:.6f} s]\033[0m")
-                    pass
                 self.get_fps()
                 
                 time.sleep(max(0, self.Timing.frame_interval - elapsed_time))
@@ -183,14 +180,19 @@ class App():
                 
     def do_render_tick(self):
         
+        start = time.perf_counter()
+        
         if self.Timing.exited:
             return
         
         for event in pygame.event.get():
             EventHandler.notify(event)
-            
+        
+        self.Debug.get_metrics()  
         self.Render.draw_frame()
         self.FrameClock.tick()
+            
+        self.Timing.iteration_times['render_loop'] = time.perf_counter() - start
                  
     def get_fps(self):
         self.Timing.FPS = self.FrameClock.get_fps()
@@ -318,7 +320,120 @@ class Timing():
         self.tick_interval = 1 / self.TPS
         self.poll_interval = 1 / self.POLLING_RATE
         self.frame_interval = 1 / self.FPS
+
+
+class Debug():
+    def __init__(self, Config, TimingStruct, RenderStruct, DebugStruct):
+        """
+        Manage the debug information for the game
+        
+        args:
+            Config (StructConfig): The configuration struct
+            TimingStruct (StructTiming): The timing struct
+            HandlingStruct (StructHandling): The handling struct
+            GameInstanceStruct (StructGameInstance): The game instance struct
+            FlagStruct (StructFlags): The flag struct
+            RenderStruct (StructRender): The render struct
+            DebugStruct (StructDebug): The debug struct
+        """
+        self.Config = Config
+        self.Timing = TimingStruct
+        self.RenderStruct = RenderStruct
+        self.DebugStruct = DebugStruct
     
+    # =================================================== METRIC CALCULATION ===================================================
+    
+    def __calculate_metrics(self, values_list, current_value, idx, metric, larger_is_better):
+        """
+        Calculate the average, best and worst values of a metric
+        
+        args:
+            values_list (list): The list of values to calculate the metrics for
+            current_value (int): The current value of the metric
+            idx (int): The current index of the list
+            metric (str): The name of the metric
+            larger_is_better (bool): Whether a larger value is better for the metric
+        """
+        if idx >= self.DebugStruct.max_avg_len:
+            idx = 0
+        
+        if len(values_list) >= self.DebugStruct.max_avg_len:
+            values_list.pop(idx)
+        
+        values_list.append(current_value)
+        idx += 1
+        
+        average = sum(values_list) / len(values_list)
+        
+        if larger_is_better:
+            best_value = max(values_list)
+            worst_value = min(values_list)
+        else:
+            best_value = min(values_list)
+            worst_value = max(values_list)
+            
+        self.__update_debug_info(metric, current_value, average, best_value, worst_value)
+    
+    def __update_debug_info(self, metric, current_value, average, best_value, worst_value):
+        """
+        Update the debug information stored in the debug struct
+        
+        args:
+            metric (str): The name of the metric
+            current_value (int): The current value of the metric
+            average (int): The average value of the metric
+            best_value (int): The best value of the metric
+            worst_value (int): The worst value of the metric
+        """
+        current_attr = f"Current_{metric}"
+        average_attr = f"Average_{metric}"
+        best_attr = f"Best_{metric}"
+        worst_attr = f"Worst_{metric}"
+        
+        setattr(self.DebugStruct, current_attr, current_value)
+        setattr(self.DebugStruct, average_attr, average)
+        setattr(self.DebugStruct, best_attr, best_value)
+        setattr(self.DebugStruct, worst_attr, worst_value)
+    
+    # =================================================== DEBUG METRICS ===================================================
+    
+    def __get_tick_debug(self):
+        """
+        Get the tick related debug information
+        """
+        self.DebugStruct.TPS = self.Timing.TPS
+        self.__calculate_metrics(self.DebugStruct.TPS_list, self.Timing.TPS, self.DebugStruct.tps_idx, "TickRate", True)
+        self.__calculate_metrics(self.DebugStruct.tick_time_list, self.Timing.iteration_times["logic_loop"], self.DebugStruct.tick_time_idx, "ExecutionTime", False)
+        self.__calculate_metrics(self.DebugStruct.delta_tick_list, (self.Config.TPS - self.DebugStruct.Current_TickRate), self.DebugStruct.delta_tick_idx, "DeltaTick", False)
+        
+        self.DebugStruct.TickCounter = self.Timing.main_tick_counter
+        
+    def __get_frame_debug(self):
+        """
+        Get the frame related debug information
+        """
+        self.DebugStruct.FPS = self.Timing.FPS
+        self.__calculate_metrics(self.DebugStruct.FPS_list, self.DebugStruct.FPS, self.DebugStruct.fps_idx, "FrameRate", True)
+        self.__calculate_metrics(self.DebugStruct.render_time_list, self.Timing.iteration_times["render_loop"], self.DebugStruct.render_idx, "RenderTime", False)
+    
+    def __get_polling_debug(self):
+        """
+        Get the polling related debug information
+        """
+        self.DebugStruct.PollingRate = self.Timing.POLLING_RATE
+        self.__calculate_metrics(self.DebugStruct.polling_rate_list, self.DebugStruct.polling_rate, self.DebugStruct.polling_idx, "PollingRate", True)
+        self.__calculate_metrics(self.DebugStruct.polling_time_list, self.Timing.iteration_times["input_loop"], self.DebugStruct.polling_time_idx, "PollingTime", False) 
+  
+        self.DebugStruct.PollingCounter = self.Timing.input_tick_counter
+        
+    def get_metrics(self):
+        """
+        Get the debug metrics for the debug menu
+        """
+        self.__get_tick_debug()
+        self.__get_frame_debug()
+        self.__get_polling_debug()
+        
 def main():
     app = App()
     app.run()

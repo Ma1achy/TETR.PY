@@ -1,10 +1,8 @@
 import pygame
-from dataclasses import dataclass, field
-from typing import List, Dict, Tuple
-import pygame_gui as gui
+from dataclasses import dataclass
 from utils import hex_to_rgb
-import json
 from render.GUI.menu import Menu
+from render.GUI.debug_overlay import GUIDebug
 
 class Render():
     def __init__(self, Config, Timing, Debug, GameInstances):
@@ -18,6 +16,8 @@ class Render():
         self.Debug = Debug
         self.RenderStruct =  StructRender()
         self.GameInstances = GameInstances
+        
+        self.GUI_debug = GUIDebug(self.Config, self.RenderStruct, self.Debug)
         
         self.icon = pygame.image.load('resources/icon.png')
         self.window = self.__init_window()
@@ -56,6 +56,7 @@ class Render():
         self.darken_overlay_layer.fill((0, 0, 0, self.darken_overlay_layer_alpha))
         self.window.blit(self.darken_overlay_layer, (0, 0))
         self.main_menu.draw()
+        self.GUI_debug.draw(self.window)
         pygame.display.flip()
     
 @dataclass

@@ -190,8 +190,10 @@ class Font():
         elif self.type == 'action_icons':
             font_path = os.path.join(self.base_path, 'action-icons.ttf')
             self.font = pygame.font.Font(font_path, self.size)
+        
+        self.height = self.font.get_height()
                 
-    def draw(self, surface, text, colour, alignment, h_padding=0, v_padding=0):
+    def draw(self, surface, text, colour, alignment, h_padding = 0, v_padding = 0, draw_background = None):
         rendered_text = self.font.render(text, True, hex_to_rgb(colour))
 
         if alignment == 'center':
@@ -217,7 +219,11 @@ class Font():
         # Adjust positioning with paddings
         text_rect.x += h_padding
         text_rect.y += v_padding
-
+        if draw_background:
+            background_surface = pygame.Surface((text_rect.width, text_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+            background_surface.fill(draw_background)
+            surface.blit(background_surface, text_rect.topleft)
+            
         surface.blit(rendered_text, text_rect)
 
 class Logo():
