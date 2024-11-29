@@ -23,7 +23,13 @@ def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     return (blend(r1, r2), blend(g1, g2), blend(b1, b2))
 
 def smoothstep(x):
-        return x * x * x * (x * (6 * x - 15) + 10)
+    """
+    Smoothstep function to interpolate between two values
+    
+    args:
+        x (float): The interpolation factor
+    """
+    return x * x * x * (x * (6 * x - 15) + 10)
 
 def get_prefix(number: float, unit: str, precision: int = 1) -> str:
     """
