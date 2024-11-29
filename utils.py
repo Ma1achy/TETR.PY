@@ -274,6 +274,9 @@ def tint_texture(texture, tint_color):
 def to_grey_scale(image):
     """
     convert a RGBA image to greyscale
+    
+    args:
+        image (pygame.Surface): The image to convert
     """
     width, height = image.get_size()
     grey_image = pygame.Surface((width, height), flags=pygame.SRCALPHA)
