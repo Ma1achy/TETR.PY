@@ -26,7 +26,7 @@ class MenuManager():
         self.current_menu.update()
     
     def get_actions(self):
-        actions = self.menu_actions_queue.get()
+        actions = self.menu_actions_queue.get_nowait()
         self.__perform_action(actions)
         
     def __perform_action(self, actions):
