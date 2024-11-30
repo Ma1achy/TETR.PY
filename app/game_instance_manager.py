@@ -11,7 +11,7 @@ class GameInstanceManager():
     def logic_loop(self):
         try:
             while not self.Timing.exited:
-                iteration_start_time = time.perf_counter()
+                
                 ticks_this_iteration = 0
                 
                 self.Timing.current_main_tick_time = time.perf_counter() - self.Timing.start_times['logic_loop']
@@ -42,11 +42,8 @@ class GameInstanceManager():
                     self.get_tps()
                     self.Timing.main_tick_counter = 0
                     self.Timing.main_tick_counter_last_cleared += 1
-                
-                iteration_end_time = time.perf_counter()
-                elapsed_time = iteration_end_time - iteration_start_time
-                        
-                time.sleep(max(0, self.Timing.tick_interval - elapsed_time))
+                    
+                time.sleep(0)
                                  
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")

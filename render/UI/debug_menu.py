@@ -87,7 +87,7 @@ class UIDebug():
         else:
             poll_colour = (0, 255, 0)
         
-        self.debug_surfaces.append((self.Fonts.hun2_big.render(f'POLL: {int(self.DebugStruct.Average_PollingRate)}', True, poll_colour), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 8)))
+        self.debug_surfaces.append((self.Fonts.hun2_big.render(f'POLL: {int(self.DebugStruct.Average_PollingRate)} | {self.DebugStruct.PollingTickCounter}', True, poll_colour), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 8)))
         
         self.debug_surfaces.append((self.Fonts.pfw_small.render(f'worst: {int(self.DebugStruct.Worst_PollingRate)} | best: {int(self.DebugStruct.Best_PollingRate)} | current: {int(self.DebugStruct.Current_PollingRate)}', True, poll_colour), (self.RenderStruct.GRID_SIZE // 2, self.RenderStruct.GRID_SIZE * 9)))
         

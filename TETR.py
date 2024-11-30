@@ -85,10 +85,6 @@ class App():
         self.input_thread = threading.Thread(target = self.InputManager.input_loop)
         self.logic_thread = threading.Thread(target = self.GameInstanceManager.logic_loop)
         
-        self.Timing.start_times['input_loop'] = time.perf_counter()
-        self.Timing.start_times['logic_loop'] = time.perf_counter()
-        self.Timing.start_times['render_loop'] = time.perf_counter()
-    
     def __register_event_handlers(self):
         PygameEventHandler.register(pygame.WINDOWCLOSE)(self.__exit)
         PygameEventHandler.register(pygame.WINDOWFOCUSLOST)(self.__is_focused)
@@ -131,10 +127,15 @@ class App():
         
     def run(self):
         self.__initalise()
-        
+         
         self.InputManager.start_keyboard_hook() 
+        self.Timing.start_times['input_loop'] = time.perf_counter()
         self.input_thread.start()
+        
+        self.Timing.start_times['logic_loop'] = time.perf_counter()
         self.logic_thread.start()
+        
+        self.Timing.start_times['render_loop'] = time.perf_counter()
         self.render_loop() # render loop has to be in main thread because calling pygame events in a seperate thread isn't allowed in macOS, stupid as fuck
 
         self.__exit()
@@ -160,9 +161,7 @@ class App():
         """
         try:
             while not self.Timing.exited:
-         
-                iteration_start_time = time.perf_counter()
-                
+
                 self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
                 self.Timing.elapsed_times['render_loop'] = self.Timing.current_frame_time
                 
@@ -170,13 +169,10 @@ class App():
                 self.Timing.last_frame_time = self.Timing.current_frame_time
                   
                 self.do_render_tick()
-
-                iteration_end_time = time.perf_counter()
-                elapsed_time = iteration_end_time - iteration_start_time
-                
+            
                 self.get_fps()
                 
-                time.sleep(max(0, self.Timing.frame_interval - elapsed_time))
+                time.sleep(0)
                         
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")

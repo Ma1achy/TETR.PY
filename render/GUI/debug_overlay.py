@@ -45,8 +45,6 @@ class GUIDebug():
 
         # FPS debug information
         fps_text = f'FPS: {int(self.DebugStruct.Average_FrameRate)}'
-        if self.Config.UNCAPPED_FPS:
-            fps_text += ' (UNCAPPED)'
 
         self.font_hun2_big.draw(
             surface,

@@ -1,6 +1,7 @@
 import threading
 import pynput.keyboard as keyboard # cannot use keyboard module as it is not supported in macOS :-)
 import time
+import queue 
 
 class InputManager:
     def __init__(self, key_states_queue, Timing, PRINT_WARNINGS):
@@ -73,12 +74,6 @@ class InputManager:
         except AttributeError:
             return key
 
-    def wait_for_input_event(self, timeout = None):
-        if self.input_event.wait(timeout = timeout):
-            self.input_event.clear()  
-            return True
-        return False
-    
     def reset_key_states(self):
         for key in self.key_states:
             self.key_states[key]['previous'] = self.key_states[key]['current']
@@ -90,7 +85,6 @@ class InputManager:
             while not self.Timing.exited:
                 
                 ticks_this_iteration = 0
-                iteration_start_time = time.perf_counter()
             
                 self.Timing.current_input_tick_time = time.perf_counter() - self.Timing.start_times['input_loop']
                 self.Timing.elapsed_times['input_loop'] = self.Timing.current_input_tick_time
@@ -119,10 +113,7 @@ class InputManager:
                     self.Timing.input_tick_counter = 0
                     self.Timing.input_tick_counter_last_cleared += 1
 
-                iteration_end_time = time.perf_counter()
-                elapsed_time = iteration_end_time - iteration_start_time
-                
-                time.sleep(max(0, self.Timing.poll_interval - elapsed_time))
+                time.sleep(0)
                    
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
@@ -141,14 +132,11 @@ class InputManager:
         
         start = time.perf_counter()
         
-        if self.wait_for_input_event(timeout = self.Timing.poll_interval):
-           
-            self.key_states = self.key_states_queue.get()
-        else:
-            self.reset_key_states() # if no input detected, 
-            
-       # print(self.key_states)
-        
+        try:
+            self.key_states = self.key_states_queue.get_nowait()
+        except queue.Empty:
+            self.reset_key_states()
+    
         self.Timing.input_tick_counter += 1
         self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
         

@@ -100,6 +100,8 @@ class Debug():
         """
         self.__calculate_metrics(self.DebugStruct.polling_rate_list, self.DebugStruct.polling_rate, self.DebugStruct.polling_idx, "PollingRate", True)
         self.__calculate_metrics(self.DebugStruct.polling_time_list, self.TimingStruct.iter_times["handle_events"], self.DebugStruct.polling_time_idx, "PollingTime", False) 
+        
+        self.DebugStruct.PollingTickCounter = self.HandlingStruct.poll_tick_counter
   
     def get_metrics(self):
         """
