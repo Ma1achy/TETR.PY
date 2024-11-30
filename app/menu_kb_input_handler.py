@@ -12,14 +12,29 @@ class UIAction(Enum):
     MENU_DEBUG = auto()
     
 class MenuKeyboardInputHandler():
-    def __init__(self, key_states_queue, key_bindings, menu_actions_queue, PRINT_WARNINGS):
+    def __init__(self, key_states_queue, key_bindings, menu_actions_queue, Timing, PRINT_WARNINGS):
+        
         self.key_states_queue = key_states_queue
-        self.key_bindings = key_bindings
-        self.PRINT_WARNINGS = PRINT_WARNINGS
-        self.actions = self.__get_empty_actions()
         self.menu_actions_queue = menu_actions_queue
+        self.actions_to_queue = [] 
+        
+        self.Timing = Timing
+        self.PRINT_WARNINGS = PRINT_WARNINGS
+         
+        self.key_bindings = key_bindings
+        self.actions = self.__get_empty_actions()
         self.key_states = self.__get_empty_key_states()
-
+           
+        self.done_tap = False
+        self.do_repeat_input = False
+            
+        self.DAS_delay = 167
+        self.ARR_delay = 33
+        self.DAS_counter = 0
+        self.ARR_counter = 0
+        self.DAS_remainder = 0
+        self.ARR_remainder = 0
+        
     def __get_empty_key_states(self):
         return {
             key: {'current': False, 'previous': False}
@@ -28,7 +43,7 @@ class MenuKeyboardInputHandler():
         }
         
     def __get_empty_actions(self):
-        return {action: False for action in UIAction}
+        return {action: {'state': False} for action in UIAction}
     
     def __forward_key_states(self):
         """
@@ -39,24 +54,28 @@ class MenuKeyboardInputHandler():
     
     def tick(self):
         self.__get_key_states()
-        self.__get_actions()
+        self.__perform_action_tests()
         self.__forward_key_states()
-    
+        
     def __get_key_states(self):
         if not self.key_states_queue.empty():
             key_states = self.key_states_queue.queue[0]
         else:
-            key_states = self.__get_empty_key_states()
+            return
+
+        for key in key_states:
+            try:
+                self.key_states[key]['current'] = key_states[key]['current']
+            
+            except KeyError:
+                pass
+          
+    def __perform_action_tests(self):
         
-        for key, state in key_states.items():
-            if key not in self.key_states:
-                return
-            
-            self.key_states[key]['previous'] = key_states[key]['previous']
-            self.key_states[key]['current'] = key_states[key]['current']
-            
-       
-    def __get_actions(self):
+        self.current_time = self.Timing.current_frame_time
+        self.delta_time = self.Timing.frame_delta_time
+        
+        self.__do_DAS_tick()
         
         self.__test_actions(UIAction.MENU_LEFT, self.__is_action_down)
         
@@ -72,13 +91,15 @@ class MenuKeyboardInputHandler():
         
         self.__test_actions(UIAction.MENU_DEBUG, self.__is_action_toggled)
         
-        self.__queue_actions()
+        self.__get_actions()
+        
+        self.prev_time = self.current_time
     
     def __is_action_down(self, action):
         return all(self.key_states[key]['current'] for key in self.key_bindings[action])
         
     def __is_action_toggled(self, action):
-        return all(self.key_states[key]['current'] and not self.key_states[key]['previous'] for key in self.key_bindings[action])\
+        return all(self.key_states[key]['current'] and not self.key_states[key]['previous'] for key in self.key_bindings[action])
     
     def __test_actions(self, action, check):
         if check(action):
@@ -87,7 +108,64 @@ class MenuKeyboardInputHandler():
             self.__set_action_state(action, False)
     
     def __set_action_state(self, action, state):
-        self.actions[action] = state
+        self.actions[action]['state'] = state
         
-    def __queue_actions(self):
-        self.menu_actions_queue.put(self.actions)
+    def __get_actions(self):
+        
+        self.actions_to_queue = []
+        
+        for action in self.actions:
+            if self.actions[action]['state']:
+                if action is UIAction.MENU_LEFT or action is UIAction.MENU_RIGHT or action is UIAction.MENU_DOWN or action is UIAction.MENU_UP:
+                    self.__get_DAS_actions(action)
+                else:
+                    self.__queue_actions(action)
+        
+        self.menu_actions_queue.put(self.actions_to_queue)
+        
+    def __queue_actions(self, action):
+        self.actions_to_queue.append(action)
+        
+    def __reset_DAS(self): 
+        self.DAS_counter = 0
+        self.DAS_remainder = 0
+        self.ARR_counter = 0
+        self.ARR_remainder = 0
+        self.done_tap = False
+    
+    def __get_DAS_actions(self, action):
+        if self.do_repeat_input:
+            self.do_repeat_input = False
+            self.__queue_actions(action)
+    
+    def __do_DAS_tick(self):
+        
+        if self.__is_action_down(UIAction.MENU_LEFT) or self.__is_action_down(UIAction.MENU_RIGHT) or self.__is_action_down(UIAction.MENU_DOWN) or self.__is_action_down(UIAction.MENU_UP):
+            
+            if self.DAS_counter % self.DAS_delay == 0 or self.DAS_counter >= self.DAS_delay:
+                self.__do_ARR_tick()
+            
+            if self.DAS_counter >= self.DAS_delay:
+                self.DAS_counter = self.DAS_delay
+            
+            else:
+                q, r = divmod((self.current_time - self.prev_time) + self.DAS_remainder, self.delta_time)
+                self.DAS_remainder = r
+                self.DAS_counter += q
+        
+        else:
+            self.__reset_DAS()
+
+    def __do_ARR_tick(self):
+        
+        if not self.done_tap or self.ARR_counter >= self.ARR_delay:
+            
+            self.done_tap = True
+            self.do_repeat_input = True
+            self.ARR_counter = 0
+            
+        if self.DAS_counter >= self.DAS_delay:
+            q, r = divmod((self.current_time - self.prev_time) + self.ARR_remainder, self.delta_time)
+            self.ARR_remainder = r
+            self.ARR_counter += q
+            
