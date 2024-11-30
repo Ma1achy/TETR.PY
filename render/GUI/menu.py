@@ -39,7 +39,7 @@ class Menu():
                 if element['type'] == 'footer_button':
                     self.footer_widgets.append(FooterButton(self.surface, self.surface.get_rect(), element))
       
-    def draw(self):
+    def update(self):
         self.main_body.draw(self.surface)
         self.menu_header.draw(self.surface)
         self.menu_footer.draw(self.surface)

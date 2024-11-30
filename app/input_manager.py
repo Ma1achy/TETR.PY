@@ -1,7 +1,6 @@
 import threading
 import pynput.keyboard as keyboard # cannot use keyboard module as it is not supported in macOS :-)
 import time
-from utils import add_to_queue
 
 class InputManager:
     def __init__(self, key_states_queue, Timing, PRINT_WARNINGS):

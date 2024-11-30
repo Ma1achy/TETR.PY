@@ -40,8 +40,6 @@ class GUIDebug():
             fps_colour = '#ffff00'  # Yellow
         elif self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.5:
             fps_colour = '#ff0000'  # Red
-        elif self.Config.UNCAPPED_FPS:
-            fps_colour = '#00ffff'  # Cyan
         else:
             fps_colour = '#00ff00'  # Green
 

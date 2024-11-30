@@ -20,6 +20,7 @@ from app.menu_kb_input_handler import MenuKeyboardInputHandler, UIAction
 from app.debug_manager import DebugManager
 from app.pygame_event_handler import PygameEventHandler
 from app.state.timing import Timing
+from app.menu_manager import MenuManager
 
 #TODO: change renderer methods to NOT use methods ASSOCIATED WITH A GAME INSTANCE
 #      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
@@ -58,9 +59,10 @@ class App():
         }
            
         self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
-        self.MenuInputHandler = MenuKeyboardInputHandler(self.key_states_queue, self.menu_key_bindings, self.menu_actions_queue, self.PRINT_WARNINGS)
+        self.MenuInputHandler = MenuKeyboardInputHandler(self.key_states_queue, self.menu_key_bindings, self.menu_actions_queue, self.Timing, self.PRINT_WARNINGS)
+        self.MenuManager = MenuManager(self.menu_actions_queue, self.Config, self.Timing)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
-        self.Render = Render(self.Config, self.Timing, self.DebugStruct, self.game_instances)
+        self.Render = Render(self.Config, self.Timing, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
         
         self.GameParameters = { # temp, will be pased to game instance upon creation. This dict will be created by the menu manager
@@ -189,7 +191,7 @@ class App():
     def do_render_tick(self):
         
         start = time.perf_counter()
-        
+       
         if self.Timing.exited:
             return
         
@@ -197,6 +199,7 @@ class App():
             PygameEventHandler.notify(event)
         
         self.MenuInputHandler.tick()
+        self.MenuManager.tick()
         self.Debug.get_metrics()  
         self.Render.draw_frame()
         self.FrameClock.tick()
