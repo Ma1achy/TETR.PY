@@ -85,7 +85,8 @@ class InputManager:
             while not self.Timing.exited:
                 
                 ticks_this_iteration = 0
-            
+                start_time = time.perf_counter()
+                
                 self.Timing.current_input_tick_time = time.perf_counter() - self.Timing.start_times['input_loop']
                 self.Timing.elapsed_times['input_loop'] = self.Timing.current_input_tick_time
                 
@@ -113,8 +114,9 @@ class InputManager:
                     self.Timing.input_tick_counter = 0
                     self.Timing.input_tick_counter_last_cleared += 1
 
-                time.sleep(0)
-                   
+                elapsed_time = time.perf_counter() - start_time
+                time.sleep(max(0, self.Timing.poll_interval - elapsed_time))
+                
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
             return

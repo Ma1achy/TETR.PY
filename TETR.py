@@ -169,9 +169,7 @@ class App():
                 self.Timing.last_frame_time = self.Timing.current_frame_time
                   
                 self.do_render_tick()
-            
                 self.get_fps()
-                
                 time.sleep(0)
                         
         except Exception as e:

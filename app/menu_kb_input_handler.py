@@ -120,7 +120,7 @@ class MenuKeyboardInputHandler():
                     self.__get_DAS_actions(action)
                 else:
                     self.__queue_actions(action)
-        
+    
         self.menu_actions_queue.put(self.actions_to_queue)
         
     def __queue_actions(self, action):

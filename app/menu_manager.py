@@ -30,7 +30,7 @@ class MenuManager():
         self.__perform_action(actions)
         
     def __perform_action(self, actions):
-        
+
         for action in actions:
             match action:
                 case UIAction.MENU_LEFT:
