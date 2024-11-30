@@ -50,7 +50,7 @@ class Handling():
         self.FlagStruct = FlagStruct
         self.polling_tick_time = 1 / self.Config.POLLING_RATE
      
-        self.actions = self.__GetEmptyActions()
+        self.actions = self.__get_empty_actions()
         self.HandlingStruct.action_queue = deque()
         
         self.HandlingStruct.key_states = {
@@ -70,7 +70,7 @@ class Handling():
     
     # ============================================== ACTION HANDLING ==============================================
        
-    def __GetEmptyActions(self):
+    def __get_empty_actions(self):
         """
         Return an empty actions dictionary
         """
