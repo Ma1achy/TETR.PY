@@ -1,11 +1,11 @@
 import pygame
 from config import StructConfig
-from input.handling.handling import Handling
+from instance.handling.handling import Handling
 from core.debug import Debug
 from render.render import Render
 import time
 import asyncio
-from input.handling.handling_config import HandlingConfig
+from instance.handling.handling_config import HandlingConfig
 from core.state.struct_debug import StructDebug
 from core.state.struct_timing import StructTiming
 from core.state.struct_gameinstance import StructGameInstance

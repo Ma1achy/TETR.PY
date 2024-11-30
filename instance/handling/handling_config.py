@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import pygame
-from input.handling.handling import Action
+from instance.handling.handling import Action
 from typing import Dict 
 
 @dataclass

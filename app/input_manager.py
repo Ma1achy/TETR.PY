@@ -1,6 +1,7 @@
 import threading
 import pynput.keyboard as keyboard # cannot use keyboard module as it is not supported in macOS :-)
 import time
+from utils import add_to_queue
 
 class InputManager:
     def __init__(self, key_states_queue, Timing, PRINT_WARNINGS):
@@ -78,7 +79,12 @@ class InputManager:
             self.input_event.clear()  
             return True
         return False
-     
+    
+    def reset_key_states(self):
+        for key in self.key_states:
+            self.key_states[key]['previous'] = self.key_states[key]['current']
+        self.queue_key_states()
+        
     def input_loop(self):
         
         try:
@@ -128,21 +134,25 @@ class InputManager:
                 print(f"\033[92mInput loop Timing.exited in {threading.current_thread().name}\033[0m")
             self.Timing.exited = True
             return
-        
+    
     def do_input_tick(self):
-        
-        start = time.perf_counter()
         
         if self.Timing.exited:
             return
         
-        if self.wait_for_input_event(timeout = self.Timing.poll_interval/1000):
+        start = time.perf_counter()
+        
+        if self.wait_for_input_event(timeout = self.Timing.poll_interval):
            
             self.key_states = self.key_states_queue.get()
-            print(self.key_states)
+        else:
+            self.reset_key_states() # if no input detected, 
+            
+       # print(self.key_states)
         
         self.Timing.input_tick_counter += 1
         self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
         
     def get_poll_rate(self):
         self.Timing.POLLING_RATE = self.Timing.input_tick_counter
+    

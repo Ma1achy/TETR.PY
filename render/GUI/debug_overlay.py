@@ -34,7 +34,7 @@ class GUIDebug():
         # Start position
         x = 10
         y = 0  # Top of the surface, adjusted incrementally
-        y_padding = self.RenderStruct.WINDOW_HEIGHT // 100
+        y_padding = self.RenderStruct.WINDOW_HEIGHT // 200
         
         if self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.95:
             fps_colour = '#ffff00'  # Yellow

@@ -1,6 +1,6 @@
 from instance.tetromino import Tetromino
 from instance.matrix import Matrix
-from input.handling.handling import Action
+from instance.handling.handling import Action
 from instance.rotation import RotationSystem
 import math
 from utils import Vec2

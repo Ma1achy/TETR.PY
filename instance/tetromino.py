@@ -1,6 +1,6 @@
 from utils import Vec2, get_tetromino_blocks
 from instance.matrix import Matrix
-from input.handling.handling import Action
+from instance.handling.handling import Action
 from core.state.struct_flags import FLAG
 
 class Tetromino():

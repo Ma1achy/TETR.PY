@@ -493,3 +493,20 @@ def brightness(surface, brightness_factor):
         )
     )
 
+def peek_queue(q):
+    with q.mutex:
+        if q.queue:
+            return q.queue[0]
+        else:
+            return None
+        
+def add_to_queue(q, item):
+    with q.mutex:
+        q.put(item)
+
+def remove_from_queue(q):
+    with q.mutex:
+        if not q.empty():
+            return q.get()
+        else:
+            return None

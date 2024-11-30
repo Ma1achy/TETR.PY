@@ -11,7 +11,7 @@ from render.board.hold_and_queue import HoldAndQueue
 from render.board.UI.border import UIBorder
 from render.board.UI.info_text import UIInfoText
 from render.board.UI.action_text import UIActionText
-from input.handling.handling import Action
+from instance.handling.handling import Action
 from utils import ease_out_cubic, ease_in_out_quad, smoothstep
 from instance.four import RNG
 import math
