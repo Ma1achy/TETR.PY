@@ -56,7 +56,7 @@ class InputManager:
         
         try:
             KeyEntry = self.key_states[keyinfo]
-            if KeyEntry and KeyEntry['current']:
+            if KeyEntry and KeyEntry['current']: # only update if the key was pressed to prevent multiple releases from being registered
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = False
                 
