@@ -56,7 +56,7 @@ class InputManager:
         
         try:
             KeyEntry = self.key_states[keyinfo]
-            if KeyEntry:
+            if KeyEntry and KeyEntry['current']:
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = False
                 
@@ -138,7 +138,7 @@ class InputManager:
             self.key_states = self.key_states_queue.get_nowait()
         except queue.Empty:
             self.reset_key_states()
-    
+
         self.Timing.input_tick_counter += 1
         self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
         
