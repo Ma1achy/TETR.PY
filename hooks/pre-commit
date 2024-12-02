@@ -1,7 +1,17 @@
 #!/bin/sh
 
+echo "Running pre-commit hook..."
+
 # Run the Python script to generate build information
-python3 .git/scripts/generate_build_info.py
+python .git/hooks/generate_build_info.py
+
+# Check if the script ran successfully
+if [ $? -ne 0 ]; then
+    echo "Failed to run generate_build_info.py"
+    exit 1
+fi
 
 # Add the generated build_info.json to the commit
 git add app/state/build_info.json
+
+echo "Pre-commit hook completed."
