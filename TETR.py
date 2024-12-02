@@ -233,6 +233,7 @@ class App():
                 self.is_focused = False
         
         self.MenuManager.is_focused = self.is_focused
+        self.MouseInputHandler.is_focused = self.is_focused
         self.Timing.is_focused = self.MenuManager.is_focused
     
     def __update_mouse_position(self):
