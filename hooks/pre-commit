@@ -3,7 +3,7 @@
 echo "Running pre-commit hook..."
 
 # Run the Python script to generate build information
-python .git/hooks/generate_build_info.py
+python .git/scripts/generate_build_info.py
 
 # Check if the script ran successfully
 if [ $? -ne 0 ]; then

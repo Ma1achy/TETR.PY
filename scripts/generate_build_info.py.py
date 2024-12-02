@@ -1,7 +1,5 @@
 import subprocess
 import datetime
-import sys
-import platform
 import json
 
 def get_git_commit_hash():
