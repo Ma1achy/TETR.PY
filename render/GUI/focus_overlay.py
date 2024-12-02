@@ -7,13 +7,13 @@ class GUIFocus():
     def __init__(self, RenderStruct:StructRender):
         
         self.RenderStruct = RenderStruct
-        self.width = self.RenderStruct.WINDOW_WIDTH // 3
-        self.height = self.RenderStruct.WINDOW_HEIGHT // 5
+        self.width = 500
+        self.height = 180
         self.focus_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)
         self.focus_surface = pygame.Surface((self.focus_rect.width, self.focus_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
         
-        self.main_font = Font('hun2', int(2.25*self.focus_rect.height // 5))
-        self.sub_font = Font('hun2', self.focus_rect.height // 5)
+        self.main_font = Font('hun2', 85)
+        self.sub_font = Font('hun2', 36)
         
     def draw(self, surface):
         self.focus_surface.fill((0, 0, 0, 200))
