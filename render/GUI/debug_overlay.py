@@ -2,7 +2,7 @@ from config import StructConfig
 from core.state.struct_render import StructRender
 from core.state.struct_debug import StructDebug
 from utils import get_prefix
-from render.GUI.menu import Font
+from render.GUI.font import Font
 import pygame
 
 class GUIDebug():

@@ -214,6 +214,9 @@ class App():
             case pygame.WINDOWMINIMIZED:
                 self.is_focused = False
         
+        self.MenuManager.is_focused = self.is_focused
+        self.Timing.is_focused = self.MenuManager.is_focused
+        
 class GameInstance():
     def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
         

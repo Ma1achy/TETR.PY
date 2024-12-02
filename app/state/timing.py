@@ -28,6 +28,8 @@ class Timing():
     input_tick_counter_last_cleared: int = 0
     input_tick_counter: int = 0
     
+    is_focused: bool = False
+    
     start_times: Dict[str, float] = field(default_factory = lambda: {
     'input_loop': 0,
     'logic_loop': 0,

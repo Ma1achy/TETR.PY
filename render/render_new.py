@@ -2,6 +2,7 @@ import pygame
 from dataclasses import dataclass
 from utils import hex_to_rgb
 from render.GUI.debug_overlay import GUIDebug
+from render.GUI.focus_overlay import GUIFocus
 
 class Render():
     def __init__(self, Config, Timing, Debug, GameInstances, MenuManager):
@@ -18,6 +19,7 @@ class Render():
         self.MenuManager = MenuManager
         
         self.GUI_debug = GUIDebug(self.Config, self.RenderStruct, self.Debug)
+        self.GUI_focus = GUIFocus(self.RenderStruct)
         
         self.icon = pygame.image.load('resources/icon.png')
         self.window = self.__init_window()
@@ -52,6 +54,9 @@ class Render():
         
         if self.MenuManager.debug_overlay:
             self.GUI_debug.draw(self.window)
+        
+        if not self.MenuManager.is_focused:
+            self.GUI_focus.draw(self.window)
             
         pygame.display.flip()
     

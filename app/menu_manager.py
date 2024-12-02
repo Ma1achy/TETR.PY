@@ -8,6 +8,7 @@ class MenuManager():
         self.Config = Config
         self.Timing = Timing
         self.debug_overlay = False
+        self.is_focused = False
     
     def init_menus(self, window):
         self.window = window

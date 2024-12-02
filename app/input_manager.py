@@ -9,7 +9,6 @@ class InputManager:
         self.key_states = {}
         self.Timing = Timing
         self.key_states_queue = key_states_queue
-        self.input_event = threading.Event()
         self.PRINT_WARNINGS = PRINT_WARNINGS
         self.max_poll_ticks_per_iteration = 1000
         
@@ -36,7 +35,12 @@ class InputManager:
         self.key_states_queue.put(self.key_states)
 
     def on_key_press(self, key):
+        
+        if not self.Timing.is_focused:
+            return
+        
         keyinfo = self.__get_key_info(key)
+        
         try:
             KeyEntry = self.key_states[keyinfo]
             if KeyEntry:
@@ -48,10 +52,14 @@ class InputManager:
             KeyEntry['previous'] = KeyEntry['current']
             KeyEntry['current'] = True
         
+              
         self.queue_key_states()
-        self.input_event.set()
          
     def on_key_release(self, key):
+        
+        if not self.Timing.is_focused:
+            return
+        
         keyinfo = self.__get_key_info(key)
         
         try:
@@ -65,8 +73,8 @@ class InputManager:
             KeyEntry['previous'] = KeyEntry['current']
             KeyEntry['current'] = False
         
+       
         self.queue_key_states()
-        self.input_event.set()
          
     def __get_key_info(self, key):
         try:
@@ -138,7 +146,7 @@ class InputManager:
             self.key_states = self.key_states_queue.get_nowait()
         except queue.Empty:
             self.reset_key_states()
-
+    
         self.Timing.input_tick_counter += 1
         self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
         
