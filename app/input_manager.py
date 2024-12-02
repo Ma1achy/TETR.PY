@@ -37,6 +37,7 @@ class InputManager:
     def on_key_press(self, key):
         
         if not self.Timing.is_focused:
+            self.key_states = {}
             return
         
         keyinfo = self.__get_key_info(key)
@@ -58,6 +59,7 @@ class InputManager:
     def on_key_release(self, key):
         
         if not self.Timing.is_focused:
+            self.key_states = {}
             return
         
         keyinfo = self.__get_key_info(key)
