@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Run the Python script to generate build information
+python3 .git/scripts/generate_build_info.py
+
+# Add the generated build_info.json to the commit
+git add app/state/build_info.json

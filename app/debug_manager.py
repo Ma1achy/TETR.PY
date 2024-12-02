@@ -1,3 +1,13 @@
+import json
+import sys
+import platform
+import pygame
+import psutil
+import time
+import os
+import GPUtil
+
+
 class DebugManager():
     def __init__(self, Config, TimingStruct, RenderStruct, DebugStruct):
         """
@@ -16,6 +26,33 @@ class DebugManager():
         self.Timing = TimingStruct
         self.RenderStruct = RenderStruct
         self.DebugStruct = DebugStruct
+        
+        self.get_build_info()
+        
+        # Prime the CPU usage to avoid blocking later
+        psutil.cpu_percent(interval=None)
+        
+        # Initialize cache and update intervals
+        self.cpu_last_update_time = 0
+        self.memory_last_update_time = 0
+        self.gpu_last_update_time = 0
+        self.update_interval = 1
+        self.cached_cpu_usage = 0
+        self.cached_memory_usage = {
+            'total_memory': '',
+            'used_memory': '',
+            'memory_percent': 0
+        }
+        self.cached_gpu_usage = {
+            'gpu_id': '',
+            'gpu_name': '',
+            'gpu_load': 0,
+            'gpu_memory_total': 0,
+            'gpu_memory_used': 0,
+            'gpu_memory_free': 0,
+            'gpu_temperature': 0
+        }
+    
     
     # =================================================== METRIC CALCULATION ===================================================
     
@@ -109,3 +146,106 @@ class DebugManager():
         self.__get_tick_debug()
         self.__get_frame_debug()
         self.__get_polling_debug()
+        self.__get_debug()
+    
+    def __get_debug(self):
+        """
+        Get the debug information
+        """
+        self.DebugStruct.CPU_Usage = self.get_cpu_usage()
+        self.DebugStruct.TotalMemory, self.DebugStruct.UsedMemory, self.DebugStruct.MemoryPercent = self.get_memory_usage()
+        self.DebugStruct.GPUStats = self.get_gpu_usage()
+    
+    def get_pygame_version(self):
+        """
+        Get the current Pygame version
+        """
+        return pygame.__version__
+
+    def get_build_info(self):
+        
+        with open("app/state/build_info.json") as f:
+            build_info = json.load(f)
+        
+        self.DebugStruct.BuildInfo = build_info
+        
+        self.DebugStruct.PythonVersion = self.get_python_version()
+        self.DebugStruct.OS = self.get_os_version()
+        self.DebugStruct.PygameVersion = self.get_pygame_version()
+        
+    def get_python_version(self):
+        return sys.version.split()[0]
+
+    def get_os_version(self):
+        return platform.system() + " " + platform.release()
+
+    def get_cpu_usage(self):
+        """
+        Get the current CPU usage as a percentage
+        """
+        current_time = time.time()
+        if current_time - self.cpu_last_update_time > self.update_interval:
+            self.cached_cpu_usage = psutil.cpu_percent(interval=None)
+            self.cpu_last_update_time = current_time
+        return self.cached_cpu_usage
+    
+    def format_memory_size(self, size_in_bytes):
+        # Convert bytes to a more readable format (e.g., MB, GB)
+        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+            if size_in_bytes < 1024:
+                return f"{size_in_bytes:.2f} {unit}"
+            size_in_bytes /= 1024
+        
+    def get_memory_usage(self):
+        current_time = time.time()
+        if current_time - self.memory_last_update_time > self.update_interval:
+            # Get total system memory
+            memory_info = psutil.virtual_memory()
+            total_memory = self.format_memory_size(memory_info.total)
+            
+            # Get memory usage of the current Python process
+            process = psutil.Process(os.getpid())
+            process_memory_info = process.memory_info()
+            used_memory = self.format_memory_size(process_memory_info.rss)  # Resident Set Size (RSS)
+            memory_percent = process.memory_percent()  # Memory usage as a percentage of total system memory
+            
+            self.cached_memory_usage = {
+                'total_memory': total_memory,
+                'used_memory': used_memory,
+                'memory_percent': memory_percent
+            }
+            self.memory_last_update_time = current_time
+        
+        return self.cached_memory_usage['total_memory'], self.cached_memory_usage['used_memory'], self.cached_memory_usage['memory_percent']
+    
+    def get_gpu_usage(self):
+        """
+        Get the current GPU usage information
+        """
+        current_time = time.time()
+        if current_time - self.gpu_last_update_time > self.update_interval:
+            gpus = GPUtil.getGPUs()
+            if not gpus:
+                self.cached_gpu_usage = {
+                    'gpu_id': '???',
+                    'gpu_name': '???',
+                    'gpu_load': 0,
+                    'gpu_memory_total': 0,
+                    'gpu_memory_used': 0,
+                    'gpu_memory_free': 0,
+                    'gpu_temperature': 0
+                }
+            else:
+                gpu = gpus[0]  # Assuming a single GPU. Modify if you need to handle multiple GPUs.
+                self.cached_gpu_usage = {
+                    'gpu_id': gpu.id,
+                    'gpu_name': gpu.name,
+                    'gpu_load': gpu.load * 100,
+                    'gpu_memory_total': self.format_memory_size(gpu.memoryTotal * 1024 * 1024),
+                    'gpu_memory_used': self.format_memory_size(gpu.memoryUsed * 1024 * 1024),
+                    'gpu_memory_free': self.format_memory_size(gpu.memoryFree * 1024 * 1024),
+                    'gpu_temperature': gpu.temperature
+                }
+            self.gpu_last_update_time = current_time
+        
+        return self.cached_gpu_usage

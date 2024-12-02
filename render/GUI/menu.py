@@ -194,25 +194,25 @@ class Font():
         self.height = self.font.get_height()
                 
     def draw(self, surface, text, colour, alignment, h_padding = 0, v_padding = 0, draw_background = None):
-        rendered_text = self.font.render(text, True, hex_to_rgb(colour))
+        self.rendered_text = self.font.render(text, True, hex_to_rgb(colour))
 
         if alignment == 'center':
-            text_rect = rendered_text.get_rect(topleft = (surface.get_width() // 2 - rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
+            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
         elif alignment == 'left':
-            text_rect = rendered_text.get_rect(topleft = (0, (surface.get_height() //2 - self.font.get_ascent()//2)))
+            text_rect = self.rendered_text.get_rect(topleft = (0, (surface.get_height() //2 - self.font.get_ascent()//2)))
         elif alignment == 'right':
-            text_rect = rendered_text.get_rect(topleft = (surface.get_width() - rendered_text.get_width(), (surface.get_height() //2 - self.font.get_ascent()//2)))
+            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (surface.get_height() //2 - self.font.get_ascent()//2)))
             h_padding = -h_padding
         elif alignment == 'left_top':
-            text_rect = rendered_text.get_rect(topleft = (0, (self.font.get_ascent()//2)))
+            text_rect = self.rendered_text.get_rect(topleft = (0, (self.font.get_ascent()//2)))
         elif alignment == 'right_top':
-            text_rect = rendered_text.get_rect(topleft = (surface.get_width() - rendered_text.get_width(), (self.font.get_ascent()//2)))
+            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (self.font.get_ascent()//2)))
             h_padding = -h_padding
         elif alignment == 'left_bottom':
-            text_rect = rendered_text.get_rect(topleft = (0, (surface.get_height() - self.font.get_height())))
+            text_rect = self.rendered_text.get_rect(topleft = (0, (surface.get_height() - self.font.get_height())))
             v_padding = -v_padding
         elif alignment == 'right_bottom':
-            text_rect = rendered_text.get_rect(topleft = (surface.get_width() - rendered_text.get_width(), (surface.get_height() - self.font.get_height())))
+            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (surface.get_height() - self.font.get_height())))
             h_padding = -h_padding
             v_padding = -v_padding
         
@@ -224,7 +224,10 @@ class Font():
             background_surface.fill(draw_background)
             surface.blit(background_surface, text_rect.topleft)
             
-        surface.blit(rendered_text, text_rect)
+        surface.blit(self.rendered_text, text_rect)
+    
+    def get_width(self):
+        return self.rendered_text.get_width()
 
 class Logo():
     def __init__(self, container, definition):

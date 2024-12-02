@@ -1,0 +1,8 @@
+{
+    "VERSION": "alpha 0.1",
+    "BUILD_DATE": "2024-12-01 17:47:34",
+    "GIT_COMMIT_HASH": "aa8aa96d774b849fafdd87af64c02230da6b8694",
+    "GIT_BRANCH": "master",
+    "BUILD_ENV": "development",
+    "DEPENDENCIES": "Unknown"
+}
