@@ -28,21 +28,16 @@ def get_dependencies():
     except FileNotFoundError:
         return 'Unknown'
 
-def get_build_info():
-    build_info = {
-        'VERSION': 'alpha 0.1', 
-        'BUILD_DATE': get_build_date(),
-        'GIT_COMMIT_HASH': get_git_commit_hash(),
-        'GIT_BRANCH': get_git_branch(),
-        'BUILD_ENV': 'development', 
-        'DEPENDENCIES': get_dependencies(),
-    }
-    
-    with open('app/state/build_info.json', 'w') as f:
-        json.dump(build_info, f, indent=4)
 
-def main():
-    get_build_info()
-          
-if __name__ == '__main__':
-    main()
+build_info = {
+    'VERSION': 'alpha 0.1', 
+    'BUILD_DATE': get_build_date(),
+    'GIT_COMMIT_HASH': get_git_commit_hash(),
+    'GIT_BRANCH': get_git_branch(),
+    'BUILD_ENV': 'development', 
+    'DEPENDENCIES': get_dependencies(),
+}
+
+with open('app/state/build_info.json', 'w') as f:
+    json.dump(build_info, f, indent=4)
+
