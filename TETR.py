@@ -21,6 +21,8 @@ from app.debug_manager import DebugManager
 from app.pygame_event_handler import PygameEventHandler
 from app.state.timing import Timing
 from app.menu_manager import MenuManager
+from app.mouse_input_handler import MouseInputHandler
+from collections import deque
 
 #TODO: change renderer methods to NOT use methods ASSOCIATED WITH A GAME INSTANCE
 #      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
@@ -45,6 +47,9 @@ class App():
         self.DebugStruct = StructDebug()
         self.HandlingConfig = HandlingConfig()
         
+        self.mouse_events = deque()
+        self.MouseInputHandler = MouseInputHandler(self.mouse_events)
+        
         self.__init_pygame()
         self.__register_event_handlers()
         
@@ -57,10 +62,10 @@ class App():
             UIAction.MENU_BACK:         ['esc'],
             UIAction.MENU_DEBUG:        ['f3'],
         }
-           
+   
         self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
         self.MenuInputHandler = MenuKeyboardInputHandler(self.key_states_queue, self.menu_key_bindings, self.menu_actions_queue, self.Timing, self.PRINT_WARNINGS)
-        self.MenuManager = MenuManager(self.menu_actions_queue, self.Config, self.Timing)
+        self.MenuManager = MenuManager(self.menu_actions_queue, self.mouse_events, self.Config, self.Timing)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
         self.Render = Render(self.Config, self.Timing, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
@@ -86,12 +91,24 @@ class App():
         self.logic_thread = threading.Thread(target = self.GameInstanceManager.logic_loop)
         
     def __register_event_handlers(self):
+        # window focus events
         PygameEventHandler.register(pygame.WINDOWCLOSE)(self.__exit)
         PygameEventHandler.register(pygame.WINDOWFOCUSLOST)(self.__is_focused)
         PygameEventHandler.register(pygame.WINDOWFOCUSGAINED)(self.__is_focused)
         PygameEventHandler.register(pygame.VIDEOEXPOSE)(self.__is_focused)
         PygameEventHandler.register(pygame.WINDOWMINIMIZED)(self.__is_focused)
-    
+        PygameEventHandler.register(pygame.WINDOWRESTORED)(self.__is_focused)
+        PygameEventHandler.register(pygame.WINDOWENTER)(self.__is_focused)
+        PygameEventHandler.register(pygame.WINDOWLEAVE)(self.__is_focused)
+        PygameEventHandler.register(pygame.WINDOWSHOWN)(self.__is_focused)
+        PygameEventHandler.register(pygame.WINDOWHIDDEN)(self.__is_focused)
+        
+        # mouse events
+        PygameEventHandler.register(pygame.MOUSEBUTTONDOWN)(self.MouseInputHandler.on_mouse_down)
+        PygameEventHandler.register(pygame.MOUSEBUTTONUP)(self.MouseInputHandler.on_mouse_up)
+        PygameEventHandler.register(pygame.MOUSEMOTION)(self.MouseInputHandler.on_mouse_move)
+        PygameEventHandler.register(pygame.MOUSEWHEEL)(self.MouseInputHandler.on_mouse_scroll)
+        
     def __init_pygame(self):
         pygame.init()
         pygame.font.init()
@@ -192,12 +209,13 @@ class App():
         for event in pygame.event.get():
             PygameEventHandler.notify(event)
         
+        self.__update_mouse_position()
         self.MenuInputHandler.tick()
         self.MenuManager.tick()
         self.Debug.get_metrics()  
         self.Render.draw_frame()
         self.FrameClock.tick()
-            
+
         self.Timing.iteration_times['render_loop'] = time.perf_counter() - start
                  
     def get_fps(self):
@@ -216,6 +234,9 @@ class App():
         
         self.MenuManager.is_focused = self.is_focused
         self.Timing.is_focused = self.MenuManager.is_focused
+    
+    def __update_mouse_position(self):
+        self.MenuManager.mouse_position = self.MouseInputHandler.mouse_position
         
 class GameInstance():
     def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):

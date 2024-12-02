@@ -381,7 +381,7 @@ class GUIDebug():
         
         self.font_pfw_small.draw(
             self.mem_surface, 
-            f'{self.DebugStruct.GPUStats['gpu_memory_used']}/{self.DebugStruct.GPUStats['gpu_memory_total']} ({self.DebugStruct.GPUStats['gpu_load']:.2f}%)', 
+            f'{self.DebugStruct.GPUStats['gpu_memory_used']}/{self.DebugStruct.GPUStats['gpu_memory_total']} ({self.DebugStruct.GPUStats['gpu_load']:.0f}%)', 
             self.gpu_colour, 
             'left_top', 
             x, 

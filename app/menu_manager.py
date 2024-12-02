@@ -2,11 +2,15 @@ from render.GUI.menu import Menu
 from app.menu_kb_input_handler import UIAction
 
 class MenuManager():
-    def __init__(self, menu_actions_queue, Config, Timing):
+    def __init__(self, menu_actions_queue, mouse_events, Config, Timing):
         
         self.menu_actions_queue = menu_actions_queue
         self.Config = Config
         self.Timing = Timing
+        
+        self.mouse_events = mouse_events
+        self.mouse_position = 0, 0
+        
         self.debug_overlay = False
         self.is_focused = False
     
@@ -25,7 +29,7 @@ class MenuManager():
     def tick(self):
         self.get_actions()
         self.current_menu.update()
-    
+ 
     def get_actions(self):
         actions = self.menu_actions_queue.get_nowait()
         self.__perform_action(actions)
