@@ -45,7 +45,7 @@ class Menu():
         self.menu_footer.draw(self.surface)
         
         for widget in self.footer_widgets:
-            widget.update_image()
+            widget.draw()
         
     def definition_to_json(self, path):
         with open(path, 'w') as f:
@@ -185,11 +185,11 @@ class MainBody():
             for idx, element in enumerate(self.definition['menu']['elements']):
                 if element['type'] == 'bar_button':
                     button = ButtonBar(self.body_surface, self.main_body_container, element, idx, height = 120)
-                    button.update_image()
+                    button.draw()
         
         if 'back_button' in self.definition:
             self.back_button = BackButton(self.body_surface, self.main_body_container, self.definition['back_button'])
-            self.back_button.update_image()
+            self.back_button.draw()
         
     def draw(self, surface):
         surface.blit(self.body_surface, self.topleft)
@@ -206,13 +206,13 @@ class MainBody():
             for idx, element in enumerate(self.definition['menu']['elements']):
                 if element['type'] == 'bar_button':
                     button = ButtonBar(self.body_surface, self.main_body_container, element, idx, height = 120)
-                    button.update_image()
+                    button.draw()
                     button.get_hovered_image()
                     button.get_pressed_image()
         
         if 'back_button' in self.definition:
             self.back_button = BackButton(self.body_surface, self.main_body_container, self.definition['back_button'])
-            self.back_button.update_image()
+            self.back_button.draw()
             self.back_button.get_hovered_image()
             self.back_button.get_pressed_image()
         
@@ -288,7 +288,7 @@ class ButtonBar():
         self.pressed_surface = self.button_surface.copy()
         brightness(self.pressed_surface, 1.5)
         
-    def update_image(self):
+    def draw(self):
         self.surface.blit(self.button_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
         # self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
         # self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
@@ -300,7 +300,7 @@ class ButtonBar():
     
     def update(self, surface):
         self.hover = self.check_hover(pygame.mouse.get_pos())
-        self.update_image(surface)
+        self.draw(surface)
 class BackButton():
     def __init__(self, surface, container, definition):
         self.surface = surface
@@ -335,7 +335,7 @@ class BackButton():
     def render_text(self):
         self.font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'right', 20, 0)
         
-    def update_image(self):
+    def draw(self):
         self.surface.blit(self.button_surface, (self.rect.left - self.x_start , self.rect.top + 15))
         # self.surface.blit(self.hovered_surface, (self.rect.left - self.x_start, self.rect.top + 15))
         # self.surface.blit(self.pressed_surface, (self.rect.left - self.x_start, self.rect.top + 15))
@@ -389,7 +389,7 @@ class FooterButton():
         self.pressed_surface = self.button_surface.copy()
         brightness(self.pressed_surface, 1.5)
         
-    def update_image(self):
+    def draw(self):
         self.surface.blit(self.button_surface, (self.container.right - 20 - self.width, self.container.bottom - self.x_start))
         # self.surface.blit(self.hovered_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset + self.x_start))
         # self.surface.blit(self.pressed_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset + self.x_start))

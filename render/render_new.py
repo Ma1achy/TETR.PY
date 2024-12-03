@@ -42,7 +42,7 @@ class Render():
             self.dt = 1 / self.Config.FPS
         else:
             self.dt = self.Timing.frame_delta_time
-                    
+
         self.window.blit(self.image, (0, 0))
         self.darken_overlay_layer.fill((0, 0, 0, self.darken_overlay_layer_alpha))
         self.window.blit(self.darken_overlay_layer, (0, 0))
