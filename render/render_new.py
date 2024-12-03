@@ -1,11 +1,9 @@
 import pygame
 from dataclasses import dataclass
 from utils import hex_to_rgb
-from render.GUI.debug_overlay import GUIDebug
-from render.GUI.focus_overlay import GUIFocus
 
 class Render():
-    def __init__(self, Config, Timing, Debug, GameInstances, MenuManager):
+    def __init__(self, Config, Timing, RenderStruct, Debug, GameInstances, MenuManager):
         """
         args:
             self.window (pygame.Surface): the window to render the game onto
@@ -14,22 +12,17 @@ class Render():
         self.Config = Config
         self.Timing = Timing
         self.Debug = Debug
-        self.RenderStruct =  StructRender()
+        self.RenderStruct = RenderStruct
         self.GameInstances = GameInstances
         self.MenuManager = MenuManager
-        
-        self.GUI_debug = GUIDebug(self.Config, self.RenderStruct, self.Debug)
-        self.GUI_focus = GUIFocus(self.RenderStruct)
         
         self.icon = pygame.image.load('resources/icon.png')
         self.window = self.__init_window()
         self.MenuManager.init_menus(self.window)
         
-        self.image_path = 'resources/background/b1.jpg'
-        self.image = pygame.image.load(self.image_path).convert_alpha()
-        self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
-        
-        self.darken_overlay_layer = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA)
+        self.background_image_path = 'resources/background/b1.jpg'
+        self.load_background_image()
+        self.get_darken_overlay()
         self.darken_overlay_layer_alpha = 200
        
     def __init_window(self):
@@ -38,7 +31,7 @@ class Render():
         """
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
-        return pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF)
+        return pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
 
     def draw_frame(self):
         
@@ -53,13 +46,26 @@ class Render():
         self.MenuManager.current_menu.update()
         
         if self.MenuManager.debug_overlay:
-            self.GUI_debug.draw(self.window)
+            self.MenuManager.GUI_debug.draw(self.window)
         
         if not self.MenuManager.is_focused:
-            self.GUI_focus.draw(self.window)
+            self.MenuManager.GUI_focus.draw(self.window)
             
         pygame.display.flip()
     
+    def load_background_image(self):
+        self.image = pygame.image.load(self.background_image_path).convert_alpha()
+        self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
+    
+    def get_darken_overlay(self):
+        self.darken_overlay_layer = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+    
+    def handle_window_resize(self):
+        self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = self.window.get_size()
+        self.load_background_image()
+        self.get_darken_overlay()
+        self.MenuManager.handle_window_resize()
+        
 @dataclass
 class StructRender():
     CAPTION = 'TETR.PY'

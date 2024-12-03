@@ -54,6 +54,25 @@ class Menu():
     def open_definition(self, path):
         with open(path, 'r') as f:
             self.definition = json.load(f)
+    
+    def handle_window_resize(self):
+        if 'menu_header' in self.definition:
+            self.menu_header.container = self.surface.get_rect()
+            self.menu_header.handle_window_resize()
+        
+        if 'menu_footer' in self.definition:
+            self.menu_footer.container = self.surface.get_rect()
+            self.menu_footer.handle_window_resize()
+        
+        if 'menu_body' in self.definition:
+            self.main_body.width = self.surface.get_width()
+            self.main_body.height = self.surface.get_height() - self.footer_height - self.header_height
+            self.main_body.handle_window_resize()
+        
+        if "footer_widgets" in self.definition:
+            for widget in self.footer_widgets:
+                widget.container = self.surface.get_rect()
+                widget.handle_window_resize()
                 
 class Header:
     def __init__(self, container, height, text, background, border):
@@ -82,6 +101,13 @@ class Header:
     
     def draw(self, surface):
         surface.blit(self.header_surface, self.rect.topleft)
+    
+    def handle_window_resize(self):
+        self.width = self.container.width
+        self.rect = align_top_edge(self.container, self.width, self.height, 0, 0)
+        
+        self.header_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE)
+        self.render_header()
         
 class Footer:
     def __init__(self, container, height, text, background, border, image = None):
@@ -119,16 +145,23 @@ class Footer:
         new_height = self.height - 25
         new_width = int(new_height * aspect_ratio)
         
-        # Assuming align_right_edge is your alignment function
         image = pygame.transform.smoothscale(self.image, (new_width, new_height))
-
-        # Align the image to the right edge of the footer surface
         image_rect = align_centre(self.footer_surface.get_rect(), image.get_width(), image.get_height(), 0, 0)
 
         self.footer_surface.blit(image, (image_rect.left + self.footer_surface.get_rect().width//2 - new_width - 40, image_rect.top))
         
     def draw(self, surface):
         surface.blit(self.footer_surface, self.rect.topleft)
+        
+    def handle_window_resize(self):
+        self.width = self.container.width
+        self.rect = align_bottom_edge(self.container, self.width, self.height, 0, 0)
+        
+        self.footer_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE)
+        self.render_footer()
+        
+        if hasattr(self, 'image'):
+            self.render_image()
 
 class MainBody():
     def __init__(self, width, height, topleft, definition):
@@ -160,6 +193,26 @@ class MainBody():
         
     def draw(self, surface):
         surface.blit(self.body_surface, self.topleft)
+    
+    def handle_window_resize(self):
+        self.body_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.main_body_container = self.body_surface.get_rect()
+        
+        if 'logo' in self.definition:
+            self.logo = Logo(self.main_body_container, self.definition['logo'])
+            self.logo.draw(self.body_surface)
+        
+        if 'menu' in self.definition:
+            for idx, element in enumerate(self.definition['menu']['elements']):
+                if element['type'] == 'bar_button':
+                    button = ButtonBar(self.body_surface, self.main_body_container, element, idx, height = 120)
+                    button.update_image()
+        
+        if 'back_button' in self.definition:
+            self.back_button = BackButton(self.body_surface, self.main_body_container, self.definition['back_button'])
+            self.back_button.update_image()
+        
+        self.render_body()
         
 class Logo():
     def __init__(self, container, definition):
@@ -244,7 +297,6 @@ class ButtonBar():
     def update(self, surface):
         self.hover = self.check_hover(pygame.mouse.get_pos())
         self.update_image(surface)
-
 class BackButton():
     def __init__(self, surface, container, definition):
         self.surface = surface
@@ -295,8 +347,8 @@ class FooterButton():
         self.container = container
         self.definition = definition
         self.width = 70
-        self.height = 150
-        self.x_start = 50
+        self.height = 70
+        self.x_start = 70
         
         self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
         self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
@@ -334,7 +386,7 @@ class FooterButton():
         brightness(self.pressed_surface, 1.5)
         
     def update_image(self):
-        self.surface.blit(self.button_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset + self.x_start))
+        self.surface.blit(self.button_surface, (self.container.right - 20 - self.width, self.container.bottom - self.x_start))
         # self.surface.blit(self.hovered_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset + self.x_start))
         # self.surface.blit(self.pressed_surface, (self.container.right - 20 - self.width, self.container.bottom - self.height + self.y_offset + self.x_start))
     
@@ -342,5 +394,11 @@ class FooterButton():
         if self.rect.collidepoint(mouse_pos):
             return True
         return False
+    
+    def handle_window_resize(self):
+        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
+        self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.render_button()
+        self.render_image()
 
     

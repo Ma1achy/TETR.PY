@@ -387,6 +387,7 @@ class GUIDebug():
             x, 
             y,
         )
-        
-
+    
+    def handle_window_resize(self):
+        pass
         

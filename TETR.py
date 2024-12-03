@@ -7,7 +7,7 @@ from core.state.struct_debug import StructDebug
 from core.state.struct_gameinstance import StructGameInstance
 from core.state.struct_flags import StructFlags, set_flag_attr
 from core.state.struct_handling import StructHandling
-from core.state.struct_render import StructRender
+from render.render_new import StructRender
 from instance.four import Four
 from core.clock import Clock
 import pygame
@@ -65,9 +65,9 @@ class App():
    
         self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
         self.MenuInputHandler = MenuKeyboardInputHandler(self.key_states_queue, self.menu_key_bindings, self.menu_actions_queue, self.Timing, self.PRINT_WARNINGS)
-        self.MenuManager = MenuManager(self.menu_actions_queue, self.mouse_events, self.Config, self.Timing)
+        self.MenuManager = MenuManager(self.menu_actions_queue, self.mouse_events, self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
-        self.Render = Render(self.Config, self.Timing, self.DebugStruct, self.game_instances, self.MenuManager)
+        self.Render = Render(self.Config, self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
         
         self.GameParameters = { # temp, will be pased to game instance upon creation. This dict will be created by the menu manager
@@ -102,7 +102,10 @@ class App():
         PygameEventHandler.register(pygame.WINDOWLEAVE)(self.__is_focused)
         PygameEventHandler.register(pygame.WINDOWSHOWN)(self.__is_focused)
         PygameEventHandler.register(pygame.WINDOWHIDDEN)(self.__is_focused)
-        
+       
+        # window resize events
+        PygameEventHandler.register(pygame.WINDOWRESIZED)(self.__handle_window_resize)
+    
         # mouse events
         PygameEventHandler.register(pygame.MOUSEBUTTONDOWN)(self.MouseInputHandler.on_mouse_down)
         PygameEventHandler.register(pygame.MOUSEBUTTONUP)(self.MouseInputHandler.on_mouse_up)
@@ -238,7 +241,10 @@ class App():
     
     def __update_mouse_position(self):
         self.MenuManager.mouse_position = self.MouseInputHandler.mouse_position
-        
+    
+    def __handle_window_resize(self, event):
+       self.Render.handle_window_resize()
+            
 class GameInstance():
     def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
         

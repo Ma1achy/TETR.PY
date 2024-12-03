@@ -1,4 +1,4 @@
-from core.state.struct_render import StructRender
+from render.render_new import StructRender
 import pygame
 from utils import hex_to_rgb
 from render.GUI.font import Font
@@ -9,6 +9,10 @@ class GUIFocus():
         self.RenderStruct = RenderStruct
         self.width = 500
         self.height = 180
+        
+        self.window_width = self.RenderStruct.WINDOW_WIDTH
+        self.window_height = self.RenderStruct.WINDOW_HEIGHT
+        
         self.focus_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)
         self.focus_surface = pygame.Surface((self.focus_rect.width, self.focus_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
         
@@ -38,5 +42,8 @@ class GUIFocus():
             30,
         )
         
-        surface.blit(self.focus_surface, self.focus_rect.topleft)
+        surface.blit(self.focus_surface, self.focus_rect)
         
+    def handle_window_resize(self):
+        self.focus_rect.topleft = (self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2)
+       
