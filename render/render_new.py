@@ -1,6 +1,8 @@
 import pygame
 from dataclasses import dataclass
 from utils import hex_to_rgb
+import ctypes
+import platform
 
 class Render():
     def __init__(self, Config, Timing, RenderStruct, Debug, GameInstances, MenuManager):
@@ -29,6 +31,7 @@ class Render():
         """
         Create the window to draw to
         """
+        self.set_taskbar_icon_windows()
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
         return pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
@@ -65,6 +68,10 @@ class Render():
         self.load_background_image()
         self.get_darken_overlay()
         self.MenuManager.handle_window_resize()
+    
+    def set_taskbar_icon_windows(self):
+        if platform.system() == 'Windows':
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('TETR.PY')
         
 @dataclass
 class StructRender():
