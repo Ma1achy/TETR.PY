@@ -11,10 +11,13 @@ class MainBody():
         self.rect = rect
         self.menu_elements = []
 
-        self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.main_body_container = self.body_surface.get_rect()
+        self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
+    
+    def __get_rect_and_surface(self):
+        self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.main_body_container = self.body_surface.get_rect()
     
     def __init_elements(self):
         self.__init_menu_elements()
@@ -70,9 +73,7 @@ class MainBody():
         surface.blit(self.body_surface, self.rect.topleft)
     
     def handle_window_resize(self):
-        self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.main_body_container = self.body_surface.get_rect()
-        
+        self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
 

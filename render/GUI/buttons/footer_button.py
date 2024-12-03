@@ -10,15 +10,18 @@ class FooterButton():
         self.width = 70
         self.height = 70
         self.x_start = 70
-        
-        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
-        self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.y_offset = 35
+        
+        self.__get_rect_and_surface()
         self.render_button()
         self.render_image()
         self.get_hovered_image()
         self.get_pressed_image()
     
+    def __get_rect_and_surface(self):
+        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
+        self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        
     def render_button(self):
         draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)
         draw_border(self.button_surface, self.definition['border'], self.rect)

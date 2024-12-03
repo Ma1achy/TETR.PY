@@ -11,17 +11,20 @@ class ButtonBar():
         self.width = self.container.width
         self.height = height 
         
-        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
-        self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.main_font = Font('hun2', 50)
         self.sub_font = Font('hun2', 23)
                 
         self.y_offset = list_index * (self.height + 20) + 35
         self.start = self.container.width // 5.5
         
+        self.__get_rect_and_surface()
         self.render_button()
         self.get_hovered_image()
         self.get_pressed_image()
+    
+    def __get_rect_and_surface(self):
+        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
+        self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
     def render_button(self):
         draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)

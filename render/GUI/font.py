@@ -33,44 +33,69 @@ class Font():
             self.font = pygame.font.Font(font_path, self.size)
         
         self.height = self.font.get_height()
-                
+  
     def draw(self, surface, text, colour, alignment, h_padding = 0, v_padding = 0, draw_background = None):
-        self.rendered_text = self.font.render(text, True, hex_to_rgb(colour))
-
-        if alignment == 'center':
-            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
-        elif alignment == 'left':
-            text_rect = self.rendered_text.get_rect(topleft = (0, (surface.get_height() //2 - self.font.get_ascent()//2)))
-        elif alignment == 'right':
-            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (surface.get_height() //2 - self.font.get_ascent()//2)))
-            h_padding = -h_padding
-        elif alignment == 'left_top':
-            text_rect = self.rendered_text.get_rect(topleft = (0, (self.font.get_ascent()//2)))
-        elif alignment == 'right_top':
-            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (self.font.get_ascent()//2)))
-            h_padding = -h_padding
-        elif alignment == 'left_bottom':
-            text_rect = self.rendered_text.get_rect(topleft = (0, (surface.get_height() - self.font.get_height())))
-            v_padding = -v_padding
-        elif alignment == 'right_bottom':
-            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (surface.get_height() - self.font.get_height())))
-            h_padding = -h_padding
-            v_padding = -v_padding
-        elif alignment == 'top':
-            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, 0))
-        elif alignment == 'bottom':
-            text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, surface.get_height() - self.font.get_height()))
-            v_padding = -v_padding
         
-        # Adjust positioning with paddings
-        text_rect.x += h_padding
-        text_rect.y += v_padding
-        if draw_background:
-            background_surface = pygame.Surface((text_rect.width, text_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
-            background_surface.fill(draw_background)
-            surface.blit(background_surface, text_rect.topleft)
-            
-        surface.blit(self.rendered_text, text_rect)
+        self.__get_padding(h_padding, v_padding)        
+        self.__render_text(text, colour)
+        self.__get_alignment(alignment, surface)
+        self.__apply_padding()
+        self.__draw_background(surface, colour, draw_background)
+        
+        surface.blit(self.rendered_text, self.text_rect)
     
+    def __get_padding(self, h_padding, v_padding):
+        self.h_padding = h_padding
+        self.v_padding = v_padding
+        
+    def __render_text(self, text, colour):
+        self.rendered_text = self.font.render(text, True, hex_to_rgb(colour))
+        
+    def __get_alignment(self, alignment, surface):
+        match alignment:
+            case 'center':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
+            case 'left':
+                self.text_rect = self.rendered_text.get_rect(topleft = (0, (surface.get_height() //2 - self.font.get_ascent()//2)))
+            case 'right':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (surface.get_height() //2 - self.font.get_ascent()//2)))
+                self.h_padding = -self.h_padding
+            case 'top':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, 0))
+            case'bottom':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, surface.get_height() - self.font.get_height()))
+                self.v_padding = -self.v_padding    
+            case 'center_top':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, 0))
+            case 'center_bottom':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, surface.get_height() - self.font.get_height()))
+                self.v_padding = -self.v_padding
+            case 'left_top':
+                self.text_rect = self.rendered_text.get_rect(topleft = (0, (self.font.get_ascent()//2)))
+            case 'right_top':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (self.font.get_ascent()//2)))
+                self.h_padding = -self.h_padding
+            case'left_bottom':
+                self.text_rect = self.rendered_text.get_rect(topleft = (0, (surface.get_height() - self.font.get_height())))
+                self.v_padding = -self.v_padding
+            case 'right_bottom':
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (surface.get_height() - self.font.get_height())))
+                self.h_padding = -self.h_padding
+                self.v_padding = -self.v_padding
+            case _:
+                self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
+                
+    def __apply_padding(self):
+        self.text_rect.x += self.h_padding
+        self.text_rect.y += self.v_padding
+    
+    def __draw_background(self, surface, colour, draw_background = None):
+        if not draw_background:
+            return
+        
+        self.background_surface = pygame.Surface((self.text_rect.width, self.text_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.background_surface.fill(draw_background)
+        surface.blit(self.background_surface, self.text_rect.topleft)
+        
     def get_width(self):
         return self.rendered_text.get_width()
