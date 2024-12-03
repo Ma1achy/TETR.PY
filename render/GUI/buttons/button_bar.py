@@ -4,6 +4,7 @@ from render.GUI.font import Font
 
 class ButtonBar():
     def __init__(self, surface, container, definition, list_index, height):
+        
         self.surface = surface
         self.container = container
         self.definition = definition

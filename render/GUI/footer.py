@@ -5,34 +5,52 @@ from render.GUI.font import Font
 class Footer:
     def __init__(self, container, height, text, background, border, image = None):
         self.container = container
+        self.height = height
         self.text = text
         self.background = background
         self.border = border
               
+        self.font = Font('hun2', 30)
+        self.image = image
+        
+        self.__get_rect_and_surface()
+        self.__load_image()
+        self.render()
+
+    def __get_rect_and_surface(self):
         self.width = self.container.width
-        self.height = height
         
         self.rect = align_bottom_edge(self.container, self.width, self.height, 0, 0)
-
         self.footer_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE)
-    
-        self.font = Font('hun2', 30)
-        self.render_footer()
         
-        if image:
-            self.image = load_image(image["path"])
-            self.render_image()
-
-    def render_footer(self):
+    def render(self):
+        self.__render_background()
+        self.__render_border()
+        self.__render_text()
+        self.__render_image()
+    
+    def __load_image(self):
+        if self.image:
+            self.image = load_image(self.image["path"])
+        else:
+            self.image = None
+    
+    def __render_background(self):
         if self.background['style'] == 'linear_gradient':
             draw_linear_gradient(self.footer_surface, self.background['colours'][0], self.background['colours'][1], self.footer_surface.get_rect())
         elif self.background['style'] == 'solid':
             draw_solid_colour(self.footer_surface, self.background['colour'], self.footer_surface.get_rect())
             
+    def __render_border(self):
         draw_border(self.footer_surface, self.border, self.footer_surface.get_rect())
+    
+    def __render_text(self):
         self.font.draw(self.footer_surface, self.text['display_text'], self.text['colour'], 'left', 20, 0)
+         
+    def __render_image(self):
         
-    def render_image(self):
+        if self.image is None:
+            return
         
         aspect_ratio = self.image.get_width() / self.image.get_height()
         new_height = self.height - 25
@@ -47,11 +65,5 @@ class Footer:
         surface.blit(self.footer_surface, self.rect.topleft)
         
     def handle_window_resize(self):
-        self.width = self.container.width
-        self.rect = align_bottom_edge(self.container, self.width, self.height, 0, 0)
-        
-        self.footer_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE)
-        self.render_footer()
-        
-        if hasattr(self, 'image'):
-            self.render_image()
+        self.__get_rect_and_surface()
+        self.render()
