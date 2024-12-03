@@ -207,10 +207,14 @@ class MainBody():
                 if element['type'] == 'bar_button':
                     button = ButtonBar(self.body_surface, self.main_body_container, element, idx, height = 120)
                     button.update_image()
+                    button.get_hovered_image()
+                    button.get_pressed_image()
         
         if 'back_button' in self.definition:
             self.back_button = BackButton(self.body_surface, self.main_body_container, self.definition['back_button'])
             self.back_button.update_image()
+            self.back_button.get_hovered_image()
+            self.back_button.get_pressed_image()
         
         self.render_body()
         
@@ -400,5 +404,7 @@ class FooterButton():
         self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.render_button()
         self.render_image()
+        self.get_hovered_image()
+        self.get_pressed_image()
 
     
