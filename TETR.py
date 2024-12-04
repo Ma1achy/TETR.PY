@@ -247,7 +247,6 @@ class App():
     
     def __handle_window_resize(self, event):
        self.Render.handle_window_resize()
-       print(f"Window resized to {event}")
             
 class GameInstance():
     def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
