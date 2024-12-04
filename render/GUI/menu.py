@@ -8,10 +8,12 @@ from render.GUI.main_body import MainBody
 from render.GUI.buttons.footer_button import FooterButton
 
 class Menu():
-    def __init__(self, surface, Config, Timing, menu_definition):
+    def __init__(self, surface, Config, Timing, Mouse, Keyboard, menu_definition):
         self.surface = surface
         self.Config = Config
         self.Timing = Timing
+        self.Mouse = Mouse
+        self.Keyboard = Keyboard
         
         self.header_height = 0
         self.footer_height = 0
@@ -55,7 +57,7 @@ class Menu():
             return
             
         self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body = MainBody(self.main_body_rect, self.definition['menu_body'])
+        self.main_body = MainBody(self.Mouse, self.Keyboard, self.Timing, self.main_body_rect, self.definition['menu_body'])
     
     def __init_footer_widgets(self):
         if "footer_widgets" not in self.definition:
@@ -63,15 +65,11 @@ class Menu():
             
         for element in self.definition["footer_widgets"]['elements']:
             if element['type'] == 'footer_button':
-                self.footer_widgets.append(FooterButton(self.surface, self.surface.get_rect(), element))
+                self.footer_widgets.append(FooterButton(self.Mouse, self.surface, self.surface.get_rect(), element))
              
-    def update(self):
-        self.main_body.draw(self.surface)
-        self.menu_header.draw(self.surface)
-        self.menu_footer.draw(self.surface)
-        
-        for widget in self.footer_widgets:
-            widget.draw()
+    def update(self): 
+       self.main_body.update()
+       self.draw(self.surface)
             
     def handle_window_resize(self):
         
@@ -113,5 +111,15 @@ class Menu():
         for widget in self.footer_widgets:
             widget.container = self.surface.get_rect()
             widget.handle_window_resize()
+    
+    def draw(self, surface):
+        self.main_body.draw(surface)
+        self.menu_header.draw(surface)
+        self.menu_footer.draw(surface)
+        
+        for widget in self.footer_widgets:
+            widget.draw()
+            
+        surface.blit(self.surface, (0, 0))
             
         

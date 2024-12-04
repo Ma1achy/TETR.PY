@@ -13,10 +13,9 @@ class UIAction(Enum):
     WINDOW_FULLSCREEN = auto()
     
 class MenuKeyboardInputHandler():
-    def __init__(self, key_states_queue, key_bindings, menu_actions_queue, Timing, PRINT_WARNINGS):
+    def __init__(self, Keyboard, key_bindings, Timing, PRINT_WARNINGS):
         
-        self.key_states_queue = key_states_queue
-        self.menu_actions_queue = menu_actions_queue
+        self.Keyboard = Keyboard
         self.actions_to_queue = [] 
         
         self.Timing = Timing
@@ -29,12 +28,12 @@ class MenuKeyboardInputHandler():
         self.done_tap = False
         self.do_repeat_input = False
             
-        self.DAS_delay = 167
-        self.ARR_delay = 33
-        self.DAS_counter = 0
-        self.ARR_counter = 0
-        self.DAS_remainder = 0
-        self.ARR_remainder = 0
+        self.Keyboard.DAS_delay = 167
+        self.Keyboard.ARR_delay = 33
+        self.Keyboard.DAS_counter = 0
+        self.Keyboard.ARR_counter = 0
+        self.Keyboard.DAS_remainder = 0
+        self.Keyboard.ARR_remainder = 0
         
     def __get_empty_key_states(self):
         return {
@@ -59,8 +58,8 @@ class MenuKeyboardInputHandler():
         self.__forward_key_states()
         
     def __get_key_states(self):
-        if not self.key_states_queue.empty():
-            key_states = self.key_states_queue.queue[0]
+        if not self.Keyboard.key_states_queue.empty():
+            key_states = self.Keyboard.key_states_queue.queue[0]
         else:
             return
 
@@ -124,16 +123,16 @@ class MenuKeyboardInputHandler():
                 else:
                     self.__queue_actions(action)
     
-        self.menu_actions_queue.put(self.actions_to_queue)
+        self.Keyboard.menu_actions_queue.put(self.actions_to_queue)
         
     def __queue_actions(self, action):
         self.actions_to_queue.append(action)
         
     def __reset_DAS(self): 
-        self.DAS_counter = 0
-        self.DAS_remainder = 0
-        self.ARR_counter = 0
-        self.ARR_remainder = 0
+        self.Keyboard.DAS_counter = 0
+        self.Keyboard.DAS_remainder = 0
+        self.Keyboard.ARR_counter = 0
+        self.Keyboard.ARR_remainder = 0
         self.done_tap = False
     
     def __get_DAS_actions(self, action):
@@ -145,30 +144,30 @@ class MenuKeyboardInputHandler():
         
         if self.__is_action_down(UIAction.MENU_LEFT) or self.__is_action_down(UIAction.MENU_RIGHT) or self.__is_action_down(UIAction.MENU_DOWN) or self.__is_action_down(UIAction.MENU_UP):
             
-            if self.DAS_counter % self.DAS_delay == 0 or self.DAS_counter >= self.DAS_delay:
+            if self.Keyboard.DAS_counter % self.Keyboard.DAS_delay == 0 or self.Keyboard.DAS_counter >= self.Keyboard.DAS_delay:
                 self.__do_ARR_tick()
             
-            if self.DAS_counter >= self.DAS_delay:
-                self.DAS_counter = self.DAS_delay
+            if self.Keyboard.DAS_counter >= self.Keyboard.DAS_delay:
+                self.Keyboard.DAS_counter = self.Keyboard.DAS_delay
             
             else:
-                q, r = divmod((self.current_time - self.prev_time) + self.DAS_remainder, self.delta_time)
-                self.DAS_remainder = r
-                self.DAS_counter += q
+                q, r = divmod((self.current_time - self.prev_time) + self.Keyboard.DAS_remainder, self.delta_time)
+                self.Keyboard.DAS_remainder = r
+                self.Keyboard.DAS_counter += q
         
         else:
             self.__reset_DAS()
 
     def __do_ARR_tick(self):
         
-        if not self.done_tap or self.ARR_counter >= self.ARR_delay:
+        if not self.done_tap or self.Keyboard.ARR_counter >= self.Keyboard.ARR_delay:
             
             self.done_tap = True
             self.do_repeat_input = True
-            self.ARR_counter = 0
+            self.Keyboard.ARR_counter = 0
             
-        if self.DAS_counter >= self.DAS_delay:
-            q, r = divmod((self.current_time - self.prev_time) + self.ARR_remainder, self.delta_time)
-            self.ARR_remainder = r
-            self.ARR_counter += q
+        if self.Keyboard.DAS_counter >= self.Keyboard.DAS_delay:
+            q, r = divmod((self.current_time - self.prev_time) + self.Keyboard.ARR_remainder, self.delta_time)
+            self.Keyboard.ARR_remainder = r
+            self.Keyboard.ARR_counter += q
             

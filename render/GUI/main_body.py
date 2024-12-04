@@ -5,7 +5,11 @@ from render.GUI.buttons.button_bar import ButtonBar
 from render.GUI.buttons.back_button import BackButton
 
 class MainBody():
-    def __init__(self, rect, definition):
+    def __init__(self, Mouse, Keyboard, Timing, rect, definition):
+        
+        self.Mouse = Mouse
+        self.Keyboard = Keyboard
+        self.Timing = Timing
         
         self.definition = definition
         self.rect = rect
@@ -17,8 +21,7 @@ class MainBody():
     
     def __get_rect_and_surface(self):
         self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.main_body_container = self.body_surface.get_rect()
-    
+
     def __init_elements(self):
         self.__init_menu_elements()
         self.__init_back_button()
@@ -30,20 +33,20 @@ class MainBody():
         
         for idx, element in enumerate(self.definition['menu']['elements']):
             if element['type'] == 'bar_button':
-                button = ButtonBar(self.body_surface, self.main_body_container, element, idx, height = 120)
+                button = ButtonBar(self.Mouse, self.Keyboard, self.Timing, self.body_surface, self.rect, element, idx, height = 120)
                 self.menu_elements.append(button)
     
     def __init_back_button(self):
         if 'back_button' not in self.definition:
             return
         
-        self.back_button = BackButton(self.body_surface, self.main_body_container, self.definition['back_button'])
+        self.back_button = BackButton(self.Mouse, self.Keyboard, self.Timing, self.body_surface, self.rect, self.definition['back_button'])
     
     def __init_logo(self):
         if 'logo' not in self.definition:
             return
         
-        self.logo = Logo(self.main_body_container, self.definition['logo'])
+        self.logo = Logo(self.rect, self.definition['logo'])
         
     def render(self):
         self.render_logo()
@@ -76,6 +79,23 @@ class MainBody():
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
+    
+    def update(self):
+        self.__update_menu()
+        self.__update_back_button()
+    
+    def __update_menu(self):
+        if 'menu' not in self.definition:
+            return
+        
+        for element in self.menu_elements:
+            element.update()
+    
+    def __update_back_button(self):
+        if 'back_button' not in self.definition:
+            return
+        
+        self.back_button.update()
 
 class Logo():
     def __init__(self, container, definition):

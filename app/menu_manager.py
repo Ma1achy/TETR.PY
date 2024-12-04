@@ -5,16 +5,14 @@ from render.GUI.focus_overlay import GUIFocus
 import pygame
 
 class MenuManager():
-    def __init__(self, menu_actions_queue, mouse_events, Config, Timing, RenderStruct, Debug):
+    def __init__(self, Keyboard, Mouse, Config, Timing, RenderStruct, Debug):
 
-        self.menu_actions_queue = menu_actions_queue
+        self.Keyboard = Keyboard
+        self.Mouse = Mouse
         self.Config = Config
         self.Timing = Timing
         self.RenderStruct = RenderStruct
         self.Debug = Debug
-        
-        self.mouse_events = mouse_events
-        self.mouse_position = 0, 0
         
         self.debug_overlay = False
         self.is_focused = False
@@ -25,21 +23,20 @@ class MenuManager():
     def init_menus(self, window):
         self.window = window
         
-        self.home_menu           = Menu(self.window, self.Config, self.Timing, menu_definition = 'render/GUI/menus/home_menu.json')
-        self.solo_menu           = Menu(self.window, self.Config, self.Timing, menu_definition = 'render/GUI/menus/solo_menu.json')
-        self.multi_menu          = Menu(self.window, self.Config, self.Timing, menu_definition = 'render/GUI/menus/multi_menu.json')
-        self.records_menu        = Menu(self.window, self.Config, self.Timing, menu_definition = 'render/GUI/menus/records_menu.json')
-        self.about_menu          = Menu(self.window, self.Config, self.Timing, menu_definition = 'render/GUI/menus/about_menu.json')
-        self.config_menu         = Menu(self.window, self.Config, self.Timing, menu_definition = 'render/GUI/menus/config_menu.json')
+        self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, menu_definition = 'render/GUI/menus/home_menu.json')
+        self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, menu_definition = 'render/GUI/menus/solo_menu.json')
+        self.multi_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, menu_definition = 'render/GUI/menus/multi_menu.json')
+        self.records_menu        = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, menu_definition = 'render/GUI/menus/records_menu.json')
+        self.about_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.config_menu         = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, menu_definition = 'render/GUI/menus/config_menu.json')
         
         self.current_menu = self.home_menu
         
     def tick(self):
         self.get_actions()
-        self.current_menu.update()
  
     def get_actions(self):
-        actions = self.menu_actions_queue.get_nowait()
+        actions = self.Keyboard.menu_actions_queue.get_nowait()
         self.__perform_action(actions)
         
     def __perform_action(self, actions):

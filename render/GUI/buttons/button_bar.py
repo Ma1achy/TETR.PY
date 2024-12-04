@@ -3,7 +3,11 @@ from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colou
 from render.GUI.font import Font
 
 class ButtonBar():
-    def __init__(self, surface, container, definition, list_index, height):
+    def __init__(self, Mouse, Keyboard, Timing, surface, container, definition, list_index, height):
+        
+        self.Mouse = Mouse
+        self.Keyboard = Keyboard
+        self.Timing = Timing
         
         self.surface = surface
         self.container = container
@@ -17,18 +21,26 @@ class ButtonBar():
         self.y_offset = list_index * (self.height + 20) + 35
         self.start = self.container.width // 5.5
         
-        self.__get_rect_and_surface()
+        self.state = None
+        self.previous_state = None
+        
+        self.__get_rect()
+        self.__get_surface()
         self.render_button()
         self.get_hovered_image()
         self.get_pressed_image()
     
-    def __get_rect_and_surface(self):
-        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
+    def __get_rect(self):
+        self.rect = pygame.Rect(self.start, self.y_offset, self.width, self.height)
+        self.x = self.rect.left
+        self.y = self.rect.top
+    
+    def __get_surface(self):
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
     def render_button(self):
-        draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)
-        draw_border(self.button_surface, self.definition['border'], self.rect)
+        draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.button_surface.get_rect())
+        draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect())
         self.render_image()
         self.render_text()
        
@@ -44,7 +56,7 @@ class ButtonBar():
         new_width = int(button_height * aspect_ratio)
 
         image = pygame.transform.smoothscale(image, (new_width, button_height))
-        image_rect = align_left_edge(self.rect, image.get_width(), image.get_height(), x_padding, y_padding)
+        image_rect = align_left_edge(self.button_surface.get_rect(), image.get_width(), image.get_height(), x_padding, y_padding)
         
         self.button_surface.blit(image, image_rect.topleft)
     
@@ -61,15 +73,28 @@ class ButtonBar():
         brightness(self.pressed_surface, 1.5)
         
     def draw(self):
-        self.surface.blit(self.button_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        # self.surface.blit(self.hovered_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
-        # self.surface.blit(self.pressed_surface, (self.rect.left + self.start, self.rect.top + self.y_offset))
+        if self.state is None:
+            self.surface.blit(self.button_surface, (self.rect.left, self.rect.top))
+        elif self.state == 'hovered':
+            self.surface.blit(self.hovered_surface, (self.rect.left, self.rect.top))
+        elif self.state == 'pressed':
+            self.surface.blit(self.pressed_surface, (self.rect.left, self.rect.top))
     
-    def check_hover(self, mouse_pos):
-        if self.rect.collidepoint(mouse_pos):
-            return True
-        return False
+    def check_hover(self):
+        x, y = self.Mouse.position 
+        x -= self.container.left
+        y -= self.container.top
+        
+        if self.rect.collidepoint((x, y)):
+            #print(f'{self.definition['main_text']['display_text']} | {self.state}')
+            self.state = 'hovered'
+        else:
+            self.state = None
     
-    def update(self, surface):
-        self.hover = self.check_hover(pygame.mouse.get_pos())
-        self.draw(surface)
+    def update(self):
+        self.check_hover()
+        
+        if self.state != self.previous_state:
+            self.draw()
+        
+        self.previous_state = self.state

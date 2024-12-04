@@ -22,7 +22,8 @@ from app.pygame_event_handler import PygameEventHandler
 from app.state.timing import Timing
 from app.menu_manager import MenuManager
 from app.mouse_input_handler import MouseInputHandler
-from collections import deque
+from app.state.keyboard import Keyboard
+from app.state.mouse import Mouse
 
 #TODO: change renderer methods to NOT use methods ASSOCIATED WITH A GAME INSTANCE
 #      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
@@ -37,11 +38,11 @@ class App():
         
         self.is_focused = False
         self.PRINT_WARNINGS = True
-        
         self.game_instances = []
-        self.key_states_queue = queue.Queue() 
-        self.menu_actions_queue = queue.Queue()
-
+        
+        self.Keyboard = Keyboard()
+        self.Mouse = Mouse()
+        
         self.Config = StructConfig()    
         self.Timing = Timing()
         self.FrameClock = Clock()
@@ -50,8 +51,7 @@ class App():
         self.DebugStruct = StructDebug()
         self.HandlingConfig = HandlingConfig()
         
-        self.mouse_events = deque()
-        self.MouseInputHandler = MouseInputHandler(self.mouse_events)
+        self.MouseInputHandler = MouseInputHandler(self.Mouse)
         
         self.__init_pygame()
         self.__register_event_handlers()
@@ -67,9 +67,9 @@ class App():
             UIAction.WINDOW_FULLSCREEN: ['f11'],
         }
    
-        self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
-        self.MenuInputHandler = MenuKeyboardInputHandler(self.key_states_queue, self.menu_key_bindings, self.menu_actions_queue, self.Timing, self.PRINT_WARNINGS)
-        self.MenuManager = MenuManager(self.menu_actions_queue, self.mouse_events, self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
+        self.InputManager = InputManager(self.Keyboard, self.Timing, self.PRINT_WARNINGS)
+        self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing, self.PRINT_WARNINGS)
+        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
         self.Render = Render(self.Config, self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
@@ -244,11 +244,10 @@ class App():
         self.Timing.is_focused = self.MenuManager.is_focused
     
     def __update_mouse_position(self):
-        self.MenuManager.mouse_position = self.MouseInputHandler.mouse_position
+        self.MenuManager.mouse_position = self.MouseInputHandler.Mouse.position
     
     def __handle_window_resize(self, event):
-       self.Render.handle_window_resize()
-            
+       self.Render.handle_window_resize()    
 class GameInstance():
     def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
         

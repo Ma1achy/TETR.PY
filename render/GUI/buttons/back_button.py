@@ -3,7 +3,12 @@ from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colou
 from render.GUI.font import Font
 
 class BackButton():
-    def __init__(self, surface, container, definition):
+    def __init__(self, Mouse, Keyboard, Timing, surface, container, definition):
+        
+        self.Mouse = Mouse
+        self.Keyboard = Keyboard
+        self.Timing = Timing
+        
         self.surface = surface
         self.container = container
         self.definition = definition
@@ -13,18 +18,21 @@ class BackButton():
         self.x_start = 150
         self.font = Font('hun2', 33)
         
+        self.previous_state = None
+        self.state = None
+        
         self.__get_rect_and_surface()
         self.render_button()
         self.get_hovered_image()
         self.get_pressed_image()
         
     def __get_rect_and_surface(self):
-        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
+        self.rect = pygame.Rect(self.container.left - self.x_start, 15, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
     def render_button(self):
-        draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.rect)
-        draw_border(self.button_surface, self.definition['border'], self.rect)
+        draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.button_surface.get_rect())
+        draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect())
         self.render_text()
     
     def get_hovered_image(self):
@@ -39,11 +47,28 @@ class BackButton():
         self.font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'right', 20, 0)
         
     def draw(self):
-        self.surface.blit(self.button_surface, (self.rect.left - self.x_start , self.rect.top + 15))
-        # self.surface.blit(self.hovered_surface, (self.rect.left - self.x_start, self.rect.top + 15))
-        # self.surface.blit(self.pressed_surface, (self.rect.left - self.x_start, self.rect.top + 15))
+        if self.state is None:
+            self.surface.blit(self.button_surface, (self.rect.left, self.rect.top))
+        elif self.state == 'hovered':
+            self.surface.blit(self.hovered_surface, (self.rect.left, self.rect.top))
+        elif self.state == 'pressed':
+            self.surface.blit(self.pressed_surface, (self.rect.left, self.rect.top))
     
-    def check_hover(self, mouse_pos):
-        if self.rect.collidepoint(mouse_pos):
-            return True
-        return False
+    def check_hover(self):
+        x, y = self.Mouse.position 
+        x -= self.container.left
+        y -= self.container.top
+        
+        if self.rect.collidepoint((x, y)):
+            #print(f'{self.definition['main_text']['display_text']}')
+            self.state = 'hovered'
+        else:
+            self.state = None
+    
+    def update(self):
+        self.check_hover()
+
+        if self.state != self.previous_state:
+            self.draw()
+        
+        self.previous_state = self.state

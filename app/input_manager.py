@@ -4,11 +4,10 @@ import time
 import queue 
 
 class InputManager:
-    def __init__(self, key_states_queue, Timing, PRINT_WARNINGS):
+    def __init__(self, Keyboard, Timing, PRINT_WARNINGS):
         
-        self.key_states = {}
+        self.Keyboard = Keyboard
         self.Timing = Timing
-        self.key_states_queue = key_states_queue
         self.PRINT_WARNINGS = PRINT_WARNINGS
         self.max_poll_ticks_per_iteration = 1000
         
@@ -32,46 +31,45 @@ class InputManager:
         self.stop_keyboard_hook()
         
     def queue_key_states(self):
-        self.key_states_queue.put(self.key_states)
+        self.Keyboard.key_states_queue.put(self.Keyboard.key_states)
 
     def on_key_press(self, key):
         
         if not self.Timing.is_focused:
-            self.key_states = {}
+            self.Keyboard.key_states = {}
             return
         
         keyinfo = self.__get_key_info(key)
         
         try:
-            KeyEntry = self.key_states[keyinfo]
+            KeyEntry = self.Keyboard.key_states[keyinfo]
             if KeyEntry:
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = True
                 
         except KeyError:
-            KeyEntry = self.key_states.setdefault(keyinfo, {'current': False, 'previous': False})
+            KeyEntry = self.Keyboard.key_states.setdefault(keyinfo, {'current': False, 'previous': False})
             KeyEntry['previous'] = KeyEntry['current']
             KeyEntry['current'] = True
-        
-              
+           
         self.queue_key_states()
          
     def on_key_release(self, key):
         
         if not self.Timing.is_focused:
-            self.key_states = {}
+            self.Keyboard.key_states = {}
             return
         
         keyinfo = self.__get_key_info(key)
         
         try:
-            KeyEntry = self.key_states[keyinfo]
+            KeyEntry = self.Keyboard.key_states[keyinfo]
             if KeyEntry and KeyEntry['current']: # only update if the key was pressed to prevent multiple releases from being registered
                 KeyEntry['previous'] = KeyEntry['current']
                 KeyEntry['current'] = False
                 
         except KeyError:
-            KeyEntry = self.key_states.setdefault(keyinfo, {'current': False, 'previous': False})
+            KeyEntry = self.Keyboard.key_states.setdefault(keyinfo, {'current': False, 'previous': False})
             KeyEntry['previous'] = KeyEntry['current']
             KeyEntry['current'] = False
         
@@ -85,8 +83,8 @@ class InputManager:
             return key
 
     def reset_key_states(self):
-        for key in self.key_states:
-            self.key_states[key]['previous'] = self.key_states[key]['current']
+        for key in self.Keyboard.key_states:
+            self.Keyboard.key_states[key]['previous'] = self.Keyboard.key_states[key]['current']
         self.queue_key_states()
         
     def input_loop(self):
@@ -145,7 +143,7 @@ class InputManager:
         start = time.perf_counter()
         
         try:
-            self.key_states = self.key_states_queue.get_nowait()
+            self.Keyboard.key_states = self.Keyboard.key_states_queue.get_nowait()
         except queue.Empty:
             self.reset_key_states()
     

@@ -3,7 +3,10 @@ from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colou
 from render.GUI.font import Font
 
 class FooterButton():
-    def __init__(self, surface, container, definition):
+    def __init__(self, Mouse, surface, container, definition):
+        
+        self.Mouse = Mouse
+        
         self.surface = surface
         self.container = container
         self.definition = definition

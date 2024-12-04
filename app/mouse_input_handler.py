@@ -1,11 +1,8 @@
-from collections import deque
-
 class MouseInputHandler():
-    def __init__(self, mouse_events:deque):
+    def __init__(self, Mouse):
         
+        self.Mouse = Mouse
         self.is_focused = False
-        self.mouse_position = 0, 0
-        self.mouse_events = mouse_events
 
     def on_mouse_down(self, event):
         if not self.is_focused:
@@ -27,10 +24,10 @@ class MouseInputHandler():
         
     def on_mouse_move(self, event):
         if not self.is_focused:
-            self.mouse_position = 0, 0
+            self.Mouse.position = 0, 0
             return
         
-        self.mouse_position = event.pos
+        self.Mouse.position = event.pos
         
     def queue_mouse_events(self, mouse_event):
-        self.mouse_events.append(mouse_event)
+        self.Mouse.events.put(mouse_event)
