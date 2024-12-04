@@ -100,6 +100,10 @@ class Menu():
         
         self.main_body.rect.width = self.surface.get_width()
         self.main_body.rect.height = self.surface.get_height() - self.footer_height - self.header_height
+        
+        if self.main_body.rect.height <= 0: # to prevent crash
+            self.main_body.rect.height = 1
+            
         self.main_body.handle_window_resize()
     
     def __footer_widgets_resize(self):

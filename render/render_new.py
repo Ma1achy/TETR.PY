@@ -34,7 +34,9 @@ class Render():
         self.set_taskbar_icon_windows()
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
-        return pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
+        window = pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
+        self.set_dark_mode()
+        return window
 
     def draw_frame(self):
         
@@ -70,9 +72,24 @@ class Render():
         self.MenuManager.handle_window_resize()
     
     def set_taskbar_icon_windows(self):
-        if platform.system() == 'Windows':
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('TETR.PY')
+        if not platform.system() == 'Windows':
+            return
         
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('TETR.PY')
+
+    def set_dark_mode(self):
+        if not platform.system() == 'Windows':
+            return 
+        
+        try:
+            hwnd = pygame.display.get_wm_info()['window']
+            DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+            value = ctypes.c_int(1)
+            ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ctypes.byref(value), ctypes.sizeof(value))
+            
+        except Exception as e:
+            print(f"\033[91mError setting window title bar mode: {e}\033[0m")
+
 @dataclass
 class StructRender():
     CAPTION = 'TETR.PY'
