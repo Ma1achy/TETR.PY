@@ -3,8 +3,9 @@ from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colou
 from render.GUI.font import Font
 
 class BackButton():
-    def __init__(self, Mouse, Keyboard, Timing, surface, container, definition):
+    def __init__(self, function, Mouse, Keyboard, Timing, surface, container, definition):
         
+        self.function = function
         self.Mouse = Mouse
         self.Keyboard = Keyboard
         self.Timing = Timing
@@ -55,18 +56,50 @@ class BackButton():
             self.surface.blit(self.pressed_surface, (self.rect.left, self.rect.top))
     
     def check_hover(self):
+    
         x, y = self.Mouse.position 
         x -= self.container.left
         y -= self.container.top
         
         if self.rect.collidepoint((x, y)):
-            #print(f'{self.definition['main_text']['display_text']}')
+            if self.state == 'pressed':
+                return
             self.state = 'hovered'
         else:
             self.state = None
     
+    def check_events(self):
+
+        events_to_remove = []
+        
+        for event in self.Mouse.events.queue:
+            for button, info in event.items():
+                if button == 'scrollwheel':
+                    return
+                
+                event_x, event_y = info['pos']
+                event_x -= self.container.left
+                event_y -= self.container.top
+                
+                mouse_x, mouse_y = self.Mouse.position
+                mouse_x -= self.container.left
+                mouse_y -= self.container.top
+                
+                if button == 'mb1' and info['down'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
+                    self.state = 'pressed'
+                    events_to_remove.append(event)
+                
+                if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
+                    self.state = None
+                    events_to_remove.append(event)
+                    self.function()
+        
+        for event in events_to_remove:
+            self.Mouse.events.queue.remove(event)
+               
     def update(self):
         self.check_hover()
+        self.check_events()
 
         if self.state != self.previous_state:
             self.draw()

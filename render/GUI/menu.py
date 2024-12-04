@@ -8,12 +8,13 @@ from render.GUI.main_body import MainBody
 from render.GUI.buttons.footer_button import FooterButton
 
 class Menu():
-    def __init__(self, surface, Config, Timing, Mouse, Keyboard, menu_definition):
+    def __init__(self, surface, Config, Timing, Mouse, Keyboard, button_functions, menu_definition):
         self.surface = surface
         self.Config = Config
         self.Timing = Timing
         self.Mouse = Mouse
         self.Keyboard = Keyboard
+        self.button_functions = button_functions
         
         self.header_height = 0
         self.footer_height = 0
@@ -57,7 +58,7 @@ class Menu():
             return
             
         self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body = MainBody(self.Mouse, self.Keyboard, self.Timing, self.main_body_rect, self.definition['menu_body'])
+        self.main_body = MainBody(self.Mouse, self.Keyboard, self.Timing, self.main_body_rect, self.button_functions, self.definition['menu_body'])
     
     def __init_footer_widgets(self):
         if "footer_widgets" not in self.definition:
@@ -101,6 +102,8 @@ class Menu():
         
         if self.main_body.rect.height <= 0: # to prevent crash
             self.main_body.rect.height = 1
+            
+        self.main_body.rect = pygame.Rect(0, self.header_height, self.main_body.rect.width, self.main_body.rect.height)
             
         self.main_body.handle_window_resize()
     

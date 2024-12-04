@@ -133,7 +133,7 @@
                 },
                 {
                     "type": "bar_button",
-                    "function": "go_to_channel",
+                    "function": "go_to_records",
                     "main_text": {
                         "colour": "#a6fca3",
                         "display_text": "RECORDS"

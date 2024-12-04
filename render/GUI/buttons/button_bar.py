@@ -3,8 +3,9 @@ from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colou
 from render.GUI.font import Font
 
 class ButtonBar():
-    def __init__(self, Mouse, Keyboard, Timing, surface, container, definition, list_index, height):
+    def __init__(self, function:callable, Mouse, Keyboard, Timing, surface, container, definition, list_index, height):
         
+        self.function = function
         self.Mouse = Mouse
         self.Keyboard = Keyboard
         self.Timing = Timing
@@ -24,18 +25,13 @@ class ButtonBar():
         self.state = None
         self.previous_state = None
         
-        self.__get_rect()
-        self.__get_surface()
+        self.__get_rect_and_surface()
         self.render_button()
         self.get_hovered_image()
         self.get_pressed_image()
-    
-    def __get_rect(self):
+        
+    def __get_rect_and_surface(self):
         self.rect = pygame.Rect(self.start, self.y_offset, self.width, self.height)
-        self.x = self.rect.left
-        self.y = self.rect.top
-    
-    def __get_surface(self):
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
     def render_button(self):
@@ -43,7 +39,7 @@ class ButtonBar():
         draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect())
         self.render_image()
         self.render_text()
-       
+              
     def render_image(self):
            
         x_padding = self.definition['image']['padding'][0]
@@ -86,12 +82,44 @@ class ButtonBar():
         y -= self.container.top
         
         if self.rect.collidepoint((x, y)):
+            if self.state == 'pressed':
+                return
             self.state = 'hovered'
         else:
             self.state = None
+       
+    def check_events(self):
+        
+        events_to_remove = []
+        
+        for event in self.Mouse.events.queue:
+            for button, info in event.items():
+                if button == 'scrollwheel':
+                    return
+
+                event_x, event_y = info['pos']
+                event_x -= self.container.left
+                event_y -= self.container.top
+                
+                mouse_x, mouse_y = self.Mouse.position
+                mouse_x -= self.container.left
+                mouse_y -= self.container.top
+                
+                if button == 'mb1' and info['down'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
+                    self.state = 'pressed'
+                    events_to_remove.append(event)
+                
+                if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
+                    self.state = None
+                    events_to_remove.append(event)
+                    self.function()
+        
+        for event in events_to_remove:
+            self.Mouse.events.queue.remove(event)
     
     def update(self):
         self.check_hover()
+        self.check_events()
         
         if self.state != self.previous_state:
             self.draw()
