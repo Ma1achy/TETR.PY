@@ -2,6 +2,7 @@ from render.GUI.menu import Menu
 from app.menu_kb_input_handler import UIAction
 from render.GUI.debug_overlay import GUIDebug
 from render.GUI.focus_overlay import GUIFocus
+import pygame
 
 class MenuManager():
     def __init__(self, menu_actions_queue, mouse_events, Config, Timing, RenderStruct, Debug):
@@ -59,7 +60,9 @@ class MenuManager():
                     self.__menu_back()
                 case UIAction.MENU_DEBUG:
                     self.__menu_debug()
-                    
+                case UIAction.WINDOW_FULLSCREEN:
+                    self.RenderStruct.fullscreen = not self.RenderStruct.fullscreen
+         
     def __menu_left(self):
         pass
     

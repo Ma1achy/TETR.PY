@@ -64,6 +64,7 @@ class App():
             UIAction.MENU_CONFIRM:      ['enter'],
             UIAction.MENU_BACK:         ['esc'],
             UIAction.MENU_DEBUG:        ['f3'],
+            UIAction.WINDOW_FULLSCREEN: ['f11'],
         }
    
         self.InputManager = InputManager(self.key_states_queue, self.Timing, self.PRINT_WARNINGS)
@@ -108,7 +109,7 @@ class App():
        
         # window resize events
         PygameEventHandler.register(pygame.WINDOWRESIZED)(self.__handle_window_resize)
-    
+
         # mouse events
         PygameEventHandler.register(pygame.MOUSEBUTTONDOWN)(self.MouseInputHandler.on_mouse_down)
         PygameEventHandler.register(pygame.MOUSEBUTTONUP)(self.MouseInputHandler.on_mouse_up)

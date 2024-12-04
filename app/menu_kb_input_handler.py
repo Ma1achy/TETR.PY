@@ -10,6 +10,7 @@ class UIAction(Enum):
     MENU_BACK = auto()
     
     MENU_DEBUG = auto()
+    WINDOW_FULLSCREEN = auto()
     
 class MenuKeyboardInputHandler():
     def __init__(self, key_states_queue, key_bindings, menu_actions_queue, Timing, PRINT_WARNINGS):
@@ -90,6 +91,8 @@ class MenuKeyboardInputHandler():
         self.__test_actions(UIAction.MENU_BACK, self.__is_action_toggled)
         
         self.__test_actions(UIAction.MENU_DEBUG, self.__is_action_toggled)
+        
+        self.__test_actions(UIAction.WINDOW_FULLSCREEN, self.__is_action_toggled)
         
         self.__get_actions()
         

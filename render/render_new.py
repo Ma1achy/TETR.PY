@@ -23,19 +23,26 @@ class Render():
         self.MenuManager.init_menus(self.window)
         
         self.background_image_path = 'resources/background/b1.jpg'
-        self.load_background_image()
-        self.get_darken_overlay()
+        self.__load_background_image()
+        self.__get_darken_overlay()
         self.darken_overlay_layer_alpha = 200
+        
+        self.fullscreen = self.RenderStruct.fullscreen
        
     def __init_window(self):
         """
         Create the window to draw to
         """
-        self.set_taskbar_icon_windows()
+        self.__set_taskbar_icon_windows()
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
-        window = pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
-        self.set_dark_mode()
+        
+        if self.RenderStruct.fullscreen:
+            window = pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.FULLSCREEN)
+        else:
+            window = pygame.display.set_mode((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE)
+            
+        self.__set_dark_mode()
         return window
 
     def draw_frame(self):
@@ -45,6 +52,7 @@ class Render():
         else:
             self.dt = self.Timing.frame_delta_time
 
+        self.__toggle_fullscreen()
         self.window.blit(self.image, (0, 0))
         self.darken_overlay_layer.fill((0, 0, 0, self.darken_overlay_layer_alpha))
         self.window.blit(self.darken_overlay_layer, (0, 0))
@@ -58,26 +66,26 @@ class Render():
             
         pygame.display.flip()
     
-    def load_background_image(self):
+    def __load_background_image(self):
         self.image = pygame.image.load(self.background_image_path).convert_alpha()
         self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
     
-    def get_darken_overlay(self):
+    def __get_darken_overlay(self):
         self.darken_overlay_layer = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
     
     def handle_window_resize(self):
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = self.window.get_size()
-        self.load_background_image()
-        self.get_darken_overlay()
+        self.__load_background_image()
+        self.__get_darken_overlay()
         self.MenuManager.handle_window_resize()
     
-    def set_taskbar_icon_windows(self):
+    def __set_taskbar_icon_windows(self):
         if not platform.system() == 'Windows':
             return
         
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('TETR.PY')
 
-    def set_dark_mode(self):
+    def __set_dark_mode(self):
         if not platform.system() == 'Windows':
             return 
         
@@ -89,10 +97,24 @@ class Render():
             
         except Exception as e:
             print(f"\033[91mError setting window title bar mode: {e}\033[0m")
+    
+    def __toggle_fullscreen(self):
+        if self.fullscreen == self.RenderStruct.fullscreen:
+            return
+        
+        if self.RenderStruct.fullscreen:
+            pygame.display.set_mode((0, 0), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.FULLSCREEN)
+        else:
+            pygame.display.set_mode((1500, 900), pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
+        
+        self.fullscreen = self.RenderStruct.fullscreen
+        self.handle_window_resize()
 
 @dataclass
 class StructRender():
     CAPTION = 'TETR.PY'
     WINDOW_WIDTH = 1500
     WINDOW_HEIGHT = 900
+    
+    fullscreen = False
 
