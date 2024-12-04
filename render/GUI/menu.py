@@ -17,9 +17,13 @@ class Menu():
         self.footer_height = 0
         
         self.footer_widgets = []
-        self.open_definition(menu_definition)
+        self.__open_definition(menu_definition)
         self.__init_elements()
         
+    def __open_definition(self, path):
+        with open(path, 'r') as f:
+            self.definition = json.load(f)
+               
     def __init_elements(self):
         
         self.__init_header()
@@ -60,7 +64,7 @@ class Menu():
         for element in self.definition["footer_widgets"]['elements']:
             if element['type'] == 'footer_button':
                 self.footer_widgets.append(FooterButton(self.surface, self.surface.get_rect(), element))
-    
+             
     def update(self):
         self.main_body.draw(self.surface)
         self.menu_header.draw(self.surface)
@@ -68,15 +72,7 @@ class Menu():
         
         for widget in self.footer_widgets:
             widget.draw()
-        
-    def definition_to_json(self, path):
-        with open(path, 'w') as f:
-            json.dump(self.definition, f, indent = 4)
             
-    def open_definition(self, path):
-        with open(path, 'r') as f:
-            self.definition = json.load(f)
-    
     def handle_window_resize(self):
         
         self.__header_resize()

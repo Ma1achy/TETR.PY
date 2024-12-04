@@ -29,7 +29,6 @@ from collections import deque
 #      GameInstanceStruct will have to be contained in a Queue or something so that the renderer can access it in a thread safe way
 #      Debug Menu will have to be changed in a similar way but ALSO, there will have to be per game instance debug info
 
-#TODO: need to seperate out menu stuff like buttons into seperate files
 #TODO: implement mouse event handling in the menus, probably best way to do it is the currently active menu passes the events and mouse positions to all the buttons
 # then the buttons just look at the events, i.e mouse click and test if the mouse position is within the button if it is consume the action and then do it.
 
@@ -303,5 +302,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
-
