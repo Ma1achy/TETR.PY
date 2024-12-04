@@ -86,7 +86,6 @@ class ButtonBar():
         y -= self.container.top
         
         if self.rect.collidepoint((x, y)):
-            #print(f'{self.definition['main_text']['display_text']} | {self.state}')
             self.state = 'hovered'
         else:
             self.state = None

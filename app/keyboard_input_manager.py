@@ -3,7 +3,7 @@ import pynput.keyboard as keyboard # cannot use keyboard module as it is not sup
 import time
 import queue 
 
-class InputManager:
+class KeyboardInputManager:
     def __init__(self, Keyboard, Timing, PRINT_WARNINGS):
         
         self.Keyboard = Keyboard

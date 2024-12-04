@@ -1,4 +1,4 @@
-class MouseInputHandler():
+class MouseInputManager():
     def __init__(self, Mouse):
         
         self.Mouse = Mouse

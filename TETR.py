@@ -1,27 +1,22 @@
 import threading
 from config import StructConfig
-from instance.handling.handling import Handling
 import time
 from instance.handling.handling_config import HandlingConfig
 from core.state.struct_debug import StructDebug
-from core.state.struct_gameinstance import StructGameInstance
-from core.state.struct_flags import StructFlags, set_flag_attr
-from core.state.struct_handling import StructHandling
+from core.state.struct_flags import set_flag_attr
 from render.render_new import StructRender
-from instance.four import Four
 from core.clock import Clock
 import pygame
-import queue
 import os
 from render.render_new import Render
-from app.input_manager import InputManager
+from app.keyboard_input_manager import KeyboardInputManager
 from app.game_instance_manager import GameInstanceManager
 from app.menu_kb_input_handler import MenuKeyboardInputHandler, UIAction
 from app.debug_manager import DebugManager
 from app.pygame_event_handler import PygameEventHandler
 from app.state.timing import Timing
 from app.menu_manager import MenuManager
-from app.mouse_input_handler import MouseInputHandler
+from app.mouse_input_handler import MouseInputManager
 from app.state.keyboard import Keyboard
 from app.state.mouse import Mouse
 
@@ -51,7 +46,8 @@ class App():
         self.DebugStruct = StructDebug()
         self.HandlingConfig = HandlingConfig()
         
-        self.MouseInputHandler = MouseInputHandler(self.Mouse)
+        self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self.Timing, self.PRINT_WARNINGS)
+        self.MouseInputManager = MouseInputManager(self.Mouse)
         
         self.__init_pygame()
         self.__register_event_handlers()
@@ -67,7 +63,6 @@ class App():
             UIAction.WINDOW_FULLSCREEN: ['f11'],
         }
    
-        self.InputManager = InputManager(self.Keyboard, self.Timing, self.PRINT_WARNINGS)
         self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing, self.PRINT_WARNINGS)
         self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
@@ -91,7 +86,7 @@ class App():
     def __initalise(self):
         set_flag_attr()
         
-        self.input_thread = threading.Thread(target = self.InputManager.input_loop)
+        self.input_thread = threading.Thread(target = self.KeyboardInputManager.input_loop)
         self.logic_thread = threading.Thread(target = self.GameInstanceManager.logic_loop)
         
     def __register_event_handlers(self):
@@ -111,10 +106,10 @@ class App():
         PygameEventHandler.register(pygame.WINDOWRESIZED)(self.__handle_window_resize)
 
         # mouse events
-        PygameEventHandler.register(pygame.MOUSEBUTTONDOWN)(self.MouseInputHandler.on_mouse_down)
-        PygameEventHandler.register(pygame.MOUSEBUTTONUP)(self.MouseInputHandler.on_mouse_up)
-        PygameEventHandler.register(pygame.MOUSEMOTION)(self.MouseInputHandler.on_mouse_move)
-        PygameEventHandler.register(pygame.MOUSEWHEEL)(self.MouseInputHandler.on_mouse_scroll)
+        PygameEventHandler.register(pygame.MOUSEBUTTONDOWN)(self.MouseInputManager.on_mouse_down)
+        PygameEventHandler.register(pygame.MOUSEBUTTONUP)(self.MouseInputManager.on_mouse_up)
+        PygameEventHandler.register(pygame.MOUSEMOTION)(self.MouseInputManager.on_mouse_move)
+        PygameEventHandler.register(pygame.MOUSEWHEEL)(self.MouseInputManager.on_mouse_scroll)
         
     def __init_pygame(self):
         pygame.init()
@@ -152,7 +147,7 @@ class App():
     def run(self):
         self.__initalise()
          
-        self.InputManager.start_keyboard_hook() 
+        self.KeyboardInputManager.start_keyboard_hook() 
         self.Timing.start_times['input_loop'] = time.perf_counter()
         self.input_thread.start()
         
@@ -166,7 +161,7 @@ class App():
              
     def __exit(self, event = None):
         self.Timing.exited = True
-        self.InputManager.exit()
+        self.KeyboardInputManager.exit()
         pygame.font.quit()
         pygame.quit()
         
@@ -240,61 +235,14 @@ class App():
                 self.is_focused = False
         
         self.MenuManager.is_focused = self.is_focused
-        self.MouseInputHandler.is_focused = self.is_focused
+        self.MouseInputManager.is_focused = self.is_focused
         self.Timing.is_focused = self.MenuManager.is_focused
     
     def __update_mouse_position(self):
-        self.MenuManager.mouse_position = self.MouseInputHandler.Mouse.position
+        self.MenuManager.mouse_position = self.MouseInputManager.Mouse.position
     
     def __handle_window_resize(self, event):
-       self.Render.handle_window_resize()    
-class GameInstance():
-    def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
-        
-        self.ID = ID
-        self.Config = Config
-        self.GameParameters = GameParameters
-        
-        self.TimingStruct = TimingStruct
-        
-        self.HandlingConfig = HandlingConfig
-        self.HandlingStruct = StructHandling()
-        
-        self.FlagStruct = StructFlags()
-        self.GameInstanceStruct = StructGameInstance()
-        
-        self.HandlingLogic = Handling(
-            self.Config, 
-            self.HandlingConfig, 
-            self.HandlingStruct, 
-            self.FlagStruct, 
-        )
-        
-        self.GameLogic = Four(
-            self.Config,
-            self.FlagStruct, 
-            self.GameInstanceStruct, 
-            self.TimingStruct, 
-            self.HandlingStruct, 
-            self.HandlingConfig, 
-            matrix_width = self.GameParameters['MATRIX_WIDTH'], 
-            matrix_height = self.GameParameters['MATRIX_HEIGHT'],
-            rotation_system = self.GameParameters['ROTATION_ SYSTEM'],
-            randomiser = self.GameParameters['RANDOMISER'], 
-            queue_previews = self.GameParameters['QUEUE_PREVIEWS'], 
-            seed = self.GameParameters['SEED'], 
-            hold = self.GameParameters['HOLD_ENABLED'], 
-            allowed_spins = self.GameParameters['ALLOWED_SPINS'], 
-            lock_out_ok = self.GameParameters['LOCK_OUT_OK'],
-            top_out_ok = self.GameParameters['TOP_OUT_OK'],
-            reset_on_top_out = self.GameParameters['RESET_ON_TOP_OUT']
-        )
-             
-    def do_game_tick(self):
-        self.GameLogic.tick()
-    
-    def do_handling_tick(self):
-        self.HandlingLogic.tick()
+       self.Render.handle_window_resize()
 
 def main():
     app = App()
