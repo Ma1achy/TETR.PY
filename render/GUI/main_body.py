@@ -5,10 +5,9 @@ from render.GUI.buttons.button_bar import ButtonBar
 from render.GUI.buttons.back_button import BackButton
 
 class MainBody():
-    def __init__(self, Mouse, Keyboard, Timing, rect, button_functions, definition):
+    def __init__(self, Mouse, Timing, rect, button_functions, definition):
         
         self.Mouse = Mouse
-        self.Keyboard = Keyboard
         self.Timing = Timing
         
         self.button_functions = button_functions
@@ -36,7 +35,7 @@ class MainBody():
         for idx, element in enumerate(self.definition['menu']['elements']):
             if element['type'] == 'bar_button':
                 func = self.button_functions[element['function']]
-                button = ButtonBar(func, self.Mouse, self.Keyboard, self.Timing, self.body_surface, self.rect, element, idx, height = 120)
+                button = ButtonBar(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, idx, height = 120)
                 self.menu_elements.append(button)
     
     def __init_back_button(self):
@@ -44,7 +43,7 @@ class MainBody():
             return
         
         func = self.button_functions[self.definition['back_button']['function']]
-        self.back_button = BackButton(func, self.Mouse, self.Keyboard, self.Timing, self.body_surface, self.rect, self.definition['back_button'])
+        self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'])
     
     def __init_logo(self):
         if 'logo' not in self.definition:

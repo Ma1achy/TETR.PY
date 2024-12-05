@@ -4,7 +4,9 @@ class Button:
     def __init__(self, surface, Mouse, function, container, width, height, offset = (0, 0), style = 'lighten', maintain_alpha = False):
         
         self.surface = surface
+        
         self.Mouse = Mouse
+        
         self.function = function
         self.container = container
         self.width = width
@@ -67,11 +69,14 @@ class Button:
                 if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)) and self.state == 'pressed':
                     self.state = None
                     events_to_remove.append(event)
-                    self.function()
+                    self.click()
         
         for event in events_to_remove:
             self.Mouse.events.queue.remove(event)
     
+    def click(self):
+        self.function()
+        
     def update(self):
         self.check_hover()
         self.check_events()

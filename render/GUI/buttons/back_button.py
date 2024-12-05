@@ -4,10 +4,9 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class BackButton(Button):
-    def __init__(self, function, Mouse, Keyboard, Timing, surface, container, definition):
+    def __init__(self, function, Mouse, Timing, surface, container, definition):
         super().__init__(surface, Mouse, function, container, 300, 60, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False)
     
-        self.Keyboard = Keyboard
         self.Timing = Timing
     
         self.definition = definition

@@ -4,10 +4,9 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class ButtonBar(Button):
-    def __init__(self, function:callable, Mouse, Keyboard, Timing, surface, container, definition, list_index, height):
+    def __init__(self, function:callable, Mouse, Timing, surface, container, definition, list_index, height):
         super().__init__(surface, Mouse, function, container, container.width, height, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False)
         
-        self.Keyboard = Keyboard
         self.Timing = Timing
         
         self.surface = surface

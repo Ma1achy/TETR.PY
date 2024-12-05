@@ -45,12 +45,12 @@ class MenuManager():
         self.window = window
         self.ExitDialog = DialogBox(self.window, self.Mouse, self.RenderStruct, 'EXIT TETR.PY?', None, buttons = ('CANCEL', 'EXIT'), funcs = (self.close_exit_dialog, self.quit_game), click_off_dissmiss = True, width = 500)
          
-        self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
-        self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
-        self.multi_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/multi_menu.json')
-        self.records_menu        = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/records_menu.json')
-        self.about_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/about_menu.json')
-        self.config_menu         = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
+        self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
+        self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
+        self.multi_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/multi_menu.json')
+        self.records_menu        = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/records_menu.json')
+        self.about_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.config_menu         = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
         self.button_functions, 
         self.current_menu = self.home_menu
         
@@ -101,7 +101,10 @@ class MenuManager():
         pass
     
     def __menu_back(self):
-        pass
+        if self.in_dialog:
+            self.current_dialog.primary_button.click()
+        else:
+            self.current_menu.main_body.back_button.click()
     
     def __menu_debug(self):
         self.debug_overlay = not self.debug_overlay

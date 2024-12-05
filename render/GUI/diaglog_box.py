@@ -4,6 +4,7 @@ from utils import hex_to_rgb
 from render.GUI.font import Font
 from render.GUI.buttons.dialog_button import DialogButton
 from render.GUI.buttons.invisible_button import InvisibleButton
+from app.menu_kb_input_handler import UIAction
 class DialogBox():
     def __init__(self, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width):
         
@@ -129,5 +130,5 @@ class DialogBox():
         
     def __resize_click_off_buttons(self):
         self.__get_click_off_buttons()
-        
-        
+
+  
