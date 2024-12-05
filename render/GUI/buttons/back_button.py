@@ -87,6 +87,7 @@ class BackButton():
                 
                 if button == 'mb1' and info['down'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
                     self.state = 'pressed'
+                    self.get_pressed_image()
                     events_to_remove.append(event)
                 
                 if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):

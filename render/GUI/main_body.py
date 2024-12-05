@@ -15,8 +15,7 @@ class MainBody():
         self.definition = definition
         
         self.rect = rect
-        self.menu_elements = []
-
+    
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
@@ -25,6 +24,7 @@ class MainBody():
         self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
 
     def __init_elements(self):
+        self.menu_elements = []
         self.__init_menu_elements()
         self.__init_back_button()
         self.__init_logo()
@@ -50,7 +50,7 @@ class MainBody():
         if 'logo' not in self.definition:
             return
         
-        self.logo = Logo(self.rect, self.definition['logo'])
+        self.logo = Logo(self.body_surface.get_rect(), self.definition['logo'])
         
     def render(self):
         self.render_logo()

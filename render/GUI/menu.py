@@ -66,11 +66,13 @@ class Menu():
             
         for element in self.definition["footer_widgets"]['elements']:
             if element['type'] == 'footer_button':
-                self.footer_widgets.append(FooterButton(self.Mouse, self.surface, self.surface.get_rect(), element))
+                func = self.button_functions[element['function']]
+                self.footer_widgets.append(FooterButton(func, self.Mouse, self.surface, self.surface.get_rect(), element))
              
     def update(self): 
        self.main_body.update()
        self.draw(self.surface)
+       self.update_footer_widgets()
             
     def handle_window_resize(self):
         
@@ -78,7 +80,7 @@ class Menu():
         self.__footer_resize()
         self.__menu_body_resize()
         self.__footer_widgets_resize()
-        
+
     def __header_resize(self):
         if 'menu_header' not in self.definition:
             return
@@ -102,9 +104,7 @@ class Menu():
         
         if self.main_body.rect.height <= 0: # to prevent crash
             self.main_body.rect.height = 1
-            
-        self.main_body.rect = pygame.Rect(0, self.header_height, self.main_body.rect.width, self.main_body.rect.height)
-            
+                 
         self.main_body.handle_window_resize()
     
     def __footer_widgets_resize(self):
@@ -115,6 +115,13 @@ class Menu():
             widget.container = self.surface.get_rect()
             widget.handle_window_resize()
     
+    def update_footer_widgets(self):
+        if "footer_widgets" not in self.definition:
+            return
+        
+        for widget in self.footer_widgets:
+            widget.update()
+            
     def draw(self, surface):
         self.main_body.draw(surface)
         self.menu_header.draw(surface)

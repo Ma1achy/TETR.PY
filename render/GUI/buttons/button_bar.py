@@ -113,7 +113,7 @@ class ButtonBar():
                     self.state = None
                     events_to_remove.append(event)
                     self.function()
-        
+
         for event in events_to_remove:
             self.Mouse.events.queue.remove(event)
     
