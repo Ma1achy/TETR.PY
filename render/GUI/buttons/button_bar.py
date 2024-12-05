@@ -12,7 +12,7 @@ class ButtonBar(Button):
         self.surface = surface
         self.definition = definition
  
-        self.main_font = Font('din_bold', 60)
+        self.main_font = Font('din_bold', 53)
         self.sub_font = Font('hun2', 23)
                 
         self.y_offset = list_index * (self.height + 20) + 35
@@ -49,5 +49,5 @@ class ButtonBar(Button):
         self.button_surface.blit(image, image_rect.topleft)
     
     def render_text(self):
-        self.main_font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 275, - self.main_font.font.get_ascent()//2 + 7)
-        self.sub_font.draw(self.button_surface, self.definition['sub_text']['display_text'], self.definition['sub_text']['colour'], 'left', 275, self.main_font.font.get_ascent()//2 + 2)
+        self.main_font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 275, - self.main_font.font.get_ascent()//2 + 5)
+        self.sub_font.draw(self.button_surface, self.definition['sub_text']['display_text'], self.definition['sub_text']['colour'], 'left', 275, self.main_font.font.get_ascent()//2 + 5)
