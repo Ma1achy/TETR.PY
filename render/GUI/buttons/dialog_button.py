@@ -1,6 +1,6 @@
 from render.GUI.buttons.button import Button
 import pygame
-from utils import hex_to_rgb, align_left_edge, align_right_edge, align_centre
+from utils import hex_to_rgb, align_left_edge, align_right_edge, align_centre, brightness, brightness_maintain_alpha
 from render.GUI.font import Font
 
 class DialogButton(Button):
@@ -39,3 +39,44 @@ class DialogButton(Button):
             self.rect = align_right_edge(self.container, self.width, self.height, self.x_padding, self.y_padding)
         else:
             self.rect = align_centre(self.container, self.width, self.height, self.x_padding, self.y_padding)
+    
+    def get_overlays(self):
+        if self.style is None:
+            return
+        
+        self.__get_lighten_overlay()
+        self.__get_darken_overlay()
+        
+    def __get_lighten_overlay(self):
+        if self.style != 'lighten':
+            return
+        
+        if self.maintain_alpha:
+            self.hover_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.hover_surface, 1.5)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.pressed_surface, 2.0)
+        else:
+            self.hover_surface = self.button_surface.copy()
+            brightness(self.hover_surface, 1.5)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness(self.pressed_surface, 2.0)
+        
+    def __get_darken_overlay(self):
+        if self.style != 'darken':
+            return
+        
+        if self.maintain_alpha:
+            self.hover_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.hover_surface, 0.8)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.pressed_surface, 0.5)
+        else:
+            self.hover_surface = self.button_surface.copy()
+            brightness(self.hover_surface, 0.8)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness(self.pressed_surface, 0.5)
