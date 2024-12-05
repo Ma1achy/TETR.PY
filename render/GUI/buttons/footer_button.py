@@ -1,6 +1,5 @@
 import pygame
 from utils import load_image, draw_solid_colour, draw_border, align_centre
-from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 class FooterButton(Button):
     def __init__(self, function, Mouse, surface, container, definition):

@@ -1,5 +1,5 @@
 from utils import brightness_maintain_alpha, brightness
-
+import pygame
 class Button:
     def __init__(self, surface, Mouse, function, container, width, height, offset = (0, 0), style = 'lighten', maintain_alpha = False):
         
@@ -16,14 +16,21 @@ class Button:
         
         self.state = None
         self.previous_state = None
-            
+    
+    def get_rect_and_surface(self):
+        self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
+        self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        
     def draw(self):
-        if self.state is None:
+        if self.style is not None:
+            if self.state is None:
+                self.surface.blit(self.button_surface, self.rect.topleft)
+            elif self.state == 'hovered':
+                self.surface.blit(self.hover_surface, self.rect.topleft)
+            elif self.state == 'pressed':
+                self.surface.blit(self.pressed_surface, self.rect.topleft)
+        else:
             self.surface.blit(self.button_surface, self.rect.topleft)
-        elif self.state == 'hovered':
-            self.surface.blit(self.hover_surface, self.rect.topleft)
-        elif self.state == 'pressed':
-            self.surface.blit(self.pressed_surface, self.rect.topleft)
     
     def check_hover(self):
         x, y = self.Mouse.position
@@ -57,7 +64,7 @@ class Button:
                     self.state = 'pressed'
                     events_to_remove.append(event)
                 
-                if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
+                if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)) and self.state == 'pressed':
                     self.state = None
                     events_to_remove.append(event)
                     self.function()
@@ -75,6 +82,9 @@ class Button:
         self.previous_state = self.state
     
     def get_overlays(self):
+        if self.style is None:
+            return
+        
         self.__get_lighten_overlay()
         self.__get_darken_overlay()
         

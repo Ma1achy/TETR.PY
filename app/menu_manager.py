@@ -43,7 +43,7 @@ class MenuManager():
     
     def init_menus(self, window):
         self.window = window
-        self.ExitDialog = DialogBox(self.window, self.Mouse, self.RenderStruct, 'EXIT TETR.PY?', None, buttons = ('CANCEL', 'EXIT'), funcs = (self.close_exit_dialog, self.quit_game))
+        self.ExitDialog = DialogBox(self.window, self.Mouse, self.RenderStruct, 'EXIT TETR.PY?', None, buttons = ('CANCEL', 'EXIT'), funcs = (self.close_exit_dialog, self.quit_game), click_off_dissmiss = True)
          
         self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
         self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
