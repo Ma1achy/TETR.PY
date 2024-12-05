@@ -5,7 +5,7 @@ from render.GUI.font import Font
 from render.GUI.buttons.dialog_button import DialogButton
 from render.GUI.buttons.invisible_button import InvisibleButton
 class DialogBox():
-    def __init__(self, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss):
+    def __init__(self, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width):
         
         self.window = window
         self.title = title
@@ -17,20 +17,30 @@ class DialogBox():
         
         self.click_off_dissmiss = click_off_dissmiss
         
-        self.width = 500
-        self.height = 100
+        self.main_font = Font('hun2', 30)
+        self.sub_font = Font('hun2', 25)
+        
+        self.width = width
+        self.height = 50
+        
+        self.__get_height()
         self.x_padding = 10
         self.y_padding = 7
         self.border_radius = 5    
                    
-        self.main_font = Font('hun2', 30)
-        
         self.__get_rect_and_surface()
         self.__create_buttons()
         self.primary_button.render()
         self.secondary_button.render()
         self.render()
     
+    def __get_height(self):
+        if self.title:
+            self.height += 50
+        
+        if self.message:
+            self.height += sum(self.sub_font.font.get_height() for i, line in enumerate(self.message))
+            
     def __get_rect_and_surface(self):
         self.dialog_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)
         self.dialog_surface = pygame.Surface((self.dialog_rect.width, self.dialog_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
@@ -39,14 +49,26 @@ class DialogBox():
         pygame.draw.rect(self.dialog_surface, hex_to_rgb('#fffffffff'), (0, 0, self.width, self.height), border_radius = self.border_radius)
         pygame.draw.rect(self.dialog_surface, hex_to_rgb('#CCCCCC'), self.button_container, border_bottom_left_radius = self.border_radius, border_bottom_right_radius = self.border_radius)
         
-        self.main_font.draw(
-            self.dialog_surface,
-            self.title,
-            '#222222',
-            'left_top',
-            15,
-            3,
-        )
+        if self.title:
+            self.main_font.draw(
+                self.dialog_surface,
+                self.title,
+                '#222222',
+                'left_top',
+                15,
+                3,
+            )
+        
+        if self.message:
+            for i, line in enumerate(self.message):
+                self.sub_font.draw(
+                    self.dialog_surface,
+                    line,
+                    '#555555',
+                    'left_top',
+                    15,
+                    15 + (i + 1) * self.sub_font.font.get_height(),
+                )
 
         if self.click_off_dissmiss:
             self.invisible_button1.draw()
@@ -77,8 +99,9 @@ class DialogBox():
         self.invisible_button4.update()
             
     def __create_buttons(self):
-        self.button_width, self.button_height = self.dialog_rect.width // 2 - self.x_padding * 1.5, self.dialog_rect.height // 2 - self.y_padding * 2
-        self.button_container = pygame.Rect(0, self.dialog_rect.height // 2, self.dialog_rect.width, self.dialog_rect.height // 2)
+        button_height = 50
+        self.button_width, self.button_height = self.dialog_rect.width // 2 - self.x_padding * 1.5, button_height - self.y_padding * 2
+        self.button_container = pygame.Rect(0, self.dialog_rect.height - button_height, self.dialog_rect.width, button_height)
         
         self.__get_click_off_buttons()
 
