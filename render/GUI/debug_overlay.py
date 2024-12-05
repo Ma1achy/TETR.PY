@@ -168,13 +168,8 @@ class GUIDebug():
         x = 10
         y = 10 
         
-        if self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.95:
-            fps_colour = '#ffff00'  # Yellow
-        elif self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.5:
-            fps_colour = '#ff0000'  # Red
-        else:
-            fps_colour = '#00ff00'  # Green
-
+        fps_colour = '#ffff00' if self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.95 else '#ff0000' if self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.5 else '#00ff00'
+            
         fps_text = f'FPS: {int(self.DebugStruct.Average_FrameRate)}'
 
         self.font_hun2_big.draw(
@@ -317,12 +312,7 @@ class GUIDebug():
         x = 10
         y = 0
         
-        if self.DebugStruct.MemoryPercent < 50:
-            mem_colour = '#00ff00'
-        elif self.DebugStruct.MemoryPercent < 75:
-            mem_colour = '#ffff00'
-        else:
-            mem_colour = '#ff0000'
+        mem_colour = '#00ff00' if self.DebugStruct.MemoryPercent < 50 else '#ffff00' if self.DebugStruct.MemoryPercent < 75 else '#ff0000'
             
         self.font_pfw_small.draw(
             self.mem_surface, 
@@ -335,12 +325,7 @@ class GUIDebug():
         
         x += self.font_pfw_small.get_width() + 10
         
-        if self.DebugStruct.CPU_Usage < 50:
-            cpu_colour = '#00ff00'
-        elif self.DebugStruct.CPU_Usage < 75:
-            cpu_colour = '#ffff00'
-        else:
-            cpu_colour = '#ff0000'
+        cpu_colour = '#00ff00' if self.DebugStruct.CPU_Usage < 50 else '#ffff00' if self.DebugStruct.CPU_Usage < 75 else '#ff0000'
         
         self.font_pfw_small.draw(
             self.mem_surface, 
@@ -364,7 +349,7 @@ class GUIDebug():
         
         x += self.font_pfw_small.get_width() + 10
         
-        temp_colour = '#00ff00' if self.DebugStruct.GPUStats['gpu_temperature'] < 50 else '#ff0000'
+        temp_colour = '#00ff00' if self.DebugStruct.GPUStats['gpu_temperature'] < 50 else '#ffff00' if self.DebugStruct.GPUStats['gpu_temperature'] < 75 else '#ff0000'
         
         self.font_pfw_small.draw(
             self.mem_surface, 
@@ -377,12 +362,12 @@ class GUIDebug():
         
         x += self.font_pfw_small.get_width() + 10
         
-        self.gpu_colour = '#00ff00' if self.DebugStruct.GPUStats['gpu_load'] < 50 else '#ff0000'
+        gpu_colour = '#00ff00' if self.DebugStruct.GPUStats['gpu_load'] < 50 else '#ffff00' if self.DebugStruct.GPUStats['gpu_load'] < 75 else '#ff0000'
         
         self.font_pfw_small.draw(
             self.mem_surface, 
             f'{self.DebugStruct.GPUStats['gpu_memory_used']}/{self.DebugStruct.GPUStats['gpu_memory_total']} ({self.DebugStruct.GPUStats['gpu_load']:.0f}%)', 
-            self.gpu_colour, 
+            gpu_colour, 
             'left_top', 
             x, 
             y,
