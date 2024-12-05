@@ -12,6 +12,12 @@ class DialogBox():
         self.title = title
         self.message = message
         self.buttons = buttons
+        self.num_buttons = len(buttons)
+        print(self.num_buttons)
+        
+        self.primary_button = None
+        self.secondary_button = None
+        
         self.funcs = funcs
         self.Mouse = Mouse
         self.RenderStruct = RenderStruct
@@ -31,8 +37,13 @@ class DialogBox():
                    
         self.__get_rect_and_surface()
         self.__create_buttons()
-        self.primary_button.render()
-        self.secondary_button.render()
+        
+        if self.primary_button is not None:
+            self.primary_button.render()
+        
+        if self.secondary_button is not None:
+            self.secondary_button.render()
+        
         self.render()
     
     def __get_height(self):
@@ -76,17 +87,23 @@ class DialogBox():
             self.invisible_button2.draw()
             self.invisible_button3.draw()
             self.invisible_button4.draw()
-            
-        self.primary_button.draw()
-        self.secondary_button.draw()
+
+        if self.primary_button is not None:
+            self.primary_button.draw()
+        
+        if self.secondary_button is not None:
+            self.secondary_button.draw()
         
     def draw(self):
         self.window.blit(self.dialog_surface, self.dialog_rect)
             
     def update(self):
         self.__update_click_off_buttons()
-        self.primary_button.update()
-        self.secondary_button.update()
+        if self.primary_button is not None:
+            self.primary_button.update()
+        
+        if self.secondary_button is not None:
+            self.secondary_button.update()
         self.render()
         self.draw()
     
@@ -101,13 +118,22 @@ class DialogBox():
             
     def __create_buttons(self):
         button_height = 50
-        self.button_width, self.button_height = self.dialog_rect.width // 2 - self.x_padding * 1.5, button_height - self.y_padding * 2
-        self.button_container = pygame.Rect(0, self.dialog_rect.height - button_height, self.dialog_rect.width, button_height)
+        
+        if self.num_buttons == 1:
+            self.button_width = self.dialog_rect.width - self.x_padding * 2
+            self.button_height = button_height - self.y_padding * 2
+            self.button_container = pygame.Rect(0, self.dialog_rect.height - button_height, self.dialog_rect.width, button_height)
+        else:
+            self.button_width, self.button_height = self.dialog_rect.width // 2 - self.x_padding * 1.5, button_height - self.y_padding * 2
+            self.button_container = pygame.Rect(0, self.dialog_rect.height - button_height, self.dialog_rect.width, button_height)
         
         self.__get_click_off_buttons()
-
-        self.primary_button   = DialogButton(self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
-        self.secondary_button = DialogButton(self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
+         
+        if self.num_buttons == 1:
+            self.secondary_button = DialogButton(self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
+        else:
+            self.primary_button   = DialogButton(self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
+            self.secondary_button = DialogButton(self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
     
     def __get_click_off_buttons(self):
         if not self.click_off_dissmiss:
