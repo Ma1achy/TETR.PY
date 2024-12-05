@@ -104,7 +104,7 @@ class App():
        
         # window resize events
         PygameEventHandler.register(pygame.WINDOWRESIZED)(self.__handle_window_resize)
-
+        
         # mouse events
         PygameEventHandler.register(pygame.MOUSEBUTTONDOWN)(self.MouseInputManager.on_mouse_down)
         PygameEventHandler.register(pygame.MOUSEBUTTONUP)(self.MouseInputManager.on_mouse_up)
@@ -114,7 +114,7 @@ class App():
     def __init_pygame(self):
         pygame.init()
         pygame.font.init()
-        
+    
         pygame.event.set_allowed([
             pygame.QUIT,
             pygame.ACTIVEEVENT,
@@ -180,7 +180,7 @@ class App():
         """
         try:
             while not self.Timing.exited:
-
+                   
                 self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
                 self.Timing.elapsed_times['render_loop'] = self.Timing.current_frame_time
                 
@@ -209,6 +209,10 @@ class App():
             return
         
         for event in pygame.event.get():
+            if event.type == pygame.QUIT or event.type == pygame.WINDOWCLOSE: # stop the window close event from being processed by pygame
+                self.__window_close_event(event)
+                return
+                
             PygameEventHandler.notify(event)
         
         self.__update_mouse_position()
@@ -246,6 +250,9 @@ class App():
     
     def __handle_window_resize(self, event):
        self.Render.handle_window_resize()
+    
+    def __window_close_event(self, event):
+        self.MenuManager.go_to_exit()
 
 def main():
     app = App()

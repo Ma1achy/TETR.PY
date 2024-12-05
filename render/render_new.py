@@ -57,13 +57,21 @@ class Render():
         self.darken_overlay_layer.fill((0, 0, 0, self.darken_overlay_layer_alpha))
         self.window.blit(self.darken_overlay_layer, (0, 0))
 
-        self.MenuManager.current_menu.update()
+        if not self.MenuManager.in_dialog:
+            self.MenuManager.current_menu.update()
         
+        if self.MenuManager.in_dialog:
+            self.MenuManager.current_menu.draw(self.window)
+         
         if self.MenuManager.debug_overlay:
             self.MenuManager.GUI_debug.draw(self.window)
         
         if not self.MenuManager.is_focused:
             self.MenuManager.GUI_focus.draw(self.window)
+            
+        if self.MenuManager.in_dialog:
+            self.window.blit(self.darken_overlay_layer, (0, 0))
+            self.MenuManager.current_dialog.update()
             
         pygame.display.flip()
     

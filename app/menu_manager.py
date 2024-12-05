@@ -2,6 +2,7 @@ from render.GUI.menu import Menu
 from app.menu_kb_input_handler import UIAction
 from render.GUI.debug_overlay import GUIDebug
 from render.GUI.focus_overlay import GUIFocus
+from render.GUI.diaglog_box import DialogBox
 import webbrowser
 
 class MenuManager():
@@ -19,7 +20,8 @@ class MenuManager():
         
         self.GUI_debug = GUIDebug(self.Config, self.RenderStruct, self.Debug)
         self.GUI_focus = GUIFocus(self.RenderStruct)
-        
+       
+            
         self.button_functions = {
             "go_to_exit": self.go_to_exit,
             "go_to_home": self.go_to_home,
@@ -41,7 +43,8 @@ class MenuManager():
     
     def init_menus(self, window):
         self.window = window
-        
+        self.ExitDialog = DialogBox(self.window, self.Mouse, self.RenderStruct, 'EXIT TETR.PY?', None, buttons = ('CANCEL', 'EXIT'), funcs = (self.close_exit_dialog, self.quit_game))
+         
         self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
         self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
         self.multi_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/multi_menu.json')
@@ -50,6 +53,9 @@ class MenuManager():
         self.config_menu         = Menu(self.window, self.Config, self.Timing, self.Mouse, self.Keyboard, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
         self.button_functions, 
         self.current_menu = self.home_menu
+        
+        self.in_dialog = False
+        self.current_dialog = None
         
     def tick(self):
         self.get_actions()
@@ -109,9 +115,18 @@ class MenuManager():
         self.config_menu.handle_window_resize()
         self.GUI_debug.handle_window_resize()
         self.GUI_focus.handle_window_resize()
+        self.ExitDialog.handle_window_resize()
     
     def go_to_exit(self):
-        pass
+        self.in_dialog = True
+        self.current_dialog = self.ExitDialog
+    
+    def quit_game(self):
+        self.Timing.exited = True
+    
+    def close_exit_dialog(self):
+        self.in_dialog = False
+        self.current_dialog = None
     
     def go_to_home(self):
         self.current_menu = self.home_menu
@@ -149,4 +164,6 @@ class MenuManager():
     
     def go_to_custom(self):
         pass
+    
+    
     

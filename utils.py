@@ -493,6 +493,23 @@ def brightness(surface, brightness_factor):
         )
     )
 
+def brightness_maintain_alpha(surface, brightness_factor):
+    """
+    Adjust the brightness of a surface preserving the alpha channel, slower!
+    
+    args:
+        surface (pygame.Surface): The surface to adjust the brightness of
+        brightness_factor (float): The factor to adjust the brightness by (< 1 = darken, > 1 = brighten)
+    """
+    pixel_array = pygame.surfarray.array3d(surface).astype(np.float32)
+    alpha_channel = pygame.surfarray.pixels_alpha(surface).astype(np.float32)
+
+    pixel_array = np.clip(pixel_array * brightness_factor, 0, 255).astype(np.uint8)
+    pygame.surfarray.blit_array(surface, pixel_array)
+
+    alpha_channel = np.clip(alpha_channel, 0, 255).astype(np.uint8)
+    pygame.surfarray.pixels_alpha(surface)[:, :] = alpha_channel
+
 def peek_queue(q):
     with q.mutex:
         if q.queue:
