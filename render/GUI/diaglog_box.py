@@ -40,7 +40,7 @@ class DialogBox():
         self.main_font.draw(
             self.dialog_surface,
             self.title,
-            '#000000',
+            '#222222',
             'left_top',
             15,
             3,
@@ -65,6 +65,6 @@ class DialogBox():
         self.button_width, self.button_height = self.dialog_rect.width // 2 - self.x_padding * 1.5, self.dialog_rect.height // 2 - self.y_padding * 2
         self.button_container = pygame.Rect(0, self.dialog_rect.height // 2, self.dialog_rect.width, self.dialog_rect.height // 2)
         
-        self.primary_button   = DialogButton(self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#000000', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
-        self.secondary_button = DialogButton(self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CCCCCC', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
+        self.primary_button   = DialogButton(self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
+        self.secondary_button = DialogButton(self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
 
