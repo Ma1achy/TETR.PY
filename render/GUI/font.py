@@ -3,7 +3,7 @@ import pygame
 from utils import hex_to_rgb
 
 class Font():
-    def __init__(self, type, size:int = 20):
+    def __init__(self, type, size:int = 20, styles = None):
         """
         Fonts used in the game
         
@@ -13,10 +13,16 @@ class Font():
         self.size = size
         self.base_path = 'resources/font'
         self.type = type
+        self.styles = styles
     
         if self.type == 'hun2':
 
             font_path = os.path.join(self.base_path, 'hun2.ttf')
+            self.font = pygame.font.Font(font_path, self.size)
+        
+        elif self.type == 'hun2_bold':
+                
+            font_path = os.path.join(self.base_path, 'hun2_bold.otf')
             self.font = pygame.font.Font(font_path, self.size)
         
         elif self.type == 'pfw':
@@ -27,10 +33,18 @@ class Font():
         elif self.type == 'cr':
             font_path = os.path.join(self.base_path, 'cr.ttf')
             self.font = pygame.font.Font(font_path, self.size)
+            
+        elif self.type == 'din_bold':
+            font_path = os.path.join(self.base_path, 'D-DIN-Bold.ttf')
+            self.font = pygame.font.Font(font_path, self.size)
         
         elif self.type == 'action_icons':
-            font_path = os.path.join(self.base_path, 'action-icons.ttf')
+            font_path = os.path.join(self.base_path, 'action_icons.ttf')
             self.font = pygame.font.Font(font_path, self.size)
+        
+        
+        if self.styles is not None:
+            self.__apply_styles()
         
         self.height = self.font.get_height()
   
@@ -99,3 +113,12 @@ class Font():
         
     def get_width(self):
         return self.rendered_text.get_width()
+
+    def __apply_styles(self):
+        for style in self.styles:
+            if style == 'bold':
+                self.font.set_bold(True)
+            elif style == 'italic':
+                self.font.set_italic(True)
+            elif style == 'underline':
+                self.font.set_underline(True)
