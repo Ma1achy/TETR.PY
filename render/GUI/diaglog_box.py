@@ -46,14 +46,16 @@ class DialogBox():
             3,
         )
         
-        self.primary_button.draw(self.dialog_surface)
-        self.secondary_button.draw(self.dialog_surface)
+        self.primary_button.draw()
+        self.secondary_button.draw()
         
     def draw(self):
         self.window.blit(self.dialog_surface, self.dialog_rect)
          
     def handle_window_resize(self):
         self.dialog_rect.topleft = (self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2)
+        self.primary_button.offset = (self.dialog_rect.left, self.dialog_rect.top)
+        self.secondary_button.offset = (self.dialog_rect.left, self.dialog_rect.top)
     
     def update(self):
         self.primary_button.update()
@@ -65,6 +67,6 @@ class DialogBox():
         self.button_width, self.button_height = self.dialog_rect.width // 2 - self.x_padding * 1.5, self.dialog_rect.height // 2 - self.y_padding * 2
         self.button_container = pygame.Rect(0, self.dialog_rect.height // 2, self.dialog_rect.width, self.dialog_rect.height // 2)
         
-        self.primary_button   = DialogButton(self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
-        self.secondary_button = DialogButton(self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
+        self.primary_button   = DialogButton(self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
+        self.secondary_button = DialogButton(self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius)
 
