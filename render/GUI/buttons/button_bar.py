@@ -12,7 +12,7 @@ class ButtonBar(Button):
         self.surface = surface
         self.definition = definition
  
-        self.main_font = Font('din_bold', 53)
+        self.main_font = Font('d_din_bold', 53)
         self.sub_font = Font('hun2', 23)
                 
         self.y_offset = list_index * (self.height + 20) + 35
@@ -21,7 +21,7 @@ class ButtonBar(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
-
+    
     def __get_rect_and_surface(self):
         self.rect = pygame.Rect(self.start, self.y_offset, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
@@ -31,6 +31,7 @@ class ButtonBar(Button):
         draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect())
         self.render_image()
         self.render_text()
+        self.button_surface.blit(self.glow_surface, (0, 0))
               
     def render_image(self):
            
@@ -51,3 +52,4 @@ class ButtonBar(Button):
     def render_text(self):
         self.main_font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 275, - self.main_font.font.get_ascent()//2 + 5)
         self.sub_font.draw(self.button_surface, self.definition['sub_text']['display_text'], self.definition['sub_text']['colour'], 'left', 275, self.main_font.font.get_ascent()//2 + 5)
+    

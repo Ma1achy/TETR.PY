@@ -20,11 +20,6 @@ class Font():
             font_path = os.path.join(self.base_path, 'hun2.ttf')
             self.font = pygame.font.Font(font_path, self.size)
         
-        elif self.type == 'hun2_bold':
-                
-            font_path = os.path.join(self.base_path, 'hun2_bold.otf')
-            self.font = pygame.font.Font(font_path, self.size)
-        
         elif self.type == 'pfw':
 
             font_path = os.path.join(self.base_path, 'pfw.ttf')
@@ -34,7 +29,7 @@ class Font():
             font_path = os.path.join(self.base_path, 'cr.ttf')
             self.font = pygame.font.Font(font_path, self.size)
             
-        elif self.type == 'din_bold':
+        elif self.type == 'd_din_bold':
             font_path = os.path.join(self.base_path, 'D-DIN-Bold.ttf')
             self.font = pygame.font.Font(font_path, self.size)
         

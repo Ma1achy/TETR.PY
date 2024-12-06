@@ -13,8 +13,7 @@ class DialogBox():
         self.message = message
         self.buttons = buttons
         self.num_buttons = len(buttons)
-        print(self.num_buttons)
-        
+
         self.primary_button = None
         self.secondary_button = None
         
