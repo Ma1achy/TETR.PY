@@ -31,7 +31,6 @@ class ButtonBar(Button):
         draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect())
         self.render_image()
         self.render_text()
-        self.button_surface.blit(self.glow_surface, (0, 0))
               
     def render_image(self):
            
