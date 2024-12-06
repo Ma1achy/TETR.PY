@@ -43,7 +43,7 @@ class MenuManager():
     
     def init_menus(self, window):
         self.window = window
-        self.ExitDialog = DialogBox(self.window, self.Mouse, self.RenderStruct, 'EXIT TETR.PY?', None, buttons = ['CANCEL', 'EXIT'], funcs = [self.close_exit_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
+        self.ExitDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, 'EXIT TETR.PY?', None, buttons = ['CANCEL', 'EXIT'], funcs = [self.close_exit_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
          
         self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
         self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
@@ -123,6 +123,7 @@ class MenuManager():
         self.ExitDialog.handle_window_resize()
     
     def go_to_exit(self):
+        self.home_menu.reset_buttons()
         self.in_dialog = True
         self.current_dialog = self.ExitDialog
     
@@ -130,27 +131,34 @@ class MenuManager():
         self.Timing.exited = True
     
     def close_exit_dialog(self):
+        self.current_dialog.reset_buttons()
         self.in_dialog = False
         self.current_dialog = None
     
     def go_to_home(self):
+        self.home_menu.reset_buttons()
         self.current_menu = self.home_menu
     
     # home menu
     
     def go_to_multi(self):
+        self.multi_menu.reset_buttons()
         self.current_menu = self.multi_menu
     
     def go_to_solo(self):
+        self.solo_menu.reset_buttons()
         self.current_menu = self.solo_menu
     
     def go_to_records(self): 
+        self.records_menu.reset_buttons()
         self.current_menu = self.records_menu
     
     def go_to_config(self):
+        self.config_menu.reset_buttons()
         self.current_menu = self.config_menu
     
     def go_to_about(self):
+        self.about_menu.reset_buttons()
         self.current_menu = self.about_menu
     
     def go_to_github(self):

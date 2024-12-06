@@ -66,13 +66,13 @@ class Menu():
         for element in self.definition["footer_widgets"]['elements']:
             if element['type'] == 'footer_button':
                 func = self.button_functions[element['function']]
-                self.footer_widgets.append(FooterButton(func, self.Mouse, self.surface, self.surface.get_rect(), element))
+                self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element))
              
     def update(self): 
        self.main_body.update()
-       self.draw(self.surface)
        self.update_footer_widgets()
-            
+       self.draw(self.surface)
+       
     def handle_window_resize(self):
         
         self.__header_resize()
@@ -120,14 +120,20 @@ class Menu():
         
         for widget in self.footer_widgets:
             widget.update()
-            
+    
+    def reset_buttons(self):
+        if 'menu_body' in self.definition:
+            self.main_body.reset_buttons()
+          
     def draw(self, surface):
         self.main_body.draw(surface)
         self.menu_header.draw(surface)
         self.menu_footer.draw(surface)
         
         for widget in self.footer_widgets:
+            widget.draw_shadow()
             widget.draw()
+            
             
         surface.blit(self.surface, (0, 0))
             

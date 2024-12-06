@@ -1,15 +1,16 @@
 import pygame
-from utils import load_image, draw_solid_colour, draw_border, align_centre
+from utils import load_image, draw_solid_colour, draw_border, align_centre, apply_gaussian_blur_with_alpha
 from render.GUI.buttons.button import Button
 class FooterButton(Button):
-    def __init__(self, function, Mouse, surface, container, definition):
-        super().__init__(surface, Mouse, function, container, 70, 70, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False)
+    def __init__(self, Timing, function, Mouse, surface, container, definition):
+        super().__init__(Timing, surface, Mouse, function, container, 70, 70, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False)
         
         self.definition = definition
 
         self.x_start = 70
         self.y_offset = 35
-        
+        self.shadow_radius = 5
+     
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
@@ -17,8 +18,12 @@ class FooterButton(Button):
     def __get_rect_and_surface(self):
         self.rect = pygame.Rect(self.container.right - 90, self.container.bottom - self.x_start, self.width, self.height)
         self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        
+        self.shadow_rect =  pygame.Rect(self.container.right - 90 - self.shadow_radius * 2, self.container.bottom - self.x_start - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
+        self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
     def render(self):
+        self.render_shadow()
         self.render_button()
         self.render_image()
         
@@ -45,4 +50,12 @@ class FooterButton(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+    
+    def render_shadow(self):
+        pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(+self.shadow_radius * 2, +self.shadow_radius * 2, self.shadow_rect.width - 4 * self.shadow_radius, self.shadow_rect.height - 4 * self.shadow_radius))
+        self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
+        
+    def draw_shadow(self):
+        self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+
     

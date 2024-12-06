@@ -99,6 +99,14 @@ class MainBody():
             return
         
         self.back_button.update()
+    
+    def reset_buttons(self):
+        if 'menu' in self.definition:
+            for element in self.menu_elements:
+                element.reset_state()
+        
+        if 'back_button' in self.definition:
+            self.back_button.reset_state()
 
 class Logo():
     def __init__(self, container, definition):

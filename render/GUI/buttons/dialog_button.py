@@ -4,8 +4,8 @@ from utils import hex_to_rgb, align_left_edge, align_right_edge, align_centre, b
 from render.GUI.font import Font
 
 class DialogButton(Button):
-    def __init__(self, surface, Mouse, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius):
-        super().__init__(surface, Mouse, function, container, width, height, offset = (dialog_rect.left, dialog_rect.top), style = style, maintain_alpha = True)
+    def __init__(self, Timing, surface, Mouse, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius):
+        super().__init__(Timing, surface, Mouse, function, container, width, height, offset = (dialog_rect.left, dialog_rect.top), style = style, maintain_alpha = True)
         
         self.RenderStruct = RenderStruct
         
