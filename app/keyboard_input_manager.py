@@ -4,11 +4,12 @@ import time
 import queue 
 
 class KeyboardInputManager:
-    def __init__(self, Keyboard, Timing, PRINT_WARNINGS):
+    def __init__(self, Keyboard, Timing, Debug):
         
         self.Keyboard = Keyboard
         self.Timing = Timing
-        self.PRINT_WARNINGS = PRINT_WARNINGS
+        self.Debug = Debug
+        
         self.max_poll_ticks_per_iteration = 1000
         
     def start_keyboard_hook(self):
@@ -88,7 +89,8 @@ class KeyboardInputManager:
         self.queue_key_states()
         
     def input_loop(self):
-        
+        if self.Debug.PRINT_WARNINGS and self.Timing.restarts != 0:
+            print(f"\033[93mRestarting {threading.current_thread().name}...\033[0m")
         try:
             while not self.Timing.exited:
                 
@@ -112,7 +114,7 @@ class KeyboardInputManager:
                     ticks_this_iteration += 1
                     
                 if ticks_this_iteration > self.max_poll_ticks_per_iteration:
-                    if self.PRINT_WARNINGS:
+                    if self.Debug.PRINT_WARNINGS:
                         print("\033[93mWARNING: Too many ticks processed in one iteration of Input Loop, recalibrating...\033[0m")
                         
                     self.Timing.input_tick_delta_time = 1
@@ -127,12 +129,11 @@ class KeyboardInputManager:
                 
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            return
+            self.__restart((threading.current_thread().name, e))
         
         finally:
-            if self.PRINT_WARNINGS:
+            if self.Debug.PRINT_WARNINGS:
                 print(f"\033[92mInput loop Timing.exited in {threading.current_thread().name}\033[0m")
-            self.Timing.exited = True
             return
     
     def do_input_tick(self):
@@ -142,6 +143,9 @@ class KeyboardInputManager:
         
         start = time.perf_counter()
         
+        # if self.Timing.restarts == 0:
+        #     self.a = a
+            
         try:
             self.Keyboard.key_states = self.Keyboard.key_states_queue.get_nowait()
         except queue.Empty:
@@ -152,4 +156,43 @@ class KeyboardInputManager:
         
     def get_poll_rate(self):
         self.Timing.POLLING_RATE = self.Timing.input_tick_counter
+    
+    def __restart(self, error):
+        self.Debug.ERROR = error
+        MAX_RESTARTS = 2
+        self.Timing.restarts += 1
+        print(f'\033[93mAttempting restart {threading.current_thread().name}\033[0m')
+      
+        try:
+            if self.Timing.restarts > MAX_RESTARTS:
+                print(f"\033[91mMaximum restart attempts reached! \nExiting program... \nLast error: {error}\033[0m")
+                self.Timing.exited = True
+                return
+       
+            self.__do_restart()
+            
+        except Exception as e:
+            print(f"\033[93mError during restart attempt: {e}\033[0m")
+            if self.Timing.restarts > MAX_RESTARTS:
+                self.Timing.exited = True
+            else:
+                self.__restart(e)
+    
+    def __do_restart(self):
+        self.stop_keyboard_hook()
+        
+        self.Timing.POLLING_RATE = 1000
+        self.Timing.current_input_tick_time = 0
+        self.Timing.last_input_tick_time = 0
+        self.Timing.input_tick_delta_time = 0
+        self.Timing.do_first_input_tick = True
+        self.Timing.input_tick_counter = 0
+        self.Timing.input_tick_counter_last_cleared = 0
+        self.Timing.elapsed_times['input_loop'] = 0
+        self.Timing.iteration_times['input_loop'] = 1
+        self.Timing.start_times['input_loop'] = time.perf_counter()
+        
+        self.start_keyboard_hook()
+        self.input_loop()
+        
     

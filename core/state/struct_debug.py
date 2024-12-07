@@ -4,6 +4,8 @@ from typing import List
 @dataclass
 class StructDebug():
 
+   PRINT_WARNINGS: bool = False
+   ERROR: tuple = None
    max_avg_len: int = 500
    
    tick_time_list: List[float] = field(default_factory = list)

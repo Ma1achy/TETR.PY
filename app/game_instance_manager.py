@@ -2,14 +2,17 @@ import time
 import threading
 
 class GameInstanceManager():
-    def __init__(self, Timing, PRINT_WARNINGS):
+    def __init__(self, Timing, Debug):
         
         self.Timing = Timing
-        self.PRINT_WARNINGS = PRINT_WARNINGS
+        self.Debug = Debug
+        
         self.max_main_ticks_per_iteration = 256
         
     def logic_loop(self):
-        try:
+        if self.Debug.PRINT_WARNINGS and self.Timing.restarts != 0:
+            print(f"\033[93mRestarting {threading.current_thread().name}...\033[0m")
+        try:  
             while not self.Timing.exited:
                 
                 ticks_this_iteration = 0
@@ -34,7 +37,7 @@ class GameInstanceManager():
                 
                 # recalibrate if too many ticks are processed in one iteration
                 if ticks_this_iteration > self.max_main_ticks_per_iteration:
-                    if self.PRINT_WARNINGS:
+                    if self.Debug.PRINT_WARNINGS:
                         print("\033[93mWARNING: Too many ticks processed in one iteration of Logic Loop, recalibrating...\033[0m")
                         
                     self.Timing.main_tick_delta_time = 1
@@ -49,12 +52,11 @@ class GameInstanceManager():
                                  
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            return
+            self.__restart((threading.current_thread().name, e))
         
         finally:
-            if self.PRINT_WARNINGS:
+            if self.Debug.PRINT_WARNINGS:
                 print(f"\033[92mLogic loop Timing.exited in {threading.current_thread().name}\033[0m")
-            self.Timing.exited = True
             return
     
     def do_main_tick(self):
@@ -62,8 +64,47 @@ class GameInstanceManager():
         if self.Timing.exited:
             return
         
+        # if self.Timing.restarts == 0:
+        #     self.a = a
+        
         self.Timing.main_tick_counter += 1
         self.Timing.iteration_times['logic_loop'] = time.perf_counter() - start
         
     def get_tps(self):
         self.Timing.TPS = self.Timing.main_tick_counter
+    
+    def __restart(self, error):
+        self.Debug.ERROR = error
+        MAX_RESTARTS = 2
+        self.Timing.restarts += 1
+        print(f'\033[93mAttempting restart {threading.current_thread().name}\033[0m')
+      
+        try:
+            if self.Timing.restarts > MAX_RESTARTS:
+                print(f"\033[91mMaximum restart attempts reached! \nExiting program... \nLast error: {error}\033[0m")
+                self.Timing.exited = True
+                return
+       
+            self.__do_restart()
+            
+        except Exception as e:
+            print(f"\033[93mError during restart attempt: {e}\033[0m")
+            if self.Timing.restarts > MAX_RESTARTS:
+                self.Timing.exited = True
+            else:
+                self.__restart(e)
+    
+    def __do_restart(self):
+        self.Timing.current_main_tick_time = 0
+        self.Timing.last_main_tick_time = 0
+        self.Timing.main_tick_delta_time = 0
+        self.Timing.do_first_main_tick = True
+        self.Timing.main_tick_counter_last_cleared = 0
+        self.Timing.main_tick_counter = 0
+        self.Timing.TPS = self.Timing.TPS
+        self.Timing.iteration_times['logic_loop'] = 1
+        self.Timing.elapsed_times['logic_loop'] = 0
+        self.Timing.start_times['logic_loop'] = time.perf_counter()
+        self.logic_loop()
+        
+        

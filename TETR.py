@@ -32,7 +32,6 @@ class App():
     def __init__(self):
         
         self.is_focused = False
-        self.PRINT_WARNINGS = True
         self.game_instances = []
         
         self.Keyboard = Keyboard()
@@ -46,7 +45,9 @@ class App():
         self.DebugStruct = StructDebug()
         self.HandlingConfig = HandlingConfig()
         
-        self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self.Timing, self.PRINT_WARNINGS)
+        self.DebugStruct.PRINT_WARNINGS = True
+        
+        self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self.Timing, self.DebugStruct)
         self.MouseInputManager = MouseInputManager(self.Mouse)
         
         self.__init_pygame()
@@ -63,9 +64,9 @@ class App():
             UIAction.WINDOW_FULLSCREEN: ['f11'],
         }
    
-        self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing, self.PRINT_WARNINGS)
+        self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing)
         self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
-        self.GameInstanceManager = GameInstanceManager(self.Timing, self.PRINT_WARNINGS)
+        self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
         self.Render = Render(self.Config, self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
         
@@ -172,12 +173,48 @@ class App():
             self.logic_thread.join(timeout = self.Timing.tick_interval)
 
         os._exit(0)
-              
+    
+    def __restart(self, error):  # if main thread crashes, attempt to restart entire program
+        MAX_RESTARTS = 2
+        self.Timing.restarts += 1
+        print('\033[93mAttempting restart:\033[0m')
+        self.DebugStruct.ERROR = error
+        
+        try:
+            if self.Timing.restarts > MAX_RESTARTS:
+                print(f"\033[91mMaximum restart attempts reached! \nExiting program... \nLast error: {error}\033[0m")
+                self.__exit
+                return
+       
+            self.run()
+            self.__do_restart()
+            
+        except Exception as e:
+            print(f"\033[93mError during restart attempt: {e}\033[0m")
+            if self.Timing.restarts > MAX_RESTARTS:
+                self.__exit()
+            else:
+                self.__restart(e)
+                
+    def __do_restart(self):
+        self.Timing.exited = True
+        self.KeyboardInputManager.exit()
+        pygame.font.quit()
+        pygame.quit()
+        
+        if self.input_thread.is_alive():
+            self.input_thread.join(timeout = self.Timing.poll_interval)
+
+        if self.logic_thread.is_alive():
+            self.logic_thread.join(timeout = self.Timing.tick_interval)
+          
     def render_loop(self):
         """
         Render loop handles frame based updates, so drawing frames and the UI logic and handle window events.
         Tick rate is as a fast as possible.
         """
+        if self.DebugStruct.PRINT_WARNINGS and self.Timing.restarts != 0:
+            print(f"\033[93mRestarting {threading.current_thread().name}...\033[0m")
         try:
             while not self.Timing.exited:
                    
@@ -186,19 +223,21 @@ class App():
                 
                 self.Timing.frame_delta_time = (self.Timing.current_frame_time - self.Timing.last_frame_time)
                 self.Timing.last_frame_time = self.Timing.current_frame_time
-                  
+                
+                # if self.Timing.restarts == 0: # to test restart functionality
+                #     self.abc = a
+                
                 self.do_render_tick()
                 self.get_fps()
                 time.sleep(0)
                         
         except Exception as e:
-            print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            return
+            print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
+            self.__restart((threading.current_thread().name, e))
         
         finally: 
-            if self.PRINT_WARNINGS:
-                print(f"\033[92mRender loop Timing.exited in {threading.current_thread().name}\033[0m")  
-            self.Timing.exited = True
+            if self.DebugStruct.PRINT_WARNINGS:
+                print(f"\033[92mRender loop Timing exited in {threading.current_thread().name}\033[0m")  
             return
                 
     def do_render_tick(self):
@@ -253,6 +292,7 @@ class App():
     
     def __window_close_event(self, event):
         self.MenuManager.go_to_exit()
+    
 
 def main():
     app = App()

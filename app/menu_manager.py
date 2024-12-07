@@ -43,7 +43,7 @@ class MenuManager():
     
     def init_menus(self, window):
         self.window = window
-        self.ExitDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, 'EXIT TETR.PY?', None, buttons = ['CANCEL', 'EXIT'], funcs = [self.close_exit_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
+        self.ExitDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'EXIT TETR.PY?', message =  "This is a long message that needs wrapping. It should automatically wrap based on the width of the dialog box.\n You can also manually insert a new line using \\n.\n [colour=#FF0000]You can also[/colour] [colour=#FFFF00]change the text[/colour] [colour=#00FF00]colour as desired[/colour] [colour=#0000FF]using special hex tags[/colour] [colour=#Ff00FF]!!!![/colour]" , buttons = ['CANCEL', 'EXIT'], funcs = [self.close_exit_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
          
         self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
         self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')

@@ -5,6 +5,7 @@ from typing import Dict
 class Timing():
     
     exited = False
+    restarts = 0
     FPS: int = 144
     TPS: int = 256
     POLLING_RATE: int = 1000

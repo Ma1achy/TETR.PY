@@ -13,14 +13,13 @@ class UIAction(Enum):
     WINDOW_FULLSCREEN = auto()
     
 class MenuKeyboardInputHandler():
-    def __init__(self, Keyboard, key_bindings, Timing, PRINT_WARNINGS):
+    def __init__(self, Keyboard, key_bindings, Timing):
         
         self.Keyboard = Keyboard
         self.actions_to_queue = [] 
         
         self.Timing = Timing
-        self.PRINT_WARNINGS = PRINT_WARNINGS
-         
+        
         self.key_bindings = key_bindings
         self.actions = self.__get_empty_actions()
         self.key_states = self.__get_empty_key_states()

@@ -4,7 +4,7 @@ from utils import hex_to_rgb
 from render.GUI.font import Font
 from render.GUI.buttons.dialog_button import DialogButton
 from render.GUI.buttons.invisible_button import InvisibleButton
-from app.menu_kb_input_handler import UIAction
+import re
 class DialogBox():
     def __init__(self, Timing, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width):
         
@@ -30,11 +30,13 @@ class DialogBox():
         self.width = width
         self.height = 50
         
-        self.__get_height()
         self.x_padding = 10
         self.y_padding = 7
-        self.border_radius = 5    
-                   
+        self.border_radius = 5   
+        
+        self.__wrap_text(self.message, self.sub_font.font, self.width - 2 * self.x_padding)
+        self.__get_height()
+                    
         self.__get_rect_and_surface()
         self.__create_buttons()
         
@@ -45,14 +47,41 @@ class DialogBox():
             self.secondary_button.render()
         
         self.render()
-    
+
+    def __strip_tags(self, text):
+        tag_pattern = r"\[colour=#[0-9A-Fa-f]{6}\]|\[\/colour\]"
+        return re.sub(tag_pattern, "", text)
+
+    def __wrap_text(self, text, font, max_width):
+        words = re.split(r"(\s+)", text) 
+        lines = []
+        current_line = ""
+
+        for word in words:
+            stripped_word = self.__strip_tags(current_line + word)  
+            if font.size(stripped_word.strip())[0] > max_width:
+                lines.append(current_line.strip())  
+                current_line = word 
+            else:
+                current_line += word 
+
+        if current_line:
+            lines.append(current_line.strip())  
+
+        return lines
+
     def __get_height(self):
         if self.title:
             self.height += 50
-        
+
         if self.message:
-            self.height += sum(self.sub_font.font.get_height() for i, line in enumerate(self.message))
-            
+            wrapped_message = []
+            for paragraph in self.message.split('\n'):
+                wrapped_message.extend(self.__wrap_text(paragraph, self.sub_font.font, self.width - 2 * self.x_padding))
+
+            self.wrapped_message = wrapped_message
+            self.height += len(wrapped_message) * self.sub_font.font.get_height()
+          
     def __get_rect_and_surface(self):
         self.dialog_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)
         self.dialog_surface = pygame.Surface((self.dialog_rect.width, self.dialog_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
@@ -72,15 +101,29 @@ class DialogBox():
             )
         
         if self.message:
-            for i, line in enumerate(self.message):
-                self.sub_font.draw(
-                    self.dialog_surface,
-                    line,
-                    '#555555',
-                    'left_top',
-                    15,
-                    15 + (i + 1) * self.sub_font.font.get_height(),
-                )
+            tag_pattern = r"(\[colour=#[0-9A-Fa-f]{6}\]|\[\/colour\])"
+            default_colour = "#555555"
+            current_colour = default_colour
+
+            for i, line in enumerate(self.wrapped_message):
+                segments = re.split(tag_pattern, line)
+                x_offset = self.x_padding
+
+                for segment in segments:
+                    if segment.startswith("[colour="):
+                        current_colour = segment[8:-1]
+                    elif segment == "[/colour]":
+                        current_colour = default_colour 
+                    else:
+                        self.sub_font.draw(
+                            self.dialog_surface,
+                            segment,
+                            current_colour,
+                            'left_top',
+                            x_offset,
+                            self.y_padding * 5.25 + i * self.sub_font.font.get_height(),
+                        )
+                        x_offset += self.sub_font.font.size(segment)[0]
 
         if self.click_off_dissmiss:
             self.invisible_button1.draw()
