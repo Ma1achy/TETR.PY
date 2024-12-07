@@ -124,6 +124,10 @@ class Menu():
     def reset_buttons(self):
         if 'menu_body' in self.definition:
             self.main_body.reset_buttons()
+        
+        if 'footer_widgets' in self.definition:
+            for widget in self.footer_widgets:
+                widget.reset_state()
           
     def draw(self, surface):
         self.main_body.draw(surface)

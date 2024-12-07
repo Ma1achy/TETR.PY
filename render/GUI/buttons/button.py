@@ -20,7 +20,7 @@ class Button:
         self.state = None
         self.previous_state = None
         
-        self.hover_surface_transition_time = 0.25
+        self.hover_surface_transition_time = 0.35
         self.pressed_surface_transition_time = 0.1
         
         self.hover_timer = 0
