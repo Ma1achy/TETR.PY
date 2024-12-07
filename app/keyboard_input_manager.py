@@ -2,6 +2,8 @@ import threading
 import pynput.keyboard as keyboard # cannot use keyboard module as it is not supported in macOS :-)
 import time
 import queue 
+import traceback
+import logging
 
 class KeyboardInputManager:
     def __init__(self, Keyboard, Timing, Debug):
@@ -129,7 +131,9 @@ class KeyboardInputManager:
                 
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            self.__restart((threading.current_thread().name, e))
+            tb_str = traceback.format_exc()
+            logging.error("Exception occurred: %s", tb_str)
+            self.__restart((threading.current_thread().name, e, tb_str))
         
         finally:
             if self.Debug.PRINT_WARNINGS:
@@ -142,10 +146,7 @@ class KeyboardInputManager:
             return
         
         start = time.perf_counter()
-        
-        # if self.Timing.restarts == 0:
-        #     self.a = a
-            
+              
         try:
             self.Keyboard.key_states = self.Keyboard.key_states_queue.get_nowait()
         except queue.Empty:
@@ -179,8 +180,6 @@ class KeyboardInputManager:
                 self.__restart(e)
     
     def __do_restart(self):
-        self.stop_keyboard_hook()
-        
         self.Timing.POLLING_RATE = 1000
         self.Timing.current_input_tick_time = 0
         self.Timing.last_input_tick_time = 0
@@ -191,8 +190,7 @@ class KeyboardInputManager:
         self.Timing.elapsed_times['input_loop'] = 0
         self.Timing.iteration_times['input_loop'] = 1
         self.Timing.start_times['input_loop'] = time.perf_counter()
-        
-        self.start_keyboard_hook()
+ 
         self.input_loop()
         
     

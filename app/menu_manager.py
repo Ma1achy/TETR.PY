@@ -16,6 +16,7 @@ class MenuManager():
         self.Debug = Debug
         
         self.debug_overlay = False
+        self.show_error_dialog = False
         self.is_focused = False
         
         self.GUI_debug = GUIDebug(self.Config, self.RenderStruct, self.Debug)
@@ -43,7 +44,7 @@ class MenuManager():
     
     def init_menus(self, window):
         self.window = window
-        self.ExitDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'EXIT TETR.PY?', message =  "This is a long message that needs wrapping. It should automatically wrap based on the width of the dialog box.\n You can also manually insert a new line using \\n.\n [colour=#FF0000]You can also[/colour] [colour=#FFFF00]change the text[/colour] [colour=#00FF00]colour as desired[/colour] [colour=#0000FF]using special hex tags[/colour] [colour=#Ff00FF]!!!![/colour]" , buttons = ['CANCEL', 'EXIT'], funcs = [self.close_exit_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
+        self.ExitDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'EXIT TETR.PY?', message = None , buttons = ['CANCEL', 'EXIT'], funcs = [self.close_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
          
         self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
         self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
@@ -56,9 +57,22 @@ class MenuManager():
         
         self.in_dialog = False
         self.current_dialog = None
-        
+    
     def tick(self):
         self.get_actions()
+        
+        if self.Debug.ERROR:
+            self.current_menu = self.home_menu
+            thread, error, trace = self.Debug.ERROR
+            self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error} ({thread})[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nIf the problem persits, please report it at: \n https://github.com/Ma1achy/TETR.PY", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, self.copy_to_clipboard], click_off_dissmiss = True, width = 800)
+            self.show_error_dialog = True
+            self.Debug.ERROR = False
+        
+        if self.show_error_dialog:
+            self.show_error_dialog = False
+            self.open_error_dialog()
+            
+            
  
     def get_actions(self):
         actions = self.Keyboard.menu_actions_queue.get_nowait()
@@ -130,11 +144,21 @@ class MenuManager():
     def quit_game(self):
         self.Timing.exited = True
     
-    def close_exit_dialog(self):
+    def copy_to_clipboard(self):
+        self.current_dialog.reset_buttons()
+        print('copying to clipboard')
+        
+    
+    def close_dialog(self):
         self.current_dialog.reset_buttons()
         self.in_dialog = False
         self.current_dialog = None
     
+    def open_error_dialog(self):
+        self.current_menu.reset_buttons()
+        self.in_dialog = True
+        self.current_dialog = self.ErrorDialog
+             
     def go_to_home(self):
         self.current_menu.reset_buttons()
         self.current_menu = self.home_menu

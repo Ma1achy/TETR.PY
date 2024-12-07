@@ -19,6 +19,11 @@ from app.menu_manager import MenuManager
 from app.mouse_input_handler import MouseInputManager
 from app.state.keyboard import Keyboard
 from app.state.mouse import Mouse
+import logging
+import threading
+import traceback
+
+logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 #TODO: change renderer methods to NOT use methods ASSOCIATED WITH A GAME INSTANCE
 #      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
@@ -169,6 +174,7 @@ class App():
         if self.input_thread.is_alive():
             self.input_thread.join(timeout = self.Timing.poll_interval)
 
+
         if self.logic_thread.is_alive():
             self.logic_thread.join(timeout = self.Timing.tick_interval)
 
@@ -185,9 +191,8 @@ class App():
                 print(f"\033[91mMaximum restart attempts reached! \nExiting program... \nLast error: {error}\033[0m")
                 self.__exit
                 return
-       
+
             self.run()
-            self.__do_restart()
             
         except Exception as e:
             print(f"\033[93mError during restart attempt: {e}\033[0m")
@@ -195,19 +200,7 @@ class App():
                 self.__exit()
             else:
                 self.__restart(e)
-                
-    def __do_restart(self):
-        self.Timing.exited = True
-        self.KeyboardInputManager.exit()
-        pygame.font.quit()
-        pygame.quit()
-        
-        if self.input_thread.is_alive():
-            self.input_thread.join(timeout = self.Timing.poll_interval)
-
-        if self.logic_thread.is_alive():
-            self.logic_thread.join(timeout = self.Timing.tick_interval)
-          
+                      
     def render_loop(self):
         """
         Render loop handles frame based updates, so drawing frames and the UI logic and handle window events.
@@ -223,17 +216,16 @@ class App():
                 
                 self.Timing.frame_delta_time = (self.Timing.current_frame_time - self.Timing.last_frame_time)
                 self.Timing.last_frame_time = self.Timing.current_frame_time
-                
-                # if self.Timing.restarts == 0: # to test restart functionality
-                #     self.abc = a
-                
+                  
                 self.do_render_tick()
                 self.get_fps()
                 time.sleep(0)
                         
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
-            self.__restart((threading.current_thread().name, e))
+            tb_str = traceback.format_exc()
+            logging.error("Exception occurred: %s", tb_str)
+            self.__restart((threading.current_thread().name, e, tb_str))
         
         finally: 
             if self.DebugStruct.PRINT_WARNINGS:
@@ -246,7 +238,7 @@ class App():
        
         if self.Timing.exited:
             return
-        
+                
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.WINDOWCLOSE: # stop the window close event from being processed by pygame
                 self.__window_close_event(event)

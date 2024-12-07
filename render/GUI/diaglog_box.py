@@ -5,6 +5,7 @@ from render.GUI.font import Font
 from render.GUI.buttons.dialog_button import DialogButton
 from render.GUI.buttons.invisible_button import InvisibleButton
 import re
+import math
 class DialogBox():
     def __init__(self, Timing, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width):
         
@@ -53,20 +54,36 @@ class DialogBox():
         return re.sub(tag_pattern, "", text)
 
     def __wrap_text(self, text, font, max_width):
-        words = re.split(r"(\s+)", text) 
+        if text is None:
+            return
+        
+        words = re.split(r"(\s+)", text)
         lines = []
         current_line = ""
 
         for word in words:
-            stripped_word = self.__strip_tags(current_line + word)  
+            stripped_word = self.__strip_tags(current_line + word)
             if font.size(stripped_word.strip())[0] > max_width:
-                lines.append(current_line.strip())  
-                current_line = word 
+                if font.size(word.strip())[0] > max_width:
+                    # Split the word if it's too long
+                    while font.size(word.strip())[0] > max_width:
+                        for i in range(1, len(word) + 1):
+                            if font.size(word[:i].strip())[0] > max_width - font.size(current_line.strip())[0]:
+            
+                                lines.append(current_line.strip() + word[:i-1])
+                                word = word[i-1:]
+                                current_line = ""
+                                break
+                    current_line += word
+                else:
+                    # Add the current line to lines and start a new line with the word
+                    lines.append(current_line.strip())
+                    current_line = word
             else:
-                current_line += word 
+                current_line += word
 
         if current_line:
-            lines.append(current_line.strip())  
+            lines.append(current_line.strip())
 
         return lines
 
@@ -96,7 +113,7 @@ class DialogBox():
                 self.title,
                 '#222222',
                 'left_top',
-                15,
+                10,
                 3,
             )
         

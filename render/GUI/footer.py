@@ -65,7 +65,7 @@ class Footer:
         image = pygame.transform.smoothscale(self.image, (new_width, new_height))
         image_rect = align_centre(self.footer_surface.get_rect(), image.get_width(), image.get_height(), 0, 0)
 
-        self.footer_surface.blit(image, (image_rect.left + self.footer_surface.get_rect().width//2 - new_width - 40, image_rect.top))
+        self.footer_surface.blit(image, (image_rect.left + self.footer_surface.get_rect().width//2 - new_width - 45, image_rect.top))
     
     def __render_shadow(self):
         pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rect.width - 4 * self.shadow_radius, self.shadow_rect.height - 4 * self.shadow_radius))

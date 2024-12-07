@@ -1,6 +1,7 @@
 import time
 import threading
-
+import traceback
+import logging
 class GameInstanceManager():
     def __init__(self, Timing, Debug):
         
@@ -52,7 +53,9 @@ class GameInstanceManager():
                                  
         except Exception as e:
             print(f"\033[91mError in {threading.current_thread().name}: {e}\033[0m")
-            self.__restart((threading.current_thread().name, e))
+            tb_str = traceback.format_exc()
+            logging.error("Exception occurred: %s", tb_str)
+            self.__restart((threading.current_thread().name, e, tb_str))
         
         finally:
             if self.Debug.PRINT_WARNINGS:
@@ -63,10 +66,7 @@ class GameInstanceManager():
         start = time.perf_counter()
         if self.Timing.exited:
             return
-        
-        # if self.Timing.restarts == 0:
-        #     self.a = a
-        
+
         self.Timing.main_tick_counter += 1
         self.Timing.iteration_times['logic_loop'] = time.perf_counter() - start
         
