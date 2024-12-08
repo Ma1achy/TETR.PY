@@ -203,12 +203,12 @@ class KeyboardInputManager:
         timestamp = datetime.datetime.now().isoformat()
         
         env_info = {
-            "os": os.name,
-            "platform": sys.platform,
-            "python_version": sys.version,
-            "current_working_directory": os.getcwd(),
-            "imported_packages": self.__get_imported_packages(),
-            "build_info": self.__get_build_info()
+            "OS": os.name,
+            "Platform": sys.platform,
+            "Python Version": sys.version,
+            "Current Working Directory": os.getcwd(),
+            "Imported Packages": self.__get_imported_packages(),
+            "Build Info": self.__get_build_info()
         }
         
         
