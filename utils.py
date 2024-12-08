@@ -1,6 +1,9 @@
 import pygame
 import numpy as np
 from scipy.ndimage import gaussian_filter
+import json
+import subprocess
+import platform
 
 def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     """
@@ -527,3 +530,18 @@ def remove_from_queue(q):
             return q.get()
         else:
             return None
+
+def copy2clipboard(text):
+    """
+    Copy text to the clipboard
+    
+    args:
+        text (str): The text to copy
+    """
+    if isinstance(text, dict):
+        text = json.dumps(text, indent=4)
+        
+    if platform.system() == "Darwin":
+        subprocess.run("pbcopy", universal_newlines = True, input = text)
+    elif platform.system() == "Windows":
+        subprocess.run("clip", universal_newlines = True, input = text)

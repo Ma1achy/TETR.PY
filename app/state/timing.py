@@ -6,6 +6,9 @@ class Timing():
     
     exited = False
     restarts = 0
+    restart_interval = 10
+    last_restart_time: float = 0
+    
     FPS: int = 144
     TPS: int = 256
     POLLING_RATE: int = 1000

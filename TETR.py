@@ -184,27 +184,27 @@ class App():
 
         os._exit(0)
     
-    def __restart(self, error):  # if main thread crashes, attempt to restart entire program
-        MAX_RESTARTS = 2
+    def restart(self, error):  # if main thread crashes, attempt to restart entire program
         self.Timing.restarts += 1
+        current_time = time.perf_counter()
+    
+        time_since_last_restart = current_time - self.Timing.last_restart_time
+       
+        if time_since_last_restart < self.Timing.restart_interval :
+            print(f"\033[91mRestart attempt too soon! \nExiting program... \nLast error: \n{error}\033[0m")
+            self.__exit()
+            return
+        
+        self.Timing.last_restart_time = current_time
         print('\033[93mAttempting restart:\033[0m')
         self.DebugStruct.ERROR = error
         
         try:
-            if self.Timing.restarts > MAX_RESTARTS:
-                print(f"\033[91mMaximum restart attempts reached! \nExiting program... \nLast error: {error}\033[0m")
-                self.__exit
-                return
-
             self.run()
-            
         except Exception as e:
             print(f"\033[93mError during restart attempt: {e}\033[0m")
-            if self.Timing.restarts > MAX_RESTARTS:
-                self.__exit()
-            else:
-                self.__restart(e)
-                      
+            self.restart(e)
+            
     def render_loop(self):
         """
         Render loop handles frame based updates, so drawing frames and the UI logic and handle window events.
@@ -226,7 +226,7 @@ class App():
                 time.sleep(0)
                         
         except Exception as e:
-            self.__handle_exception(e)
+            self.handle_exception(e)
         
         finally: 
             if self.DebugStruct.PRINT_WARNINGS:
@@ -241,7 +241,9 @@ class App():
             return
         
         if self.Timing.restarts == 0:
-            pygame.draw.rect(self.RenderStruct.screen, (0, 0, 0), self.RenderStruct.screen.get_rect())
+            arr = [1,2,3,4,5,6]
+            h = arr + "a"    
+            arr = arr[::-1]
             
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.WINDOWCLOSE: # stop the window close event from being processed by pygame
@@ -289,15 +291,12 @@ class App():
     def __window_close_event(self, event):
         self.MenuManager.go_to_exit()
     
-    def __handle_exception(self, e):
+    def handle_exception(self, e):
         print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
         
-        tb = traceback.TracebackException.from_exception(e)
         tb_str = traceback.format_exc()
         current_thread = threading.current_thread()
         timestamp = datetime.datetime.now().isoformat()
-        
-        local_vars = {frame.name: frame.locals for frame in tb.stack}
         
         env_info = {
             "os": os.name,
@@ -308,11 +307,20 @@ class App():
             "build_info": self.__get_build_info()
         }
         
-        logging.error("Exception occurred at %s in thread %s: %s", timestamp, current_thread.name, tb_str)
-        logging.error("Local variables at the time of the exception: %s", local_vars)
+        
+        logging.error(f"\033[91m{'Exception occurred at %s in thread %s: %s'}\033[0m", timestamp, current_thread.name, tb_str)
         logging.error("Environment information: %s", env_info)
         
-        self.__restart((current_thread.name, e, tb_str))
+        info = {
+            "Exception Information": {
+            "Timestamp": timestamp,
+            "Thread": current_thread.name,
+            "Traceback": tb_str
+            },
+            
+            "Environment Information": env_info
+        }
+        self.restart((info, e, tb_str))
     
     def __get_imported_packages(self):
         imported_packages = {}

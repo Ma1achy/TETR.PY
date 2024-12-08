@@ -4,7 +4,7 @@ from render.GUI.debug_overlay import GUIDebug
 from render.GUI.focus_overlay import GUIFocus
 from render.GUI.diaglog_box import DialogBox
 import webbrowser
-
+from utils import copy2clipboard
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Config, Timing, RenderStruct, Debug):
 
@@ -60,18 +60,8 @@ class MenuManager():
     
     def tick(self):
         self.get_actions()
+        self.handle_exceptions()
         
-        if self.Debug.ERROR:
-            self.current_menu = self.home_menu
-            thread, error, trace = self.Debug.ERROR
-            self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, lambda: self.copy_to_clipboard(trace)], click_off_dissmiss = True, width = 700)
-            self.show_error_dialog = True
-            self.Debug.ERROR = False
-        
-        if self.show_error_dialog:
-            self.show_error_dialog = False
-            self.open_error_dialog()
-            
     def get_actions(self):
         actions = self.Keyboard.menu_actions_queue.get_nowait()
         self.__perform_action(actions)
@@ -134,8 +124,8 @@ class MenuManager():
         self.GUI_focus.handle_window_resize()
         self.ExitDialog.handle_window_resize()
         
-        if self.ErrorDialog:
-            self.ErrorDialog.handle_window_resize()
+        if self.current_dialog:
+            self.current_dialog.handle_window_resize()
     
     def go_to_exit(self):
         self.current_menu.reset_buttons()
@@ -146,10 +136,8 @@ class MenuManager():
         self.Timing.exited = True
     
     def copy_to_clipboard(self, item):
-        print(f'''Copied to clipboard: {item}''')
-        
         self.current_dialog.reset_buttons()
-   
+        copy2clipboard(item)
         
     def close_dialog(self):
         self.current_dialog.reset_buttons()
@@ -158,9 +146,12 @@ class MenuManager():
         self.ErrorDialog = None
     
     def open_error_dialog(self):
+        if not self.show_error_dialog:
+            return
+        
+        self.show_error_dialog = False
         self.current_menu.reset_buttons()
         self.in_dialog = True
-        self.current_dialog = self.ErrorDialog
              
     def go_to_home(self):
         self.current_menu.reset_buttons()
@@ -206,5 +197,18 @@ class MenuManager():
     def go_to_custom(self):
         pass
     
+    def handle_exceptions(self):
+        self.__create_error_message_dialog()
+        self.open_error_dialog()
+        
+    def __create_error_message_dialog(self): 
+        if self.Debug.ERROR is None:
+            return
+        
+        info, error, trace = self.Debug.ERROR
+        self.current_dialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = True, width = 700)
+        
+        self.show_error_dialog = True
+        self.Debug.ERROR = None
     
     
