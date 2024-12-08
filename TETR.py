@@ -22,6 +22,10 @@ from app.state.mouse import Mouse
 import logging
 import threading
 import traceback
+import datetime
+import sys
+import json
+import pkg_resources
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -222,10 +226,7 @@ class App():
                 time.sleep(0)
                         
         except Exception as e:
-            print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
-            tb_str = traceback.format_exc()
-            logging.error("Exception occurred: %s", tb_str)
-            self.__restart((threading.current_thread().name, e, tb_str))
+            self.__handle_exception(e)
         
         finally: 
             if self.DebugStruct.PRINT_WARNINGS:
@@ -238,7 +239,10 @@ class App():
        
         if self.Timing.exited:
             return
-                
+        
+        if self.Timing.restarts == 0:
+            pygame.draw.rect(self.RenderStruct.screen, (0, 0, 0), self.RenderStruct.screen.get_rect())
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.WINDOWCLOSE: # stop the window close event from being processed by pygame
                 self.__window_close_event(event)
@@ -285,6 +289,46 @@ class App():
     def __window_close_event(self, event):
         self.MenuManager.go_to_exit()
     
+    def __handle_exception(self, e):
+        print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
+        
+        tb = traceback.TracebackException.from_exception(e)
+        tb_str = traceback.format_exc()
+        current_thread = threading.current_thread()
+        timestamp = datetime.datetime.now().isoformat()
+        
+        local_vars = {frame.name: frame.locals for frame in tb.stack}
+        
+        env_info = {
+            "os": os.name,
+            "platform": sys.platform,
+            "python_version": sys.version,
+            "current_working_directory": os.getcwd(),
+            "imported_packages": self.__get_imported_packages(),
+            "build_info": self.__get_build_info()
+        }
+        
+        logging.error("Exception occurred at %s in thread %s: %s", timestamp, current_thread.name, tb_str)
+        logging.error("Local variables at the time of the exception: %s", local_vars)
+        logging.error("Environment information: %s", env_info)
+        
+        self.__restart((current_thread.name, e, tb_str))
+    
+    def __get_imported_packages(self):
+        imported_packages = {}
+        for name, module in sys.modules.items():
+            if name in pkg_resources.working_set.by_key:
+                imported_packages[name] = pkg_resources.working_set.by_key[name].version
+        return imported_packages
+
+    def __get_build_info(self):
+        path = os.path.join(os.getcwd(), 'app/state/build_info.json')
+        try:
+            with open(path, 'r') as file:
+                build_info = json.load(file)
+        except Exception as e:
+            build_info = None
+        return build_info
 
 def main():
     app = App()

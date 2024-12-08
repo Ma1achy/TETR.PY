@@ -21,7 +21,7 @@ class MenuManager():
         
         self.GUI_debug = GUIDebug(self.Config, self.RenderStruct, self.Debug)
         self.GUI_focus = GUIFocus(self.RenderStruct)
-       
+        self.ErrorDialog = None
             
         self.button_functions = {
             "go_to_exit": self.go_to_exit,
@@ -64,7 +64,7 @@ class MenuManager():
         if self.Debug.ERROR:
             self.current_menu = self.home_menu
             thread, error, trace = self.Debug.ERROR
-            self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error} ({thread})[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nIf the problem persits, please report it at: \n https://github.com/Ma1achy/TETR.PY", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, self.copy_to_clipboard], click_off_dissmiss = True, width = 800)
+            self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, lambda: self.copy_to_clipboard(trace)], click_off_dissmiss = True, width = 700)
             self.show_error_dialog = True
             self.Debug.ERROR = False
         
@@ -72,8 +72,6 @@ class MenuManager():
             self.show_error_dialog = False
             self.open_error_dialog()
             
-            
- 
     def get_actions(self):
         actions = self.Keyboard.menu_actions_queue.get_nowait()
         self.__perform_action(actions)
@@ -135,6 +133,9 @@ class MenuManager():
         self.GUI_debug.handle_window_resize()
         self.GUI_focus.handle_window_resize()
         self.ExitDialog.handle_window_resize()
+        
+        if self.ErrorDialog:
+            self.ErrorDialog.handle_window_resize()
     
     def go_to_exit(self):
         self.current_menu.reset_buttons()
@@ -144,15 +145,17 @@ class MenuManager():
     def quit_game(self):
         self.Timing.exited = True
     
-    def copy_to_clipboard(self):
-        self.current_dialog.reset_buttons()
-        print('copying to clipboard')
+    def copy_to_clipboard(self, item):
+        print(f'''Copied to clipboard: {item}''')
         
-    
+        self.current_dialog.reset_buttons()
+   
+        
     def close_dialog(self):
         self.current_dialog.reset_buttons()
         self.in_dialog = False
         self.current_dialog = None
+        self.ErrorDialog = None
     
     def open_error_dialog(self):
         self.current_menu.reset_buttons()
