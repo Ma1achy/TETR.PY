@@ -545,3 +545,7 @@ def copy2clipboard(text):
         subprocess.run("pbcopy", universal_newlines = True, input = text)
     elif platform.system() == "Windows":
         subprocess.run("clip", universal_newlines = True, input = text)
+
+def smoothstep_interpolate(start, end, progress):
+    """Interpolate between start and end using smoothstep."""
+    return smoothstep(progress) * (end - start) + start

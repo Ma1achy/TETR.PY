@@ -240,11 +240,6 @@ class App():
         if self.Timing.exited:
             return
         
-        if self.Timing.restarts == 0:
-            arr = [1,2,3,4,5,6]
-            h = arr + "a"    
-            arr = arr[::-1]
-            
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.WINDOWCLOSE: # stop the window close event from being processed by pygame
                 self.__window_close_event(event)

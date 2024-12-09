@@ -6,3 +6,5 @@ class InvisibleButton(Button):
         super().__init__(Timing, surface, Mouse, function, container, width = container.width, height = container.height, offset = (0, 0), style = None, maintain_alpha = False)
 
         self.get_rect_and_surface()
+        
+        

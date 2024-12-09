@@ -18,10 +18,15 @@ class MainBody():
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
-    
+        self.get_cached_surface()
+
     def __get_rect_and_surface(self):
         self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.cached_surface = self.body_surface.copy()
 
+    def get_cached_surface(self):
+        self.cached_surface = self.body_surface.copy()
+    
     def __init_elements(self):
         self.menu_elements = []
         self.__init_menu_elements()
@@ -50,7 +55,7 @@ class MainBody():
             return
         
         self.logo = Logo(self.body_surface.get_rect(), self.definition['logo'])
-        
+ 
     def render(self):
         self.render_logo()
         self.render_menu()
@@ -77,28 +82,29 @@ class MainBody():
     
     def draw(self, surface):
         surface.blit(self.body_surface, self.rect.topleft)
+        self.body_surface.fill((0, 0, 0, 0))
     
     def handle_window_resize(self):
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
     
-    def update(self):
-        self.__update_menu()
-        self.__update_back_button()
-    
-    def __update_menu(self):
+    def update(self, in_dialog):
+        self.__update_menu(in_dialog)
+        self.__update_back_button(in_dialog)
+        
+    def __update_menu(self, in_dialog):
         if 'menu' not in self.definition:
             return
         
         for element in self.menu_elements:
-            element.update()
-    
-    def __update_back_button(self):
+            element.update(in_dialog)
+            
+    def __update_back_button(self, in_dialog):
         if 'back_button' not in self.definition:
             return
         
-        self.back_button.update()
+        self.back_button.update(in_dialog)
     
     def reset_buttons(self):
         if 'menu' in self.definition:

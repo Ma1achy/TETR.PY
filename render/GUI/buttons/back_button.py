@@ -5,11 +5,17 @@ from render.GUI.buttons.button import Button
 
 class BackButton(Button):
     def __init__(self, function, Mouse, Timing, surface, container, definition):
-        super().__init__(Timing, surface, Mouse, function, container, 300, 60, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False)
+        super().__init__(Timing, surface, Mouse, function, container, 300, 60, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False, slider = 'right')
 
         self.definition = definition
 
-        self.x_start = 150
+        self.default_x_position = 150
+        self.hovered_x_position = 170
+        self.pressed_x_position = 185
+        
+        self.x_position = self.default_x_position
+        self.y_offset = 15
+        
         self.font = Font('hun2', 33)
         self.shadow_radius = 5
            
@@ -18,10 +24,10 @@ class BackButton(Button):
         self.get_overlays()
            
     def __get_rect_and_surface(self):
-        self.rect = pygame.Rect(self.container.left - self.x_start, 15, self.width, self.height)
+        self.rect = pygame.Rect(self.container.left - self.x_position, self.y_offset, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
-        self.shadow_rect = pygame.Rect(self.container.left - self.x_start - self.shadow_radius * 2, 15 - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
+        self.shadow_rect = pygame.Rect(self.container.left - self.x_position - self.shadow_radius * 2, self.y_offset - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
     def render(self):

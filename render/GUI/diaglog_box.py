@@ -1,11 +1,11 @@
 from render.render_new import StructRender
 import pygame
-from utils import hex_to_rgb
+from utils import hex_to_rgb, smoothstep, TransformSurface
 from render.GUI.font import Font
 from render.GUI.buttons.dialog_button import DialogButton
 from render.GUI.buttons.invisible_button import InvisibleButton
 import re
-import math
+
 class DialogBox():
     def __init__(self, Timing, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width):
         
@@ -34,6 +34,13 @@ class DialogBox():
         self.x_padding = 10
         self.y_padding = 7
         self.border_radius = 5   
+        
+        self.closed = False
+        self.alpha = 0
+        self.do_animate_appear = True
+        self.do_animate_disappear = False
+        self.timer = 0
+        self.animation_length = 0.35
         
         self.__wrap_text(self.message, self.sub_font.font, self.width - 2 * self.x_padding)
         self.__get_height()
@@ -155,6 +162,9 @@ class DialogBox():
             self.secondary_button.draw()
         
     def draw(self):
+        if self.do_animate_appear or self.do_animate_disappear:
+            return
+        
         self.window.blit(self.dialog_surface, self.dialog_rect)
             
     def update(self):
@@ -164,7 +174,9 @@ class DialogBox():
         
         if self.secondary_button is not None:
             self.secondary_button.update()
-        self.render()
+ 
+        self.animate_appear()
+        self.animate_disappear()
         self.draw()
     
     def __update_click_off_buttons(self):
@@ -229,5 +241,42 @@ class DialogBox():
             self.invisible_button2.reset_state()
             self.invisible_button3.reset_state()
             self.invisible_button4.reset_state()
+    
+    def animate_appear(self):
+        if not self.do_animate_appear:
+            return
+        
+        if self.timer >= self.animation_length:
+            self.timer = self.animation_length
+            self.do_animate_appear = False
+            self.timer = 0
+            return
+            
+        self.timer += self.Timing.frame_delta_time
+        self.alpha = min(255, smoothstep(self.timer / self.animation_length) * 255)
+        self.dialog_surface.set_alpha(self.alpha)
 
-  
+        self.animation_surface = TransformSurface(self.dialog_surface, smoothstep(self.timer / self.animation_length), 0, pygame.Vector2(self.dialog_rect.width//2, self.dialog_rect.height//2), pygame.Vector2(self.RenderStruct.WINDOW_WIDTH//2, self.RenderStruct.WINDOW_HEIGHT//2), pygame.Vector2(0, 0))
+        self.window.blit(self.animation_surface[0], self.animation_surface[1].topleft)
+    
+    def animate_disappear(self):
+     
+        if not self.do_animate_disappear:
+            return
+    
+        if self.timer >= self.animation_length:
+            self.timer = self.animation_length
+            self.do_animate_disappear = False
+            self.closed = True
+            return
+        
+        self.timer += self.Timing.frame_delta_time
+        self.alpha = max(0, 255 - smoothstep(self.timer / self.animation_length) * 255)
+        self.dialog_surface.set_alpha(self.alpha)
+        
+        self.animation_surface = TransformSurface(self.dialog_surface, max(0, 1 - smoothstep(self.timer / self.animation_length)), 0, pygame.Vector2(self.dialog_rect.width//2, self.dialog_rect.height//2), pygame.Vector2(self.RenderStruct.WINDOW_WIDTH//2, self.RenderStruct.WINDOW_HEIGHT//2), pygame.Vector2(0, 0))
+        self.window.blit(self.animation_surface[0], self.animation_surface[1].topleft)
+            
+    def close(self):
+        self.do_animate_disappear = True
+        self.timer = 0
