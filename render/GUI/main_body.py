@@ -67,7 +67,7 @@ class MainBody():
     
         self.logo.draw(self.body_surface)
     
-    def render_menu(self):
+    def render_menu(self):    
         if 'menu' not in self.definition:
             return
         
@@ -81,16 +81,16 @@ class MainBody():
         self.back_button.draw()
     
     def draw(self, surface):
-        self.logo.draw(self.body_surface)
         surface.blit(self.body_surface, self.rect.topleft)
         self.body_surface.fill((0, 0, 0, 0))
-    
+       
     def handle_window_resize(self):
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
     
     def update(self, in_dialog):
+        self.__update_logo()
         self.__update_menu(in_dialog)
         self.__update_back_button(in_dialog)
         
@@ -106,7 +106,13 @@ class MainBody():
             return
         
         self.back_button.update(in_dialog)
-    
+
+    def __update_logo(self):
+        if 'logo' not in self.definition:
+            return
+
+        self.logo.draw(self.body_surface)
+        
     def reset_buttons(self):
         if 'menu' in self.definition:
             for element in self.menu_elements:

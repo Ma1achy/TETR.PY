@@ -44,6 +44,12 @@ class Button:
         self.shadow_radius = 5
         
     def get_rect_and_surface(self):
+        if self.width < 1:
+            self.width = 1
+        
+        if self.height < 1:
+            self.height = 1
+            
         self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
@@ -131,7 +137,8 @@ class Button:
         
         self.check_hover()
         self.check_events()
-
+        self.draw()
+        
         if self.state is None and self.previous_state is None:
             self.slider_hover_start_timer = 0
             
@@ -140,9 +147,7 @@ class Button:
             
             if self.slider_pressed_end_timer > 0 and self.slider_pressed_end_timer < self.pressed_slider_end_length:
                 self.slider_pressed_end_animation()
-                
-            self.draw()
-              
+                  
         if self.state == 'hovered':
             self.handle_hover_start_events()
         
@@ -158,7 +163,7 @@ class Button:
     def handle_hover_start_events(self):
         self.slider_hover_end_timer = 0
         self.slider_hover_start_animation()
-        self.draw()
+       # self.draw()
         self.animate_hover_surface_transition()
         self.hover_timer += self.Timing.frame_delta_time
         
@@ -170,7 +175,7 @@ class Button:
     def handle_hover_end_events(self):
         self.slider_hover_start_timer = 0
         self.slider_hover_end_animation()
-        self.draw()
+       # self.draw()
         self.animate_hover_surface_transition()
         self.hover_timer -= self.Timing.frame_delta_time
      
@@ -182,7 +187,7 @@ class Button:
     def handle_pressed_start_events(self):
         self.slider_pressed_end_timer = 0
         self.slider_pressed_start_animation()
-        self.draw()
+       # self.draw()
         self.animate_pressed_surface_transition()
         self.pressed_timer += self.Timing.frame_delta_time
         
@@ -194,7 +199,7 @@ class Button:
     def handle_pressed_end_events(self):
         self.slider_pressed_start_timer = 0
         self.slider_pressed_end_animation()
-        self.draw()
+       # self.draw()
         self.animate_pressed_surface_transition()
         self.pressed_timer -= self.Timing.frame_delta_time
                
