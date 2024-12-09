@@ -11,9 +11,9 @@ class FooterButton(Button):
         self.y_offset = -5
         
         
-        self.default_y_position =  70
-        self.hovered_y_position = 60
-        self.pressed_y_position = 50
+        self.default_y_position =  62
+        self.hovered_y_position = 70
+        self.pressed_y_position = 75
         
         self.x_position = self.container.right + self.x_offset
         self.default_x_position = self.x_position, self.container.bottom
