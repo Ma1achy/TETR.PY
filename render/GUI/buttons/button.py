@@ -260,15 +260,15 @@ class Button:
         
         if self.slider == 'left':
             self.x_position = self.default_x_position
-            self.rect.topleft = (self.x_position, self.y_offset)
-            self.shadow_rect.topleft = (self.x_position - self.shadow_radius * 2, self.y_offset - self.shadow_radius * 2)
+            self.rect.topleft = (self.x_position, self.y_position)
+            self.shadow_rect.topleft = (self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2)
         if self.slider == 'right':
             self.x_position = self.default_x_position
-            self.rect.topright = (self.x_position, self.y_offset)
-            self.shadow_rect.topright = (self.x_position + self.shadow_radius * 2, self.y_offset - self.shadow_radius * 2)
+            self.rect.topright = (self.x_position, self.y_position)
+            self.shadow_rect.topright = (self.x_position + self.shadow_radius * 2, self.y_position - self.shadow_radius * 2)
         if self.slider == 'up':
             self.y_position = self.default_y_position
-            self.rect.topleft = (self.x_position, self.container.bottom - self.y_position + self.y_offset)
+            self.rect.topleft = (self.x_position, self.container.bottom - self.y_position)
             self.shadow_rect.topleft = self.rect.topleft[0] - self.shadow_radius * 2, self.rect.topleft[1] - self.shadow_radius * 2
       
     def animate_slider(self, timer, duration, start_pos, end_pos, dir, shadow_offset):
@@ -303,19 +303,19 @@ class Button:
         # Update position
         if dir == 'left':
             self.x_position = new_pos
-            self.rect.topleft = (self.x_position, self.y_offset)
-            self.shadow_rect.topleft = (self.x_position - shadow_offset, self.y_offset - shadow_offset)
+            self.rect.topleft = (self.x_position, self.y_position)
+            self.shadow_rect.topleft = (self.x_position - shadow_offset, self.y_position - shadow_offset)
         elif dir == 'right':
             self.x_position = new_pos
-            self.rect.topright = (self.x_position, self.y_offset)
-            self.shadow_rect.topright = (self.x_position + shadow_offset, self.y_offset - shadow_offset)
+            self.rect.topright = (self.x_position, self.y_position)
+            self.shadow_rect.topright = (self.x_position + shadow_offset, self.y_position - shadow_offset)
         elif dir == 'up':
             self.y_position = new_pos
             self.rect.topleft = (self.x_position, self.container.bottom - self.y_position)
             self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset)
         elif dir == 'down':
             self.y_position = new_pos
-            self.rect.topleft = (self.x_position, self.container.top + self.y_position + self.y_offset)
+            self.rect.topleft = (self.x_position, self.container.top + self.y_position)
             self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset)
 
         return timer, progress

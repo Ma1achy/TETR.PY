@@ -81,6 +81,7 @@ class MainBody():
         self.back_button.draw()
     
     def draw(self, surface):
+        self.logo.draw(self.body_surface)
         surface.blit(self.body_surface, self.rect.topleft)
         self.body_surface.fill((0, 0, 0, 0))
     

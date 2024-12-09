@@ -14,7 +14,7 @@ class BackButton(Button):
         self.pressed_x_position = 185
         
         self.x_position = self.default_x_position
-        self.y_offset = 15
+        self.y_position = 15
         
         self.font = Font('hun2', 33)
         self.shadow_radius = 5
@@ -24,10 +24,10 @@ class BackButton(Button):
         self.get_overlays()
            
     def __get_rect_and_surface(self):
-        self.rect = pygame.Rect(self.container.left - self.x_position, self.y_offset, self.width, self.height)
+        self.rect = pygame.Rect(self.container.left - self.x_position, self.y_position, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
-        self.shadow_rect = pygame.Rect(self.container.left - self.x_position - self.shadow_radius * 2, self.y_offset - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
+        self.shadow_rect = pygame.Rect(self.container.left - self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
     def render(self):

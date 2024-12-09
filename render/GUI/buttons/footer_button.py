@@ -52,7 +52,7 @@ class FooterButton(Button):
         new_height = int(button_width * aspect_ratio)
 
         image = pygame.transform.smoothscale(image, (button_width, new_height))
-        image_rect = align_centre(self.button_surface.get_rect(), image.get_width(), image.get_height(), 0, -self.height//2 + y_padding - 2)
+        image_rect = align_centre(self.button_surface.get_rect(), image.get_width(), image.get_height(), 0, -self.height//2 + y_padding - 3)
         
         self.button_surface.blit(image, image_rect.topleft)
     

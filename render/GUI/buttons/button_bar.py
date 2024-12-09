@@ -13,7 +13,7 @@ class ButtonBar(Button):
         self.main_font = Font('d_din_bold', 53)
         self.sub_font = Font('hun2', 23)
                 
-        self.y_offset = list_index * (self.height + 20) + 35
+        self.y_position = list_index * (self.height + 20) + 35
         
         self.default_x_position = self.container.width // 4.5
         self.hovered_x_position = self.default_x_position - 75
@@ -27,10 +27,10 @@ class ButtonBar(Button):
         self.get_overlays()
     
     def __get_rect_and_surface(self):
-        self.rect = pygame.Rect(self.x_position, self.y_offset, self.width, self.height)
+        self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
-        self.shadow_rect = pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_offset - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
+        self.shadow_rect = pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
     def render(self):
