@@ -5,4 +5,5 @@ import queue
 class Mouse():
     
     position: tuple[int, int] = (0, 0)
+    motion: tuple[int, int] = (0, 0)
     events: queue.Queue = field(default_factory = queue.Queue)

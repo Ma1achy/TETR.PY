@@ -28,6 +28,7 @@ class MouseInputManager():
             return
         
         self.Mouse.position = event.pos
+        self.Mouse.motion = event.rel
         
     def queue_mouse_events(self, mouse_event):
         self.Mouse.events.put(mouse_event)
