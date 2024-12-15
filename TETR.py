@@ -328,7 +328,7 @@ class App():
         try:
             with open(path, 'r') as file:
                 build_info = json.load(file)
-        except Exception as e:
+        except Exception as _:
             build_info = None
         return build_info
 

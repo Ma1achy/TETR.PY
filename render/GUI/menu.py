@@ -22,7 +22,6 @@ class Menu():
 
         self.__open_definition(menu_definition)
         self.__init_elements()
-        self.update(False)
         
     def __open_definition(self, path):
         with open(path, 'r') as f:
@@ -71,8 +70,8 @@ class Menu():
                 self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element))
              
     def update(self, in_dialog): 
-        self.draw(self.surface)
         self.main_body.update(in_dialog)
+        self.draw(self.surface)
         self.update_footer_widgets(in_dialog)
             
     def handle_window_resize(self):
@@ -135,8 +134,8 @@ class Menu():
                 widget.reset_state()
           
     def draw(self, surface):
-        self.menu_footer.draw(surface)
         self.main_body.draw(surface)
+        self.menu_footer.draw(surface)
         self.menu_header.draw(surface)
         
         surface.blit(self.surface, (0, 0))
