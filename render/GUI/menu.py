@@ -19,8 +19,10 @@ class Menu():
         self.footer_height = 0
         
         self.footer_widgets = []
+
         self.__open_definition(menu_definition)
         self.__init_elements()
+        self.update(False)
         
     def __open_definition(self, path):
         with open(path, 'r') as f:
@@ -69,10 +71,10 @@ class Menu():
                 self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element))
              
     def update(self, in_dialog): 
-       self.draw(self.surface)
-       self.main_body.update(in_dialog)
-       self.update_footer_widgets(in_dialog)
-       
+        self.draw(self.surface)
+        self.main_body.update(in_dialog)
+        self.update_footer_widgets(in_dialog)
+            
     def handle_window_resize(self):
         
         self.__header_resize()
@@ -98,11 +100,14 @@ class Menu():
         if 'menu_body' not in self.definition:
             return
         
-        self.main_body.rect.width = self.surface.get_width()
-        self.main_body.rect.height = self.surface.get_height() - self.footer_height - self.header_height
+        self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
+        self.main_body.rect = self.main_body_rect
         
         if self.main_body.rect.height <= 0: # to prevent crash
             self.main_body.rect.height = 1
+        
+        if self.main_body.rect.width <= 0:
+            self.main_body.rect.width = 1
                  
         self.main_body.handle_window_resize()
     

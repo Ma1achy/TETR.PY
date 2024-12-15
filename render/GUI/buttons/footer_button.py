@@ -10,13 +10,11 @@ class FooterButton(Button):
         self.x_offset = -90
         self.y_offset = -5
         
-        
-        self.default_y_position =  62
-        self.hovered_y_position = 70
-        self.pressed_y_position = 75
+        self.default_y_position =  self.container.bottom - 62
+        self.hovered_y_position = self.default_y_position - 14
+        self.pressed_y_position = self.default_y_position - 24
         
         self.x_position = self.container.right + self.x_offset
-        self.default_x_position = self.x_position, self.container.bottom
         self.y_position = self.default_y_position
         
         self.shadow_radius = 5
@@ -26,10 +24,10 @@ class FooterButton(Button):
         self.get_overlays()
         
     def __get_rect_and_surface(self):
-        self.rect = pygame.Rect(self.x_position, self.container.bottom - self.y_position, self.width, self.height)
+        self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.button_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
-        self.shadow_rect =  pygame.Rect(self.container.right + self.x_offset - self.shadow_radius * 2, self.container.bottom - self.y_position - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
+        self.shadow_rect =  pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
     def render(self):
@@ -58,6 +56,10 @@ class FooterButton(Button):
     
     def handle_window_resize(self):
         self.x_position = self.container.right + self.x_offset
+        self.default_y_position =  self.container.bottom - 62
+        self.hovered_y_position = self.default_y_position - 14
+        self.pressed_y_position = self.default_y_position - 24
+        self.y_position = self.default_y_position
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()

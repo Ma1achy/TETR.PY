@@ -53,6 +53,284 @@
                     "#181818"
                 ]
             }
+        }, 
+        "menu": {
+            "scrollable": true,
+            "elements": [
+                {
+                    "type": "bar_button_sub",
+                    "function": "go_to_account_settings",
+                    "main_text": {
+                        "colour": "#90aef9",
+                        "display_text": "ACCOUNT"
+                    },
+                    "sub_text": {
+                        "colour": "#5668ba",
+                        "display_text": "change account settings"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#1c263e"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#1e2a48"
+                        ],
+                        "top": [
+                            3,
+                            "#1d3164"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0e0f13"
+                        ]
+                    }
+                },
+                {
+                    "type": "floating_text",
+                    "content": {
+                        "font": "hun2",
+                        "colour": "#ffffff",
+                        "alpha": 0.25,
+                        "size": 14,
+                        "alignment": "center",
+                        "padding": [
+                            0,
+                            0
+                        ],
+                        "display_text": "hover over a setting for more information"
+                    }
+                },       
+                {
+                    "type": "collapsible_panel",
+                    "main_text": {
+                        "colour": "#657497",
+                        "display_text": "CONTROLS"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ],
+                        "top": [
+                            3,
+                            "#283145"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "colour": "#12151D" 
+                    }
+                },
+                {
+                    "type": "collapsible_panel",
+                    "main_text": {
+                        "colour": "#657497",
+                        "display_text": "HANDLING"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ],
+                        "top": [
+                            3,
+                            "#283145"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "colour": "#12151D" 
+                    }
+                },
+                {
+                    "type": "collapsible_panel",
+                    "main_text": {
+                        "colour": "#657497",
+                        "display_text": "VOLUME & AUDIO"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ],
+                        "top": [
+                            3,
+                            "#283145"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "colour": "#12151D" 
+                    }
+                },
+                {
+                    "type": "collapsible_panel",
+                    "main_text": {
+                        "colour": "#657497",
+                        "display_text": "GAMEPLAY"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ],
+                        "top": [
+                            3,
+                            "#283145"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "colour": "#12151D" 
+                    }
+                },
+                {
+                    "type": "collapsible_panel",
+                    "main_text": {
+                        "colour": "#657497",
+                        "display_text": "VIDEO & INTERFACE"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ],
+                        "top": [
+                            3,
+                            "#283145"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "colour": "#12151D" 
+                    }
+                },
+                {
+                    "type": "collapsible_panel",
+                    "main_text": {
+                        "colour": "#657497",
+                        "display_text": "CUSTOMISATION"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ],
+                        "top": [
+                            3,
+                            "#283145"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "colour": "#12151D" 
+                    }
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "go_to_account_settings",
+                    "main_text": {
+                        "colour": "#90aef9",
+                        "display_text": "EXPORT SETTINGS"
+                    },
+                    "sub_text": {
+                        "colour": "#5668ba",
+                        "display_text": "save a file of your config that you can drag into TETR.PY to import"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#1c263e"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#1e2a48"
+                        ],
+                        "top": [
+                            3,
+                            "#1d3164"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0e0f13"
+                        ]
+                    }
+                }
+            ]
         }
     },
     "menu_footer": {

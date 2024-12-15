@@ -17,11 +17,15 @@ class Button:
         self.style = style
         self.maintain_alpha = maintain_alpha
         
+        self.scroll_y = 0
+        self.y_position = 0
+        
         self.state = None
         self.previous_state = None
+        self.doing_click = False
         
         self.hover_surface_transition_time = 0.35
-        self.pressed_surface_transition_time = 0.1
+        self.pressed_surface_transition_time = 0.2
         
         self.hover_timer = 0
         self.pressed_timer = 0
@@ -120,24 +124,35 @@ class Button:
                     events_to_remove.append(event)
                 
                 if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)) and self.state == 'pressed':
-                    self.state = None
                     events_to_remove.append(event)
-                    self.click()
+                    self.start_click()
         
         for event in events_to_remove:
             self.Mouse.events.queue.remove(event)
     
+    def update_click(self):
+        if self.doing_click and self.pressed_timer >= self.pressed_surface_transition_time:
+            self.doing_click = False
+            self.click()
+            
+    def start_click(self):
+        self.doing_click = True
+    
     def click(self):
+        if self.function is None:
+            return
         self.function()
         
     def update(self, in_dialog = False):
+        
+        self.handle_scroll()
+        
         if in_dialog:
-            self.draw()
             return
         
         self.check_hover()
+        self.update_click()
         self.check_events()
-        self.draw()
         
         if self.state is None and self.previous_state is None:
             self.slider_hover_start_timer = 0
@@ -159,11 +174,11 @@ class Button:
         
         elif self.previous_state == 'pressed' and self.state is None:
             self.handle_pressed_end_events()
-    
+        
     def handle_hover_start_events(self):
         self.slider_hover_end_timer = 0
         self.slider_hover_start_animation()
-       # self.draw()
+ 
         self.animate_hover_surface_transition()
         self.hover_timer += self.Timing.frame_delta_time
         
@@ -175,7 +190,7 @@ class Button:
     def handle_hover_end_events(self):
         self.slider_hover_start_timer = 0
         self.slider_hover_end_animation()
-       # self.draw()
+     
         self.animate_hover_surface_transition()
         self.hover_timer -= self.Timing.frame_delta_time
      
@@ -187,7 +202,7 @@ class Button:
     def handle_pressed_start_events(self):
         self.slider_pressed_end_timer = 0
         self.slider_pressed_start_animation()
-       # self.draw()
+
         self.animate_pressed_surface_transition()
         self.pressed_timer += self.Timing.frame_delta_time
         
@@ -199,7 +214,7 @@ class Button:
     def handle_pressed_end_events(self):
         self.slider_pressed_start_timer = 0
         self.slider_pressed_end_animation()
-       # self.draw()
+
         self.animate_pressed_surface_transition()
         self.pressed_timer -= self.Timing.frame_delta_time
                
@@ -265,16 +280,20 @@ class Button:
         
         if self.slider == 'left':
             self.x_position = self.default_x_position
-            self.rect.topleft = (self.x_position, self.y_position)
-            self.shadow_rect.topleft = (self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2)
+            self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
+            self.shadow_rect.topleft = self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2  + self.scroll_y
         if self.slider == 'right':
             self.x_position = self.default_x_position
-            self.rect.topright = (self.x_position, self.y_position)
-            self.shadow_rect.topright = (self.x_position + self.shadow_radius * 2, self.y_position - self.shadow_radius * 2)
+            self.rect.topright = (self.x_position, self.y_position + self.scroll_y)
+            self.shadow_rect.topright = self.x_position + self.shadow_radius * 2, self.y_position - self.shadow_radius * 2 + self.scroll_y
         if self.slider == 'up':
-            self.y_position = self.default_y_position
-            self.rect.topleft = (self.x_position, self.container.bottom - self.y_position)
-            self.shadow_rect.topleft = self.rect.topleft[0] - self.shadow_radius * 2, self.rect.topleft[1] - self.shadow_radius * 2
+            self.y_position = self.default_y_position + self.scroll_y
+            self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
+            self.shadow_rect.topleft = self.rect.topleft[0] - self.shadow_radius * 2, self.rect.topleft[1] - self.shadow_radius * 2  + self.scroll_y
+        if self.slider == 'down':
+            self.y_position = self.default_y_position + self.scroll_y
+            self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
+            self.shadow_rect.topleft = self.rect.topleft[0] - self.shadow_radius * 2, self.rect.topleft[1] - self.shadow_radius * 2  + self.scroll_y
       
     def animate_slider(self, timer, duration, start_pos, end_pos, dir, shadow_offset):
         """
@@ -308,20 +327,20 @@ class Button:
         # Update position
         if dir == 'left':
             self.x_position = new_pos
-            self.rect.topleft = (self.x_position, self.y_position)
-            self.shadow_rect.topleft = (self.x_position - shadow_offset, self.y_position - shadow_offset)
+            self.rect.topleft = (self.x_position, self.y_position + self.scroll_y) 
+            self.shadow_rect.topleft = (self.x_position - shadow_offset, self.y_position - shadow_offset + self.scroll_y)
         elif dir == 'right':
             self.x_position = new_pos
-            self.rect.topright = (self.x_position, self.y_position)
-            self.shadow_rect.topright = (self.x_position + shadow_offset, self.y_position - shadow_offset)
+            self.rect.topright = (self.x_position, self.y_position + self.scroll_y)
+            self.shadow_rect.topright = (self.x_position + shadow_offset, self.y_position - shadow_offset + self.scroll_y)
         elif dir == 'up':
             self.y_position = new_pos
-            self.rect.topleft = (self.x_position, self.container.bottom - self.y_position)
-            self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset)
+            self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
+            self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset + self.scroll_y)
         elif dir == 'down':
             self.y_position = new_pos
-            self.rect.topleft = (self.x_position, self.container.top + self.y_position)
-            self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset)
+            self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
+            self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset + self.scroll_y)
 
         return timer, progress
 
@@ -413,3 +432,11 @@ class Button:
                 self.slider,
                 self.shadow_radius * 2,
             )
+
+    def handle_scroll(self):
+        self.rect.top = self.y_position + self.scroll_y
+        self.shadow_rect.top = self.y_position + self.scroll_y - self.shadow_radius * 2
+        self.draw()
+        
+        
+

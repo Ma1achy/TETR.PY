@@ -42,9 +42,10 @@ class DialogBox():
         self.timer = 0
         self.animation_length = 0.35
         
+        self.is_validating_size = False
         self.__wrap_text(self.message, self.sub_font.font, self.width - 2 * self.x_padding)
         self.__get_height()
-                    
+               
         self.__get_rect_and_surface()
         self.__create_buttons()
         
@@ -56,6 +57,14 @@ class DialogBox():
         
         self.render()
 
+    def __validate_size(self):
+        self.is_validating_size = True
+        self.height = 0
+        self.width += 400
+        self.__wrap_text(self.message, self.sub_font.font, self.width - 2 * self.x_padding)
+        self.__get_height()
+        self.is_validating_size = False
+        
     def __strip_tags(self, text):
         tag_pattern = r"\[colour=#[0-9A-Fa-f]{6}\]|\[\/colour\]"
         return re.sub(tag_pattern, "", text)
@@ -97,7 +106,7 @@ class DialogBox():
     def __get_height(self):
         if self.title:
             self.height += 50
-
+        
         if self.message:
             wrapped_message = []
             for paragraph in self.message.split('\n'):
@@ -105,6 +114,10 @@ class DialogBox():
 
             self.wrapped_message = wrapped_message
             self.height += len(wrapped_message) * self.sub_font.font.get_height()
+        
+        if self.height > self.RenderStruct.WINDOW_HEIGHT - 10:
+            if not self.is_validating_size:
+                self.__validate_size()
           
     def __get_rect_and_surface(self):
         self.dialog_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)

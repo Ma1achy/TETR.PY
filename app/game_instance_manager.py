@@ -126,7 +126,7 @@ class GameInstanceManager():
         }
         
         
-        logging.error(f"\033[91m{'Exception occurred at %s in thread %s: %s'}\033[0m", timestamp, current_thread.name, tb_str)
+        logging.error(f"\033[91mException occurred at {timestamp} in thread {current_thread.name}:\n{tb_str}\033[0m")
         logging.error("Environment information: %s", env_info)
         
         info = {

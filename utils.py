@@ -245,6 +245,9 @@ def TransformSurface(surface, scale, angle, pivot, origin, offset):
         pivot (tuple): The pivot point to rotate around.
         origin (tuple): The origin point of the surface.
         offset (tuple): The offset of the surface."""
+    if scale < 0:
+        scale = 1e-6
+        
     scaled_surface, _ = ScaleSurface(surface, scale, pivot, origin + offset)
     rotated_surface, rotated_surface_rect = RotateSurface(scaled_surface, angle, pivot * scale, origin + offset)
     return rotated_surface, rotated_surface_rect

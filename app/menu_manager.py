@@ -43,6 +43,8 @@ class MenuManager():
             "go_to_blitz": self.go_to_blitz,
             "go_to_zen": self.go_to_zen,
             "go_to_custom": self.go_to_custom,
+            
+            "go_to_account_settings": self.go_to_account_settings,
     }
         
         self.copied_text_surface_width, self.copied_text_surface_height = 900, 200
@@ -82,7 +84,7 @@ class MenuManager():
     def get_actions(self):
         actions = self.Keyboard.menu_actions_queue.get_nowait()
         self.__perform_action(actions)
-        
+
     def __perform_action(self, actions):
 
         for action in actions:
@@ -103,7 +105,7 @@ class MenuManager():
                     self.__menu_debug()
                 case UIAction.WINDOW_FULLSCREEN:
                     self.RenderStruct.fullscreen = not self.RenderStruct.fullscreen
-        
+                 
     def __menu_left(self):
         pass
     
@@ -146,12 +148,16 @@ class MenuManager():
         
         self.copied_text_surface_rect = pygame.Rect((self.RenderStruct.WINDOW_WIDTH - self.copied_text_surface_width)//2, (self.RenderStruct.WINDOW_HEIGHT - self.copied_text_surface_height)//2, self.copied_text_surface_width, self.copied_text_surface_height)
     
+    # exit dialog
+    
     def go_to_exit(self):
         self.current_menu.reset_buttons()
         self.open_dialog(self.ExitDialog)
     
     def quit_game(self):
         self.Timing.exited = True
+    
+    # copy to clipboard
     
     def copy_to_clipboard(self, item):
         self.current_dialog.reset_buttons()
@@ -161,91 +167,6 @@ class MenuManager():
         except Exception as _:
             self.handle_copy_to_clipboard_fail()
             
-    def open_dialog(self, dialog):
-        if dialog is None:
-            return
-        
-        self.current_dialog = dialog
-        self.in_dialog = True
-        self.current_menu.reset_buttons()
-        
-    def close_dialog(self):
-        self.current_dialog.reset_buttons()
-        self.current_dialog.close()
-        
-    def reset_dialogs(self):
-        if self.current_dialog is None:
-            return
-        
-        if self.current_dialog.closed:
-            self.current_dialog.closed = False
-            self.current_dialog.do_animate_appear = True
-            self.current_dialog.do_animate_disappear = False
-            self.current_dialog.timer = 0
-            self.ErrorDialog = None
-            self.current_dialog = None
-            self.in_dialog = False
-            
-    def go_to_home(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.home_menu
-    
-    # home menu
-    
-    def go_to_multi(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.multi_menu
-    
-    def go_to_solo(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.solo_menu
-    
-    def go_to_records(self): 
-        self.current_menu.reset_buttons()
-        self.current_menu = self.records_menu
-    
-    def go_to_config(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.config_menu
-    
-    def go_to_about(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.about_menu
-    
-    def go_to_github(self):
-        self.current_menu.reset_buttons()
-        webbrowser.open('https://github.com/Ma1achy/TETR.PY')
-    
-    # solo menu
-    
-    def go_to_40_lines(self):
-        pass
-    
-    def go_to_blitz(self):
-        pass
-    
-    def go_to_zen(self):
-        pass
-    
-    def go_to_custom(self):
-        pass
-    
-    def handle_exceptions(self):
-        self.__create_error_message_dialog()
-        
-        if self.ErrorDialog is not None:
-            self.go_to_home()
-            self.open_dialog(self.ErrorDialog)
-        
-    def __create_error_message_dialog(self): 
-        if self.Debug.ERROR is None:
-            return
-        
-        info, error, trace = self.Debug.ERROR
-        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = True, width = 700)
-        
-        self.Debug.ERROR = None
-    
     def handle_copy_to_clipboard_fail(self):
         self.copied_text_surface.fill((0, 0, 0, 0))
             
@@ -294,6 +215,101 @@ class MenuManager():
             self.copied_text_surface.fill((0, 0, 0, 0))
             self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FF7B10', 'center', 0, 5)
             self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FFD800', 'center', 0, 0)
+    
+    # dialog boxes
+           
+    def open_dialog(self, dialog):
+        if dialog is None:
+            return
+        
+        self.current_dialog = dialog
+        self.in_dialog = True
+        self.current_menu.reset_buttons()
+        
+    def close_dialog(self):
+        self.current_dialog.reset_buttons()
+        self.current_dialog.close()
+        
+    def reset_dialogs(self):
+        if self.current_dialog is None:
+            return
+        
+        if self.current_dialog.closed:
+            self.current_dialog.closed = False
+            self.current_dialog.do_animate_appear = True
+            self.current_dialog.do_animate_disappear = False
+            self.current_dialog.timer = 0
+            self.ErrorDialog = None
+            self.current_dialog = None
+            self.in_dialog = False
+    
+    # home    
+    def go_to_home(self):
+        self.current_menu.reset_buttons()
+        self.current_menu = self.home_menu
+    
+    # home menu
+    
+    def go_to_multi(self):
+        self.current_menu.reset_buttons()
+        self.current_menu = self.multi_menu
+    
+    def go_to_solo(self):
+        self.current_menu.reset_buttons()
+        self.current_menu = self.solo_menu
+    
+    def go_to_records(self): 
+        self.current_menu.reset_buttons()
+        self.current_menu = self.records_menu
+    
+    def go_to_config(self):
+        self.current_menu.reset_buttons()
+        self.current_menu = self.config_menu
+    
+    def go_to_about(self):
+        self.current_menu.reset_buttons()
+        self.current_menu = self.about_menu
+    
+    def go_to_github(self):
+        self.current_menu.reset_buttons()
+        webbrowser.open('https://github.com/Ma1achy/TETR.PY')
+    
+    # solo menu
+    
+    def go_to_40_lines(self):
+        pass
+    
+    def go_to_blitz(self):
+        pass
+    
+    def go_to_zen(self):
+        pass
+    
+    def go_to_custom(self):
+        pass
+    
+    # config
+    
+    def go_to_account_settings(self):
+        pass
+    
+    # error dialog 
+    
+    def handle_exceptions(self):
+        self.__create_error_message_dialog()
+        
+        if self.ErrorDialog is not None:
+            self.go_to_home()
+            self.open_dialog(self.ErrorDialog)
+        
+    def __create_error_message_dialog(self): 
+        if self.Debug.ERROR is None:
+            return
+        
+        info, error, trace = self.Debug.ERROR
+        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = True, width = 700)
+        
+        self.Debug.ERROR = None
         
         
         

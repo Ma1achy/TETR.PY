@@ -8,7 +8,7 @@ class DialogButton(Button):
         super().__init__(Timing, surface, Mouse, function, container, width, height, offset = (dialog_rect.left, dialog_rect.top), style = style, maintain_alpha = True)
         
         self.RenderStruct = RenderStruct
-        
+        self.y_position = self.container.top + padding[1]
         self.text = text
         self.text_colour = text_colour
         self.colour = colour

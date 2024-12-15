@@ -1,6 +1,6 @@
 import pygame
 from dataclasses import dataclass
-from utils import hex_to_rgb
+from utils import hex_to_rgb, smoothstep
 import ctypes
 import platform
 
@@ -66,10 +66,16 @@ class Render():
             self.MenuManager.GUI_focus.draw(self.window)
             
         if self.MenuManager.in_dialog:
-            self.darken_overlay_layer.fill((0, 0, 0, min(200, self.MenuManager.current_dialog.alpha)))
+            try:
+                self.darken_overlay_layer.fill((0, 0, 0, min(self.MenuManager.current_dialog.alpha, 200)))
+            except Exception as e:
+                self.darken_overlay_layer.fill((0, 0, 0, 200))
+                
             self.window.blit(self.darken_overlay_layer, (0, 0))
             self.MenuManager.current_dialog.update()
-        
+        else:
+            self.darken_overlay_layer_alpha = 200
+            
         self.MenuManager.copy_to_clipboard_animation()     
         pygame.display.flip()
     

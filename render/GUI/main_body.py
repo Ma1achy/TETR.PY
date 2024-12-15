@@ -1,8 +1,12 @@
 import pygame
 from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colour, draw_border, brightness, align_top_edge, align_bottom_edge, align_right_edge, align_left_edge, align_centre, align_bottom_left, align_bottom_right, align_top_right, align_top_left
+from utils import smoothstep_interpolate
 from render.GUI.font import Font
-from render.GUI.buttons.button_bar import ButtonBar
+from render.GUI.buttons.button_bar_main import ButtonBarMain
+from render.GUI.buttons.button_bar_sub import ButtonBarSub
 from render.GUI.buttons.back_button import BackButton
+from render.GUI.buttons.collapsible_panel_header import CollapsiblePanelHeader
+from render.GUI.menu_elements.floating_text import FloatingText
 
 class MainBody():
     def __init__(self, Mouse, Timing, rect, button_functions, definition):
@@ -14,19 +18,20 @@ class MainBody():
         self.definition = definition
         
         self.rect = rect
-    
+        self.scroll_speed = 10
+        self.scroll_y = 0
+        self.y_diff = 0
+        self.scollable = False
+        self.scroll_timer = 0
+        self.scroll_timer_duration = 0.1
+        
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
-        self.get_cached_surface()
-
+       
     def __get_rect_and_surface(self):
         self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.cached_surface = self.body_surface.copy()
 
-    def get_cached_surface(self):
-        self.cached_surface = self.body_surface.copy()
-    
     def __init_elements(self):
         self.menu_elements = []
         self.__init_menu_elements()
@@ -37,12 +42,44 @@ class MainBody():
         if 'menu' not in self.definition:
             return
         
+        y = 35
+        
         for idx, element in enumerate(self.definition['menu']['elements']):
             if element['type'] == 'bar_button':
+                y += 10
                 func = self.button_functions[element['function']]
-                button = ButtonBar(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, idx, height = 120)
+                button = ButtonBarMain(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 120)
+                button.y_position = y
                 self.menu_elements.append(button)
-    
+                y += button.height + 10
+                
+            elif element['type'] == 'bar_button_sub':
+                y += 7
+                func = self.button_functions[element['function']]
+                button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 90)
+                button.y_position = y
+                self.menu_elements.append(button)
+                y += button.height + 7
+                
+            elif element['type'] == 'collapsible_panel':
+                y += 7
+                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y)
+                self.menu_elements.append(panel)
+                y += panel.height + 7
+            
+            elif element['type'] == 'floating_text':
+                y += 3
+                text = FloatingText(self.body_surface, element['content'], y)
+                self.menu_elements.append(text)
+                y += text.height + 3
+        
+        if y > self.rect.height:
+            self.scollable = True
+        else:
+            self.scollable = False
+        
+        self.y_diff = y - self.rect.height
+ 
     def __init_back_button(self):
         if 'back_button' not in self.definition:
             return
@@ -89,7 +126,69 @@ class MainBody():
         self.__init_elements()
         self.render()
     
+    def __handle_mouse_scroll(self, in_dialog):
+        
+        if not self.scollable:
+            return
+        
+        if in_dialog:
+            return
+        
+        events_to_remove = []
+        
+        for event in self.Mouse.events.queue:
+            for button, info in event.items():
+                if button == 'scrollwheel':
+                    events_to_remove.append(event)
+                    self.do_scroll(info, in_dialog)
+                    
+        self.end_scroll(events_to_remove)
+
+        for event in events_to_remove:
+            self.Mouse.events.queue.remove(event)
+    
+    def do_scroll(self, info, in_dialog):
+        if in_dialog:
+            return
+            
+        self.scroll_timer += self.Timing.frame_delta_time
+        self.scroll_speed += 50
+
+        if self.scroll_speed >= 1000:
+            self.scroll_speed = 1000
+
+        dir = info['y'] if not info['inverted'] else -info['y']
+        
+        if self.scroll_y <= -self.y_diff - 10 and dir < 0:
+            return
+        
+        self.scroll_y += (dir) * (self.scroll_speed)
+        
+    def end_scroll(self, events_to_remove):
+        if len(events_to_remove) != 0:
+            return
+        
+        self.scroll_timer -= self.Timing.frame_delta_time
+        progress = self.scroll_timer / self.scroll_timer_duration
+        
+        if self.scroll_timer < 0:
+            self.scroll_timer = 0
+            
+        self.scroll_speed = smoothstep_interpolate(self.scroll_speed, 10, (1 - progress))
+    
+    def __update_scroll_position(self):
+        if not self.scollable:
+            self.scroll_y = 0
+
+        if self.scroll_y > 0:
+            self.scroll_y = 0
+            
+        for element in self.menu_elements:
+            element.scroll_y = self.scroll_y
+            
     def update(self, in_dialog):
+        self.__update_scroll_position()
+        self.__handle_mouse_scroll(in_dialog)
         self.__update_logo()
         self.__update_menu(in_dialog)
         self.__update_back_button(in_dialog)
@@ -98,8 +197,9 @@ class MainBody():
         if 'menu' not in self.definition:
             return
         
-        for element in self.menu_elements:
-            element.update(in_dialog)
+        for element in self.menu_elements: # only update elements that are visible
+            if element.y_position + self.scroll_y + element.height >= 0 and element.y_position  + self.scroll_y - element.height < self.rect.height:
+                element.update(in_dialog)
             
     def __update_back_button(self, in_dialog):
         if 'back_button' not in self.definition:
@@ -126,14 +226,21 @@ class Logo():
         
         self.container = container
         self.definition = definition
+        self.height = self.container.height// 18
+        
         self.__init_image()
         self.__align_image()
         self.image.set_alpha(self.definition['opacity'])
+        
     
     def __init_image(self):
         self.image = load_image(self.definition['image'])  
-        self.image = pygame.transform.smoothscale(self.image, (int(self.image.get_width() * self.definition['scale']), int(self.image.get_height() * self.definition['scale'])))
-    
+        
+        aspect_ratio = self.image.get_width() / self.image.get_height()
+        new_width = int(self.height * aspect_ratio)
+
+        self.image = pygame.transform.smoothscale(self.image, (new_width, self.height))
+
     def __align_image(self):
         if self.definition['alignment'] == 'bottom_left':
             self.rect = align_bottom_left(self.container, self.image.get_width(), self.image.get_height(), self.definition['padding'][0], self.definition['padding'][1])

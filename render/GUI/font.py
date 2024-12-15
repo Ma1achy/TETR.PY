@@ -46,8 +46,8 @@ class Font():
     def draw(self, surface, text, colour, alignment, h_padding = 0, v_padding = 0, draw_background = None):
         
         self.__get_padding(h_padding, v_padding)        
-        self.__render_text(text, colour)
-        self.__get_alignment(alignment, surface)
+        self.render_text(text, colour)
+        self.get_alignment(alignment, surface)
         self.__apply_padding()
         self.__draw_background(surface, colour, draw_background)
         
@@ -57,10 +57,10 @@ class Font():
         self.h_padding = h_padding
         self.v_padding = v_padding
         
-    def __render_text(self, text, colour):
+    def render_text(self, text, colour):
         self.rendered_text = self.font.render(text, True, hex_to_rgb(colour))
         
-    def __get_alignment(self, alignment, surface):
+    def get_alignment(self, alignment, surface):
         match alignment:
             case 'center':
                 self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
