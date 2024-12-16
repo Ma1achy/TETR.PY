@@ -7,6 +7,7 @@ from render.GUI.buttons.collapsible_panel_header import CollapsiblePanelHeader
 from render.GUI.menu_elements.floating_text import FloatingText
 from render.GUI.menu_elements.scrollbar import ScrollBar
 from render.GUI.menu_elements.logo import Logo
+from app.input.mouse.mouse import MouseEvents
 
 class MainBody():
     def __init__(self, Mouse, Timing, rect, button_functions, definition):
@@ -143,7 +144,7 @@ class MainBody():
         
         for event in self.Mouse.events.queue:
             for button, info in event.items():
-                if button == 'scrollwheel':
+                if button is MouseEvents.SCROLLWHEEL:
                     events_to_remove.append(event)
                     self.do_scroll(info, in_dialog)
                     

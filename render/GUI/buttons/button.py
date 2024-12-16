@@ -1,5 +1,6 @@
 from utils import brightness_maintain_alpha, brightness, smoothstep, smoothstep_interpolate
 import pygame
+from app.input.mouse.mouse import MouseEvents
 class Button:
     def __init__(self, Timing, surface, Mouse, function, container, width, height, offset = (0, 0), style = 'lighten', maintain_alpha = False, slider = None):
         
@@ -43,10 +44,13 @@ class Button:
         self.hover_slider_end_length = 0.5
         self.pressed_slider_start_length = 0.2
         self.pressed_slider_end_length = 0.4
+        
         self.shadow_surface = pygame.Surface((1, 1), pygame.HWSURFACE|pygame.SRCALPHA)
         self.shadow_rect = pygame.Rect(0, 0, 1, 1)
         self.shadow_radius = 5
-        
+    
+    # -------------------------------------------------------------------------- DRAWING --------------------------------------------------------------------------
+     
     def get_rect_and_surface(self):
         if self.width < 1:
             self.width = 1
@@ -56,41 +60,54 @@ class Button:
             
         self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+    
+    def get_overlays(self):
+        if self.style is None:
+            return
         
+        self.__get_lighten_overlay()
+        self.__get_darken_overlay()
+        
+    def __get_lighten_overlay(self):
+        if self.style != 'lighten':
+            return
+        
+        if self.maintain_alpha:
+            self.hover_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.hover_surface, 1.2)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.pressed_surface, 1.5)
+        else:
+            self.hover_surface = self.button_surface.copy()
+            brightness(self.hover_surface, 1.2)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness(self.pressed_surface, 1.5)
+        
+    def __get_darken_overlay(self):
+        if self.style != 'darken':
+            return
+        
+        if self.maintain_alpha:
+            self.hover_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.hover_surface, 0.8)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness_maintain_alpha(self.pressed_surface, 0.5)
+        else:
+            self.hover_surface = self.button_surface.copy()
+            brightness(self.hover_surface, 0.8)
+
+            self.pressed_surface = self.button_surface.copy()
+            brightness(self.pressed_surface, 0.5)
+            
     def draw(self):
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.surface.blit(self.button_surface, self.rect.topleft)
-         
-    def animate_hover_surface_transition(self):
-        if self.style is None:
-            return
-        
-        self.hover_surface_alpha = min(255, smoothstep(self.hover_timer / self.hover_surface_transition_time) * 255) 
-   
-        if self.hover_timer == 0:
-            return
-        
-        if self.hover_surface_alpha == 0:
-            return
-        
-        self.hover_surface.set_alpha(self.hover_surface_alpha)
-        self.surface.blit(self.hover_surface, self.rect.topleft)
     
-    def animate_pressed_surface_transition(self):
-        if self.style is None:
-            return
-        
-        self.pressed_surface_alpha = min(255, smoothstep(self.pressed_timer / self.pressed_surface_transition_time) * 255)
-        
-        if self.pressed_timer == 0:
-            return
-        
-        if self.pressed_surface_alpha == 0:
-            return
-        
-        self.pressed_surface.set_alpha(self.pressed_surface_alpha)
-        self.surface.blit(self.pressed_surface, self.rect.topleft)
-            
+    # -------------------------------------------------------------------------- MOUSE EVENTS --------------------------------------------------------------------------
+              
     def check_hover(self):
         x, y = self.Mouse.position
         x -= self.offset[0]
@@ -108,7 +125,7 @@ class Button:
         
         for event in self.Mouse.events.queue:
             for button, info in event.items():
-                if button == 'scrollwheel':
+                if button is MouseEvents.SCROLLWHEEL:
                     return
                 
                 event_x, event_y = info['pos']
@@ -119,11 +136,11 @@ class Button:
                 mouse_x -= self.offset[0]
                 mouse_y -= self.offset[1]
                 
-                if button == 'mb1' and info['down'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
+                if button is MouseEvents.MOUSEBUTTON1 and info['down'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
                     self.state = 'pressed'
                     events_to_remove.append(event)
                 
-                if button == 'mb1' and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)) and self.state == 'pressed':
+                if button is MouseEvents.MOUSEBUTTON1 and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)) and self.state == 'pressed':
                     events_to_remove.append(event)
                     self.start_click()
         
@@ -142,7 +159,9 @@ class Button:
         if self.function is None:
             return
         self.function()
-        
+    
+    # -------------------------------------------------------------------------- UPDATE LOGIC --------------------------------------------------------------------------
+       
     def update(self, in_dialog = False):
         
         self.handle_scroll()
@@ -174,6 +193,11 @@ class Button:
         
         elif self.previous_state == 'pressed' and self.state is None:
             self.handle_pressed_end_events()
+    
+    def handle_scroll(self):
+        self.rect.top = self.y_position + self.scroll_y
+        self.shadow_rect.top = self.y_position + self.scroll_y - self.shadow_radius * 2
+        self.draw()
         
     def handle_hover_start_events(self):
         self.slider_hover_end_timer = 0
@@ -224,48 +248,7 @@ class Button:
             self.previous_state = None
             self.hover_timer = 0
             self.hover_surface_alpha = 0
-                
-    def get_overlays(self):
-        if self.style is None:
-            return
-        
-        self.__get_lighten_overlay()
-        self.__get_darken_overlay()
-        
-    def __get_lighten_overlay(self):
-        if self.style != 'lighten':
-            return
-        
-        if self.maintain_alpha:
-            self.hover_surface = self.button_surface.copy()
-            brightness_maintain_alpha(self.hover_surface, 1.2)
-
-            self.pressed_surface = self.button_surface.copy()
-            brightness_maintain_alpha(self.pressed_surface, 1.5)
-        else:
-            self.hover_surface = self.button_surface.copy()
-            brightness(self.hover_surface, 1.2)
-
-            self.pressed_surface = self.button_surface.copy()
-            brightness(self.pressed_surface, 1.5)
-        
-    def __get_darken_overlay(self):
-        if self.style != 'darken':
-            return
-        
-        if self.maintain_alpha:
-            self.hover_surface = self.button_surface.copy()
-            brightness_maintain_alpha(self.hover_surface, 0.8)
-
-            self.pressed_surface = self.button_surface.copy()
-            brightness_maintain_alpha(self.pressed_surface, 0.5)
-        else:
-            self.hover_surface = self.button_surface.copy()
-            brightness(self.hover_surface, 0.8)
-
-            self.pressed_surface = self.button_surface.copy()
-            brightness(self.pressed_surface, 0.5)
-            
+                        
     def reset_state(self):
         self.hover_timer = 0
         self.pressed_timer = 0
@@ -294,7 +277,43 @@ class Button:
             self.y_position = self.default_y_position + self.scroll_y
             self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
             self.shadow_rect.topleft = self.rect.topleft[0] - self.shadow_radius * 2, self.rect.topleft[1] - self.shadow_radius * 2  + self.scroll_y
-      
+    
+    # -------------------------------------------------------------------------- ANIMATION --------------------------------------------------------------------------
+    
+    # ----------------------------------- Hover and pressed surface animations -----------------------------------
+    
+    def animate_hover_surface_transition(self):
+        if self.style is None:
+            return
+        
+        self.hover_surface_alpha = min(255, smoothstep(self.hover_timer / self.hover_surface_transition_time) * 255) 
+   
+        if self.hover_timer == 0:
+            return
+        
+        if self.hover_surface_alpha == 0:
+            return
+        
+        self.hover_surface.set_alpha(self.hover_surface_alpha)
+        self.surface.blit(self.hover_surface, self.rect.topleft)
+    
+    def animate_pressed_surface_transition(self):
+        if self.style is None:
+            return
+        
+        self.pressed_surface_alpha = min(255, smoothstep(self.pressed_timer / self.pressed_surface_transition_time) * 255)
+        
+        if self.pressed_timer == 0:
+            return
+        
+        if self.pressed_surface_alpha == 0:
+            return
+        
+        self.pressed_surface.set_alpha(self.pressed_surface_alpha)
+        self.surface.blit(self.pressed_surface, self.rect.topleft)
+    
+    # ----------------------------------- Slider animations -----------------------------------
+    
     def animate_slider(self, timer, duration, start_pos, end_pos, dir, shadow_offset):
         """
         Generalized animation logic for sliders.
@@ -432,11 +451,6 @@ class Button:
                 self.slider,
                 self.shadow_radius * 2,
             )
-
-    def handle_scroll(self):
-        self.rect.top = self.y_position + self.scroll_y
-        self.shadow_rect.top = self.y_position + self.scroll_y - self.shadow_radius * 2
-        self.draw()
         
         
 
