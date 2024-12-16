@@ -1,11 +1,11 @@
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags
+from instance.state.flags import Flags
 from render.board.struct_board import StructBoardConsts
 import pygame
 from utils import lerpBlendRGBA, apply_gaussian_blur_with_alpha
 
 class UIBorder():
-    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct, Fonts, BoardConsts:StructBoardConsts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:Flags, GameInstanceStruct, Fonts, BoardConsts:StructBoardConsts):
         
         self.RenderStruct = RenderStruct
         self.GameInstanceStruct = GameInstanceStruct

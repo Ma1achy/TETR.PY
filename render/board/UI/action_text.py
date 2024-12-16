@@ -1,14 +1,14 @@
-from config import StructConfig
+from app.state.config import Config
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags
-from core.state.struct_gameinstance import StructGameInstance
+from instance.state.flags import Flags
+from instance.state.game_state import GameState
 from core.state.struct_timing import StructTiming
-from core.state.struct_debug import StructDebug
+from app.debug.debug_metrics import DebugMetrics
 from render.board.struct_board import StructBoardConsts
 import pygame
 
 class UIActionText():
-    def __init__(self, GameInstanceStruct:StructGameInstance, RenderStruct:StructRender, FlagStruct:StructFlags, TimingStruct:StructTiming, Fonts, BoardConsts):
+    def __init__(self, GameInstanceStruct:GameState, RenderStruct:StructRender, FlagStruct:Flags, TimingStruct:StructTiming, Fonts, BoardConsts):
  
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct

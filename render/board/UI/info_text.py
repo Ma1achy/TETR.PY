@@ -1,13 +1,13 @@
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags
+from instance.state.flags import Flags
 from core.state.struct_timing import StructTiming
 from render.board.struct_board import StructBoardConsts
-from core.state.struct_gameinstance import StructGameInstance
+from instance.state.game_state import GameState
 import pygame
 from utils import comma_separate
 
 class UIInfoText():
-    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, Fonts, BoardConsts:StructBoardConsts):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:Flags, GameInstanceStruct:GameState, TimingStruct:StructTiming, Fonts, BoardConsts:StructBoardConsts):
         
         self.GameInstanceStruct = GameInstanceStruct
         self.RenderStruct = RenderStruct

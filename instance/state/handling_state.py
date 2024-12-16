@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from instance.handling.handling import Action
 
 @dataclass
-class StructHandling():
+class HandlingState():
     current_time: float = 0
     prev_time: float = 0
     delta_time: float = 0

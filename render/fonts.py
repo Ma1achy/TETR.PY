@@ -26,7 +26,7 @@ class Font():
         return pygame.font.Font(font_path, self.size)
     
     def keystates(self):
-        font_path = os.path.join(self.base_path, 'action-icons.ttf')
+        font_path = os.path.join(self.base_path, 'action_icons.ttf')
         return pygame.font.Font(font_path, self.size)
 
 class Fonts():

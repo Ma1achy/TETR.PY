@@ -1,7 +1,7 @@
-from instance.tetromino import Tetromino
-from instance.matrix import Matrix
+from instance.engine.tetromino import Tetromino
+from instance.engine.matrix import Matrix
 from instance.handling.handling import Action
-from instance.rotation import RotationSystem
+from instance.engine.rotation import RotationSystem
 import math
 from utils import Vec2
 

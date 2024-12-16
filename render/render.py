@@ -1,10 +1,10 @@
 import pygame.gfxdraw
-from config import StructConfig
+from app.state.config import Config
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags
-from core.state.struct_gameinstance import StructGameInstance
+from instance.state.flags import Flags
+from instance.state.game_state import GameState
 from core.state.struct_timing import StructTiming
-from core.state.struct_debug import StructDebug
+from app.debug.debug_metrics import DebugMetrics
 from utils import TransformSurface
 from render.UI.debug_menu import UIDebug
 from render.UI.key_states_overlay import UIKeyStates
@@ -12,7 +12,7 @@ from render.board.board import Board
 from render.fonts import Fonts
 
 class Render():
-    def __init__(self, Config:StructConfig, RenderStruct:StructRender, Flags:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug):  
+    def __init__(self, Config:Config, RenderStruct:StructRender, Flags:Flags, GameInstanceStruct:GameState, TimingStruct:StructTiming, DebugStruct:DebugMetrics):  
         """
         Render an instance of four onto a window
         

@@ -1,18 +1,18 @@
 import pygame
-from config import StructConfig
+from app.state.config import Config
 from instance.handling.handling import Handling
 from core.debug import Debug
 from render.render import Render
 import time
 import asyncio
 from instance.handling.handling_config import HandlingConfig
-from core.state.struct_debug import StructDebug
+from app.debug.debug_metrics import DebugMetrics
 from core.state.struct_timing import StructTiming
-from core.state.struct_gameinstance import StructGameInstance
-from core.state.struct_flags import StructFlags, set_flag_attr
-from core.state.struct_handling import StructHandling
+from instance.state.game_state import GameState
+from instance.state.flags import Flags, set_flag_attr
+from instance.state.handling_state import HandlingState
 from core.state.struct_render import StructRender
-from core.clock import Clock
+from app.state.clock import Clock
 
 class Core():
     def __init__(self):
@@ -22,13 +22,13 @@ class Core():
         methods:
             run(four): Run the instance of four
         """
-        self.Config = StructConfig()
+        self.Config = Config()
         self.TimingStruct = StructTiming()
-        self.GameInstanceStruct = StructGameInstance()
-        self.HandlingStruct = StructHandling()
-        self.FlagStruct = StructFlags()
+        self.GameInstanceStruct = GameState()
+        self.HandlingStruct = HandlingState()
+        self.FlagStruct = Flags()
         self.RenderStruct = StructRender()
-        self.DebugStruct = StructDebug()
+        self.DebugStruct = DebugMetrics()
         self.HandlingConfig = HandlingConfig()
         
         self.render_clock = Clock()
@@ -204,30 +204,19 @@ class Core():
         """
         while not self.exited:
             
-            if self.Config.UNCAPPED_FPS:
-                
-                self.TimingStruct.current_frame_time = time.perf_counter() - self.TimingStruct.start_times["render_loop"]
-                self.TimingStruct.elapsed_times["render_loop"] = self.TimingStruct.current_frame_time
-                
-                self.TimingStruct.delta_frame_time = (self.TimingStruct.current_frame_time - self.TimingStruct.last_frame_time) / self.frame_time
-                self.TimingStruct.last_frame_time = self.TimingStruct.current_frame_time
-                
+            self.TimingStruct.current_frame_time = time.perf_counter() - self.TimingStruct.start_times["render_loop"]
+            self.TimingStruct.elapsed_times["render_loop"] = self.TimingStruct.current_frame_time
+            
+            self.TimingStruct.delta_frame_time += (self.TimingStruct.current_frame_time - self.TimingStruct.last_frame_time) / self.frame_time
+            self.TimingStruct.last_frame_time = self.TimingStruct.current_frame_time
+            
+            if self.TimingStruct.draw_first_frame:
                 self.__do_render()
-                
-            else:
-                self.TimingStruct.current_frame_time = time.perf_counter() - self.TimingStruct.start_times["render_loop"]
-                self.TimingStruct.elapsed_times["render_loop"] = self.TimingStruct.current_frame_time
-                
-                self.TimingStruct.delta_frame_time += (self.TimingStruct.current_frame_time - self.TimingStruct.last_frame_time) / self.frame_time
-                self.TimingStruct.last_frame_time = self.TimingStruct.current_frame_time
-                
-                if self.TimingStruct.draw_first_frame:
-                    self.__do_render()
-                    self.TimingStruct.draw_first_frame = False
-                
-                if self.TimingStruct.delta_frame_time >= 1:
-                    self.__do_render()
-                    self.TimingStruct.delta_frame_time -= 1
+                self.TimingStruct.draw_first_frame = False
+            
+            if self.TimingStruct.delta_frame_time >= 1:
+                self.__do_render()
+                self.TimingStruct.delta_frame_time -= 1
          
             self.__get_fps()
             

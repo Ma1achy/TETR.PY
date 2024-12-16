@@ -41,7 +41,7 @@ class FLAG(Enum):
 def generate_flags():
     return {flag: False for flag in FLAG}
 @dataclass
-class StructFlags():
+class Flags():
     FLAGS: Dict[FLAG, bool] = field(default_factory = generate_flags)
     
 def create_property(flag):
@@ -55,4 +55,4 @@ def create_property(flag):
 
 def set_flag_attr():
     for flag in FLAG:
-        setattr(StructFlags, flag.name, create_property(flag))
+        setattr(Flags, flag.name, create_property(flag))

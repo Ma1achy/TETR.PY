@@ -1,12 +1,12 @@
-from config import StructConfig
+from app.state.config import Config
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags
-from core.state.struct_debug import StructDebug
+from instance.state.flags import Flags
+from app.debug.debug_metrics import DebugMetrics
 from utils import get_prefix
 import pygame
 
 class UIDebug():
-    def __init__(self, Config:StructConfig, RenderStruct:StructRender, DebugStruct:StructDebug, FlagStruct:StructFlags, Fonts):
+    def __init__(self, Config:Config, RenderStruct:StructRender, DebugStruct:DebugMetrics, FlagStruct:Flags, Fonts):
         
         self.Fonts = Fonts
         

@@ -1,9 +1,9 @@
-from config import StructConfig
+from app.state.config import Config
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags
-from core.state.struct_gameinstance import StructGameInstance
+from instance.state.flags import Flags
+from instance.state.game_state import GameState
 from core.state.struct_timing import StructTiming
-from core.state.struct_debug import StructDebug
+from app.debug.debug_metrics import DebugMetrics
 from render.board.struct_board import StructBoardConsts
 import pygame
 from render.board.matrix import Matrix
@@ -13,11 +13,11 @@ from render.board.UI.info_text import UIInfoText
 from render.board.UI.action_text import UIActionText
 from instance.handling.handling import Action
 from utils import ease_out_cubic, ease_in_out_quad, smoothstep
-from instance.four import RNG
+from instance.engine.four import RNG
 import math
  
 class Board():
-    def __init__(self, Config:StructConfig, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct:StructTiming, DebugStruct:StructDebug, Fonts):
+    def __init__(self, Config:Config, RenderStruct:StructRender, FlagStruct:Flags, GameInstanceStruct:GameState, TimingStruct:StructTiming, DebugStruct:DebugMetrics, Fonts):
             
         self.Config = Config
         self.RenderStruct = RenderStruct

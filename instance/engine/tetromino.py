@@ -1,7 +1,7 @@
 from utils import Vec2, get_tetromino_blocks
-from instance.matrix import Matrix
+from instance.engine.matrix import Matrix
 from instance.handling.handling import Action
-from core.state.struct_flags import FLAG
+from instance.state.flags import FLAG
 
 class Tetromino():
     def __init__(self, type:str, state:int, x:int, y:int, FlagStruct:FLAG, GameInstanceStruct):

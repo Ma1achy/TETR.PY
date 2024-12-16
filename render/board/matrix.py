@@ -1,6 +1,6 @@
 from core.state.struct_render import StructRender
-from core.state.struct_flags import StructFlags
-from core.state.struct_gameinstance import StructGameInstance
+from instance.state.flags import Flags
+from instance.state.game_state import GameState
 from render.board.struct_board import StructBoardConsts
 import pygame
 import copy
@@ -8,7 +8,7 @@ from utils import lerpBlendRGBA, smoothstep, tint_texture
 import numpy as np
 # FIXME: line clear particles dont draw always since I will need to add the cleared lines/blocks to a queue in the game instance and then draw them
 class Matrix():
-    def __init__(self, RenderStruct:StructRender, FlagStruct:StructFlags, GameInstanceStruct:StructGameInstance, TimingStruct, BoardConsts:StructBoardConsts, RNG):
+    def __init__(self, RenderStruct:StructRender, FlagStruct:Flags, GameInstanceStruct:GameState, TimingStruct, BoardConsts:StructBoardConsts, RNG):
         
         self.RenderStruct = RenderStruct
         self.FlagStruct = FlagStruct

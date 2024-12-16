@@ -1,6 +1,6 @@
 from render.GUI.menu import Menu
 from render.GUI.font import Font
-from app.menu_kb_input_handler import UIAction
+from app.input.keyboard.menu_kb_input_handler import UIAction
 from render.GUI.debug_overlay import GUIDebug
 from render.GUI.focus_overlay import GUIFocus
 from render.GUI.diaglog_box import DialogBox

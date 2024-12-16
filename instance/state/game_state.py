@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from utils import Vec2
-from instance.four import Queue
-from instance.matrix import Matrix
+from instance.engine.four import Queue
+from instance.engine.matrix import Matrix
 
 @dataclass
-class StructGameInstance():
+class GameState():
     
     spawn_pos = Vec2(4, 18)
     held_tetromino: str = None 

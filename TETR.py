@@ -1,26 +1,25 @@
 import threading
-from config import StructConfig
+from app.state.config import Config
 import time
 from instance.handling.handling_config import HandlingConfig
-from core.state.struct_debug import StructDebug
-from core.state.struct_flags import set_flag_attr
+from app.debug.debug_metrics import DebugMetrics
+from instance.state.flags import set_flag_attr
 from render.render_new import StructRender
-from core.clock import Clock
+from app.state.clock import Clock
 import pygame
 import os
 from render.render_new import Render
-from app.keyboard_input_manager import KeyboardInputManager
-from app.game_instance_manager import GameInstanceManager
-from app.menu_kb_input_handler import MenuKeyboardInputHandler, UIAction
-from app.debug_manager import DebugManager
-from app.pygame_event_handler import PygameEventHandler
+from app.input.keyboard.keyboard_input_manager import KeyboardInputManager
+from app.core.game_instance_manager import GameInstanceManager
+from app.input.keyboard.menu_kb_input_handler import MenuKeyboardInputHandler, UIAction
+from app.debug.debug_manager import DebugManager
+from app.core.pygame_event_handler import PygameEventHandler
 from app.state.timing import Timing
-from app.menu_manager import MenuManager
-from app.mouse_input_handler import MouseInputManager
-from app.state.keyboard import Keyboard
-from app.state.mouse import Mouse
+from app.core.menu_manager import MenuManager
+from app.input.mouse.mouse_input_handler import MouseInputManager
+from app.input.keyboard.keyboard import Keyboard
+from app.input.mouse.mouse import Mouse
 import logging
-import threading
 import traceback
 import datetime
 import sys
@@ -28,14 +27,6 @@ import json
 import pkg_resources
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-#TODO: change renderer methods to NOT use methods ASSOCIATED WITH A GAME INSTANCE
-#      change game instance to UPDATE variables, i.e, current_tetromino is on floor etc which are contained in GameInstanceStruct
-#      GameInstanceStruct will have to be contained in a Queue or something so that the renderer can access it in a thread safe way
-#      Debug Menu will have to be changed in a similar way but ALSO, there will have to be per game instance debug info
-
-#TODO: implement mouse event handling in the menus, probably best way to do it is the currently active menu passes the events and mouse positions to all the buttons
-# then the buttons just look at the events, i.e mouse click and test if the mouse position is within the button if it is consume the action and then do it.
 
 class App():
     def __init__(self):
@@ -46,12 +37,12 @@ class App():
         self.Keyboard = Keyboard()
         self.Mouse = Mouse()
         
-        self.Config = StructConfig()    
+        self.Config = Config()    
         self.Timing = Timing()
         self.FrameClock = Clock()
         
         self.RenderStruct = StructRender()
-        self.DebugStruct = StructDebug()
+        self.DebugStruct = DebugMetrics()
         self.HandlingConfig = HandlingConfig()
         
         self.DebugStruct.PRINT_WARNINGS = True

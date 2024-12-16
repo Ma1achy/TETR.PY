@@ -1,8 +1,8 @@
 from instance.handling.handling import Handling
-from core.state.struct_gameinstance import StructGameInstance
-from core.state.struct_flags import StructFlags, set_flag_attr
-from core.state.struct_handling import StructHandling
-from instance.four import Four
+from instance.state.game_state import GameState
+from instance.state.flags import Flags, set_flag_attr
+from instance.state.handling_state import HandlingState
+from instance.logic.four import Four
 
 class GameInstance():
     def __init__(self, ID, Config, TimingStruct, HandlingConfig, GameParameters):
@@ -14,10 +14,10 @@ class GameInstance():
         self.TimingStruct = TimingStruct
         
         self.HandlingConfig = HandlingConfig
-        self.HandlingStruct = StructHandling()
+        self.HandlingStruct = HandlingState()
         
-        self.FlagStruct = StructFlags()
-        self.GameInstanceStruct = StructGameInstance()
+        self.FlagStruct = Flags()
+        self.GameInstanceStruct = GameState()
         
         self.HandlingLogic = Handling(
             self.Config, 
