@@ -1,8 +1,8 @@
 from app.state.config import Config
-from core.state.struct_render import StructRender
+from old_state.struct_render import StructRender
 from instance.state.flags import Flags
 from instance.state.game_state import GameState
-from core.state.struct_timing import StructTiming
+from old_state.struct_timing import StructTiming
 from app.debug.debug_metrics import DebugMetrics
 from render.board.struct_board import StructBoardConsts
 import pygame

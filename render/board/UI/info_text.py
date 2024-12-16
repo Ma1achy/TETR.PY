@@ -1,6 +1,6 @@
-from core.state.struct_render import StructRender
+from old_state.struct_render import StructRender
 from instance.state.flags import Flags
-from core.state.struct_timing import StructTiming
+from old_state.struct_timing import StructTiming
 from render.board.struct_board import StructBoardConsts
 from instance.state.game_state import GameState
 import pygame

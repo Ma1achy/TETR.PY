@@ -7,11 +7,11 @@ import time
 import asyncio
 from instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
-from core.state.struct_timing import StructTiming
+from old_state.struct_timing import StructTiming
 from instance.state.game_state import GameState
 from instance.state.flags import Flags, set_flag_attr
 from instance.state.handling_state import HandlingState
-from core.state.struct_render import StructRender
+from old_state.struct_render import StructRender
 from app.state.clock import Clock
 
 class Core():

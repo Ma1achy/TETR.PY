@@ -1,4 +1,4 @@
-from core.state.struct_render import StructRender
+from old_state.struct_render import StructRender
 import pygame
 import os
 

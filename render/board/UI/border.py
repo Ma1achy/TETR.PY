@@ -1,4 +1,4 @@
-from core.state.struct_render import StructRender
+from old_state.struct_render import StructRender
 from instance.state.flags import Flags
 from render.board.struct_board import StructBoardConsts
 import pygame

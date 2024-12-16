@@ -1,5 +1,5 @@
 from app.state.config import Config
-from core.state.struct_render import StructRender
+from old_state.struct_render import StructRender
 from app.debug.debug_metrics import DebugMetrics
 from utils import get_prefix
 from render.GUI.font import Font
