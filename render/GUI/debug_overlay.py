@@ -1,12 +1,11 @@
 from app.state.config import Config
-from old_state.struct_render import StructRender
 from app.debug.debug_metrics import DebugMetrics
 from utils import get_prefix
 from render.GUI.font import Font
 import pygame
 
 class GUIDebug():
-    def __init__(self, Config: Config, RenderStruct: StructRender, DebugStruct: DebugMetrics):
+    def __init__(self, Config: Config, RenderStruct, DebugStruct: DebugMetrics):
         self.Config = Config
         self.RenderStruct = RenderStruct
         self.DebugStruct = DebugStruct

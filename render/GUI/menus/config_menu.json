@@ -103,7 +103,7 @@
                     }
                 },       
                 {
-                    "type": "collapsible_panel",
+                    "type": "collapsible_panel_header",
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "CONTROLS"
@@ -132,11 +132,105 @@
                     },
                     "button": {
                         "function": "toggle_panel",
-                        "colour": "#12151D" 
+                        "closed_colour": "#12151D", 
+                        "open_colour": "#0D0F15"
                     }
                 },
                 {
                     "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ] 
+                    },
+                    "elements": [
+                        {
+                            "type": "button_list",
+                            "buttons": [
+                                {
+                                    "display_text": "GUIDLINE",
+                                    "function": "toggle_guideline_keybinds"
+                                },
+                                {
+                                    "display_text": "WASD",
+                                    "function": "toggle_wasd_keybinds"	
+                                },
+                                {
+                                    "display_text": "CUSTOM",
+                                    "function": "toggle_custom_keybinds"
+                                }
+                            ],
+                            "themeing": {
+                                "background_colour": "#12151D",
+                                "inactive": {
+                                    "text_colour": "#7f9ddf",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#22293b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#2d364b"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e232d"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#33405c"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#1b1f28"
+                                        ]
+                                    }
+                                },
+                                "active": {
+                                    "text_colour": "#aec0ee",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#11141b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0e1015"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1d222f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#0b0c10"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#252c3d"
+                                        ]
+                                    }
+                                    }
+                                }
+                        }
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "HANDLING"
@@ -165,11 +259,36 @@
                     },
                     "button": {
                         "function": "toggle_panel",
-                        "colour": "#12151D" 
+                        "closed_colour": "#12151D", 
+                        "open_colour": "#0D0F15"
                     }
                 },
                 {
                     "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ] 
+                    },
+                    "elements": [
+                        
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "VOLUME & AUDIO"
@@ -198,11 +317,36 @@
                     },
                     "button": {
                         "function": "toggle_panel",
-                        "colour": "#12151D" 
+                        "closed_colour": "#12151D", 
+                        "open_colour": "#0D0F15"
                     }
                 },
                 {
                     "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ] 
+                    },
+                    "elements": [
+                        
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "GAMEPLAY"
@@ -231,11 +375,36 @@
                     },
                     "button": {
                         "function": "toggle_panel",
-                        "colour": "#12151D" 
+                        "closed_colour": "#12151D", 
+                        "open_colour": "#0D0F15"
                     }
                 },
                 {
                     "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ] 
+                    },
+                    "elements": [
+                        
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "VIDEO & INTERFACE"
@@ -264,11 +433,36 @@
                     },
                     "button": {
                         "function": "toggle_panel",
-                        "colour": "#12151D" 
+                        "closed_colour": "#12151D", 
+                        "open_colour": "#0D0F15"
                     }
                 },
                 {
                     "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ] 
+                    },
+                    "elements": [
+                        
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "CUSTOMISATION"
@@ -297,8 +491,33 @@
                     },
                     "button": {
                         "function": "toggle_panel",
-                        "colour": "#12151D" 
+                        "closed_colour": "#12151D", 
+                        "open_colour": "#0D0F15"
                     }
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#181c27"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#232936"
+                        ],
+                        "right": [
+                            3,
+                            "#151922"
+                        ],
+                        "bottom": [
+                            3,
+                            "#0f1117"
+                        ] 
+                    },
+                    "elements": [
+                        
+                    ]
                 },
                 {
                     "type": "bar_button_sub",

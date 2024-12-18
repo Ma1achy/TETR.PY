@@ -1,9 +1,9 @@
 import pygame.gfxdraw
 from app.state.config import Config
-from old_state.struct_render import StructRender
+
 from instance.state.flags import Flags
 from instance.state.game_state import GameState
-from old_state.struct_timing import StructTiming
+
 from app.debug.debug_metrics import DebugMetrics
 from utils import TransformSurface
 from render.UI.debug_menu import UIDebug

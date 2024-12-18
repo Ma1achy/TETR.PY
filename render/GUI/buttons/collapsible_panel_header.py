@@ -38,7 +38,7 @@ class CollapsiblePanelHeader(Button):
     def render(self):
         self.render_shadow()
         self.render_panel(self.button_surface)
-        self.render_button(self.button_surface, self.definition["button"]["colour"])
+        self.render_button(self.button_surface, self.definition["button"]["closed_colour"])
         self.render_text(self.button_surface)
     
     def __get_rect_and_surface(self):
@@ -131,12 +131,12 @@ class CollapsiblePanelHeader(Button):
         
     def __render_open_state(self):
         self.render_panel(self.open_button_surface)
-        self.render_button(self.open_button_surface, self.definition["button"]["colour"])
+        self.render_button(self.open_button_surface, self.definition["button"]["open_colour"])
         self.draw_open_state(self.open_button_surface)
     
     def __get_closed_state(self):
         self.render_panel(self.closed_button_surface)
-        self.render_button(self.closed_button_surface, self.definition["button"]["colour"])
+        self.render_button(self.closed_button_surface, self.definition["button"]["closed_colour"])
         self.draw_closed_state(self.closed_button_surface)
         
     def click(self):

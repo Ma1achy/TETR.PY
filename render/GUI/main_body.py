@@ -8,6 +8,7 @@ from render.GUI.menu_elements.floating_text import FloatingText
 from render.GUI.menu_elements.scrollbar import ScrollBar
 from render.GUI.menu_elements.logo import Logo
 from app.input.mouse.mouse import MouseEvents
+from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 
 class MainBody():
     def __init__(self, Mouse, Timing, rect, button_functions, definition):
@@ -19,10 +20,15 @@ class MainBody():
         self.definition = definition
         
         self.rect = rect
+        
         self.scroll_speed = 10
         self.scroll_y = 0
         self.y_diff = 0
-        self.scollable = False
+        
+        self.old_content_height = 0
+        self.content_height = 0
+        
+        self.scrollable = False
         self.scroll_bar = None
         self.scroll_timer = 0
         self.scroll_timer_duration = 0.1
@@ -30,7 +36,10 @@ class MainBody():
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
-       
+    
+    def get_local_position(self):
+        return self.rect.topleft
+    
     def __get_rect_and_surface(self):
         self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
 
@@ -57,34 +66,35 @@ class MainBody():
                 
             elif element['type'] == 'bar_button_sub':
                 y += 7
-                func = self.button_functions[element['function']]
+                func = self.button_functions[element['function']] 
                 button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 90)
                 button.y_position = y
                 self.menu_elements.append(button)
                 y += button.height + 7
                 
-            elif element['type'] == 'collapsible_panel':
+            elif element['type'] == 'collapsible_panel_header':
                 y += 7
                 panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y)
                 self.menu_elements.append(panel)
                 y += panel.height + 7
             
+            elif element['type'] == 'collapsible_panel':
+       
+                panel = CollapsiblePanel(self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1])
+                self.menu_elements.append(panel)
+               
             elif element['type'] == 'floating_text':
                 y += 3
                 text = FloatingText(self.body_surface, element['content'], y)
                 self.menu_elements.append(text)
                 y += text.height + 3
         
-        if y > self.rect.height:
-            self.scollable = True
-        else:
-            self.scollable = False
-        
         self.content_height = y
         self.y_diff = y - self.rect.height
+        self.scrollable = self.y_diff > 0
 
-        if self.scollable:
-            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scollable)
+        if self.scrollable:
+            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable)
                         
     def __init_back_button(self):
         if 'back_button' not in self.definition:
@@ -131,10 +141,10 @@ class MainBody():
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
-    
+
     def __handle_mouse_scroll(self, in_dialog):
         
-        if not self.scollable:
+        if not self.scrollable:
             return
         
         if in_dialog:
@@ -183,30 +193,76 @@ class MainBody():
         self.scroll_speed = smoothstep_interpolate(self.scroll_speed, 10, (1 - progress))
     
     def __update_scroll_position(self):
-        if not self.scollable:
-            self.scroll_y = 0
+        if not self.scrollable:
+            self.scroll_y = 0  # Reset scroll position if not scrollable
+            return
 
         if self.scroll_y > 0:
             self.scroll_y = 0
             
-        for element in self.menu_elements:
-            element.scroll_y = self.scroll_y
-            
+        elif self.scroll_y < -self.y_diff - 35:
+            self.scroll_y = -self.y_diff - 35  # Clamp scroll position to valid range
+
     def update(self, in_dialog):
+        
         self.__update_scroll_position()
+        self.__update_y_positions()
         self.__handle_mouse_scroll(in_dialog)
         self.__update_logo()
         self.__update_menu(in_dialog)
         self.__update_back_button(in_dialog)
         self.__update_scroll_bar(in_dialog)
+    
+    def __update_y_positions(self):
         
+        self.old_content_height = self.content_height
+        y = 35  # Initialize y outside the loop
+        for element in self.menu_elements:
+            element.scroll_y = self.scroll_y
+            
+            if isinstance(element, ButtonBarMain):
+                y += 10
+                element.y_position = y 
+                y += element.height + 10
+            
+            elif isinstance(element, ButtonBarSub):
+                y += 7
+                element.y_position = y
+                y += element.height + 7
+            
+            elif isinstance(element, CollapsiblePanelHeader):
+                y += 7
+                element.y_position = y 
+                y += element.height + 7
+            
+            elif isinstance(element, CollapsiblePanel):
+                if element.open:
+                    y -= 10
+                    element.y_position = y
+                    y += element.height + 7
+            
+            elif isinstance(element, FloatingText):
+                y += 3
+                element.y_position = y 
+                y += element.height + 3
+             
+        self.content_height = y
+        self.y_diff = y - self.body_surface.get_rect().height
+        self.scrollable = self.y_diff > 0 
+
+        if self.old_content_height != self.content_height and self.scrollable:
+            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable)
+        
+        elif not self.scrollable:
+            self.scroll_bar = None
+            
     def __update_menu(self, in_dialog):
         if 'menu' not in self.definition:
             return
         
         for element in self.menu_elements: # only update elements that are visible
-            if element.y_position + self.scroll_y + element.height >= 0 and element.y_position  + self.scroll_y - element.height < self.rect.height:
-                element.update(in_dialog)
+            #if element.y_position + self.scroll_y + element.height >= 0 and element.y_position  + self.scroll_y - element.height < self.rect.height:
+            element.update(in_dialog)
             
     def __update_back_button(self, in_dialog):
         if 'back_button' not in self.definition:
