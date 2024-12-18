@@ -58,7 +58,7 @@ class Menu():
             return
             
         self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body = MainBody(self.Mouse, self.Timing, self.main_body_rect, self.button_functions, self.definition['menu_body'])
+        self.main_body = MainBody(self.Mouse, self.Timing, self.main_body_rect, self.button_functions, self.definition['menu_body'], parent = None)
     
     def __init_footer_widgets(self):
         if "footer_widgets" not in self.definition:
@@ -67,7 +67,7 @@ class Menu():
         for element in self.definition["footer_widgets"]['elements']:
             if element['type'] == 'footer_button':
                 func = self.button_functions[element['function']]
-                self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element))
+                self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element, parent = None))
              
     def update(self, in_dialog): 
         self.main_body.update(in_dialog)

@@ -1,8 +1,10 @@
 from utils import brightness_maintain_alpha, brightness, smoothstep, smoothstep_interpolate
 import pygame
 from app.input.mouse.mouse import MouseEvents
-class Button:
-    def __init__(self, Timing, surface, Mouse, function, container, width, height, offset = (0, 0), style = 'lighten', maintain_alpha = False, slider = None):
+from render.GUI.menu_elements.nested_element import NestedElement
+class Button(NestedElement):
+    def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None):
+        super().__init__(parent)
         
         self.Timing = Timing
         self.surface = surface
@@ -13,7 +15,6 @@ class Button:
         self.container = container
         self.width = width
         self.height = height
-        self.offset = offset
         
         self.style = style
         self.maintain_alpha = maintain_alpha
@@ -48,16 +49,21 @@ class Button:
         self.shadow_surface = pygame.Surface((1, 1), pygame.HWSURFACE|pygame.SRCALPHA)
         self.shadow_rect = pygame.Rect(0, 0, 1, 1)
         self.shadow_radius = 5
-    
+        
+        self.get_rect_and_surface()
+        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+         
+    def get_local_position(self):
+        return self.rect.topleft
     # -------------------------------------------------------------------------- DRAWING --------------------------------------------------------------------------
-     
+    
     def get_rect_and_surface(self):
         if self.width < 1:
             self.width = 1
         
         if self.height < 1:
             self.height = 1
-            
+        
         self.rect = pygame.Rect(self.container.left, self.container.top, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
@@ -103,6 +109,9 @@ class Button:
             brightness(self.pressed_surface, 0.5)
             
     def draw(self):
+        if not hasattr(self, 'button_surface') or self.button_surface is None:
+            return 
+        
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.surface.blit(self.button_surface, self.rect.topleft)
     
@@ -110,10 +119,10 @@ class Button:
               
     def check_hover(self):
         x, y = self.Mouse.position
-        x -= self.offset[0]
-        y -= self.offset[1]
         
-        if self.rect.collidepoint((x, y)):
+        self.collision_rect.topleft = self.get_screen_position()
+        
+        if self.collision_rect.collidepoint((x, y)):
             if self.state == 'pressed':
                 return
             self.state = 'hovered'
@@ -129,18 +138,13 @@ class Button:
                     return
                 
                 event_x, event_y = info['pos']
-                event_x -= self.offset[0]
-                event_y -= self.offset[1]
-                
                 mouse_x, mouse_y = self.Mouse.position
-                mouse_x -= self.offset[0]
-                mouse_y -= self.offset[1]
-                
-                if button is MouseEvents.MOUSEBUTTON1 and info['down'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)):
+
+                if button is MouseEvents.MOUSEBUTTON1 and info['down'] and self.collision_rect.collidepoint((event_x, event_y)) and self.collision_rect.collidepoint((mouse_x, mouse_y)):
                     self.state = 'pressed'
                     events_to_remove.append(event)
                 
-                if button is MouseEvents.MOUSEBUTTON1 and info['up'] and self.rect.collidepoint((event_x, event_y)) and self.rect.collidepoint((mouse_x, mouse_y)) and self.state == 'pressed':
+                if button is MouseEvents.MOUSEBUTTON1 and info['up'] and self.collision_rect.collidepoint((event_x, event_y)) and self.collision_rect.collidepoint((mouse_x, mouse_y)) and self.state == 'pressed':
                     events_to_remove.append(event)
                     self.start_click()
         

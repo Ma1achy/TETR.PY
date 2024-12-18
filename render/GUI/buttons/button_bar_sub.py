@@ -4,9 +4,9 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class ButtonBarSub(Button):
-    def __init__(self, function:callable, Mouse, Timing, surface, container, definition, y_position, height):
-        super().__init__(Timing, surface, Mouse, function, container, container.width, height, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False, slider = 'left')
-    
+    def __init__(self, function:callable, Mouse, Timing, surface, container, definition, y_position, height, parent):
+        super().__init__(Timing, surface, Mouse, function, container, container.width, height, style = 'lighten', maintain_alpha = False, slider = 'left', parent = parent)
+        
         self.surface = surface
         self.definition = definition
  
@@ -25,7 +25,9 @@ class ButtonBarSub(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
-    
+        
+        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
+            
     def __get_rect_and_surface(self):
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)

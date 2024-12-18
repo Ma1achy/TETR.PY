@@ -4,8 +4,9 @@ from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 
 class CollapsiblePanelHeader(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position):
-        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, offset = (container.left, container.top), style = 'lighten', maintain_alpha = True, slider = 'left')
+    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent):
+        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent)
+        
         self.Timing = Timing
 
         self.Mouse = Mouse
@@ -34,7 +35,9 @@ class CollapsiblePanelHeader(Button):
         self.render()
         self.__render_states()
         self.get_state_overlays()
-           
+        
+        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
+        
     def render(self):
         self.render_shadow()
         self.render_panel(self.button_surface)

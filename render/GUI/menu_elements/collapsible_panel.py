@@ -1,9 +1,11 @@
 import pygame
 from utils import draw_border, draw_solid_colour, apply_gaussian_blur_with_alpha
 from render.GUI.menu_elements.button_list import ButtonList
+from render.GUI.menu_elements.nested_element import NestedElement
 
-class CollapsiblePanel():
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, linked_header):
+class CollapsiblePanel(NestedElement):
+    def __init__(self, Timing, Mouse, surface, container, definition, y_position, linked_header, parent):
+        super().__init__(parent = parent)
         
         self.Timing = Timing
         self.Mouse = Mouse
@@ -27,7 +29,10 @@ class CollapsiblePanel():
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
-                
+    
+    def get_local_position(self):
+        return self.rect.topleft
+    
     def __get_rect_and_surface(self):
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.panel_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
@@ -39,7 +44,7 @@ class CollapsiblePanel():
         y = 0
         for element in self.definition['elements']:
             if element['type'] == "button_list":
-                self.elements.append(ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y))
+                self.elements.append(ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self))
                 
     def render(self):
         self.render_shadow()
@@ -78,5 +83,3 @@ class CollapsiblePanel():
 
     def reset_state(self):
         pass
-        
-        

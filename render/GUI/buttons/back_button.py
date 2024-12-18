@@ -4,9 +4,9 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class BackButton(Button):
-    def __init__(self, function, Mouse, Timing, surface, container, definition):
-        super().__init__(Timing, surface, Mouse, function, container, 300, 60, offset = (container.left, container.top), style = 'lighten', maintain_alpha = False, slider = 'right')
-
+    def __init__(self, function, Mouse, Timing, surface, container, definition, parent):
+        super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent)
+        
         self.definition = definition
 
         self.default_x_position = 150
@@ -18,11 +18,13 @@ class BackButton(Button):
         
         self.font = Font('hun2', 33)
         self.shadow_radius = 5
-           
+        
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
-           
+        
+        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
+          
     def __get_rect_and_surface(self):
         self.rect = pygame.Rect(self.container.left - self.x_position, self.y_position, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
@@ -43,3 +45,5 @@ class BackButton(Button):
         pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rect.width - 4 * self.shadow_radius, self.shadow_rect.height - 4 * self.shadow_radius))
         self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+
+        

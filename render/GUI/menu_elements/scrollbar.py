@@ -1,8 +1,10 @@
 import pygame
 from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha
+from render.GUI.menu_elements.nested_element import NestedElement
 
-class ScrollBar:
+class ScrollBar(NestedElement):
     def __init__(self, container, y_scroll, y_diff, scrollable):
+        super().__init__(parent = None)
         self.container = container
         self.y_scroll = y_scroll 
         self.y_diff = y_diff  
@@ -16,6 +18,9 @@ class ScrollBar:
         self.bar = Bar(self.rect, self.y_scroll, self.y_diff, self.scrollable)
         self.render()
 
+    def get_local_position(self):
+        return self.rect.topleft
+    
     def get_rect_and_surface(self):
         self.surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE | pygame.SRCALPHA)
         self.rect = pygame.Rect(
@@ -51,8 +56,9 @@ class ScrollBar:
         self.draw()
         self.bar.update(y_scroll, self.container)
 
-class Bar:
+class Bar():
     def __init__(self, scrollbar_rect, y_scroll, y_diff, scrollable):
+        
         self.scrollbar_rect = scrollbar_rect
         self.y_scroll = y_scroll
         self.y_diff = y_diff

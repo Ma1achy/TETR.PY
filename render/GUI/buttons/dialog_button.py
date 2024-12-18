@@ -4,8 +4,8 @@ from utils import hex_to_rgb, align_left_edge, align_right_edge, align_centre, b
 from render.GUI.font import Font
 
 class DialogButton(Button):
-    def __init__(self, Timing, surface, Mouse, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, offset = (dialog_rect.left, dialog_rect.top), style = style, maintain_alpha = True)
+    def __init__(self, Timing, surface, Mouse, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent):
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = style, maintain_alpha = True, parent = parent)
         
         self.RenderStruct = RenderStruct
         self.y_position = self.container.top + padding[1]
@@ -23,6 +23,8 @@ class DialogButton(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+        
+        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
         
     def render(self):
         pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)

@@ -9,9 +9,11 @@ from render.GUI.menu_elements.scrollbar import ScrollBar
 from render.GUI.menu_elements.logo import Logo
 from app.input.mouse.mouse import MouseEvents
 from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
+from render.GUI.menu_elements.nested_element import NestedElement
 
-class MainBody():
-    def __init__(self, Mouse, Timing, rect, button_functions, definition):
+class MainBody(NestedElement):
+    def __init__(self, Mouse, Timing, rect, button_functions, definition, parent):
+        super().__init__(parent)
         
         self.Mouse = Mouse
         self.Timing = Timing
@@ -59,7 +61,7 @@ class MainBody():
             if element['type'] == 'bar_button':
                 y += 10
                 func = self.button_functions[element['function']]
-                button = ButtonBarMain(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 120)
+                button = ButtonBarMain(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 120, parent = self)
                 button.y_position = y
                 self.menu_elements.append(button)
                 y += button.height + 10
@@ -67,20 +69,20 @@ class MainBody():
             elif element['type'] == 'bar_button_sub':
                 y += 7
                 func = self.button_functions[element['function']] 
-                button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 90)
+                button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 90, parent = self)
                 button.y_position = y
                 self.menu_elements.append(button)
                 y += button.height + 7
                 
             elif element['type'] == 'collapsible_panel_header':
                 y += 7
-                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y)
+                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y, parent = self)
                 self.menu_elements.append(panel)
                 y += panel.height + 7
             
             elif element['type'] == 'collapsible_panel':
        
-                panel = CollapsiblePanel(self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1])
+                panel = CollapsiblePanel(self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self)
                 self.menu_elements.append(panel)
                
             elif element['type'] == 'floating_text':
@@ -101,7 +103,7 @@ class MainBody():
             return
         
         func = self.button_functions[self.definition['back_button']['function']]
-        self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'])
+        self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'], parent = self)
     
     def __init_logo(self):
         if 'logo' not in self.definition:
