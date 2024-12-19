@@ -134,7 +134,8 @@
                         "function": "toggle_panel",
                         "closed_colour": "#12151D", 
                         "open_colour": "#0D0F15"
-                    }
+                    },
+                    "hover_text": "Change the way you control TETR.PY."
                 },
                 {
                     "type": "collapsible_panel",
@@ -162,15 +163,18 @@
                             "buttons": [
                                 {
                                     "display_text": "GUIDLINE",
-                                    "function": "toggle_guideline_keybinds"
+                                    "function": "toggle_guideline_keybinds",
+                                    "hover_text": "The standard controls, as seen in many stacker games."
                                 },
                                 {
                                     "display_text": "WASD",
-                                    "function": "toggle_wasd_keybinds"	
+                                    "function": "toggle_wasd_keybinds",
+                                    "hover_text": "A WASD based layout, that sets piece movement to the left hand and rotation to the right."
                                 },
                                 {
                                     "display_text": "CUSTOM",
-                                    "function": "toggle_custom_keybinds"
+                                    "function": "toggle_custom_keybinds",
+                                    "hover_text": "Custom controls - set them as you wish."
                                 }
                             ],
                             "themeing": {
@@ -262,7 +266,90 @@
                         "function": "toggle_panel",
                         "closed_colour": "#12151D", 
                         "open_colour": "#0D0F15"
-                    }
+                    },
+                    "elements": [
+                        {   
+                            "type": "generic_button",
+                            "function": "test_handling",
+                            "hover_text": "Try out these settings.",
+                            "text": {
+                                "display_text": "TEST",
+                                "colour": "#7f9ddf"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#22293b"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#2d364b"
+                                ],
+                                "right": [
+                                    3,
+                                    "#1e232d"
+                                ],
+                                "top": [
+                                    3,
+                                    "#33405c"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "#1b1f28"
+                                ]
+                            },
+                            "size": {
+                                "width": 80,
+                                "height": 35
+                            },
+                            "position": {
+                                "x": 25,
+                                "y": 20
+                            },
+                            "alignment": "center_right"
+                        },
+                        {   
+                            "type": "generic_button",
+                            "function": "reset_handling",
+                            "hover_text": "Reset these settings to their default values.",
+                            "text": {
+                                "display_text": "RESET",
+                                "colour": "#7f9ddf"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#22293b"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#2d364b"
+                                ],
+                                "right": [
+                                    3,
+                                    "#1e232d"
+                                ],
+                                "top": [
+                                    3,
+                                    "#33405c"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "#1b1f28"
+                                ]
+                            },
+                            "size": {
+                                "width": 95,
+                                "height": 35
+                            },
+                            "position": {
+                                "x": 115,
+                                "y": 20
+                            },
+                            "alignment": "center_right"
+                        }
+                    ],
+                    "hover_text": "Change how TETR.PY feels."
                 },
                 {
                     "type": "collapsible_panel",
@@ -320,7 +407,50 @@
                         "function": "toggle_panel",
                         "closed_colour": "#12151D", 
                         "open_colour": "#0D0F15"
-                    }
+                    },
+                    "elements": [
+                        {   
+                            "type": "generic_button",
+                            "function": "go_to_tweak_music",
+                            "hover_text": "Tweak the music randomiser to your liking.",
+                            "text": {
+                                "display_text": "TWEAK MUSIC",
+                                "colour": "#7f9ddf"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#22293b"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#2d364b"
+                                ],
+                                "right": [
+                                    3,
+                                    "#1e232d"
+                                ],
+                                "top": [
+                                    3,
+                                    "#33405c"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "#1b1f28"
+                                ]
+                            },
+                            "size": {
+                                "width": 170,
+                                "height": 35
+                            },
+                            "position": {
+                                "x": 25,
+                                "y": 20
+                            },
+                            "alignment": "center_right"
+                        }
+                    ],
+                    "hover_text": "Change the way TETR.PY sounds."  
                 },
                 {
                     "type": "collapsible_panel",
@@ -343,7 +473,6 @@
                         ] 
                     },
                     "elements": [
-                        
                     ]
                 },
                 {
@@ -378,7 +507,8 @@
                         "function": "toggle_panel",
                         "closed_colour": "#12151D", 
                         "open_colour": "#0D0F15"
-                    }
+                    },
+                    "hover_text": "Change the way TETR.PY functions."
                 },
                 {
                     "type": "collapsible_panel",
@@ -407,15 +537,18 @@
                             "buttons": [
                                 {
                                     "display_text": "OFF",
-                                    "function": "toggle_action_text_off"
+                                    "function": "toggle_action_text_off",
+                                    "hover_text": "Don't display any action text when doing special attacks."
                                 },
                                 {
                                     "display_text": "SOME",
-                                    "function": "toggle_action_text_some"	
+                                    "function": "toggle_action_text_some",
+                                    "hover_text": "Display only non-distracting action text when doing special attacks."
                                 },
                                 {
                                     "display_text": "ALL",
-                                    "function": "toggle_action_text_all"
+                                    "function": "toggle_action_text_all",
+                                    "hover_text": "Display all action text when doing special attacks."
                                 }
                             ],
                             "themeing": {
@@ -507,7 +640,8 @@
                         "function": "toggle_panel",
                         "closed_colour": "#12151D", 
                         "open_colour": "#0D0F15"
-                    }
+                    },
+                    "hover_text": "Change the way TETR.PY looks."
                 },
                 {
                     "type": "collapsible_panel",
@@ -536,23 +670,23 @@
                             "buttons": [
                                 {
                                     "display_text": "MINIMAL",
-                                    "function": "toggle_minimal_graphics"
+                                    "function": "toggle_minimal_graphics",
+                                    "hover_text": "Disable everything (including textures) for the highest performance but worst visuals."
                                 },
                                 {
                                     "display_text": "LOW",
-                                    "function": "toggle_low_graphics"
+                                    "function": "toggle_low_graphics",
+                                    "hover_text": "No particles, effects, or animations. Use this for better performance, or if you simply dislike the flare."
                                 },
                                 {
                                     "display_text": "MEDIUM",
-                                    "function": "toggle_medium_graphics"
+                                    "function": "toggle_medium_graphics",
+                                    "hover_text": "Less particles and effects. Remove any non-gameplay related particles and effects"
                                 },
                                 {
                                     "display_text": "HIGH",
-                                    "function": "toggle_high_graphics"
-                                },
-                                {
-                                    "display_text": "ULTRA",
-                                    "function": "toggle_ultra_graphics"
+                                    "function": "toggle_high_graphics",
+                                    "hover_text": "All the particles and effects."
                                 }
                             ],
                             "themeing": {
@@ -644,7 +778,8 @@
                         "function": "toggle_panel",
                         "closed_colour": "#12151D", 
                         "open_colour": "#0D0F15"
-                    }
+                    },
+                    "hover_text": "Add your own personal spin to TETR.PY."
                 },
                 {
                     "type": "collapsible_panel",

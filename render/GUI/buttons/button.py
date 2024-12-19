@@ -52,6 +52,8 @@ class Button(NestedElement):
         
         self.get_rect_and_surface()
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        
+        self.ignore_events = False
          
     def get_local_position(self):
         return self.rect.topleft
@@ -165,18 +167,22 @@ class Button(NestedElement):
         self.function()
     
     # -------------------------------------------------------------------------- UPDATE LOGIC --------------------------------------------------------------------------
-       
-    def update(self, in_dialog = False):
-        
-        self.handle_scroll()
-        
-        if in_dialog:
+    
+    def update_state(self):
+        if self.ignore_events:
             return
         
         self.check_hover()
         self.update_click()
         self.check_events()
         
+    def update(self, in_dialog = False):
+        
+        self.handle_scroll()
+        
+        if not in_dialog:
+            self.update_state()
+            
         if self.state is None and self.previous_state is None:
             self.slider_hover_start_timer = 0
             

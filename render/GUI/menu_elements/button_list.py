@@ -1,8 +1,7 @@
 import pygame
-from render.GUI.buttons.button import Button
-from utils import draw_border, draw_solid_colour, brightness
 from render.GUI.font import Font
 from render.GUI.menu_elements.nested_element import NestedElement
+from render.GUI.buttons.button_list_buttons import ButtonListButtons
 
 class ButtonList(NestedElement):
     def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent):
@@ -25,7 +24,7 @@ class ButtonList(NestedElement):
         self.y_position = self.y_padding + y_position
 
         self.width = self.container.width - self.x_padding * 2
-        self.height = 65 - self.y_padding * 2
+        self.height = 65
         
         self.buttons = []
         
@@ -58,13 +57,13 @@ class ButtonList(NestedElement):
     def generate_button(self, button, idx):
         
         button_rect = self.get_button_rect(idx) 
-       
-        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.button_list_surface, button_rect, button, self.themeing, button['function'], parent = self))     
+        function = None
+        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.button_list_surface, button_rect, button, self.themeing, function, parent = self))     
     
     def get_button_rect(self, idx):
         num_buttons = len(self.definition['buttons'])
         edge_padding = 15
-        inter_button_padding = 5
+        inter_button_padding = 7
         y_padd = 15
         
         total_padding = edge_padding * 2 + inter_button_padding * (num_buttons - 1)
@@ -111,100 +110,7 @@ class ButtonList(NestedElement):
     def on_click(self):
         for button in self.buttons:
             button.active = False
-class ButtonListButtons(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, themeing, function, parent):
-        super().__init__(Timing, surface, Mouse, function, container, container.width, container.height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent)
-        
-        self.Timing = Timing
-        self.Mouse = Mouse
-        
-        self.surface = surface
-        self.container = container
-        self.width = container.width
-        self.height = container.height
-        
-        self.function = function
-        
-        self.function = None # temp
-        self.definition = definition
-        self.themeing = themeing
-        
-        self.active = False
-        self.state = None
-        
-        self.display_text = definition['display_text']
-        self.inactive_themeing = self.themeing['inactive']
-        self.active_themeing = self.themeing['active']
-        
-        self.y_position = container.top
-        self.font = Font('hun2', 23)
-        
-        self.__get_rect_and_surface()
-        self.render()
-        self.get_overlays()
-        self.update_apperance()
-    
-    def get_local_position(self):
-        return self.container.topleft
-    
-    def __get_rect_and_surface(self):
-        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
-        self.active_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.inactive_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-    
-    def render(self):
-        self.render_inactive_state()
-        self.render_active_state()
-    
-    def render_inactive_state(self):
-        draw_solid_colour(self.inactive_surface, self.inactive_themeing['background']['colour'], self.inactive_surface.get_rect())
-        draw_border(self.inactive_surface, self.inactive_themeing['border'], self.inactive_surface.get_rect())
-        self.render_text(self.inactive_surface, self.inactive_themeing['text_colour'], self.display_text)
-        
-    def render_active_state(self):
-        draw_solid_colour(self.active_surface, self.active_themeing['background']['colour'], self.active_surface.get_rect())
-        draw_border(self.active_surface, self.active_themeing['border'], self.active_surface.get_rect())
-        self.render_text(self.active_surface, self.active_themeing['text_colour'], self.display_text)
-    
-    def render_text(self, surface, colour, text):
-        self.font.draw(surface, text, colour, 'centre', 0, 0)
-    
-    def get_overlays(self):
-        self.get_inactive_overlay()
-        self.get_active_overlay()
-    
-    def get_inactive_overlay(self):
-        self.inactive_hover_surface = self.inactive_surface.copy()
-        brightness(self.inactive_hover_surface, 1.2)
-        
-        self.inactive_pressed_surface = self.inactive_surface.copy()
-        brightness(self.inactive_pressed_surface, 1.5)
-        
-    def get_active_overlay(self):
-        self.active_hover_surface = self.active_surface.copy()
-        brightness(self.active_hover_surface, 1.2)
-        
-        self.active_pressed_surface = self.active_surface.copy()
-        brightness(self.active_pressed_surface, 1.5)
-    
-    def update_apperance(self):
-        if self.active:
-            self.button_surface = self.active_surface
-            self.hover_surface = self.active_hover_surface
-            self.pressed_surface = self.active_pressed_surface
-        else:
-            self.button_surface = self.inactive_surface
-            self.hover_surface = self.inactive_hover_surface
-            self.pressed_surface = self.inactive_pressed_surface
-    
-    def click(self):
-        self.parent.on_click()
-        self.active = not self.active
-        super().click()
-        
-    def update(self, in_dialog):
-        self.update_apperance()
-        super().update(in_dialog)
+
         
         
     

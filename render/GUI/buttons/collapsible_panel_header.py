@@ -2,6 +2,7 @@ import pygame
 from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha, hex_to_rgb, brightness, brightness_maintain_alpha
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
+from render.GUI.buttons.generic_button import GenericButton
 
 class CollapsiblePanelHeader(Button):
     def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent):
@@ -20,7 +21,6 @@ class CollapsiblePanelHeader(Button):
         self.x_position = self.container.width // 6
         
         self.open = False
-        #self.y_position = list_index * (self.height + 15) + 55
         
         self.default_x_position = self.container.width // 6
         self.hovered_x_position = self.x_position
@@ -30,14 +30,26 @@ class CollapsiblePanelHeader(Button):
         
         self.main_font = Font('d_din_bold', 45)
         
+        self.elements = []
+    
         self.__get_rect_and_surface()
         self.get_overlays()
         self.render()
         self.__render_states()
         self.get_state_overlays()
+        self.__init_elements()
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
+    
+    def __init_elements(self):
+        if 'elements' not in self.definition:
+            return
         
+        for element in self.definition['elements']:
+            if element['type'] == 'generic_button':
+                function = None
+                self.elements.append(GenericButton(self.Timing, self.Mouse, self.open_button_surface, self.button_surface.get_rect(), element, function, self))
+    
     def render(self):
         self.render_shadow()
         self.render_panel(self.button_surface)
@@ -174,6 +186,18 @@ class CollapsiblePanelHeader(Button):
                 (self.arrow_rect.center[0], self.arrow_rect.center[1] + self.arrow_rect.height // 8)
             ]
         )
+    
+    def update(self, in_dialog):
+        self.update_elements(in_dialog)
+        super().update(in_dialog)
+       
+       
+    def update_elements(self, in_dialog):
+        if not self.open:
+            return
+        
+        for element in self.elements:
+            element.update(in_dialog)
        
     
         

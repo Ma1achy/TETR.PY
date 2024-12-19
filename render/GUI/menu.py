@@ -2,8 +2,8 @@ import pygame
 from utils import hex_to_rgb, load_image, draw_linear_gradient, draw_solid_colour, draw_border, brightness, align_top_edge, align_bottom_edge, align_right_edge, align_left_edge, align_centre, align_bottom_left, align_bottom_right, align_top_right, align_top_left
 from render.GUI.font import Font
 import json
-from render.GUI.header import Header
-from render.GUI.footer import Footer
+from render.GUI.menu_elements.header import Header
+from render.GUI.menu_elements.footer import Footer
 from render.GUI.main_body import MainBody
 from render.GUI.buttons.footer_button import FooterButton
 

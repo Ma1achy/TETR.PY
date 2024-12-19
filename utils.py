@@ -391,6 +391,33 @@ def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
+def align_element(container, element_width, element_height, h_padding = 0, v_padding = 0, alignment = 'center'):
+    match alignment:
+        case 'top':
+            return align_top_edge(container, element_width, element_height, h_padding, v_padding)
+        case 'bottom':
+            return align_bottom_edge(container, element_width, element_height, h_padding, v_padding)
+        case 'left':
+            return align_left_edge(container, element_width, element_height, h_padding, v_padding)
+        case 'right':
+            return align_right_edge(container, element_width, element_height, h_padding, v_padding)
+        case 'top_left':
+            return align_top_left(container, element_width, element_height, h_padding, v_padding)
+        case 'top_right':
+            return align_top_right(container, element_width, element_height, h_padding, v_padding)
+        case 'bottom_left':
+            return align_bottom_left(container, element_width, element_height, h_padding, v_padding)
+        case 'bottom_right':
+            return align_bottom_right(container, element_width, element_height, h_padding, v_padding)
+        case 'center':
+            return align_centre(container, element_width, element_height, h_padding, v_padding)
+        case 'center_left':
+            return align_center_left(container, element_width, element_height, h_padding, v_padding)
+        case 'center_right':
+            return align_center_right(container, element_width, element_height, h_padding, v_padding)
+        case _:
+            return align_centre(container, element_width, element_height, h_padding, v_padding)
+
 def align_top_edge(container, element_width, element_height, h_padding = 0, v_padding = 0):
     return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
 
@@ -417,6 +444,12 @@ def align_top_right(container, element_width, element_height, h_padding = 0, v_p
 
 def align_top_left(container, element_width, element_height, h_padding = 0, v_padding = 0):
     return pygame.Rect(container.left + h_padding, container.top + v_padding, element_width, element_height)
+
+def align_center_right(container, element_width, element_height, h_padding = 0, v_padding = 0):
+    return pygame.Rect(container.right - element_width - h_padding, container.top + (container.height - element_height)//2 + v_padding, element_width, element_height)
+
+def align_center_left(container, element_width, element_height, h_padding = 0, v_padding = 0):
+    return pygame.Rect(container.left + h_padding, container.top + (container.height - element_height)//2 + v_padding, element_width, element_height)
 
 def load_image(image_path):
     """
