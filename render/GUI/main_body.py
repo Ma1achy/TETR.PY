@@ -1,5 +1,5 @@
 import pygame
-from utils import smoothstep_interpolate
+from utils import smoothstep_interpolate, draw_linear_gradient, draw_solid_colour
 from render.GUI.buttons.button_bar_main import ButtonBarMain
 from render.GUI.buttons.button_bar_sub import ButtonBarSub
 from render.GUI.buttons.back_button import BackButton
@@ -135,9 +135,19 @@ class MainBody(NestedElement):
         
         self.back_button.draw()
     
-    def draw(self, surface):
+    def draw_background(self):
+        if 'background' not in self.definition:
+            return
+        
+        if self.definition['background']['style'] == 'linear_gradient':
+            draw_linear_gradient(self.body_surface, self.definition['background']['colours'][0], self.definition['background']['colours'][1], self.body_surface.get_rect())
+        elif self.definition['background']['style'] == 'solid':
+            draw_solid_colour(self.body_surface, self.definition['background']['colour'], self.body_surface.get_rect())
+                
+    def draw(self, surface): 
         surface.blit(self.body_surface, self.rect.topleft)
         self.body_surface.fill((0, 0, 0, 0))
+        self.draw_background()
        
     def handle_window_resize(self):
         self.__get_rect_and_surface()

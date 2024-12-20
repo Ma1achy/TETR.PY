@@ -1,12 +1,12 @@
-from app.state.config import Config
 from app.debug.debug_metrics import DebugMetrics
 from utils import get_prefix
 from render.GUI.font import Font
 import pygame
 
 class GUIDebug():
-    def __init__(self, Config: Config, RenderStruct, DebugStruct: DebugMetrics):
-        self.Config = Config
+    def __init__(self, Timing, RenderStruct, DebugStruct: DebugMetrics):
+        
+        self.Timing = Timing
         self.RenderStruct = RenderStruct
         self.DebugStruct = DebugStruct
 
@@ -167,7 +167,7 @@ class GUIDebug():
         x = 10
         y = 10 
         
-        fps_colour = '#ffff00' if self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.95 else '#ff0000' if self.DebugStruct.Average_FrameRate < self.Config.FPS * 0.5 else '#00ff00'
+        fps_colour = '#ffff00' if self.DebugStruct.Average_FrameRate < self.Timing.target_FPS * 0.95 else '#ff0000' if self.DebugStruct.Average_FrameRate < self.Timing.target_FPS * 0.5 else '#00ff00'
             
         fps_text = f'FPS: {int(self.DebugStruct.Average_FrameRate)}'
 
@@ -214,7 +214,7 @@ class GUIDebug():
         y = 10
         
         # TPS debug information
-        tps_colour = '#ff0000' if self.DebugStruct.Average_TickRate < self.Config.TPS * 0.95 else '#00ff00'
+        tps_colour = '#ff0000' if self.DebugStruct.Average_TickRate < self.Timing.target_TPS * 0.95 else '#00ff00'
 
         self.font_hun2_big.draw(
             self.tps_surface,
@@ -262,7 +262,7 @@ class GUIDebug():
         y = 10
         
         # Polling debug information
-        poll_colour = '#ff0000' if self.DebugStruct.Average_PollingRate < self.Config.POLLING_RATE * 0.95 else '#00ff00'
+        poll_colour = '#ff0000' if self.DebugStruct.Average_PollingRate < self.Timing.target_POLLING_RATE * 0.95 else '#00ff00'
 
         self.font_hun2_big.draw(
             self.polling_surface,

@@ -8,11 +8,10 @@ import webbrowser
 from utils import copy2clipboard, smoothstep, TransformSurface
 import pygame
 class MenuManager():
-    def __init__(self, Keyboard, Mouse, Config, Timing, RenderStruct, Debug):
+    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug):
 
         self.Keyboard = Keyboard
         self.Mouse = Mouse
-        self.Config = Config
         self.Timing = Timing
         self.RenderStruct = RenderStruct
         self.Debug = Debug
@@ -22,7 +21,7 @@ class MenuManager():
         self.is_focused = False
         self.in_dialog = False
         
-        self.GUI_debug = GUIDebug(self.Config, self.RenderStruct, self.Debug)
+        self.GUI_debug = GUIDebug(self.Timing, self.RenderStruct, self.Debug)
         self.GUI_focus = GUIFocus(self.RenderStruct)
         self.ErrorDialog = None
             
@@ -64,13 +63,14 @@ class MenuManager():
     def init_menus(self, window):
         self.window = window
         self.ExitDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'EXIT TETR.PY?', message = None , buttons = ['CANCEL', 'EXIT'], funcs = [self.close_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
-         
-        self.home_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
-        self.solo_menu           = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
-        self.multi_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/multi_menu.json')
-        self.records_menu        = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/records_menu.json')
-        self.about_menu          = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/about_menu.json')
-        self.config_menu         = Menu(self.window, self.Config, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
+        
+        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/login_menu.json')
+        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
+        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
+        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/multi_menu.json')
+        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/records_menu.json')
+        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
         self.button_functions, 
         self.current_menu = self.home_menu
 
@@ -133,6 +133,7 @@ class MenuManager():
         self.debug_overlay = not self.debug_overlay
     
     def handle_window_resize(self):
+        self.login_menu.handle_window_resize()
         self.home_menu.handle_window_resize()
         self.solo_menu.handle_window_resize()
         self.multi_menu.handle_window_resize()
@@ -148,6 +149,13 @@ class MenuManager():
         
         self.copied_text_surface_rect = pygame.Rect((self.RenderStruct.WINDOW_WIDTH - self.copied_text_surface_width)//2, (self.RenderStruct.WINDOW_HEIGHT - self.copied_text_surface_height)//2, self.copied_text_surface_width, self.copied_text_surface_height)
     
+    def go_to_login(self):
+        if self.current_menu == self.login_menu:
+            return
+        
+        self.current_menu.reset_buttons()
+        self.current_menu = self.login_menu
+
     # exit dialog
     
     def go_to_exit(self):

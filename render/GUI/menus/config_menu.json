@@ -139,6 +139,7 @@
                 },
                 {
                     "type": "collapsible_panel",
+                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -353,6 +354,7 @@
                 },
                 {
                     "type": "collapsible_panel",
+                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -454,6 +456,7 @@
                 },
                 {
                     "type": "collapsible_panel",
+                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -512,6 +515,7 @@
                 },
                 {
                     "type": "collapsible_panel",
+                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -645,6 +649,7 @@
                 },
                 {
                     "type": "collapsible_panel",
+                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -748,6 +753,7 @@
                 },
                 {
                     "type": "collapsible_panel_header",
+                    "height": 200,
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "CUSTOMISATION"

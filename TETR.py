@@ -1,5 +1,4 @@
 import threading
-from app.state.config import Config
 import time
 from instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
@@ -25,11 +24,18 @@ import datetime
 import sys
 import json
 import pkg_resources
+from app.core.account_manager import AccountManager
+from app.core.config_manager import ConfigManager
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class App():
     def __init__(self):
+        
+        self.ConfigManager = ConfigManager()
+        self.AccountManager = AccountManager()
+        
+        self.load_user_settings()
         
         self.is_focused = False
         self.game_instances = []
@@ -37,7 +43,6 @@ class App():
         self.Keyboard = Keyboard()
         self.Mouse = Mouse()
         
-        self.Config = Config()    
         self.Timing = Timing()
         self.FrameClock = Clock()
         
@@ -65,10 +70,10 @@ class App():
         }
    
         self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing)
-        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
+        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
-        self.Render = Render(self.Config, self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
-        self.Debug = DebugManager(self.Config, self.Timing, self.RenderStruct, self.DebugStruct)
+        self.Render = Render(self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
+        self.Debug = DebugManager(self.Timing, self.RenderStruct, self.DebugStruct)
         
         self.GameParameters = { # temp, will be pased to game instance upon creation. This dict will be created by the menu manager
             'MATRIX_WIDTH': 10,
@@ -83,7 +88,20 @@ class App():
             'TOP_OUT_OK': False,
             'RESET_ON_TOP_OUT': False
         }
-               
+    
+    def load_user_settings(self):
+        if self.AccountManager.user is None:
+            self.ConfigManager.load_default_settings()
+            return
+        
+        self.ConfigManager.load_user_settings(self.AccountManager.user)
+        
+    def check_login(self):
+        if self.AccountManager.user is not None:
+            return
+        
+        self.MenuManager.go_to_login()
+    
     def __initalise(self):
         set_flag_attr()
         
@@ -227,7 +245,9 @@ class App():
     def do_render_tick(self):
         
         start = time.perf_counter()
-       
+        
+        self.check_login()
+        
         if self.Timing.exited:
             return
         

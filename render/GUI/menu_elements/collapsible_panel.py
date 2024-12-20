@@ -26,6 +26,7 @@ class CollapsiblePanel(NestedElement):
         
         self.shadow_radius = 5
         
+        self.__get_height()
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
@@ -40,12 +41,23 @@ class CollapsiblePanel(NestedElement):
         self.shadow_rect = pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
+    def __get_height(self):
+        self.__get_rect_and_surface()
+        self.height = self.__init_elements()
+        
     def __init_elements(self):
+        self.elements = []
+        
         y = 0
         for element in self.definition['elements']:
             if element['type'] == "button_list":
-                self.elements.append(ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self))
-                
+                button_list = ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self)
+                self.elements.append(button_list)
+                y += button_list.height
+        
+        y += 25
+        return y   
+      
     def render(self):
         self.render_shadow()
         self.render_panel()

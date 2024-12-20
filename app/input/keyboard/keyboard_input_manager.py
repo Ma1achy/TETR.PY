@@ -153,7 +153,7 @@ class KeyboardInputManager:
             self.Keyboard.key_states = self.Keyboard.key_states_queue.get_nowait()
         except queue.Empty:
             self.reset_key_states()
-    
+  
         self.Timing.input_tick_counter += 1
         self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
         

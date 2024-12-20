@@ -9,6 +9,10 @@ class Timing():
     restart_interval = 10
     last_restart_time: float = 0
     
+    target_FPS: int = 144
+    target_TPS: int = 256
+    target_POLLING_RATE: int = 1000
+    
     FPS: int = 144
     TPS: int = 256
     POLLING_RATE: int = 1000

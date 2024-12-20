@@ -8,9 +8,8 @@ from render.GUI.main_body import MainBody
 from render.GUI.buttons.footer_button import FooterButton
 
 class Menu():
-    def __init__(self, surface, Config, Timing, Mouse, button_functions, menu_definition):
+    def __init__(self, surface, Timing, Mouse, button_functions, menu_definition):
         self.surface = surface
-        self.Config = Config
         self.Timing = Timing
         self.Mouse = Mouse
         self.button_functions = button_functions
@@ -33,24 +32,29 @@ class Menu():
         self.__init_footer()  
         self.__init_menu_body()
         self.__init_footer_widgets()
-        
+    
     def __init_header(self):
         if 'menu_header' not in self.definition:
             return
         
-        self.header_height = 70
-        self.menu_header = Header(self.surface.get_rect(), self.header_height, self.definition['menu_header']['text'], self.definition['menu_header']['background'], self.definition['menu_header']['border'])
+        self.header_height = 70 if 'height' not in self.definition['menu_header'] else self.definition['menu_header']['height']
+        self.menu_header = Header(self.surface.get_rect(), self.header_height, self.definition['menu_header'], image = self.__init_header_image())
     
     def __init_footer(self):
         if 'menu_footer' not in self.definition:
             return
         
-        self.footer_height = 55
-        self.menu_footer = Footer(self.surface.get_rect(), self.footer_height, self.definition['menu_footer']['text'], self.definition['menu_footer']['background'], self.definition['menu_footer']['border'], image = self.__init_footer_image())
+        self.footer_height = 55 if 'height' not in self.definition['menu_footer'] else self.definition['menu_footer']['height']
+        self.menu_footer = Footer(self.surface.get_rect(), self.footer_height, self.definition['menu_footer'], image = self.__init_footer_image())
     
     def __init_footer_image(self):
         if 'image' in self.definition['menu_footer']:
             return self.definition['menu_footer']['image']
+        return None
+    
+    def __init_header_image(self):
+        if 'image' in self.definition['menu_header']:
+            return self.definition['menu_header']['image']
         return None
     
     def __init_menu_body(self):
@@ -99,8 +103,7 @@ class Menu():
         if 'menu_body' not in self.definition:
             return
         
-        self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body.rect = self.main_body_rect
+        self.main_body.rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
         
         if self.main_body.rect.height <= 0: # to prevent crash
             self.main_body.rect.height = 1
@@ -133,10 +136,15 @@ class Menu():
             for widget in self.footer_widgets:
                 widget.reset_state()
           
-    def draw(self, surface):
-        self.main_body.draw(surface)
-        self.menu_footer.draw(surface)
-        self.menu_header.draw(surface)
+    def draw(self, surface):        
+        if 'menu_body' in self.definition:
+            self.main_body.draw(surface)
+        
+        if 'menu_footer' in self.definition:
+            self.menu_footer.draw(surface)
+        
+        if 'menu_header' in self.definition:    
+            self.menu_header.draw(surface)
         
         surface.blit(self.surface, (0, 0))
             

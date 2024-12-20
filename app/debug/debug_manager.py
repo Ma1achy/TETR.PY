@@ -9,12 +9,11 @@ import GPUtil
 
 
 class DebugManager():
-    def __init__(self, Config, TimingStruct, RenderStruct, DebugStruct):
+    def __init__(self, TimingStruct, RenderStruct, DebugStruct):
         """
         Manage the debug information for the game
         
         args:
-            Config (StructConfig): The configuration struct
             TimingStruct (StructTiming): The timing struct
             HandlingStruct (StructHandling): The handling struct
             GameInstanceStruct (StructGameInstance): The game instance struct
@@ -22,7 +21,6 @@ class DebugManager():
             RenderStruct (StructRender): The render struct
             DebugStruct (StructDebug): The debug struct
         """
-        self.Config = Config
         self.Timing = TimingStruct
         self.RenderStruct = RenderStruct
         self.DebugStruct = DebugStruct
@@ -119,7 +117,7 @@ class DebugManager():
         
         self.__calculate_metrics(self.DebugStruct.TPS_list, self.Timing.TPS, self.DebugStruct.tps_idx, "TickRate", True)
         self.__calculate_metrics(self.DebugStruct.tick_time_list, self.Timing.iteration_times["logic_loop"], self.DebugStruct.tick_time_idx, "ExecutionTime", False)
-        self.__calculate_metrics(self.DebugStruct.delta_tick_list, (self.Config.TPS - self.DebugStruct.Current_TickRate), self.DebugStruct.delta_tick_idx, "DeltaTick", False)
+        self.__calculate_metrics(self.DebugStruct.delta_tick_list, (self.Timing.target_TPS - self.DebugStruct.Current_TickRate), self.DebugStruct.delta_tick_idx, "DeltaTick", False)
         
     def __get_frame_debug(self):
         """

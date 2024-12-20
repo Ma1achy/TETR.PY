@@ -5,13 +5,12 @@ import platform
 from typing import Dict, Tuple
 
 class Render():
-    def __init__(self, Config, Timing, RenderStruct, Debug, GameInstances, MenuManager):
+    def __init__(self, Timing, RenderStruct, Debug, GameInstances, MenuManager):
         """
         args:
             self.window (pygame.Surface): the window to render the game onto
         """
         
-        self.Config = Config
         self.Timing = Timing
         self.Debug = Debug
         self.RenderStruct = RenderStruct
@@ -47,11 +46,6 @@ class Render():
 
     def draw_frame(self):
         
-        if self.Timing.frame_delta_time <= 0:
-            self.dt = 1 / self.Config.FPS
-        else:
-            self.dt = self.Timing.frame_delta_time
-
         self.__toggle_fullscreen()
         self.window.blit(self.image, (0, 0))
         self.darken_overlay_layer.fill((0, 0, 0, self.darken_overlay_layer_alpha))

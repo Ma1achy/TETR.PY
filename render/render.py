@@ -12,7 +12,7 @@ from render.board.board import Board
 from render.fonts import Fonts
 
 class Render():
-    def __init__(self, Config:Config, RenderStruct:StructRender, Flags:Flags, GameInstanceStruct:GameState, TimingStruct:StructTiming, DebugStruct:DebugMetrics):  
+    def __init__(self, RenderStruct:StructRender, Flags:Flags, GameInstanceStruct:GameState, TimingStruct:StructTiming, DebugStruct:DebugMetrics):  
         """
         Render an instance of four onto a window
         
@@ -20,7 +20,6 @@ class Render():
             self.window (pygame.Surface): the window to render the game onto
         """
         
-        self.Config = Config
         self.RenderStruct = RenderStruct
         self.FlagStruct = Flags
         self.GameInstanceStruct = GameInstanceStruct

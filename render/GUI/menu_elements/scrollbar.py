@@ -35,7 +35,7 @@ class ScrollBar(NestedElement):
 
     def render(self):
         draw_solid_colour(self.surface, '#111111', self.surface.get_rect())
-        draw_border(self.surface, {'right': [2, '#222222']}, self.surface.get_rect())
+        draw_border(self.surface, {'left': [2, '#1a1a1a']}, self.surface.get_rect())
         self.render_shadow()
         
     def render_shadow(self):
@@ -67,7 +67,7 @@ class Bar():
         self.width = scrollbar_rect.width - 12
         self.min_height = 10
         self.height = self.calculate_height()
-        self.x = scrollbar_rect.x + 5
+        self.x = scrollbar_rect.x + 7
         self.y = self.calculate_position()
 
         self.shadow_radius = 2

@@ -1,0 +1,34 @@
+{
+    "menu_header": {
+        "background": {
+            "style": "solid",
+            "colour": "#111111"
+        },
+        "no_shadow": "True",
+        "style": "image",
+        "height": 100,
+        "image": {
+            "path": "resources/logos/LogoLightGlow.png",
+            "padding": [
+                20,
+                20
+            ]
+        }
+    },
+    "menu_body": {
+        "background": {
+            "style": "solid",
+            "colour": "#000000"
+        }
+    },
+    "menu_footer": {
+        "background": {
+            "style": "solid",
+            "colour": "#080808"
+        },
+        "no_shadow": "True",
+        "style": "image",
+        "height": 55
+    }
+}
+ 
