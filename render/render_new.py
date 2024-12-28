@@ -60,10 +60,9 @@ class Render():
             self.MenuManager.GUI_focus.draw(self.window)
             
         if self.MenuManager.in_dialog:
-            try:
-                self.darken_overlay_layer.fill((0, 0, 0, min(self.MenuManager.current_dialog.alpha, 200)))
-            except Exception as e:
-                self.darken_overlay_layer.fill((0, 0, 0, 200))
+
+            self.darken_overlay_layer.fill((0, 0, 0, self.MenuManager.darken_overlay_layer_alpha))
+
                 
             self.window.blit(self.darken_overlay_layer, (0, 0))
             self.MenuManager.current_dialog.update()

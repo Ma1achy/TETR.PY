@@ -26,13 +26,6 @@ class MenuKeyboardInputHandler():
            
         self.done_tap = False
         self.do_repeat_input = False
-            
-        self.Keyboard.DAS_delay = 167
-        self.Keyboard.ARR_delay = 33
-        self.Keyboard.DAS_counter = 0
-        self.Keyboard.ARR_counter = 0
-        self.Keyboard.DAS_remainder = 0
-        self.Keyboard.ARR_remainder = 0
         
     def __get_empty_key_states(self):
         return {
@@ -169,4 +162,3 @@ class MenuKeyboardInputHandler():
             q, r = divmod((self.current_time - self.prev_time) + self.Keyboard.ARR_remainder, self.delta_time)
             self.Keyboard.ARR_remainder = r
             self.Keyboard.ARR_counter += q
-            
