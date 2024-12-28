@@ -22,6 +22,9 @@ class Menu():
         self.__open_definition(menu_definition)
         self.__init_elements()
         
+        self.transition_animation_timer = 0
+        self.doing_transition_animation = False
+        
     def __open_definition(self, path):
         with open(path, 'r') as f:
             self.definition = json.load(f)
@@ -74,6 +77,7 @@ class Menu():
                 self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element, parent = None))
              
     def update(self, in_dialog): 
+        self.count_transition_animation()
         self.main_body.update(in_dialog)
         self.draw(self.surface)
         self.update_footer_widgets(in_dialog)
@@ -147,5 +151,34 @@ class Menu():
             self.menu_header.draw(surface)
         
         surface.blit(self.surface, (0, 0))
-            
         
+    def do_menu_enter_transition_animation(self, animate_back_button, animate_footer_widgets):
+        if 'menu_body' in self.definition:
+            self.main_body.do_menu_enter_transition_animation(animate_back_button)
+        
+        if 'footer_widgets' in self.definition and animate_footer_widgets:
+            for widget in self.footer_widgets:
+                widget.do_menu_enter_transition_animation()
+                
+        self.doing_transition_animation = True
+    
+    def do_menu_leave_transition_animation(self, animate_back_button, animate_footer_widgets):
+        if 'menu_body' in self.definition:
+            self.main_body.do_menu_leave_transition_animation(animate_back_button)
+        
+        if 'footer_widgets' in self.definition and animate_footer_widgets:
+            for widget in self.footer_widgets:
+                widget.do_menu_leave_transition_animation()
+                
+        self.doing_transition_animation = True
+        
+    def count_transition_animation(self):
+        if not self.doing_transition_animation:
+            return
+        
+        self.transition_animation_timer += self.Timing.frame_delta_time
+            
+        if self.transition_animation_timer >= 0.19 - self.Timing.frame_delta_time:
+                
+            self.doing_transition_animation = False
+            self.transition_animation_timer = 0

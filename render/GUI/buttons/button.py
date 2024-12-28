@@ -54,9 +54,16 @@ class Button(NestedElement):
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
         
         self.ignore_events = False
+        
+        self.do_menu_enter_transition = False
+        self.do_menu_leave_transition = False
+        
+        self.menu_transition_timer = 0
+        self.menu_transition_time = 0.20
          
     def get_local_position(self):
         return self.rect.topleft
+    
     # -------------------------------------------------------------------------- DRAWING --------------------------------------------------------------------------
     
     def get_rect_and_surface(self):
@@ -172,6 +179,9 @@ class Button(NestedElement):
         if self.ignore_events:
             return
         
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+            return
+        
         self.check_hover()
         self.update_click()
         self.check_events()
@@ -203,6 +213,9 @@ class Button(NestedElement):
         
         elif self.previous_state == 'pressed' and self.state is None:
             self.handle_pressed_end_events()
+            
+        self.animate_menu_enter_transition()
+        self.animate_menu_leave_transition()
     
     def handle_scroll(self):
         self.rect.top = self.y_position + self.scroll_y
@@ -271,6 +284,10 @@ class Button(NestedElement):
         self.slider_pressed_start_timer = 0
         self.slider_pressed_end_timer = 0
         
+        self.menu_transition_timer = 0
+        self.do_menu_enter_transition = False
+        self.do_menu_leave_transition = False
+        
         if self.slider == 'left':
             self.x_position = self.default_x_position
             self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
@@ -296,6 +313,9 @@ class Button(NestedElement):
         if self.style is None:
             return
         
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+            return
+        
         self.hover_surface_alpha = min(255, smoothstep(self.hover_timer / self.hover_surface_transition_time) * 255) 
    
         if self.hover_timer == 0:
@@ -309,6 +329,9 @@ class Button(NestedElement):
     
     def animate_pressed_surface_transition(self):
         if self.style is None:
+            return
+        
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
             return
         
         self.pressed_surface_alpha = min(255, smoothstep(self.pressed_timer / self.pressed_surface_transition_time) * 255)
@@ -376,6 +399,10 @@ class Button(NestedElement):
     def slider_hover_start_animation(self):
         if self.slider is None:
             return
+        
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+            return
+        
         if self.slider == 'left' or self.slider == 'right':
             self.slider_hover_start_timer, progress = self.animate_slider(
                 self.slider_hover_start_timer,
@@ -398,6 +425,10 @@ class Button(NestedElement):
     def slider_hover_end_animation(self):
         if self.slider is None:
             return
+        
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+            return
+        
         if self.slider == 'left' or self.slider == 'right':
             self.slider_hover_end_timer, progress = self.animate_slider(
                 self.slider_hover_end_timer,
@@ -420,6 +451,10 @@ class Button(NestedElement):
     def slider_pressed_start_animation(self):
         if self.slider is None:
             return
+        
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+            return
+        
         if self.slider == 'left' or self.slider == 'right':
             self.slider_pressed_start_timer, progress = self.animate_slider(
                 self.slider_pressed_start_timer,
@@ -443,6 +478,9 @@ class Button(NestedElement):
         if self.slider is None:
             return
         
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+            return
+        
         if self.slider == 'left' or self.slider == 'right':
             self.slider_pressed_end_timer, progress = self.animate_slider(
                 self.slider_pressed_end_timer,
@@ -461,6 +499,98 @@ class Button(NestedElement):
                 self.slider,
                 self.shadow_radius * 2,
             )
+    
+    # ----------------------------------- Menu transition animations -----------------------------------
+       
+    def do_menu_enter_transition_animation(self):
+        self.do_menu_enter_transition = True
+    
+    def do_menu_leave_transition_animation(self):
+        self.do_menu_leave_transition = True
+    
+    def animate_menu_enter_transition(self):
+        if not self.do_menu_enter_transition:
+            return
         
+        self.animate_menu_transition('enter')
         
-
+        if self.menu_transition_timer >= self.menu_transition_time:
+            self.do_menu_enter_transition = False
+            self.menu_transition_timer = 0
+        
+    def animate_menu_leave_transition(self):
+        if not self.do_menu_leave_transition:
+            return
+        
+        self.animate_menu_transition('leave')
+        
+        if self.menu_transition_timer >= self.menu_transition_time:
+            self.do_menu_leave_transition = False
+            self.menu_transition_timer = 0
+        
+    def animate_menu_transition(self, direction):
+        if not (self.do_menu_enter_transition or self.do_menu_leave_transition):
+            return
+        
+        # Determine if it's an 'enter' or 'leave' transition
+        is_enter = direction == 'enter'
+        
+        if self.slider == 'left' and is_enter:
+            start_x = self.default_x_position + self.container.width//12
+            end_x = self.default_x_position
+            
+        elif self.slider == 'left' and not is_enter:
+            start_x = self.default_x_position
+            end_x = self.default_x_position + self.container.width//12
+        
+        elif self.slider == 'right' and is_enter:
+            start_x = self.default_x_position - self.width//5
+            end_x = self.default_x_position
+        
+        elif self.slider == 'right' and not is_enter:
+            start_x = self.default_x_position
+            end_x = self.default_x_position - self.width//5
+        
+        elif self.slider == 'up' and is_enter:
+            start_y = self.default_y_position + self.height // 4
+            end_y = self.default_y_position
+        
+        elif self.slider == 'up' and not is_enter:
+            start_y = self.default_y_position
+            end_y = self.default_y_position + self.height // 4
+        
+        elif self.slider == 'down' and is_enter:
+            start_y = self.default_y_position - self.height // 4
+            end_y = self.default_y_position
+        
+        elif self.slider == 'down' and not is_enter:
+            start_y = self.default_y_position
+            end_y = self.default_y_position - self.height // 4
+           
+        # Animate slider using the helper
+        if self.slider in ['left', 'right']:
+            self.menu_transition_timer, progress = self.animate_slider(
+                self.menu_transition_timer,
+                self.menu_transition_time,
+                start_x,
+                end_x,
+                self.slider,
+                self.shadow_radius * 2,
+            )
+            
+        elif self.slider in ['up', 'down']:
+            self.menu_transition_timer, progress = self.animate_slider(
+                self.menu_transition_timer,
+                self.menu_transition_time,
+                start_y,
+                end_y,
+                self.slider,
+                self.shadow_radius * 2,
+            )
+        
+        prog = smoothstep(progress)
+        alpha = ((prog) * 255) if is_enter else (((1 - prog)) * 255)
+        alpha = max(0, min(255, alpha))
+        self.button_surface.set_alpha(alpha)
+        self.shadow_surface.set_alpha(alpha)
+        

@@ -87,7 +87,7 @@ class MainBody(NestedElement):
                
             elif element['type'] == 'floating_text':
                 y += 3
-                text = FloatingText(self.body_surface, element['content'], y)
+                text = FloatingText(self.Timing, self.body_surface, element['content'], y)
                 self.menu_elements.append(text)
                 y += text.height + 3
         
@@ -301,3 +301,21 @@ class MainBody(NestedElement):
         
         if 'back_button' in self.definition:
             self.back_button.reset_state()
+    
+    def do_menu_enter_transition_animation(self, animate_back_button):
+        if 'menu' in self.definition:
+            for element in self.menu_elements:
+                element.do_menu_enter_transition_animation()
+        
+        if 'back_button' in self.definition and animate_back_button:
+            self.back_button.do_menu_enter_transition_animation()
+          
+    def do_menu_leave_transition_animation(self, animate_back_button):
+        if 'menu' in self.definition:
+            for element in self.menu_elements:
+                element.do_menu_leave_transition_animation()
+        
+        if 'back_button' in self.definition and animate_back_button:
+            self.back_button.do_menu_leave_transition_animation()
+            
+

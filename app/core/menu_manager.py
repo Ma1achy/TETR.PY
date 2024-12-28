@@ -7,26 +7,32 @@ from render.GUI.diaglog_box import DialogBox
 import webbrowser
 from utils import copy2clipboard, smoothstep, TransformSurface
 import pygame
+from render.GUI.menu_elements.text_input import TextInput
 class MenuManager():
-    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug):
+    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager):
 
         self.Keyboard = Keyboard
         self.Mouse = Mouse
         self.Timing = Timing
         self.RenderStruct = RenderStruct
         self.Debug = Debug
+        self.pygame_events_queue = pygame_events_queue
+        
+        self.AccountManager = AccountManager
+        self.ConfigManager = ConfigManager
         
         self.debug_overlay = False
         self.show_error_dialog = False
         self.is_focused = False
         self.in_dialog = False
+        self.wait_for_dialog_close = False
         
         self.GUI_debug = GUIDebug(self.Timing, self.RenderStruct, self.Debug)
         self.GUI_focus = GUIFocus(self.RenderStruct)
         self.ErrorDialog = None
             
         self.button_functions = {
-            "go_to_exit": self.go_to_exit,
+            "go_to_exit": self.open_exit_dialog,
             "go_to_home": self.go_to_home,
             
             # home menu
@@ -44,6 +50,8 @@ class MenuManager():
             "go_to_custom": self.go_to_custom,
             
             "go_to_account_settings": self.go_to_account_settings,
+            "export_settings": self.export_settings,
+            "open_logout_dialog": self.open_logout_dialog
     }
         
         self.copied_text_surface_width, self.copied_text_surface_height = 900, 200
@@ -59,10 +67,63 @@ class MenuManager():
         self.copy_text_do_fade_out = False
         self.copied_text_animation_length = 0.5
         self.copied_text_timer = 0
-    
+        
+        self.darken_overlay_layer_alpha = 0
+        
     def init_menus(self, window):
         self.window = window
-        self.ExitDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'EXIT TETR.PY?', message = None , buttons = ['CANCEL', 'EXIT'], funcs = [self.close_dialog, self.quit_game], click_off_dissmiss = True, width = 500)
+        
+        self.LoginDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'WELCOME TO TETR.PY', 
+            message = "Enter a username to login" ,
+            buttons = ['LOGIN'], 
+            funcs = [lambda: self.login(self.LoginDialog.TextEntry.get_value())], 
+            click_off_dissmiss = False, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'alphanumeric',
+                no_empty_input = True,
+                max_chars = 32,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = self.login
+            )
+        )
+        
+        self.ExitDialog = DialogBox(
+            self.Timing,
+            self.window,
+            self.Mouse,
+            self.RenderStruct,
+            title = 'EXIT TETR.PY?',
+            message = None ,
+            buttons = ['CANCEL', 'EXIT'],
+            funcs = [self.close_dialog, self.quit_game],
+            click_off_dissmiss = True,
+            width = 500
+        )
+        
+        self.LogOutDialog = DialogBox(
+            self.Timing,
+            self.window,
+            self.Mouse,
+            self.RenderStruct,
+            title = 'LOGOUT?',
+            message = None,
+            buttons = ['CANCEL', 'LOGOUT'],
+            funcs = [self.close_dialog, self.logout],
+            click_off_dissmiss = True,
+            width = 500
+        )
         
         self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/login_menu.json')
         self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
@@ -71,15 +132,23 @@ class MenuManager():
         self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/records_menu.json')
         self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/about_menu.json')
         self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
-        self.button_functions, 
+        
+        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/account_menu.json')
+        
         self.current_menu = self.home_menu
+        self.next_menu = None
+        self.previous_menu = None
 
         self.current_dialog = None
-    
+        self.dialog_stack = []  
+        
     def tick(self):
+        self.__wait_for_dialog_close()
+        self.update_darken_overlay_alpha()
         self.reset_dialogs()
         self.get_actions()
         self.handle_exceptions()
+        self.handle_menu_transitions()
         
     def get_actions(self):
         actions = self.Keyboard.menu_actions_queue.get_nowait()
@@ -140,9 +209,16 @@ class MenuManager():
         self.records_menu.handle_window_resize()
         self.about_menu.handle_window_resize()
         self.config_menu.handle_window_resize()
+        self.account_menu.handle_window_resize()
+        
         self.GUI_debug.handle_window_resize()
         self.GUI_focus.handle_window_resize()
         self.ExitDialog.handle_window_resize()
+        self.LogOutDialog.handle_window_resize()
+        self.LoginDialog.handle_window_resize()
+        
+        if self.ErrorDialog:
+            self.ErrorDialog.handle_window_resize()
         
         if self.current_dialog:
             self.current_dialog.handle_window_resize()
@@ -150,15 +226,42 @@ class MenuManager():
         self.copied_text_surface_rect = pygame.Rect((self.RenderStruct.WINDOW_WIDTH - self.copied_text_surface_width)//2, (self.RenderStruct.WINDOW_HEIGHT - self.copied_text_surface_height)//2, self.copied_text_surface_width, self.copied_text_surface_height)
     
     def go_to_login(self):
-        if self.current_menu == self.login_menu:
-            return
-        
+        self.dialog_stack.clear()
+        self.current_dialog = None
+        self.in_dialog = False
+
         self.current_menu.reset_buttons()
         self.current_menu = self.login_menu
+        self.open_dialog(self.LoginDialog)
 
+    # login dialog
+    def login(self, value):
+        self.current_dialog.reset_buttons()
+        self.current_dialog.TextEntry.manager.value = ""
+        self.AccountManager.login(value)
+        self.close_dialog()
+        self.switch_menus(self.home_menu)
+
+    # logout dialog
+    def open_logout_dialog(self):
+        self.current_menu.reset_buttons()
+        self.open_dialog(self.LogOutDialog)
+    
+    def logout(self):
+        self.current_dialog.reset_buttons()
+        self.close_dialog()
+
+        # Reset dialog states
+        self.dialog_stack.clear()
+        self.current_dialog = None
+        self.in_dialog = False
+
+        self.AccountManager.logout()
+        self.go_to_login()
+ 
     # exit dialog
     
-    def go_to_exit(self):
+    def open_exit_dialog(self):
         self.current_menu.reset_buttons()
         self.open_dialog(self.ExitDialog)
     
@@ -172,6 +275,7 @@ class MenuManager():
         try:
             copy2clipboard(item)
             self.do_copy_to_clipboard_animation = True
+            
         except Exception as _:
             self.handle_copy_to_clipboard_fail()
             
@@ -227,56 +331,165 @@ class MenuManager():
     # dialog boxes
            
     def open_dialog(self, dialog):
-        if dialog is None:
+        """
+        Opens a new dialog with proper animation handling.
+        """
+        if not dialog:
+            return  
+
+        if self.current_dialog == dialog:
             return
-        
+    
+        if self.current_dialog and self.current_dialog != dialog:
+            if self.current_dialog not in self.dialog_stack:
+                self.dialog_stack.append(self.current_dialog) 
+                
+            self.current_dialog.do_animate_disappear = True
+            self.current_dialog.do_animate_appear = False  
+            self.current_dialog.timer = 0
+
         self.current_dialog = dialog
         self.in_dialog = True
-        self.current_menu.reset_buttons()
         
+        if self.current_menu:
+            self.current_menu.reset_buttons()
+
+        dialog.do_animate_appear = True
+        dialog.do_animate_disappear = False
+        dialog.timer = 0
+
     def close_dialog(self):
-        self.current_dialog.reset_buttons()
-        self.current_dialog.close()
-        
-    def reset_dialogs(self):
-        if self.current_dialog is None:
+        """
+        Closes the current dialog and animates the previous dialog (if any).
+        """
+        if not self.current_dialog:
             return
-        
-        if self.current_dialog.closed:
+
+        self.current_dialog.reset_buttons()
+        self.current_dialog.do_animate_disappear = True
+        self.current_dialog.do_animate_appear = False
+        self.current_dialog.timer = 0
+        self.wait_for_dialog_close = True
+
+    def reset_dialogs(self):
+        """
+        Resets dialogs and ensures animation states are consistent.
+        """
+        if self.current_dialog and self.current_dialog.closed:
             self.current_dialog.closed = False
             self.current_dialog.do_animate_appear = True
             self.current_dialog.do_animate_disappear = False
             self.current_dialog.timer = 0
-            self.ErrorDialog = None
-            self.current_dialog = None
-            self.in_dialog = False
+
+        for dialog in self.dialog_stack:
+            if dialog.closed:
+                dialog.closed = False
+                dialog.do_animate_appear = True
+                dialog.do_animate_disappear = False
+                dialog.timer = 0
     
-    # home    
+    def __wait_for_dialog_close(self):
+        """
+        Waits for the current dialog to close before proceeding to the previous one in the stack.
+        """
+        if self.current_dialog is None:
+            return
+
+        if self.current_dialog.do_animate_disappear and self.current_dialog.timer >= self.current_dialog.animation_length:
+            # Current dialog is finished closing
+            self.current_dialog.closed = True
+            self.current_dialog = None  # Clear the current dialog
+
+            if self.dialog_stack:
+                # Pop the previous dialog from the stack and make it active
+                self.current_dialog = self.dialog_stack.pop()
+                self.current_dialog.do_animate_appear = True
+                self.current_dialog.do_animate_disappear = False
+                self.current_dialog.timer = 0
+                self.in_dialog = True
+            else:
+                # No more dialogs in the stack
+                self.in_dialog = False
+                self.wait_for_dialog_close = False
+                if self.current_menu:
+                    self.current_menu.reset_buttons()
+    
+
+    def animate_diff(self, current_menu, next_menu):
+        
+        animate_back_button = False
+        
+        if 'back_button' in current_menu.main_body.definition and 'back_button' not in next_menu.main_body.definition:
+            animate_back_button = True
+        
+        elif 'back_button' not in current_menu.main_body.definition and 'back_button' in next_menu.main_body.definition:
+            animate_back_button = True
+            
+        elif 'back_button' not in current_menu.main_body.definition and 'back_button' not in next_menu.main_body.definition:
+            animate_back_button = False
+            
+        elif current_menu.main_body.definition['back_button']['main_text']['display_text'] != next_menu.main_body.definition['back_button']['main_text']['display_text']:
+            animate_back_button = True
+            
+        animate_footer_widget = False
+        
+        if 'footer_widgets' in current_menu.definition and 'footer_widgets' not in next_menu.definition:
+            animate_footer_widget = True
+        
+        elif 'footer_widgets' not in current_menu.definition and 'footer_widgets' in next_menu.definition:
+            animate_footer_widget = True
+        
+        elif 'footer_widgets' not in current_menu.definition and 'footer_widgets' not in next_menu.definition:
+            animate_footer_widget = False
+            
+        elif len(current_menu.footer_widgets) != len(next_menu.footer_widgets):
+            animate_footer_widget = True
+        
+        return animate_back_button, animate_footer_widget
+
+    def handle_menu_transitions(self):
+        if self.next_menu is None:
+            return
+        
+        if self.current_menu.doing_transition_animation:
+            return
+        
+        if self.current_dialog is not None:
+            return
+        
+        self.previous_menu = self.current_menu
+        self.current_menu = self.next_menu
+        
+        animate_back_button, animate_footer_widget = self.animate_diff(self.previous_menu, self.current_menu)
+        self.current_menu.do_menu_enter_transition_animation(animate_back_button, animate_footer_widget)
+        
+        self.previous_menu.reset_buttons()
+        self.next_menu = None
+        
+    def switch_menus(self, next_menu):
+        animate_back_button, animate_footer_widget = self.animate_diff(self.current_menu, next_menu)
+        self.current_menu.do_menu_leave_transition_animation(animate_back_button, animate_footer_widget)
+        self.next_menu = next_menu
+        
     def go_to_home(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.home_menu
+        self.switch_menus(self.home_menu)
     
     # home menu
     
     def go_to_multi(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.multi_menu
+        self.switch_menus(self.multi_menu)
     
     def go_to_solo(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.solo_menu
+        self.switch_menus(self.solo_menu)
     
     def go_to_records(self): 
-        self.current_menu.reset_buttons()
-        self.current_menu = self.records_menu
+        self.switch_menus(self.records_menu)
     
     def go_to_config(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.config_menu
+        self.switch_menus(self.config_menu)
     
     def go_to_about(self):
-        self.current_menu.reset_buttons()
-        self.current_menu = self.about_menu
+        self.switch_menus(self.about_menu)
     
     def go_to_github(self):
         self.current_menu.reset_buttons()
@@ -299,7 +512,10 @@ class MenuManager():
     # config
     
     def go_to_account_settings(self):
-        pass
+        self.switch_menus(self.account_menu)
+    
+    def export_settings(self):
+        self.ConfigManager.export_user_settings(self.AccountManager.user)
     
     # error dialog 
     
@@ -318,8 +534,9 @@ class MenuManager():
         self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = True, width = 700)
         
         self.Debug.ERROR = None
-        
-        
-        
-        
     
+    def update_darken_overlay_alpha(self):
+        if self.in_dialog and self.current_dialog is not self.LoginDialog:
+            self.darken_overlay_layer_alpha =  min(self.current_dialog.alpha, 200)
+        else:
+            self.darken_overlay_layer_alpha = 0
