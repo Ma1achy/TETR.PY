@@ -110,7 +110,7 @@ class ButtonList(NestedElement):
     def on_click(self):
         for button in self.buttons:
             button.active = False
-
+    
         
         
     
