@@ -37,7 +37,6 @@ class Font():
             font_path = os.path.join(self.base_path, 'action_icons.ttf')
             self.font = pygame.font.Font(font_path, self.size)
         
-        
         if self.styles is not None:
             self.__apply_styles()
         
