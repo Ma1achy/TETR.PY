@@ -97,7 +97,7 @@ class Header:
         self.font.draw(self.header_surface, self.text['display_text'], self.text['colour'], 'left', 20, 0)
     
     def __render_shadow(self):
-        if 'no_shadow' not in self.definition:
+        if 'no_shadow' in self.definition:
             return
         
         pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.rect.width, self.rect.height))
