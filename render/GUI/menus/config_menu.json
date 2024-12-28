@@ -813,7 +813,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "go_to_account_settings",
+                    "function": "export_settings",
                     "main_text": {
                         "colour": "#90aef9",
                         "display_text": "EXPORT SETTINGS"
