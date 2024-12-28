@@ -1,4 +1,7 @@
 import threading
+import queue
+import concurrent.futures
+
 import time
 from instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
@@ -26,14 +29,17 @@ import json
 import pkg_resources
 from app.core.account_manager import AccountManager
 from app.core.config_manager import ConfigManager
+from collections import deque
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class App():
     def __init__(self):
         
-        self.ConfigManager = ConfigManager()
-        self.AccountManager = AccountManager()
+        self.WorkerManager = WorkerManager()
+        
+        self.ConfigManager = ConfigManager(self.WorkerManager)
+        self.AccountManager = AccountManager(self.ConfigManager)
         
         self.load_user_settings()
         
@@ -58,6 +64,8 @@ class App():
         self.__init_pygame()
         self.__register_event_handlers()
         
+        self.pygame_events_queue = deque()
+        
         self.menu_key_bindings = {
             UIAction.MENU_LEFT:         ['left'],
             UIAction.MENU_RIGHT:        ['right'],
@@ -70,7 +78,7 @@ class App():
         }
    
         self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing)
-        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct)
+        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
         self.Render = Render(self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Timing, self.RenderStruct, self.DebugStruct)
@@ -165,6 +173,7 @@ class App():
         
     def run(self):
         self.__initalise()
+        self.check_login()
          
         self.KeyboardInputManager.start_keyboard_hook() 
         self.Timing.start_times['input_loop'] = time.perf_counter()
@@ -246,8 +255,6 @@ class App():
         
         start = time.perf_counter()
         
-        self.check_login()
-        
         if self.Timing.exited:
             return
         
@@ -255,7 +262,8 @@ class App():
             if event.type == pygame.QUIT or event.type == pygame.WINDOWCLOSE: # stop the window close event from being processed by pygame
                 self.__window_close_event(event)
                 return
-                
+            
+            self.pygame_events_queue.append(event)
             PygameEventHandler.notify(event)
         
         self.__update_mouse_position()
@@ -268,7 +276,12 @@ class App():
         while not self.Mouse.events.empty():
             self.Mouse.events.get_nowait()
 
+        self.empty_pygame_events_queue()
+        
         self.Timing.iteration_times['render_loop'] = time.perf_counter() - start
+    
+    def empty_pygame_events_queue(self):
+        self.pygame_events_queue.clear()
                  
     def get_fps(self):
         self.Timing.FPS = self.FrameClock.get_fps()
@@ -295,7 +308,7 @@ class App():
        self.Render.handle_window_resize()
     
     def __window_close_event(self, event):
-        self.MenuManager.go_to_exit()
+        self.MenuManager.open_exit_dialog()
     
     def handle_exception(self, e):
         print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
@@ -342,6 +355,36 @@ class App():
         except Exception as _:
             build_info = None
         return build_info
+class WorkerManager:
+    def __init__(self, max_workers = 4):
+        self.tasks = queue.Queue()
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
+        self.worker_thread = threading.Thread(target=self.worker_loop, daemon=True)
+        self.worker_thread.start()
+
+    def add_task(self, task):
+        if not callable(task):
+            raise ValueError("Task must be callable.")
+        self.tasks.put(task)
+
+    def worker_loop(self):
+        while True:
+            task = self.tasks.get()
+            if task is None:  # Stop signal
+                self.tasks.task_done()
+                break
+            try:
+                self.executor.submit(task)
+            except Exception as e:
+                logging.error(f"Error processing task: {e}")
+            finally:
+                self.tasks.task_done()
+
+    def stop(self):
+        self.tasks.put(None)  # Stop signal
+        self.tasks.join()     # Wait for all tasks to finish
+        self.worker_thread.join()
+        self.executor.shutdown(wait=True)
 
 def main():
     app = App()
