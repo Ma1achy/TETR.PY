@@ -31,7 +31,7 @@ class ButtonBarSub(Button):
         
         self.y_position = y_position
         
-        self.main_font = Font('hun2', 32)
+        self.main_font = Font('hun2', 35)
         self.sub_font = Font('hun2', 18)
         self.shadow_radius = 5
         

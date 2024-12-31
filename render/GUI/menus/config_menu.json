@@ -820,7 +820,7 @@
                     },
                     "sub_text": {
                         "colour": "#5668ba",
-                        "display_text": "save a file of your config that you can drag into TETR.PY to import"
+                        "display_text": "save a .cfg file of your config that you can drag into TETR.PY to import"
                     },
                     "background": {
                         "style": "solid",

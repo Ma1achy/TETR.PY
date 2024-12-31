@@ -1,0 +1,77 @@
+{
+    "menu_header": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#4e2c4e",
+                "#301d31"
+            ]
+        },
+        "border": {
+            "bottom": [
+                2,
+                "#6d2f6e"
+            ]
+        },
+        "text": {
+            "colour": "#db9fe0",
+            "display_text": "ZEN"
+        }
+    },
+    "menu_body": {
+        "logo": {
+            "image": "resources/logos/LogoLightGlow.png",
+            "alignment": "bottom_left",
+            "padding": [
+                20,
+                20
+            ],
+            "scale": 0.23,
+            "opacity": 32
+        },
+        "back_button": {
+            "function": "go_to_solo",
+            "main_text": {
+                "colour": "#c9c9c9",
+                "display_text": "BACK"
+            },
+            "background": {
+                "style": "solid",
+                "colour": "#242424"
+            },
+            "border": {
+                "top": [
+                    3,
+                    "#3d3d3d"
+                ],
+                "bottom": [
+                    3,
+                    "#0e0e0e"
+                ],
+                "right": [
+                    3,
+                    "#181818"
+                ]
+            }
+        }
+    },
+    "menu_footer": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#2f1d31",
+                "#422447"
+            ]
+        },
+        "border": {
+            "top": [
+                2,
+                "#592a5b"
+            ]
+        },
+        "text": {
+            "colour": "#d89fe0",
+            "display_text": "press START to begin playing"
+        }
+    }
+}

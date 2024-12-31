@@ -149,6 +149,11 @@ class MenuManager():
         
         self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/account_menu.json')
         
+        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/40_lines_menu.json')
+        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/blitz_menu.json')
+        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/zen_menu.json')
+        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
+        
         self.current_menu = self.home_menu
         self.next_menu = None
         self.previous_menu = None
@@ -280,7 +285,13 @@ class MenuManager():
         self.records_menu.handle_window_resize()
         self.about_menu.handle_window_resize()
         self.config_menu.handle_window_resize()
+        
         self.account_menu.handle_window_resize()
+        
+        self.forty_lines_menu.handle_window_resize()
+        self.blitz_menu.handle_window_resize()
+        self.zen_menu.handle_window_resize()
+        self.custom_solo_menu.handle_window_resize()
         
         self.GUI_debug.handle_window_resize()
         self.GUI_focus.handle_window_resize()
@@ -640,25 +651,25 @@ class MenuManager():
         """
         Go to the 40 lines menu
         """
-        pass
+        self.switch_menus(self.forty_lines_menu)
     
     def go_to_blitz(self):
         """
         Go to the blitz menu
         """
-        pass
+        self.switch_menus(self.blitz_menu)
     
     def go_to_zen(self):
         """
         Go to the zen menu
         """
-        pass
+        self.switch_menus(self.zen_menu)
     
     def go_to_custom(self):
         """
         Go to the custom menu
         """
-        pass
+        self.switch_menus(self.custom_solo_menu)
     
     # config
     

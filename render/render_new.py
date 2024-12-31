@@ -47,7 +47,11 @@ class Render():
     def draw_frame(self):
         
         self.__toggle_fullscreen()
+        
         self.window.blit(self.image, (0, 0))
+        self.MenuManager.tick()
+        
+        pygame.display.flip()
         
     def __load_background_image(self):
         self.image = pygame.image.load(self.background_image_path).convert_alpha()

@@ -300,14 +300,13 @@ class TETRPY():
         
         self.Debug.get_metrics()  
         self.Render.draw_frame()
-        self.MenuManager.tick()
+        #self.MenuManager.tick()
         self.FrameClock.tick()
         
         while not self.Mouse.events.empty():
             self.Mouse.events.get_nowait()
 
         self.empty_pygame_events_queue()
-        pygame.display.flip()
         
         self.Timing.iteration_times['render_loop'] = time.perf_counter() - start
     

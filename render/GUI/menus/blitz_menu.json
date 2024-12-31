@@ -1,0 +1,77 @@
+{
+    "menu_header": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#4e2c2c",
+                "#311d1d"
+            ]
+        },
+        "border": {
+            "bottom": [
+                2,
+                "#6e2f2f"
+            ]
+        },
+        "text": {
+            "colour": "#e09f9f",
+            "display_text": "BLITZ"
+        }
+    },
+    "menu_body": {
+        "logo": {
+            "image": "resources/logos/LogoLightGlow.png",
+            "alignment": "bottom_left",
+            "padding": [
+                20,
+                20
+            ],
+            "scale": 0.23,
+            "opacity": 32
+        },
+        "back_button": {
+            "function": "go_to_solo",
+            "main_text": {
+                "colour": "#c9c9c9",
+                "display_text": "BACK"
+            },
+            "background": {
+                "style": "solid",
+                "colour": "#242424"
+            },
+            "border": {
+                "top": [
+                    3,
+                    "#3d3d3d"
+                ],
+                "bottom": [
+                    3,
+                    "#0e0e0e"
+                ],
+                "right": [
+                    3,
+                    "#181818"
+                ]
+            }
+        }
+    },
+    "menu_footer": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#311d1d",
+                "#472424"
+            ]
+        },
+        "border": {
+            "top": [
+                2,
+                "#5b2a2a"
+            ]
+        },
+        "text": {
+            "colour": "#e09f9f",
+            "display_text": "press START to begin playing"
+        }
+    }
+}
