@@ -19,24 +19,48 @@ class MouseInputManager():
         }
         
     def on_mouse_down(self, event):
+        """
+        Handle the mouse button down event and queue the mouse button event
+        
+        args:
+            event (pygame.event): the event to handle
+        """
         if not self.is_focused:
             return
         
         self.queue_mouse_events({self.button_map.get(event.button, MouseEvents.MOUSEBUTTON1):{'down': True, 'up': False, 'pos': event.pos}})
       
     def on_mouse_up(self, event):
+        """
+        Handle the mouse button up event and queue the mouse button event
+        
+        args:
+            event (pygame.event): the event to handle
+        """
         if not self.is_focused:
             return
         
         self.queue_mouse_events({self.button_map.get(event.button, MouseEvents.MOUSEBUTTON1):{'down': False, 'up': True, 'pos': event.pos}})
    
     def on_mouse_scroll(self, event):
+        """
+        Handle the mouse scroll event and queue the scroll wheel event
+        
+        args:
+            event (pygame.event): the event to handle
+        """
         if not self.is_focused:
             return
         
         self.queue_mouse_events({MouseEvents.SCROLLWHEEL: {'x': event.precise_x, 'y': event.precise_y, 'inverted': event.flipped}}) # inverted is a bool that indicates if the scroll direction is inverted on the system
         
     def on_mouse_move(self, event):
+        """
+        Handle the mouse move event and update the mouse position and motion
+        
+        args:
+            event (pygame.event): the event to handle
+        """
         if not self.is_focused:
             self.Mouse.position = 0, 0
             return
@@ -45,4 +69,10 @@ class MouseInputManager():
         self.Mouse.motion = event.rel
         
     def queue_mouse_events(self, mouse_event):
+        """
+        Queue the mouse events
+        
+        args:
+            mouse_event (dict): the mouse event to queue
+        """
         self.Mouse.events.put(mouse_event)

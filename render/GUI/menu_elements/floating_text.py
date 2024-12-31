@@ -3,6 +3,15 @@ from render.GUI.font import Font
 from utils import smoothstep, smoothstep_interpolate
 class FloatingText():
     def __init__(self, Timing, surface, definition, y_position):
+        """
+        A text element that can floats on the page
+        
+        args:
+            Timing (Timing): the Timing object
+            surface (pygame.Surface): the surface to draw the text on
+            definition (dict): the definition of the text
+            y_position (int): the y position of the text
+        """
         self.Timing = Timing
         self.surface = surface
         self.container = surface.get_rect()
@@ -34,6 +43,9 @@ class FloatingText():
         self.menu_transition_time = 0.20
         
     def get_rect_and_surface(self):
+        """
+        Get the rects and surfaces for the text
+        """
         self.main_font.render_text(self.display_text, self.font_colour)
         self.width = self.main_font.rendered_text.get_width()
         self.height = self.main_font.rendered_text.get_height()
@@ -42,26 +54,44 @@ class FloatingText():
         self.font_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
     
     def draw(self):
+        """
+        Draw the text
+        """
         self.surface.blit(self.font_surface, self.font_rect)
 
     def render(self):
+        """
+        Render the text
+        """
         self.main_font.draw(self.font_surface, self.display_text, self.font_colour, self.alignment, self.x_padding, self.y_padding, None)
         self.font_surface.set_alpha(self.font_alpha)
         
     def update(self, in_dialog):
+        """
+        Update the text
+        """
         self.handle_scroll()
         self.animate_menu_enter_transition()
         self.animate_menu_leave_transition()
     
     def convert_alpha(self):
+        """
+        Convert the alpha value from 0 - 1 to a 0 - 255 scale
+        """
         self.font_alpha = min(255, int(self.font_alpha * 255))
     
     def reset_state(self):
+        """
+        Reset the state of the text
+        """
         self.menu_transition_timer = 0
         self.do_menu_enter_transition = False
         self.do_menu_leave_transition = False
     
     def get_alignment(self):
+        """
+        Get the alignment of the text within the container
+        """
         match self.alignment:
             case 'center':
                 topleft = (self.surface.get_width() // 2 - self.main_font.rendered_text.get_width() // 2 + self.x_padding, self.y_position + self.y_padding)
@@ -75,40 +105,56 @@ class FloatingText():
         return topleft
     
     def handle_scroll(self):      
+        """
+        Handle the scrolling of the menu
+        """
         self.font_rect.top = self.y_position + self.scroll_y
         self.draw()
         
     def do_menu_enter_transition_animation(self):
+        """
+        Start the menu enter transition animation
+        """
         self.do_menu_enter_transition = True
     
     def do_menu_leave_transition_animation(self):
+        """
+        Start the menu leave transition animation
+        """
         self.do_menu_leave_transition = True
     
     def animate_menu_enter_transition(self):
+        """
+        Animate the text during a menu enter transition.
+        """
         if not self.do_menu_enter_transition:
             return
         
-        self.animate_menu_transition('enter')
+        self.animate_menu_transition(True)
         
         if self.menu_transition_timer >= self.menu_transition_time:
             self.do_menu_enter_transition = False
             self.menu_transition_timer = 0
         
     def animate_menu_leave_transition(self):
+        """
+        Animate the text during a menu leave transition.
+        """
         if not self.do_menu_leave_transition:
             return
         
-        self.animate_menu_transition('leave')
+        self.animate_menu_transition(False)
         
         if self.menu_transition_timer >= self.menu_transition_time:
             self.do_menu_leave_transition = False
             self.menu_transition_timer = 0
         
-    def animate_menu_transition(self, direction):
+    def animate_menu_transition(self, is_enter):
+        """
+        Animate the text during a menu transition.
+        """
         if not (self.do_menu_enter_transition or self.do_menu_leave_transition):
             return
-        
-        is_enter = direction == 'enter'
         
         if is_enter:
             start_x = self.default_x_position + self.container.width//12
@@ -118,8 +164,6 @@ class FloatingText():
             start_x = self.default_x_position
             end_x = self.default_x_position + self.container.width//12
         
-     
-        
         self.menu_transition_timer, progress = self.animate_slide(
             self.menu_transition_timer,
             self.menu_transition_time,
@@ -127,13 +171,17 @@ class FloatingText():
             end_x,
         )
             
-        prog = smoothstep(progress)
-        alpha = ((prog) * 255) if is_enter else (((1 - prog)) * 255)
-        alpha = max(0, min(255, alpha))
-        self.surface.set_alpha(alpha)
+        self.animate_menu_transition_alpha(progress, is_enter)
         
-    
     def animate_slide(self, timer, duration, start_pos, end_pos):
+        """
+        Animate the slide of the text during a menu transition.
+        
+            timer (float): The current time of the animation.
+            duration (float): The total duration of the animation.
+            start_pos (int): The starting x position of the text.
+            end_pos (int): The ending x position of the text.
+        """
   
         timer += self.Timing.frame_delta_time
         timer = min(timer, duration)
@@ -147,6 +195,19 @@ class FloatingText():
         self.font_rect.topleft = (self.x_position, self.y_position + self.scroll_y) 
       
         return timer, progress
+    
+    def animate_menu_transition_alpha(self, progress, is_enter):
+        """
+        Animate the alpha of the text surface during a menu transition.
+        
+            progress (float): Progress percentage of the animation.
+            is_enter (bool): Whether the transition is entering or leaving the menu.
+        """
+        p = smoothstep(progress)
+        alpha = ((p) * 255) if is_enter else (((1 - p)) * 255)
+        alpha = max(0, min(self.font_alpha, alpha))
+        
+        self.font_surface.set_alpha(alpha)
         
         
         

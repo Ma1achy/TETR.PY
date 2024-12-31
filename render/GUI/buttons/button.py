@@ -5,27 +5,62 @@ from render.GUI.menu_elements.nested_element import NestedElement
 class Button(NestedElement):
     def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None):
         super().__init__(parent)
+        """
+        Base button class
         
+        args:
+            Timing (Timing): the Timing object
+            surface (pygame.Surface): the surface to draw the button on
+            Mouse (Mouse): the Mouse object
+            function (callable): the function to call when the button is pressed
+            container (pygame.Rect): the container the button is in
+            width (int): the width of the button
+            height (int): the height of the button
+            style (str): the style of the button
+            maintain_alpha (bool): whether to maintain the alpha of the button
+            slider (str): the direction the button slides in
+        """
         self.Timing = Timing
         self.surface = surface
-        
         self.Mouse = Mouse
         
+        # button properties
         self.function = function
         self.container = container
         self.width = width
         self.height = height
         
+        # styling
         self.style = style
         self.maintain_alpha = maintain_alpha
+        self.slider = slider
+          
+        # position
+        self.x_position = 0
+        self.default_x_position = 0
         
         self.scroll_y = 0
         self.y_position = 0
+        self.default_y_position = 0
         
+        # state
+        self.ignore_events = False
         self.state = None
         self.previous_state = None
         self.doing_click = False
         
+        # surface and rect
+        self.get_rect_and_surface()
+        
+        # collision detection
+        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        
+        # shadow
+        self.shadow_surface = pygame.Surface((1, 1), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.shadow_rect = pygame.Rect(0, 0, 1, 1)
+        self.shadow_radius = 5
+        
+        # hover and pressed surface transition animation
         self.hover_surface_transition_time = 0.2
         self.pressed_surface_transition_time = 0.2
         
@@ -35,26 +70,20 @@ class Button(NestedElement):
         self.hover_surface_alpha = 0
         self.pressed_surface_alpha = 0
         
+        # slider animation
         self.slider_hover_start_timer = 0
         self.slider_hover_end_timer = 0
+        
         self.slider_pressed_start_timer = 0
         self.slider_pressed_end_timer = 0
         
-        self.slider = slider
         self.hover_slider_start_length = 0.2
         self.hover_slider_end_length = 0.5
+        
         self.pressed_slider_start_length = 0.2
         self.pressed_slider_end_length = 0.4
         
-        self.shadow_surface = pygame.Surface((1, 1), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.shadow_rect = pygame.Rect(0, 0, 1, 1)
-        self.shadow_radius = 5
-        
-        self.get_rect_and_surface()
-        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
-        
-        self.ignore_events = False
-        
+        # menu transition animation
         self.do_menu_enter_transition = False
         self.do_menu_leave_transition = False
         
@@ -62,11 +91,17 @@ class Button(NestedElement):
         self.menu_transition_time = 0.20
          
     def get_local_position(self):
+        """
+        Get the local position of the button for collision detection.
+        """
         return self.rect.topleft
     
     # -------------------------------------------------------------------------- DRAWING --------------------------------------------------------------------------
     
     def get_rect_and_surface(self):
+        """
+        Get the rect and surface for the button.
+        """
         if self.width < 1:
             self.width = 1
         
@@ -77,6 +112,9 @@ class Button(NestedElement):
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
     def get_overlays(self):
+        """
+        Render the overlays for the button (hover and pressed states).
+        """
         if self.style is None:
             return
         
@@ -84,6 +122,9 @@ class Button(NestedElement):
         self.__get_darken_overlay()
         
     def __get_lighten_overlay(self):
+        """
+        Render the lighten overlays for the button (hover and pressed states).
+        """
         if self.style != 'lighten':
             return
         
@@ -101,6 +142,9 @@ class Button(NestedElement):
             brightness(self.pressed_surface, 1.5)
         
     def __get_darken_overlay(self):
+        """
+        Render the darken overlays for the button (hover and pressed states).
+        """
         if self.style != 'darken':
             return
         
@@ -118,6 +162,9 @@ class Button(NestedElement):
             brightness(self.pressed_surface, 0.5)
             
     def draw(self):
+        """
+        Draw the button.
+        """
         if not hasattr(self, 'button_surface') or self.button_surface is None:
             return 
         
@@ -127,6 +174,9 @@ class Button(NestedElement):
     # -------------------------------------------------------------------------- MOUSE EVENTS --------------------------------------------------------------------------
               
     def check_hover(self):
+        """
+        Check if the mouse is hovering over the button.
+        """
         x, y = self.Mouse.position
         
         self.collision_rect.topleft = self.get_screen_position()
@@ -139,6 +189,9 @@ class Button(NestedElement):
             self.state = None
     
     def check_events(self):
+        """
+        Check for input events.
+        """
         events_to_remove = []
         
         for event in self.Mouse.events.queue:
@@ -161,22 +214,41 @@ class Button(NestedElement):
             self.Mouse.events.queue.remove(event)
     
     def update_click(self):
+        """
+        Update the click event.
+        """
+        if not self.doing_click:
+            return
+        
+        if self.doing_click:
+            self.state = 'pressed'
+            
         if self.doing_click and self.pressed_timer >= self.pressed_surface_transition_time:
             self.doing_click = False
             self.click()
             
     def start_click(self):
+        """
+        Start the click event.
+        """
         self.doing_click = True
     
     def click(self):
+        """
+        Execute the button's function.
+        """
         if self.function is None:
             return
+        
         self.function()
     
     # -------------------------------------------------------------------------- UPDATE LOGIC --------------------------------------------------------------------------
     
-    def update_state(self):
-        if self.ignore_events:
+    def update_state(self, in_dialog = False):
+        """
+        Update the state of the button and check for input events.
+        """
+        if in_dialog or self.ignore_events:
             return
         
         if self.do_menu_enter_transition or self.do_menu_leave_transition:
@@ -187,11 +259,11 @@ class Button(NestedElement):
         self.check_events()
         
     def update(self, in_dialog = False):
-        
+        """
+        Update the button.
+        """
         self.handle_scroll()
-        
-        if not in_dialog:
-            self.update_state()
+        self.update_state(in_dialog)
             
         if self.state is None and self.previous_state is None:
             self.slider_hover_start_timer = 0
@@ -218,11 +290,17 @@ class Button(NestedElement):
         self.animate_menu_leave_transition()
     
     def handle_scroll(self):
+        """
+        Handle the scrolling of the menu by updating the position of the button.
+        """
         self.rect.top = self.y_position + self.scroll_y
         self.shadow_rect.top = self.y_position + self.scroll_y - self.shadow_radius * 2
         self.draw()
         
     def handle_hover_start_events(self):
+        """
+        Handle the start of the hover state.
+        """
         self.slider_hover_end_timer = 0
         self.slider_hover_start_animation()
  
@@ -235,6 +313,9 @@ class Button(NestedElement):
         self.previous_state = 'hovered'
     
     def handle_hover_end_events(self):
+        """
+        Handle the end of the hover state.
+        """
         self.slider_hover_start_timer = 0
         self.slider_hover_end_animation()
      
@@ -247,6 +328,9 @@ class Button(NestedElement):
             self.previous_state = None
         
     def handle_pressed_start_events(self):
+        """
+        Handle the start of the pressed state.
+        """
         self.slider_pressed_end_timer = 0
         self.slider_pressed_start_animation()
 
@@ -259,6 +343,9 @@ class Button(NestedElement):
         self.previous_state = 'pressed'
     
     def handle_pressed_end_events(self):
+        """
+        Handle the end of the pressed state.
+        """
         self.slider_pressed_start_timer = 0
         self.slider_pressed_end_animation()
 
@@ -273,6 +360,9 @@ class Button(NestedElement):
             self.hover_surface_alpha = 0
                         
     def reset_state(self):
+        """
+        Reset the state of the button.
+        """
         self.hover_timer = 0
         self.pressed_timer = 0
         self.hover_surface_alpha = 0
@@ -310,10 +400,13 @@ class Button(NestedElement):
     # ----------------------------------- Hover and pressed surface animations -----------------------------------
     
     def animate_hover_surface_transition(self):
-        if self.style is None:
+        """
+        Animate the transition into the hover surface.
+        """
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
             return
         
-        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+        if self.style is None:
             return
         
         self.hover_surface_alpha = min(255, smoothstep(self.hover_timer / self.hover_surface_transition_time) * 255) 
@@ -328,10 +421,13 @@ class Button(NestedElement):
         self.surface.blit(self.hover_surface, self.rect.topleft)
     
     def animate_pressed_surface_transition(self):
-        if self.style is None:
+        """
+        Animate the transition into the pressed surface.
+        """
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
             return
         
-        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+        if self.style is None:
             return
         
         self.pressed_surface_alpha = min(255, smoothstep(self.pressed_timer / self.pressed_surface_transition_time) * 255)
@@ -347,49 +443,45 @@ class Button(NestedElement):
     
     # ----------------------------------- Slider animations -----------------------------------
     
-    def animate_slider(self, timer, duration, start_pos, end_pos, dir, shadow_offset):
+    def animate_slider(self, timer, duration, start_position, end_position, direction, shadow_offset):
         """
-        Generalized animation logic for sliders.
-        - timer: Current animation timer.
-        - duration: Total animation duration.
-        - start_pos: Starting position.
-        - end_pos: Ending position.
-        - axis: 'x' or 'y' to determine the axis of animation.
-        - shadow_offset: Offset for shadow calculations.
-        - direction: 'positive' or 'negative' for determining the slider's direction.
+        Animate the slider element in a given direction.
+        
+            timer (float): Current animation timer.
+            duration (float): Total animation duration.
+            start_position (float): Starting position.
+            end_position (float): Ending position.
+            direction (str): Direction of the slider.
+            shadow_offset (float): Offset for shadow calculations.
         """
-        # Update and clamp the timer
         timer += self.Timing.frame_delta_time
         timer = min(timer, duration)
 
-        # Calculate progress
         progress = timer / duration
-        progress = max(0, min(1, progress))  # Clamp to [0, 1]
+        progress = max(0, min(1, progress)) 
 
-        # Interpolate position
-        if dir == 'right':
-            new_pos = smoothstep_interpolate(start_pos, end_pos, progress)
-        elif dir == 'up':
-            new_pos = smoothstep_interpolate(start_pos, end_pos, progress)
-        elif dir == 'left':
-            new_pos = smoothstep_interpolate(start_pos, end_pos, progress)
-        elif dir == 'down':
-            new_pos = smoothstep_interpolate(start_pos, end_pos, progress)
+        if direction == 'right':
+            new_pos = smoothstep_interpolate(start_position, end_position, progress)
+        elif direction == 'up':
+            new_pos = smoothstep_interpolate(start_position, end_position, progress)
+        elif direction == 'left':
+            new_pos = smoothstep_interpolate(start_position, end_position, progress)
+        elif direction == 'down':
+            new_pos = smoothstep_interpolate(start_position, end_position, progress)
            
-        # Update position
-        if dir == 'left':
+        if direction == 'left':
             self.x_position = new_pos
             self.rect.topleft = (self.x_position, self.y_position + self.scroll_y) 
             self.shadow_rect.topleft = (self.x_position - shadow_offset, self.y_position - shadow_offset + self.scroll_y)
-        elif dir == 'right':
+        elif direction == 'right':
             self.x_position = new_pos
             self.rect.topright = (self.x_position, self.y_position + self.scroll_y)
             self.shadow_rect.topright = (self.x_position + shadow_offset, self.y_position - shadow_offset + self.scroll_y)
-        elif dir == 'up':
+        elif direction == 'up':
             self.y_position = new_pos
             self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
             self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset + self.scroll_y)
-        elif dir == 'down':
+        elif direction == 'down':
             self.y_position = new_pos
             self.rect.topleft = (self.x_position, self.y_position + self.scroll_y)
             self.shadow_rect.topleft = (self.rect.topleft[0] - shadow_offset, self.rect.topleft[1] - shadow_offset + self.scroll_y)
@@ -397,11 +489,12 @@ class Button(NestedElement):
         return timer, progress
 
     def slider_hover_start_animation(self):
+        """
+        Animate the slider when the button is hovered.
+        """
         if self.slider is None:
             return
         
-        if self.do_menu_enter_transition or self.do_menu_leave_transition:
-            return
         
         if self.slider == 'left' or self.slider == 'right':
             self.slider_hover_start_timer, progress = self.animate_slider(
@@ -423,17 +516,18 @@ class Button(NestedElement):
             )
 
     def slider_hover_end_animation(self):
+        """
+        Animate the slider when the button is no longer hovered.
+        """
         if self.slider is None:
             return
         
-        if self.do_menu_enter_transition or self.do_menu_leave_transition:
-            return
         
         if self.slider == 'left' or self.slider == 'right':
             self.slider_hover_end_timer, progress = self.animate_slider(
                 self.slider_hover_end_timer,
                 self.hover_slider_end_length,
-                self.hovered_x_position,
+                self.x_position,
                 self.default_x_position,
                 self.slider,
                 self.shadow_radius * 2,
@@ -442,24 +536,24 @@ class Button(NestedElement):
             self.slider_hover_end_timer, progress = self.animate_slider(
                 self.slider_hover_end_timer,
                 self.hover_slider_end_length,
-                self.hovered_y_position,
+                self.y_position,
                 self.default_y_position,
                 self.slider,
                 self.shadow_radius * 2,
             )
 
     def slider_pressed_start_animation(self):
+        """
+        Animate the slider when the button is pressed.
+        """
         if self.slider is None:
             return
-        
-        if self.do_menu_enter_transition or self.do_menu_leave_transition:
-            return
-        
+         
         if self.slider == 'left' or self.slider == 'right':
             self.slider_pressed_start_timer, progress = self.animate_slider(
                 self.slider_pressed_start_timer,
                 self.pressed_slider_start_length,
-                self.default_x_position,
+                self.x_position,
                 self.pressed_x_position,
                 self.slider,
                 self.shadow_radius * 2,
@@ -468,24 +562,24 @@ class Button(NestedElement):
             self.slider_pressed_start_timer, progress = self.animate_slider(
                 self.slider_pressed_start_timer,
                 self.pressed_slider_start_length,
-                self.default_y_position,
+                self.y_position,
                 self.pressed_y_position,
                 self.slider,
                 self.shadow_radius * 2,
             )
 
     def slider_pressed_end_animation(self):
+        """
+        Animate the slider when the button is no longer pressed.
+        """
         if self.slider is None:
-            return
-        
-        if self.do_menu_enter_transition or self.do_menu_leave_transition:
             return
         
         if self.slider == 'left' or self.slider == 'right':
             self.slider_pressed_end_timer, progress = self.animate_slider(
                 self.slider_pressed_end_timer,
                 self.pressed_slider_end_length,
-                self.pressed_x_position,
+                self.x_position,
                 self.default_x_position,
                 self.slider,
                 self.shadow_radius * 2,
@@ -494,7 +588,7 @@ class Button(NestedElement):
             self.slider_pressed_end_timer, progress = self.animate_slider(
                 self.slider_pressed_end_timer,
                 self.pressed_slider_end_length,
-                self.pressed_y_position,
+                self.y_position,
                 self.default_y_position,
                 self.slider,
                 self.shadow_radius * 2,
@@ -503,38 +597,53 @@ class Button(NestedElement):
     # ----------------------------------- Menu transition animations -----------------------------------
        
     def do_menu_enter_transition_animation(self):
+        """
+        Start the menu enter transition animation.
+        """
         self.do_menu_enter_transition = True
     
     def do_menu_leave_transition_animation(self):
+        """
+        Start the menu leave transition animation.
+        """
         self.do_menu_leave_transition = True
     
     def animate_menu_enter_transition(self):
+        """
+        Animate the menu transition when entering the menu.
+        """
         if not self.do_menu_enter_transition:
             return
         
-        self.animate_menu_transition('enter')
+        self.animate_menu_transition(True)
         
         if self.menu_transition_timer >= self.menu_transition_time:
             self.do_menu_enter_transition = False
             self.menu_transition_timer = 0
         
     def animate_menu_leave_transition(self):
+        """
+        Animate the menu transition when leaving the menu.
+        """
         if not self.do_menu_leave_transition:
             return
         
-        self.animate_menu_transition('leave')
+        self.animate_menu_transition(False)
         
         if self.menu_transition_timer >= self.menu_transition_time:
             self.do_menu_leave_transition = False
             self.menu_transition_timer = 0
         
-    def animate_menu_transition(self, direction):
+    def animate_menu_transition(self, is_enter):
+        """
+        Animate the menu transition.
+        
+        args:
+            is_enter (bool): Whether the transition is entering or leaving the menu.
+        """
         if not (self.do_menu_enter_transition or self.do_menu_leave_transition):
             return
-        
-        # Determine if it's an 'enter' or 'leave' transition
-        is_enter = direction == 'enter'
-        
+    
         if self.slider == 'left' and is_enter:
             start_x = self.default_x_position + self.container.width//12
             end_x = self.default_x_position
@@ -566,31 +675,49 @@ class Button(NestedElement):
         elif self.slider == 'down' and not is_enter:
             start_y = self.default_y_position
             end_y = self.default_y_position - self.height // 4
-           
-        # Animate slider using the helper
-        if self.slider in ['left', 'right']:
-            self.menu_transition_timer, progress = self.animate_slider(
-                self.menu_transition_timer,
-                self.menu_transition_time,
-                start_x,
-                end_x,
-                self.slider,
-                self.shadow_radius * 2,
-            )
-            
-        elif self.slider in ['up', 'down']:
-            self.menu_transition_timer, progress = self.animate_slider(
-                self.menu_transition_timer,
-                self.menu_transition_time,
-                start_y,
-                end_y,
-                self.slider,
-                self.shadow_radius * 2,
-            )
         
-        prog = smoothstep(progress)
-        alpha = ((prog) * 255) if is_enter else (((1 - prog)) * 255)
+        if self.state != 'pressed':
+            if self.slider in ['left', 'right']:
+                self.menu_transition_timer, progress = self.animate_slider(
+                    self.menu_transition_timer,
+                    self.menu_transition_time,
+                    start_x,
+                    end_x,
+                    self.slider,
+                    self.shadow_radius * 2,
+                )
+                
+            elif self.slider in ['up', 'down']:
+                self.menu_transition_timer, progress = self.animate_slider(
+                    self.menu_transition_timer,
+                    self.menu_transition_time,
+                    start_y,
+                    end_y,
+                    self.slider,
+                    self.shadow_radius * 2,
+                )
+        else:
+            self.menu_transition_timer += self.Timing.frame_delta_time
+            self.menu_transition_timer = min(self.menu_transition_timer, self.menu_transition_time)
+
+            progress = self.menu_transition_timer / self.menu_transition_time
+            progress = max(0, min(1, progress))
+            
+        self.animate_menu_transition_alpha(progress, is_enter)
+
+    def animate_menu_transition_alpha(self, progress, is_enter):
+        """
+        Animate the alpha of the button surface during a menu transition.
+        
+            progress (float): Progress percentage of the animation.
+            is_enter (bool): Whether the transition is entering or leaving the menu.
+        """
+        p = smoothstep(progress)
+        alpha = ((p) * 255) if is_enter else (((1 - p)) * 255)
         alpha = max(0, min(255, alpha))
+        
         self.button_surface.set_alpha(alpha)
+        self.hover_surface.set_alpha(alpha)
+        self.pressed_surface.set_alpha(alpha)
         self.shadow_surface.set_alpha(alpha)
         

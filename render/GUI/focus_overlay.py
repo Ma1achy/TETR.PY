@@ -4,8 +4,15 @@ from utils import hex_to_rgb
 from render.GUI.font import Font
 
 class GUIFocus():
-    def __init__(self, RenderStruct:StructRender):
+    def __init__(self, window, RenderStruct:StructRender):
+        """
+        An overlay that can be used to indicate that the game is out of focus
         
+        args:
+            window (pygame.Surface): the window to draw the focus overlay on
+            RenderStruct (StructRender): the render structure
+        """
+        self.window = window
         self.RenderStruct = RenderStruct
         self.width = 500
         self.height = 180
@@ -18,8 +25,13 @@ class GUIFocus():
         
         self.main_font = Font('hun2', 85)
         self.sub_font = Font('hun2', 36)
+
+        self.render()
         
-    def draw(self, surface):
+    def render(self):
+        """
+        Render the focus overlay
+        """
         self.focus_surface.fill((0, 0, 0, 200))
         pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (0, 0, self.focus_rect.width, self.focus_rect.height), 5)
         pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (10, 10, self.focus_rect.width - 20, self.focus_rect.height - 20), 2)
@@ -42,8 +54,21 @@ class GUIFocus():
             30,
         )
         
-        surface.blit(self.focus_surface, self.focus_rect)
+    def draw(self):
+        """
+        Draw the focus overlay
+        """
+        self.window.blit(self.focus_surface, self.focus_rect)
         
     def handle_window_resize(self):
+        """
+        Handle the window resize
+        """
         self.focus_rect.topleft = (self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2)
+        
+    def update(self):
+        """
+        Update the focus overlay
+        """
+        self.draw()
        

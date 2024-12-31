@@ -12,7 +12,14 @@ import pkg_resources
 
 class KeyboardInputManager:
     def __init__(self, Keyboard, Timing, Debug):
+        """
+        A keyboard input manager
         
+        args:
+            Keyboard (Keyboard): The Keyboard instance
+            Timing (Timing): The Timing instance
+            Debug (Debug): The Debug instance
+        """
         self.Keyboard = Keyboard
         self.Timing = Timing
         self.Debug = Debug
@@ -20,6 +27,9 @@ class KeyboardInputManager:
         self.max_poll_ticks_per_iteration = 1000
         
     def start_keyboard_hook(self):
+        """
+        Start the keyboard hook
+        """
         self.keyboard_listener = keyboard.Listener(
             on_press = self.on_key_press,
             on_release = self.on_key_release
@@ -27,6 +37,9 @@ class KeyboardInputManager:
         self.keyboard_listener.start()
     
     def stop_keyboard_hook(self):
+        """
+        Stop the keyboard hook
+        """
         if self.keyboard_listener:
             self.keyboard_listener.stop()
             self.keyboard_hook = None
@@ -39,10 +52,18 @@ class KeyboardInputManager:
         self.stop_keyboard_hook()
         
     def queue_key_states(self):
+        """
+        Queue the key states
+        """
         self.Keyboard.key_states_queue.put(self.Keyboard.key_states)
 
     def on_key_press(self, key):
+        """
+        Handle a key press event
         
+        args:
+            key (pynput.keyboard.Key): The key that was pressed
+        """
         if not self.Timing.is_focused:
             self.Keyboard.key_states = {}
             return
@@ -63,7 +84,12 @@ class KeyboardInputManager:
         self.queue_key_states()
          
     def on_key_release(self, key):
+        """
+        Handle a key release event
         
+        args:
+            key (pynput.keyboard.Key): The key that was released
+        """
         if not self.Timing.is_focused:
             self.Keyboard.key_states = {}
             return
@@ -81,21 +107,32 @@ class KeyboardInputManager:
             KeyEntry['previous'] = KeyEntry['current']
             KeyEntry['current'] = False
         
-       
         self.queue_key_states()
          
     def __get_key_info(self, key):
+        """
+        Get the key info
+        
+        args:
+            key (pynput.keyboard.Key): The key to get the info for
+        """
         try:
             return key.name
         except AttributeError:
             return key
 
     def reset_key_states(self):
+        """
+        Reset the key states
+        """
         for key in self.Keyboard.key_states:
             self.Keyboard.key_states[key]['previous'] = self.Keyboard.key_states[key]['current']
         self.queue_key_states()
         
     def input_loop(self):
+        """
+        The input loop
+        """
         if self.Debug.PRINT_WARNINGS and self.Timing.restarts != 0:
             print(f"\033[93mRestarting {threading.current_thread().name}...\033[0m")
         try:
@@ -143,7 +180,9 @@ class KeyboardInputManager:
             return
     
     def do_input_tick(self):
-        
+        """
+        Perform an input tick
+        """
         if self.Timing.exited:
             return
         
@@ -158,9 +197,18 @@ class KeyboardInputManager:
         self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
         
     def get_poll_rate(self):
+        """
+        Get the polling rate of the input loop
+        """
         self.Timing.POLLING_RATE = self.Timing.input_tick_counter
     
     def restart(self, error):
+        """
+        Attempt to restart the input loop
+        
+        args:
+            error (Exception): The error that caused the restart
+        """
         self.Timing.restarts += 1
         current_time = time.perf_counter()
     
@@ -182,6 +230,9 @@ class KeyboardInputManager:
             self.restart(e)
     
     def __do_restart(self):
+        """
+        Restart the input loop
+        """
         self.Timing.POLLING_RATE = 1000
         self.Timing.current_input_tick_time = 0
         self.Timing.last_input_tick_time = 0
@@ -196,6 +247,9 @@ class KeyboardInputManager:
         self.input_loop()
     
     def handle_exception(self, e):
+        """
+        Handle an exception that occurs in the input loop
+        """
         print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
         
         tb_str = traceback.format_exc()
@@ -227,6 +281,9 @@ class KeyboardInputManager:
         self.restart((info, e, tb_str))
     
     def __get_imported_packages(self):
+        """
+        Get the imported packages and their versions
+        """
         imported_packages = {}
         for name, module in sys.modules.items():
             if name in pkg_resources.working_set.by_key:
@@ -234,11 +291,14 @@ class KeyboardInputManager:
         return imported_packages
 
     def __get_build_info(self):
+        """
+        Get the build info from the build_info.json file
+        """
         path = os.path.join(os.getcwd(), 'app/state/build_info.json')
         try:
             with open(path, 'r') as file:
                 build_info = json.load(file)
-        except Exception as e:
+        except Exception as _:
             build_info = None
         return build_info
         

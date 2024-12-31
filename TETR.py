@@ -33,7 +33,7 @@ from collections import deque
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-class App():
+class TETRPY():
     def __init__(self):
         
         self.WorkerManager = WorkerManager()
@@ -98,6 +98,9 @@ class App():
         }
     
     def load_user_settings(self):
+        """
+        Load the user settings
+        """
         if self.AccountManager.user is None:
             self.ConfigManager.load_default_settings()
             return
@@ -105,18 +108,25 @@ class App():
         self.ConfigManager.load_user_settings(self.AccountManager.user)
         
     def check_login(self):
+        """
+        Check if the user is logged in
+        """
         if self.AccountManager.user is not None:
             return
         
         self.MenuManager.go_to_login()
     
     def __initalise(self):
-        set_flag_attr()
-        
+        """
+        Initialise the programs threads
+        """  
         self.input_thread = threading.Thread(target = self.KeyboardInputManager.input_loop)
         self.logic_thread = threading.Thread(target = self.GameInstanceManager.logic_loop)
         
     def __register_event_handlers(self):
+        """
+        Register the event handlers for pygame events
+        """
         # window focus events
         PygameEventHandler.register(pygame.WINDOWCLOSE)(self.__exit)
         PygameEventHandler.register(pygame.WINDOWFOCUSLOST)(self.__is_focused)
@@ -139,6 +149,9 @@ class App():
         PygameEventHandler.register(pygame.MOUSEWHEEL)(self.MouseInputManager.on_mouse_scroll)
         
     def __init_pygame(self):
+        """
+        Initialise pygame
+        """
         pygame.init()
         pygame.font.init()
     
@@ -172,6 +185,9 @@ class App():
         )
         
     def run(self):
+        """
+        Run the program
+        """
         self.__initalise()
         self.check_login()
          
@@ -188,6 +204,12 @@ class App():
         self.__exit()
              
     def __exit(self, event = None):
+        """
+        Exit the program
+        
+        args:
+            event (pygame.event): the event to handle
+        """
         self.Timing.exited = True
         self.KeyboardInputManager.exit()
         pygame.font.quit()
@@ -196,13 +218,18 @@ class App():
         if self.input_thread.is_alive():
             self.input_thread.join(timeout = self.Timing.poll_interval)
 
-
         if self.logic_thread.is_alive():
             self.logic_thread.join(timeout = self.Timing.tick_interval)
 
         os._exit(0)
     
     def restart(self, error):  # if main thread crashes, attempt to restart entire program
+        """
+        Attempt to restart the entire program if the main thread crahses
+        
+        args:
+            error (Exception): the error that caused the crash
+        """
         self.Timing.restarts += 1
         current_time = time.perf_counter()
     
@@ -252,7 +279,9 @@ class App():
             return
                 
     def do_render_tick(self):
-        
+        """
+        Perform a render tick.
+        """
         start = time.perf_counter()
         
         if self.Timing.exited:
@@ -268,25 +297,39 @@ class App():
         
         self.__update_mouse_position()
         self.MenuInputHandler.tick()
-        self.MenuManager.tick()
+        
         self.Debug.get_metrics()  
         self.Render.draw_frame()
+        self.MenuManager.tick()
         self.FrameClock.tick()
         
         while not self.Mouse.events.empty():
             self.Mouse.events.get_nowait()
 
         self.empty_pygame_events_queue()
+        pygame.display.flip()
         
         self.Timing.iteration_times['render_loop'] = time.perf_counter() - start
     
     def empty_pygame_events_queue(self):
+        """
+        Empty the pygame events queue.
+        """
         self.pygame_events_queue.clear()
                  
     def get_fps(self):
+        """
+        Get the frames per second.
+        """
         self.Timing.FPS = self.FrameClock.get_fps()
     
     def __is_focused(self, event):
+        """
+        Handle the window focus event and update the focus state.
+        
+        args:
+            event (pygame.event): the event to handle
+        """
         match event.type:
             case pygame.WINDOWFOCUSGAINED:
                 self.is_focused = True
@@ -302,15 +345,36 @@ class App():
         self.Timing.is_focused = self.MenuManager.is_focused
     
     def __update_mouse_position(self):
+        """
+        Update the mouse position.
+        """
         self.MenuManager.mouse_position = self.MouseInputManager.Mouse.position
     
     def __handle_window_resize(self, event):
-       self.Render.handle_window_resize()
+        """
+        Handle the window resize event.
+        
+        args:
+            event (pygame.event): the event to handle
+        """
+        self.Render.handle_window_resize()
     
     def __window_close_event(self, event):
+        """
+        Handle the window close event.
+        
+        args:
+            event (pygame.event): the event to handle   
+        """
         self.MenuManager.open_exit_dialog()
     
     def handle_exception(self, e):
+        """
+        Handle an exception by logging the exception and environment information and restarting the program.
+        
+        args:
+            e (Exception): The exception that occurred.
+        """
         print(f"\033[91mError in {threading.current_thread().name}: \n{e}\033[0m")
         
         tb_str = traceback.format_exc()
@@ -341,6 +405,9 @@ class App():
         self.restart((info, e, tb_str))
     
     def __get_imported_packages(self):
+        """
+        Get the imported packages and their versions.
+        """
         imported_packages = {}
         for name, module in sys.modules.items():
             if name in pkg_resources.working_set.by_key:
@@ -348,6 +415,9 @@ class App():
         return imported_packages
 
     def __get_build_info(self):
+        """
+        Get the build info from the build_info.json file.
+        """
         path = os.path.join(os.getcwd(), 'app/state/build_info.json')
         try:
             with open(path, 'r') as file:
@@ -355,19 +425,32 @@ class App():
         except Exception as _:
             build_info = None
         return build_info
+    
 class WorkerManager:
     def __init__(self, max_workers = 4):
+        """
+        Worker manager that manages a worker thread that processes tasks from a task queue.
+        
+        args:
+            max_workers (int): The maximum number of worker threads to use.
+        """
         self.tasks = queue.Queue()
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
-        self.worker_thread = threading.Thread(target=self.worker_loop, daemon=True)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers = max_workers)
+        self.worker_thread = threading.Thread(target = self.worker_loop, daemon = True)
         self.worker_thread.start()
 
     def add_task(self, task):
+        """
+        Add a task to the task queue.
+        """
         if not callable(task):
             raise ValueError("Task must be callable.")
         self.tasks.put(task)
 
     def worker_loop(self):
+        """
+        Worker thread that processes tasks from the task queue.
+        """
         while True:
             task = self.tasks.get()
             if task is None:  # Stop signal
@@ -381,13 +464,16 @@ class WorkerManager:
                 self.tasks.task_done()
 
     def stop(self):
+        """
+        Stop the worker thread and wait for all tasks to finish.
+        """
         self.tasks.put(None)  # Stop signal
         self.tasks.join()     # Wait for all tasks to finish
         self.worker_thread.join()
         self.executor.shutdown(wait=True)
 
 def main():
-    app = App()
+    app = TETRPY()
     app.run()
 
 if __name__ == "__main__":

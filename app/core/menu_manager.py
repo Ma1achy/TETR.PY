@@ -10,7 +10,19 @@ import pygame
 from render.GUI.menu_elements.text_input import TextInput
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager):
-
+        """
+        The menu manager, manages the current menu and GUI elements and transitions
+        
+        args:
+            Keyboard (Keyboard): The Keyboard object
+            Mouse (Mouse): The Mouse object
+            Timing (Timing): The Timing object
+            RenderStruct (StructRender): The RenderStruct object
+            Debug (Debug): The Debug object
+            pygame_events_queue (queue): The pygame events queue
+            AccountManager (AccountManager): The AccountManager object
+            ConfigManager (ConfigManager): The ConfigManager object
+        """
         self.Keyboard = Keyboard
         self.Mouse = Mouse
         self.Timing = Timing
@@ -22,13 +34,10 @@ class MenuManager():
         self.ConfigManager = ConfigManager
         
         self.debug_overlay = False
-        self.show_error_dialog = False
         self.is_focused = False
         self.in_dialog = False
         self.wait_for_dialog_close = False
         
-        self.GUI_debug = GUIDebug(self.Timing, self.RenderStruct, self.Debug)
-        self.GUI_focus = GUIFocus(self.RenderStruct)
         self.ErrorDialog = None
             
         self.button_functions = {
@@ -54,13 +63,7 @@ class MenuManager():
             "open_logout_dialog": self.open_logout_dialog
     }
         
-        self.copied_text_surface_width, self.copied_text_surface_height = 900, 200
-        self.copied_text_surface = pygame.surface.Surface((self.copied_text_surface_width, self.copied_text_surface_height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.copied_text_surface_rect = pygame.Rect((self.RenderStruct.WINDOW_WIDTH - self.copied_text_surface_width)//2, (self.RenderStruct.WINDOW_HEIGHT - self.copied_text_surface_height)//2, self.copied_text_surface_width, self.copied_text_surface_height)
-        
-        self.copied_text = Font('d_din_bold', 90, None)
-        self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FF7B10', 'center', 0, 5)
-        self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FFD800', 'center', 0, 0)
+        self.render_copied_text()
         
         self.copied_failed = False
         self.do_copy_to_clipboard_animation = False
@@ -71,7 +74,18 @@ class MenuManager():
         self.darken_overlay_layer_alpha = 0
         
     def init_menus(self, window):
+        """
+        Initialise the menus and GUI elements
+        
+        args:
+            window (pygame.Surface): The window to draw the menus on
+        """
         self.window = window
+        self.darken_overlay = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.darken_overlay.fill((0, 0, 0))
+        
+        self.GUI_debug = GUIDebug(self.window, self.Timing, self.RenderStruct, self.Debug)
+        self.GUI_focus = GUIFocus(self.window, self.RenderStruct)
         
         self.LoginDialog = DialogBox(
             self.Timing, 
@@ -143,6 +157,28 @@ class MenuManager():
         self.dialog_stack = []  
         
     def tick(self):
+        """
+        Update the menus and GUI elements
+        """
+        self.darken_overlay.fill((0, 0, 0, 200))
+        self.window.blit(self.darken_overlay, (0, 0))
+        
+        if self.current_menu is not None:
+            self.current_menu.update(self.in_dialog)
+            
+        if self.debug_overlay:
+            self.GUI_debug.update()
+        
+        if not self.is_focused:
+            self.GUI_focus.update()
+        
+        if self.current_dialog:
+            self.darken_overlay.fill((0, 0, 0, self.darken_overlay_layer_alpha))
+            self.window.blit(self.darken_overlay, (0, 0))
+            self.current_dialog.update()
+            
+        self.copy_to_clipboard_animation()
+            
         self.__wait_for_dialog_close()
         self.update_darken_overlay_alpha()
         self.reset_dialogs()
@@ -150,12 +186,36 @@ class MenuManager():
         self.handle_exceptions()
         self.handle_menu_transitions()
         
+    def if_doing_animation(self):
+        """
+        Check if the current menu is doing an animation
+        """
+        if self.current_menu.doing_transition_animation:
+            return True
+        
+        if self.current_dialog is not None:
+            if self.current_dialog.do_animate_appear or self.current_dialog.do_animate_disappear:
+                return True
+        
+        return False
+        
     def get_actions(self):
+        """
+        Get the actions from the keyboard input handler
+        """
         actions = self.Keyboard.menu_actions_queue.get_nowait()
         self.__perform_action(actions)
 
     def __perform_action(self, actions):
-
+        """
+        Perform the actions from the keyboard input handler
+        
+        args:
+            actions (list): The list of actions to perform
+        """
+        if self.if_doing_animation(): # ignore input events if doing a menu transition animation
+            return
+        
         for action in actions:
             match action:
                 case UIAction.MENU_LEFT:
@@ -191,6 +251,9 @@ class MenuManager():
         pass
     
     def __menu_back(self):
+        """
+        Go back to the previous menu or close the current dialog
+        """
         if self.in_dialog:
             if self.current_dialog.primary_button is None:
                 return
@@ -199,9 +262,17 @@ class MenuManager():
             self.current_menu.main_body.back_button.click()
     
     def __menu_debug(self):
+        """
+        Toggle the debug overlay
+        """
         self.debug_overlay = not self.debug_overlay
     
     def handle_window_resize(self):
+        """
+        Handle the window resize
+        """
+        self.darken_overlay = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        
         self.login_menu.handle_window_resize()
         self.home_menu.handle_window_resize()
         self.solo_menu.handle_window_resize()
@@ -226,17 +297,26 @@ class MenuManager():
         self.copied_text_surface_rect = pygame.Rect((self.RenderStruct.WINDOW_WIDTH - self.copied_text_surface_width)//2, (self.RenderStruct.WINDOW_HEIGHT - self.copied_text_surface_height)//2, self.copied_text_surface_width, self.copied_text_surface_height)
     
     def go_to_login(self):
+        """
+        Go to the login menu
+        """
         self.dialog_stack.clear()
         self.current_dialog = None
         self.in_dialog = False
 
-        self.current_menu.reset_buttons()
+        self.current_menu.reset_state()
         self.current_menu = self.login_menu
         self.open_dialog(self.LoginDialog)
 
     # login dialog
     def login(self, value):
-        self.current_dialog.reset_buttons()
+        """
+        Login to the account
+        
+        args:
+            value (str): The username to login with
+        """
+        self.current_dialog.reset_state()
         self.current_dialog.TextEntry.manager.value = ""
         self.AccountManager.login(value)
         self.close_dialog()
@@ -244,11 +324,17 @@ class MenuManager():
 
     # logout dialog
     def open_logout_dialog(self):
-        self.current_menu.reset_buttons()
+        """
+        Open the logout dialog
+        """
+        self.current_menu.reset_state()
         self.open_dialog(self.LogOutDialog)
     
     def logout(self):
-        self.current_dialog.reset_buttons()
+        """
+        Logout of the account
+        """
+        self.current_dialog.reset_state()
         self.close_dialog()
 
         # Reset dialog states
@@ -262,16 +348,25 @@ class MenuManager():
     # exit dialog
     
     def open_exit_dialog(self):
-        self.current_menu.reset_buttons()
+        """
+        Open the exit dialog
+        """
+        self.current_menu.reset_state()
         self.open_dialog(self.ExitDialog)
     
     def quit_game(self):
+        """
+        Quit the game
+        """
         self.Timing.exited = True
     
     # copy to clipboard
     
     def copy_to_clipboard(self, item):
-        self.current_dialog.reset_buttons()
+        """
+        Copy the item to the clipboard
+        """
+        self.current_dialog.reset_state()
         try:
             copy2clipboard(item)
             self.do_copy_to_clipboard_animation = True
@@ -280,6 +375,9 @@ class MenuManager():
             self.handle_copy_to_clipboard_fail()
             
     def handle_copy_to_clipboard_fail(self):
+        """
+        Handle the copy to clipboard failure
+        """
         self.copied_text_surface.fill((0, 0, 0, 0))
             
         self.copied_text.draw(self.copied_text_surface, 'COPY FAILED!', '##AB0000', 'center', 0, 5)
@@ -289,6 +387,9 @@ class MenuManager():
         self.copied_failed = True
             
     def copy_to_clipboard_animation(self):
+        """
+        Animate the copy to clipboard text
+        """
         if not self.do_copy_to_clipboard_animation:
             return
         
@@ -316,6 +417,9 @@ class MenuManager():
             self.window.blit(self.copied_text_surface, self.copied_text_surface_rect.topleft)
         
     def reset_copy_to_clipboard_animation(self):
+        """
+        Reset the copy to clipboard animation
+        """
         self.do_copy_to_clipboard_animation = False
         self.copy_text_do_fade_out = False
         self.copied_text_timer = 0
@@ -332,7 +436,10 @@ class MenuManager():
            
     def open_dialog(self, dialog):
         """
-        Opens a new dialog with proper animation handling.
+        Opens a new dialog box and animates it.
+        
+        args:
+            dialog (DialogBox): The dialog box to open
         """
         if not dialog:
             return  
@@ -352,7 +459,7 @@ class MenuManager():
         self.in_dialog = True
         
         if self.current_menu:
-            self.current_menu.reset_buttons()
+            self.current_menu.reset_state()
 
         dialog.do_animate_appear = True
         dialog.do_animate_disappear = False
@@ -365,7 +472,7 @@ class MenuManager():
         if not self.current_dialog:
             return
 
-        self.current_dialog.reset_buttons()
+        self.current_dialog.reset_state()
         self.current_dialog.do_animate_disappear = True
         self.current_dialog.do_animate_appear = False
         self.current_dialog.timer = 0
@@ -396,27 +503,26 @@ class MenuManager():
             return
 
         if self.current_dialog.do_animate_disappear and self.current_dialog.timer >= self.current_dialog.animation_length:
-            # Current dialog is finished closing
             self.current_dialog.closed = True
-            self.current_dialog = None  # Clear the current dialog
+            self.current_dialog = None 
 
             if self.dialog_stack:
-                # Pop the previous dialog from the stack and make it active
                 self.current_dialog = self.dialog_stack.pop()
                 self.current_dialog.do_animate_appear = True
                 self.current_dialog.do_animate_disappear = False
                 self.current_dialog.timer = 0
                 self.in_dialog = True
             else:
-                # No more dialogs in the stack
                 self.in_dialog = False
                 self.wait_for_dialog_close = False
+                
                 if self.current_menu:
-                    self.current_menu.reset_buttons()
+                    self.current_menu.reset_state()
     
-
     def animate_diff(self, current_menu, next_menu):
-        
+        """
+        Animate the differences in anchored elements between the current and next menu
+        """
         animate_back_button = False
         
         if 'back_button' in current_menu.main_body.definition and 'back_button' not in next_menu.main_body.definition:
@@ -448,6 +554,9 @@ class MenuManager():
         return animate_back_button, animate_footer_widget
 
     def handle_menu_transitions(self):
+        """
+        Handle the menu transitions
+        """
         if self.next_menu is None:
             return
         
@@ -462,81 +571,157 @@ class MenuManager():
         
         animate_back_button, animate_footer_widget = self.animate_diff(self.previous_menu, self.current_menu)
         self.current_menu.do_menu_enter_transition_animation(animate_back_button, animate_footer_widget)
-        
-        self.previous_menu.reset_buttons()
         self.next_menu = None
         
     def switch_menus(self, next_menu):
-        animate_back_button, animate_footer_widget = self.animate_diff(self.current_menu, next_menu)
-        self.current_menu.do_menu_leave_transition_animation(animate_back_button, animate_footer_widget)
+        """
+        Switch to the next menu
+        
+        args:
+            next_menu (Menu): The menu to switch to
+        """
         self.next_menu = next_menu
         
+        animate_back_button, animate_footer_widget = self.animate_diff(self.current_menu, next_menu)
+        self.current_menu.do_menu_leave_transition_animation(animate_back_button, animate_footer_widget)
+        
+        if self.previous_menu is not None:
+            self.previous_menu.reset_state()
+            self.previous_menu = None
+        
     def go_to_home(self):
+        """
+        Go to the home menu
+        """
         self.switch_menus(self.home_menu)
     
     # home menu
     
     def go_to_multi(self):
+        """
+        Go to the multiplayer menu
+        """
         self.switch_menus(self.multi_menu)
     
     def go_to_solo(self):
+        """
+        Go to the solo menu
+        """ 
         self.switch_menus(self.solo_menu)
     
     def go_to_records(self): 
+        """
+        Go to the records menu
+        """
         self.switch_menus(self.records_menu)
     
     def go_to_config(self):
+        """
+        Go to the config menu
+        """
         self.switch_menus(self.config_menu)
     
     def go_to_about(self):
+        """
+        Go to the about menu
+        """
         self.switch_menus(self.about_menu)
     
     def go_to_github(self):
-        self.current_menu.reset_buttons()
+        """
+        Open the github page
+        """
+        self.current_menu.reset_state()
         webbrowser.open('https://github.com/Ma1achy/TETR.PY')
     
     # solo menu
     
     def go_to_40_lines(self):
+        """
+        Go to the 40 lines menu
+        """
         pass
     
     def go_to_blitz(self):
+        """
+        Go to the blitz menu
+        """
         pass
     
     def go_to_zen(self):
+        """
+        Go to the zen menu
+        """
         pass
     
     def go_to_custom(self):
+        """
+        Go to the custom menu
+        """
         pass
     
     # config
     
     def go_to_account_settings(self):
+        """
+        Go to the account settings menu
+        """
         self.switch_menus(self.account_menu)
     
     def export_settings(self):
+        """
+        Export the user settings
+        """
         self.ConfigManager.export_user_settings(self.AccountManager.user)
     
     # error dialog 
     
     def handle_exceptions(self):
-        self.__create_error_message_dialog()
-        
+        """
+        Handle exceptions
+        """
+        if self.Debug.ERROR is not None:
+            self.__create_error_message_dialog()
+
         if self.ErrorDialog is not None:
-            self.go_to_home()
             self.open_dialog(self.ErrorDialog)
         
     def __create_error_message_dialog(self): 
+        """
+        Create the error message dialog
+        """
         if self.Debug.ERROR is None:
             return
         
         info, error, trace = self.Debug.ERROR
-        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = True, width = 700)
-        
         self.Debug.ERROR = None
+        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_error_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = False, width = 700)
     
+    def close_error_dialog(self):
+        """
+        Close the error dialog
+        """
+        self.close_dialog()
+        self.ErrorDialog = None
+        self.switch_menus(self.home_menu)
+        
     def update_darken_overlay_alpha(self):
+        """
+        Update the darken overlay alpha
+        """
         if self.in_dialog and self.current_dialog is not self.LoginDialog:
             self.darken_overlay_layer_alpha =  min(self.current_dialog.alpha, 200)
         else:
             self.darken_overlay_layer_alpha = 0
+    
+    def render_copied_text(self):
+        """
+        Render the text to be used in the copy to clipboard animation
+        """
+        self.copied_text_surface_width, self.copied_text_surface_height = 900, 200
+        self.copied_text_surface = pygame.surface.Surface((self.copied_text_surface_width, self.copied_text_surface_height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.copied_text_surface_rect = pygame.Rect((self.RenderStruct.WINDOW_WIDTH - self.copied_text_surface_width)//2, (self.RenderStruct.WINDOW_HEIGHT - self.copied_text_surface_height)//2, self.copied_text_surface_width, self.copied_text_surface_height)
+        
+        self.copied_text = Font('d_din_bold', 90, None)
+        self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FF7B10', 'center', 0, 5)
+        self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FFD800', 'center', 0, 0)

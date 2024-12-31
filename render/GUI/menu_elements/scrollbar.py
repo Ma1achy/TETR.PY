@@ -4,6 +4,15 @@ from render.GUI.menu_elements.nested_element import NestedElement
 
 class ScrollBar(NestedElement):
     def __init__(self, container, y_scroll, y_diff, scrollable):
+        """
+        A scrollbar for a scrollable area
+        
+        args:
+            container (pygame.Surface): the container the scrollbar is in
+            y_scroll (int): the y scroll of the container
+            y_diff (int): the difference between the height of the container and the height of the scrollable area
+            scrollable (bool): whether the current menu is scrollable
+        """
         super().__init__(parent = None)
         self.container = container
         self.y_scroll = y_scroll 
@@ -19,9 +28,15 @@ class ScrollBar(NestedElement):
         self.render()
 
     def get_local_position(self):
+        """
+        Get the position of the scrollbar relative to the container it is in for collision detection.
+        """
         return self.rect.topleft
     
     def get_rect_and_surface(self):
+        """
+        Get the rects and surfaces for the scrollbar
+        """
         self.surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE | pygame.SRCALPHA)
         self.rect = pygame.Rect(
             self.container.get_rect().right - self.width,
@@ -34,19 +49,31 @@ class ScrollBar(NestedElement):
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE | pygame.SRCALPHA)
 
     def render(self):
+        """
+        Render the scrollbar container and its shadow
+        """
         draw_solid_colour(self.surface, '#111111', self.surface.get_rect())
         draw_border(self.surface, {'left': [2, '#1a1a1a']}, self.surface.get_rect())
         self.render_shadow()
         
     def render_shadow(self):
+        """
+        Render the shadow of the scrollbar container
+        """
         pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rect.width - self.shadow_radius * 4, self.shadow_rect.height - self.shadow_radius * 4))
         self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
         
     def draw(self):
+        """
+        Draw the scrollbar container and its shadow
+        """
         self.container.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.container.blit(self.surface, self.rect.topleft)
 
     def update(self, y_scroll, in_dialog):
+        """
+        Update the scrollbar
+        """
         if in_dialog:
             self.draw()
             self.bar.draw(self.container)
@@ -76,6 +103,9 @@ class Bar():
         self.render()
     
     def get_rect_and_surface(self):
+        """
+        Get the rects and surfaces for the scrollbar
+        """
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE | pygame.SRCALPHA) 
         
@@ -83,10 +113,16 @@ class Bar():
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE | pygame.SRCALPHA)
     
     def calculate_height(self):
+        """
+        Calculate the height of the scrollbar based on the height of the container and the height of the scrollable area
+        """
         visible_ratio = self.scrollbar_rect.height / (self.scrollbar_rect.height + self.y_diff)
         return max(self.min_height, visible_ratio * self.scrollbar_rect.height)
 
     def render(self):
+        """
+        Render the scrollbar and its shadow
+        """
         self.render_shadow()
         draw_solid_colour(self.surface, '#242424', self.surface.get_rect())
         draw_border(self.surface, {'left': [2, '#3d3d3d']}, self.surface.get_rect())
@@ -95,10 +131,16 @@ class Bar():
         draw_border(self.surface, {'bottom': [2, '#0e0e0e']}, self.surface.get_rect())
         
     def render_shadow(self):
+        """
+        Render the shadow of the scrollbar
+        """
         pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rect.width - 4 * self.shadow_radius, self.shadow_rect.height - 4 * self.shadow_radius))
         self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
         
     def calculate_position(self):
+        """
+        Calculate the position of the scrollbar based on the scrollable area
+        """
         if self.y_scroll > 0:
             return 0
         
@@ -108,10 +150,16 @@ class Bar():
         return scroll_ratio * (self.scrollbar_rect.height - self.height)
         
     def draw(self, surface):
+        """
+        Draw the scrollbar and its shadow
+        """
         surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         surface.blit(self.surface, self.rect.topleft)
         
     def update(self, y_scroll, surface):
+        """
+        Update the scrollbar
+        """
         self.y_scroll = y_scroll    
         self.y = self.calculate_position()
         self.rect.update(self.x, self.y, self.width, self.height)

@@ -11,6 +11,9 @@ class AccountManager():
         self.ConfigManager = ConfigManager
     
     def get_accounts(self):
+        """
+        Get the accounts from the config file
+        """
         self.parser.read('app\core\config\login.cfg')
         accounts = self.parser['USERS']['ACCOUNTS']
         
@@ -20,6 +23,9 @@ class AccountManager():
         return ast.literal_eval(accounts)
     
     def read_saved_login(self):
+        """
+        Read the saved login from the config file
+        """
         self.parser.read('app\core\config\login.cfg')
         user = self.parser['LOGIN']['USER']
         
@@ -34,6 +40,12 @@ class AccountManager():
         self.user = None
         
     def login(self, user):
+        """
+        Log in as a user
+        
+        args:
+            user (str): the user to log in as
+        """
         if not self.user_exists(user):
             self.create_user(user)
         
@@ -43,6 +55,12 @@ class AccountManager():
         self.ConfigManager.load_user_settings(user)
                
     def save_login(self, user):
+        """
+        Save the login to the config file
+        
+        args:
+            user (str): the user to save
+        """
         if user is None:
             return
          
@@ -55,12 +73,24 @@ class AccountManager():
             self.parser.write(configfile)
         
     def user_exists(self, user):
+        """
+        Check if a user exists
+        
+        args:
+            user (str): the user to check
+        """
         if user in self.accounts:
             return True
         else:
             return False
     
     def create_user(self, user):
+        """
+        Create a user
+        
+        args:
+            user (str): the user to create
+        """
         if self.user_exists(user):
             return
                 
@@ -71,6 +101,12 @@ class AccountManager():
             self.parser.write(configfile)
     
     def delete_user(self, user):
+        """
+        Delete a user
+        
+        args:
+            user (str): the user to delete
+        """
         if not self.user_exists(user):
             return
         
@@ -81,6 +117,9 @@ class AccountManager():
             self.parser.write(configfile)
     
     def logout(self):
+        """
+        Log out of the current user
+        """
         self.save_login("")
         self.ConfigManager.load_default_settings()
         self.user = None

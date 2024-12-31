@@ -3,9 +3,15 @@ import ast
 import os
 import tkinter as tk
 from tkinter import filedialog
-import threading
+
 class ConfigManager():
     def __init__(self, WorkerManager):
+        """
+        The configuration manager
+        
+        args:
+            WorkerManager (WorkerManager): The WorkerManager instance
+        """
         self.WorkerManager = WorkerManager
         self.parser = configparser.ConfigParser()
         
@@ -16,19 +22,31 @@ class ConfigManager():
         self.load_default_keybindings()
         
     def load_defualt_handling(self):
+        """
+        Load the default handling settings
+        """
         self.parser.read('app/core/config/default_handling.cfg')
         self.default_handling_settings = {key: self.convert_value(value) for key, value in self.parser['HANDLING_SETTINGS'].items()}
     
     def load_default_keybindings(self):
+        """
+        Load the default keybindings
+        """
         self.parser.read('app/core/config/default_keybindings.cfg')
         self.guidline_keybindings = {key: self.convert_value(value) for key, value in self.parser['GUIDLINE_KEYBINDINGS'].items()}
         self.wasd_keybindings = {key: self.convert_value(value) for key, value in self.parser['WASD_KEYBINDINGS'].items()}
             
     def load_default_settings(self):
+        """
+        Load the default settings
+        """
         self.parser.read('app/core/config/default.cfg')
         self.load_settings()
     
     def load_user_settings(self, user):
+        """
+        Load the user settings
+        """
         cfg = f'@{user}.cfg'
         path = os.path.join('app/core/config', cfg)
         
@@ -39,6 +57,12 @@ class ConfigManager():
         self.load_settings()
         
     def create_user_settings(self, user):
+        """
+        Create the user settings
+        
+        args:
+            user (str): the user to create the settings for
+        """
         if user == '' or user is None:
             return
         
@@ -50,7 +74,9 @@ class ConfigManager():
                 new.write(f.read())
     
     def load_settings(self):
-  
+        """
+        Load the settings
+        """
         self.controls_settings      =   {key: self.convert_value(value) for key, value in self.parser['CONTROLS_SETTINGS'].items()}
         self.custom_keybindings     =   {key: self.convert_value(value) for key, value in self.parser['CUSTOM_KEYBINDINGS'].items()}
         self.handling_settings      =   {key: self.convert_value(value) for key, value in self.parser['HANDLING_SETTINGS'].items()}
@@ -66,6 +92,12 @@ class ConfigManager():
         print(self.video_settings)
     
     def convert_value(self, value):
+        """
+        Convert the value to the correct type
+        
+        args:
+            value (str): the value to convert
+        """
         if value in ['True', 'False']:
             return value == 'True'
         try:
@@ -74,6 +106,12 @@ class ConfigManager():
             return value
 
     def export_user_settings(self, user):
+        """
+        Export the user settings
+        
+        args:
+            user (str): the user to export the settings for
+        """
         self.user = user
     
         if not self.in_export_window:
@@ -81,6 +119,9 @@ class ConfigManager():
             self.WorkerManager.add_task(self.save_file)
                 
     def save_file(self):
+        """
+        Save the settings to a configuration file
+        """
         cfg = f'@{self.user}.cfg'
         
         root = tk.Tk()

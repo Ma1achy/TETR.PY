@@ -6,7 +6,7 @@ class Timing():
     
     exited = False
     restarts = 0
-    restart_interval = 10
+    restart_interval = 0.5
     last_restart_time: float = 0
     
     target_FPS: int = 144

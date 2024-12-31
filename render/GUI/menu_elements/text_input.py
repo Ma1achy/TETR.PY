@@ -53,6 +53,9 @@ class TextInput():
                 self.validator = lambda input: len(input) <= self.max_chars and re.match(r'^[A-Z0-9-_]*$', input.upper()) is not None
           
     def init(self, surface):
+        """
+        Initialise the text input field
+        """
         self.surface = surface  
         self.manager = TextInputManager(validator = self.validator, force_caps = self.force_caps)
         self.textinput = TextInputVisualizer(self.manager, self.font, font_color = self.font_colour, cursor_color = self.cursor_colour)
@@ -61,6 +64,9 @@ class TextInput():
         self.textinput.cursor_width = 2
         
     def update(self):
+        """
+        Update the text input field
+        """
         if self.focused:
             self.__handle_events()
         
@@ -70,6 +76,9 @@ class TextInput():
         self.surface.blit(self.textinput.surface, (10, 10))
         
     def __handle_events(self):
+        """
+        Handle the events for the text input field
+        """
         self.dequeue_events()
         self.textinput.update(self.events)
         
@@ -80,6 +89,9 @@ class TextInput():
         self.events = []
     
     def get_value(self):
+        """
+        Get the value of the text within the input field
+        """
         value = self.manager.value
         
         match self.allowed_input:
@@ -91,6 +103,9 @@ class TextInput():
                 return value
 
     def dequeue_events(self):
+        """
+        Dequeue the events from the pygame events queue
+        """
         for event in self.pygame_events_queue:
             self.events.append(event)
             self.events_to_remove.append(event)
@@ -101,6 +116,9 @@ class TextInput():
         self.events_to_remove = []
     
     def call_function(self):
+        """
+        Call the function with the value of the text input field
+        """
         if self.function is None:
             return
         

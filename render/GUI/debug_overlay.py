@@ -4,8 +4,17 @@ from render.GUI.font import Font
 import pygame
 
 class GUIDebug():
-    def __init__(self, Timing, RenderStruct, DebugStruct: DebugMetrics):
+    def __init__(self, window, Timing, RenderStruct, DebugStruct: DebugMetrics):
+        """
+        A debug visor that displays debug information
         
+        args:
+            window (pygame.Surface): The window to draw the debug menu onto
+            Timing (Timing): The Timing object
+            RenderStruct (RenderStruct): The RenderStruct object
+            DebugStruct (DebugMetrics): The DebugMetrics object
+        """
+        self.window = window
         self.Timing = Timing
         self.RenderStruct = RenderStruct
         self.DebugStruct = DebugStruct
@@ -31,7 +40,7 @@ class GUIDebug():
         self.polling_surface = pygame.Surface((self.polling_rect.width, self.polling_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
         self.mem_surface = pygame.Surface((self.mem_rect.width, self.mem_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
         
-    def draw(self, surface):
+    def draw(self):
         """
         Draw the debug menu onto a surface
         
@@ -56,7 +65,7 @@ class GUIDebug():
         self.debug_surface.blit(self.polling_surface, self.polling_rect.topleft)
         self.debug_surface.blit(self.mem_surface, self.mem_rect.topleft)
         
-        surface.blit(self.debug_surface, (self.padding_x, self.padding_y))
+        self.window.blit(self.debug_surface, (self.padding_x, self.padding_y))
     
     def __draw_debug_menu(self):
         """
@@ -72,7 +81,9 @@ class GUIDebug():
         self.draw_build_info()
     
     def draw_build_info(self):
-        
+        """
+        Draw the build information
+        """
         x = 10
         
         self.font_cr_medium.draw(
@@ -164,6 +175,9 @@ class GUIDebug():
         
     
     def draw_fps_debug(self):
+        """
+        Draw the FPS debug information
+        """
         x = 10
         y = 10 
         
@@ -210,6 +224,9 @@ class GUIDebug():
         )
 
     def draw_tps_debug(self):
+        """
+        Draw the TPS debug information
+        """
         x = 10
         y = 10
         
@@ -257,7 +274,9 @@ class GUIDebug():
 
        
     def draw_polling_debug(self):
-        
+        """
+        Draw the polling debug information
+        """
         x = 10
         y = 10
         
@@ -307,7 +326,9 @@ class GUIDebug():
         y += self.font_pfw_small.height
     
     def draw_mem_debug(self):
-        
+        """
+        Draw the memory debug information
+        """
         x = 10
         y = 0
         
@@ -372,6 +393,12 @@ class GUIDebug():
             y,
         )
     
+    def update(self):
+        """
+        Update the debug menu
+        """
+        self.draw()
+        
     def handle_window_resize(self):
         pass
         

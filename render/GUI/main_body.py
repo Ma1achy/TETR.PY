@@ -14,7 +14,17 @@ from render.GUI.menu_elements.nested_element import NestedElement
 class MainBody(NestedElement):
     def __init__(self, Mouse, Timing, rect, button_functions, definition, parent):
         super().__init__(parent)
+        """
+        The main body of the menu
         
+        args:
+            Mouse (Mouse): the Mouse object
+            Timing (Timing): the Timing object
+            rect (pygame.Rect): the rect of the main body
+            button_functions (dict): the functions of the buttons
+            definition (dict): the definition of the main body
+            parent (Object): the parent UI element
+        """
         self.Mouse = Mouse
         self.Timing = Timing
         
@@ -40,18 +50,30 @@ class MainBody(NestedElement):
         self.render()
     
     def get_local_position(self):
+        """
+        Get the position of the panel relative to the container it is in for collision detection.
+        """
         return self.rect.topleft
     
     def __get_rect_and_surface(self):
+        """
+        Get the rects and surfaces for the panel
+        """
         self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
 
     def __init_elements(self):
+        """
+        Initialize the elements of the panel
+        """
         self.menu_elements = []
         self.__init_menu_elements()
         self.__init_back_button()
         self.__init_logo()
     
     def __init_menu_elements(self):
+        """
+        Initialize the elements of the menu
+        """
         if 'menu' not in self.definition:
             return
         
@@ -99,6 +121,9 @@ class MainBody(NestedElement):
             self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable)
                         
     def __init_back_button(self):
+        """
+        Initialize the back button
+        """
         if 'back_button' not in self.definition:
             return
         
@@ -106,23 +131,35 @@ class MainBody(NestedElement):
         self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'], parent = self)
     
     def __init_logo(self):
+        """
+        Initialize the logo
+        """
         if 'logo' not in self.definition:
             return
         
         self.logo = Logo(self.body_surface.get_rect(), self.definition['logo'])
  
     def render(self):
+        """
+        Render the panel
+        """
         self.render_logo()
         self.render_menu()
         self.render_back_button()
         
     def render_logo(self):
+        """
+        Render the logo
+        """
         if 'logo' not in self.definition:
             return
     
         self.logo.draw(self.body_surface)
     
     def render_menu(self):    
+        """
+        Render the menu
+        """
         if 'menu' not in self.definition:
             return
         
@@ -130,12 +167,18 @@ class MainBody(NestedElement):
             element.draw()
     
     def render_back_button(self):
+        """
+        Render the back button
+        """
         if 'back_button' not in self.definition:
             return
         
         self.back_button.draw()
     
     def draw_background(self):
+        """
+        Draw the background of the panel
+        """
         if 'background' not in self.definition:
             return
         
@@ -144,18 +187,32 @@ class MainBody(NestedElement):
         elif self.definition['background']['style'] == 'solid':
             draw_solid_colour(self.body_surface, self.definition['background']['colour'], self.body_surface.get_rect())
                 
-    def draw(self, surface): 
+    def draw(self, surface):
+        """
+        Draw the panel
+        
+        args:
+            surface: Surface to draw the panel on
+        """
         surface.blit(self.body_surface, self.rect.topleft)
         self.body_surface.fill((0, 0, 0, 0))
         self.draw_background()
        
     def handle_window_resize(self):
+        """
+        Handle the window being resized
+        """
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()
 
     def __handle_mouse_scroll(self, in_dialog):
+        """
+        Handle the mouse scroll event
         
+        args:
+            in_dialog (bool): Whether the panel is in a dialog
+        """
         if not self.scrollable:
             return
         
@@ -176,6 +233,13 @@ class MainBody(NestedElement):
             self.Mouse.events.queue.remove(event)
     
     def do_scroll(self, info, in_dialog):
+        """
+        Do the mouse scroll event
+        
+        args:
+            info (dict): The information about the scroll event
+            in_dialog (bool): Whether the panel is in a dialog
+        """
         if in_dialog:
             return
             
@@ -193,6 +257,9 @@ class MainBody(NestedElement):
         self.scroll_y += (dir) * (self.scroll_speed)
         
     def end_scroll(self, events_to_remove):
+        """
+        End the mouse scroll event
+        """
         if len(events_to_remove) != 0:
             return
         
@@ -205,6 +272,9 @@ class MainBody(NestedElement):
         self.scroll_speed = smoothstep_interpolate(self.scroll_speed, 10, (1 - progress))
     
     def __update_scroll_position(self):
+        """
+        Update the scroll position
+        """
         if not self.scrollable:
             self.scroll_y = 0  # Reset scroll position if not scrollable
             return
@@ -216,7 +286,12 @@ class MainBody(NestedElement):
             self.scroll_y = -self.y_diff - 35  # Clamp scroll position to valid range
 
     def update(self, in_dialog):
+        """
+        Update the panel
         
+        args:
+            in_dialog (bool): Whether the panel is in a dialog
+        """
         self.__update_scroll_position()
         self.__update_y_positions()
         self.__handle_mouse_scroll(in_dialog)
@@ -226,7 +301,9 @@ class MainBody(NestedElement):
         self.__update_scroll_bar(in_dialog)
     
     def __update_y_positions(self):
-        
+        """
+        Update the y positions of the elements
+        """
         self.old_content_height = self.content_height
         y = 35  # Initialize y outside the loop
         for element in self.menu_elements:
@@ -269,32 +346,55 @@ class MainBody(NestedElement):
             self.scroll_bar = None
             
     def __update_menu(self, in_dialog):
+        """
+        Update the menu elements
+        
+        args:
+            in_dialog (bool): Whether the panel is in a dialog
+        """
         if 'menu' not in self.definition:
             return
         
-        for element in self.menu_elements: # only update elements that are visible
-            #if element.y_position + self.scroll_y + element.height >= 0 and element.y_position  + self.scroll_y - element.height < self.rect.height:
+        for element in self.menu_elements: 
             element.update(in_dialog)
             
     def __update_back_button(self, in_dialog):
+        """
+        Update the back button
+        
+        args:
+            in_dialog (bool): Whether the panel is in a dialog
+        """
         if 'back_button' not in self.definition:
             return
         
         self.back_button.update(in_dialog)
 
     def __update_logo(self):
+        """
+        Update the logo
+        """
         if 'logo' not in self.definition:
             return
 
         self.logo.draw(self.body_surface)
     
     def __update_scroll_bar(self, in_dialog):
+        """
+        Update the scroll bar
+        
+        args:
+            in_dialog (bool): Whether the panel is in a dialog
+        """
         if self.scroll_bar is None:
             return
         
         self.scroll_bar.update(self.scroll_y, in_dialog)
 
     def reset_buttons(self):
+        """
+        Reset the buttons
+        """
         if 'menu' in self.definition:
             for element in self.menu_elements:
                 element.reset_state()
@@ -303,6 +403,12 @@ class MainBody(NestedElement):
             self.back_button.reset_state()
     
     def do_menu_enter_transition_animation(self, animate_back_button):
+        """
+        Start the menu enter transition animation
+        
+        args:
+            animate_back_button (bool): Whether to animate the back button
+        """
         if 'menu' in self.definition:
             for element in self.menu_elements:
                 element.do_menu_enter_transition_animation()
@@ -311,6 +417,12 @@ class MainBody(NestedElement):
             self.back_button.do_menu_enter_transition_animation()
           
     def do_menu_leave_transition_animation(self, animate_back_button):
+        """
+        Start the menu leave transition animation
+        
+        args:
+            animate_back_button (bool): Whether to animate the back button
+        """
         if 'menu' in self.definition:
             for element in self.menu_elements:
                 element.do_menu_leave_transition_animation()

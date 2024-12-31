@@ -13,11 +13,28 @@ from app.input.mouse.mouse import MouseEvents
 class DialogBox(NestedElement):
     def __init__(self, Timing, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width, TextEntry = None):
         super().__init__(parent = None)
+        """
+        A dialog box that can be used for any purpose
         
+        args:
+            Timing (Timing): the Timing object
+            window (pygame.Surface): the window to draw the dialog box on
+            Mouse (Mouse): the Mouse object
+            RenderStruct (RenderStruct): the RenderStruct object
+            title (str): the title of the dialog box
+            message (str): the message of the dialog box
+            buttons (list): the buttons to display on the dialog box
+            funcs (list): the functions to call when the buttons are pressed
+            click_off_dissmiss (bool): whether the dialog box can be dismissed by clicking off it
+            width (int): the width of the dialog box
+            TextEntry (TextEntry): the text entry box to display on the dialog box
+        """
         self.Timing = Timing
         self.window = window
+        
         self.title = title
         self.message = message
+        
         self.buttons = buttons
         self.num_buttons = len(buttons)
 
@@ -69,9 +86,15 @@ class DialogBox(NestedElement):
         self.render()
 
     def get_local_position(self):
+        """
+        Get the local position of the dialog box
+        """
         return self.dialog_rect.topleft
     
     def __validate_size(self):
+        """
+        Validate the size of the dialog box and adjust it if necessary when wrapping text
+        """
         self.is_validating_size = True
         self.height = 0
         self.width += 400
@@ -80,10 +103,24 @@ class DialogBox(NestedElement):
         self.is_validating_size = False
         
     def __strip_tags(self, text):
+        """
+        Strip colour tags from the text
+        
+        args:
+            text (str): The text to strip the tags from
+        """
         tag_pattern = r"\[colour=#[0-9A-Fa-f]{6}\]|\[\/colour\]"
         return re.sub(tag_pattern, "", text)
 
     def __wrap_text(self, text, font, max_width):
+        """	
+        Wrap text to fit inside a given width
+        
+        args:
+            text (str): The text to wrap
+            font (pygame.font.Font): The font to use
+            max_width (int): The maximum width of the text
+        """
         if text is None:
             return
         
@@ -93,10 +130,12 @@ class DialogBox(NestedElement):
 
         for word in words:
             stripped_word = self.__strip_tags(current_line + word)
+            
             if font.size(stripped_word.strip())[0] > max_width:
+                
                 if font.size(word.strip())[0] > max_width:
-                    # Split the word if it's too long
-                    while font.size(word.strip())[0] > max_width:
+                    
+                    while font.size(word.strip())[0] > max_width:  # Split the word if it's too long
                         for i in range(1, len(word) + 1):
                             if font.size(word[:i].strip())[0] > max_width - font.size(current_line.strip())[0]:
             
@@ -104,10 +143,10 @@ class DialogBox(NestedElement):
                                 word = word[i-1:]
                                 current_line = ""
                                 break
+                            
                     current_line += word
                 else:
-                    # Add the current line to lines and start a new line with the word
-                    lines.append(current_line.strip())
+                    lines.append(current_line.strip())   # Add the current line to lines and start a new line with the word
                     current_line = word
             else:
                 current_line += word
@@ -118,7 +157,9 @@ class DialogBox(NestedElement):
         return lines
 
     def __get_height(self):
-        
+        """
+        Get the height of the dialog box
+        """
         self.height += 50
         
         if self.title:
@@ -140,10 +181,16 @@ class DialogBox(NestedElement):
                 self.__validate_size()
           
     def __get_rect_and_surface(self):
+        """
+        Get the rect and surface for the dialog box
+        """
         self.dialog_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)
         self.dialog_surface = pygame.Surface((self.dialog_rect.width, self.dialog_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
     
     def render(self):
+        """
+        Render the dialog box
+        """
         pygame.draw.rect(self.dialog_surface, hex_to_rgb('#fffffffff'), (0, 0, self.width, self.height), border_radius = self.border_radius)
         pygame.draw.rect(self.dialog_surface, hex_to_rgb('#CCCCCC'), self.button_container, border_bottom_left_radius = self.border_radius, border_bottom_right_radius = self.border_radius)
         
@@ -195,12 +242,18 @@ class DialogBox(NestedElement):
             self.secondary_button.draw()
         
     def draw(self):
+        """
+        Draw the dialog box
+        """
         if self.do_animate_appear or self.do_animate_disappear:
             return
         
         self.window.blit(self.dialog_surface, self.dialog_rect)
             
     def update(self):
+        """
+        Update the dialog box
+        """
         self.__update_click_off_buttons()
         if self.primary_button is not None:
             self.primary_button.update()
@@ -216,6 +269,9 @@ class DialogBox(NestedElement):
         self.draw()
     
     def __update_click_off_buttons(self):
+        """
+        Update the click off buttons
+        """
         if not self.click_off_dissmiss:
             return
         
@@ -225,7 +281,9 @@ class DialogBox(NestedElement):
         self.invisible_button4.update()
             
     def __create_buttons(self):
-        
+        """
+        Create the buttons for the dialog box
+        """
         if self.num_buttons == 1:
             self.button_width = self.dialog_rect.width - self.x_padding * 2
             self.button_height = self.button_height - self.y_padding * 2
@@ -243,6 +301,9 @@ class DialogBox(NestedElement):
             self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self)
     
     def __create_text_entry(self):
+        """
+        Create the text entry box for the dialog box
+        """
         if self.TextEntry is None:
             return
         
@@ -251,6 +312,9 @@ class DialogBox(NestedElement):
         self.text_entry_box = DialogTextEntryBox(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.text_entry_box, function = function, width = self.dialog_rect.width - 2 * self.x_padding, height = self.text_entry_height, colour = '#222222', text_colour = '#eeeeee', style = None, container = self.text_entry_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, TextEntry = self.TextEntry)
         
     def __get_click_off_buttons(self):
+        """
+        Get the click off buttons for the dialog box
+        """
         if not self.click_off_dissmiss:
             return
         
@@ -260,11 +324,18 @@ class DialogBox(NestedElement):
         self.invisible_button4 = InvisibleButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.dialog_rect.right, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None)
     
     def handle_window_resize(self):
+        """
+        Handle the window resize
+        """
         self.__resize_dialog_box()
         self.__resize_click_off_buttons()
     
     def __resize_dialog_box(self):
+        """
+        Resize the dialog box
+        """
         self.dialog_rect.topleft = (self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2)
+        
         if self.primary_button is not None:
             self.primary_button.offset = (self.dialog_rect.left, self.dialog_rect.top)
         
@@ -272,9 +343,15 @@ class DialogBox(NestedElement):
             self.secondary_button.offset = (self.dialog_rect.left, self.dialog_rect.top)
         
     def __resize_click_off_buttons(self):
+        """
+        Resize the click off buttons
+        """
         self.__get_click_off_buttons()
     
-    def reset_buttons(self):
+    def reset_state(self):
+        """
+        Reset the state of the dialog box
+        """
         if self.primary_button is not None:
             self.primary_button.reset_state()
         
@@ -291,6 +368,9 @@ class DialogBox(NestedElement):
             self.text_entry_box.reset_state()
     
     def animate_appear(self):
+        """
+        Animate the dialog box appearing
+        """
         if not self.do_animate_appear:
             return
         
@@ -308,7 +388,9 @@ class DialogBox(NestedElement):
         self.window.blit(self.animation_surface[0], self.animation_surface[1].topleft)
     
     def animate_disappear(self):
-     
+        """
+        Animate the dialog box disappearing
+        """
         if not self.do_animate_disappear:
             return
     
@@ -326,6 +408,9 @@ class DialogBox(NestedElement):
         self.window.blit(self.animation_surface[0], self.animation_surface[1].topleft)
             
     def close(self):
+        """
+        Close the dialog box
+        """
         self.do_animate_disappear = True
         self.timer = 0
 
@@ -354,13 +439,22 @@ class DialogTextEntryBox(Button):
         self.TextEntry.init(self.button_surface)
     
     def render(self):
+        """
+        Render the text entry box
+        """
         pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)
        
     def __get_rect_and_surface(self):
+        """
+        Get the rect and surface for the text entry box
+        """
         self.__get_alignment(self.alignment)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA | pygame.HWSURFACE)
     
     def __get_alignment(self, alignment):
+        """
+        Align the text entry box within the container
+        """
         if alignment == 'left':
             self.rect = align_left_edge(self.container, self.width, self.height, self.x_padding, self.y_padding)
         elif alignment == 'right':
@@ -369,6 +463,9 @@ class DialogTextEntryBox(Button):
             self.rect = align_centre(self.container, self.width, self.height, self.x_padding, self.y_padding)
     
     def check_events(self):
+        """
+        Check the events for the text entry box
+        """
         events_to_remove = []
         
         for event in self.Mouse.events.queue:
@@ -399,21 +496,32 @@ class DialogTextEntryBox(Button):
             self.Mouse.events.queue.remove(event)
             
     def click(self):
+        """
+        Click the text entry box
+        """
         super().click()
         self.focused = True
         
     def update(self):
+        """
+        Update the text entry box
+        """
         self.__update_text_entry()
         super().update()
     
     def __update_text_entry(self):
-        
+        """
+        Update the text entry
+        """
         self.__draw_background()
         
         self.TextEntry.focused = self.focused
         self.TextEntry.update()
         
     def __draw_background(self):
+        """
+        Draw the background of the text entry box
+        """
         if self.focused:
             pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)
             pygame.draw.rect(self.button_surface, hex_to_rgb('#E59700'), (0, 0, self.width, self.height), width = 3, border_radius = self.border_radius) 
@@ -421,6 +529,9 @@ class DialogTextEntryBox(Button):
             pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)          
     
     def reset_state(self):
+        """
+        Reset the state of the text entry box
+        """
         self.focused = False
         super().reset_state()
            

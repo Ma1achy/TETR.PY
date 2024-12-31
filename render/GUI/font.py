@@ -43,7 +43,18 @@ class Font():
         self.height = self.font.get_height()
   
     def draw(self, surface, text, colour, alignment, h_padding = 0, v_padding = 0, draw_background = None):
+        """
+        Draw the text on the surface
         
+        args:
+            surface (pygame.Surface): The surface to draw the text on
+            text (str): The text to draw
+            colour (str): The colour of the text
+            alignment (str): The alignment of the text
+            h_padding (int): The horizontal padding of the text
+            v_padding (int): The vertical padding of the text
+            draw_background (str): The colour of the background
+        """
         self.__get_padding(h_padding, v_padding)        
         self.render_text(text, colour)
         self.get_alignment(alignment, surface)
@@ -53,13 +64,30 @@ class Font():
         surface.blit(self.rendered_text, self.text_rect)
     
     def __get_padding(self, h_padding, v_padding):
+        """
+        Get the padding for the text
+        """
         self.h_padding = h_padding
         self.v_padding = v_padding
         
     def render_text(self, text, colour):
+        """
+        Render the text
+
+        args:
+            text (str): The text to render
+            colour (str): The colour of the text
+        """
         self.rendered_text = self.font.render(text, True, hex_to_rgb(colour))
         
     def get_alignment(self, alignment, surface):
+        """
+        Get the alignment of the text
+        
+        args:
+            alignment (str): The alignment of the text
+            surface (pygame.Surface): The surface to draw the text on
+        """
         match alignment:
             case 'center':
                 self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
@@ -83,7 +111,7 @@ class Font():
             case 'right_top':
                 self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() - self.rendered_text.get_width(), (self.font.get_ascent()//2)))
                 self.h_padding = -self.h_padding
-            case'left_bottom':
+            case 'left_bottom':
                 self.text_rect = self.rendered_text.get_rect(topleft = (0, (surface.get_height() - self.font.get_height())))
                 self.v_padding = -self.v_padding
             case 'right_bottom':
@@ -94,10 +122,21 @@ class Font():
                 self.text_rect = self.rendered_text.get_rect(topleft = (surface.get_width() // 2 - self.rendered_text.get_width() // 2, (surface.get_height() //2 - self.font.get_ascent()//2)))
                 
     def __apply_padding(self):
+        """
+        Apply the padding to the text
+        """
         self.text_rect.x += self.h_padding
         self.text_rect.y += self.v_padding
     
     def __draw_background(self, surface, colour, draw_background = None):
+        """
+        Draw the background of the text
+        
+        args:
+            surface (pygame.Surface): The surface to draw the text on
+            colour (str): The colour of the text
+            draw_background (str): The colour of the background
+        """
         if not draw_background:
             return
         
@@ -106,9 +145,15 @@ class Font():
         surface.blit(self.background_surface, self.text_rect.topleft)
         
     def get_width(self):
+        """
+        Get the width of the rendered text
+        """
         return self.rendered_text.get_width()
 
     def __apply_styles(self):
+        """
+        Apply the styles to the font
+        """
         for style in self.styles:
             if style == 'bold':
                 self.font.set_bold(True)

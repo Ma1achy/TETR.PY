@@ -1,5 +1,5 @@
 import pygame
-from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha, hex_to_rgb, brightness, brightness_maintain_alpha
+from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha, hex_to_rgb, brightness_maintain_alpha
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
@@ -7,31 +7,42 @@ from render.GUI.buttons.generic_button import GenericButton
 class CollapsiblePanelHeader(Button):
     def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent):
         super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent)
+        """
+        A button that can be clicked to open or close a collapsible panel
         
+        args:
+            Timing (Timing): the Timing object
+            Mouse (Mouse): the Mouse object
+            surface (pygame.Surface): the surface to draw the button on
+            container (pygame.Rect): the container the button is in
+            definition (dict): the definition of the button
+            y_position (int): the y position of the button
+            parent (Object): the parent UI element
+        """
         self.Timing = Timing
-
         self.Mouse = Mouse
+        
         self.surface = surface
         self.container = container
         self.definition = definition
-        self.y_position = y_position
+        
+        self.open = False
+        self.elements = None
         
         self.height = 75
         self.width = self.container.width - self.container.width // 3
+        
         self.x_position = self.container.width // 6
-        
-        self.open = False
-        
+         
         self.default_x_position = self.container.width // 6
         self.hovered_x_position = self.x_position
         self.pressed_x_position = self.x_position
 
-        self.shadow_radius = 5
+        self.y_position = y_position
         
         self.main_font = Font('d_din_bold', 45)
+        self.shadow_radius = 5
         
-        self.elements = []
-    
         self.__get_rect_and_surface()
         self.get_overlays()
         self.render()
@@ -42,8 +53,13 @@ class CollapsiblePanelHeader(Button):
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
     
     def __init_elements(self):
+        """
+        Initialise the elements of the button
+        """
         if 'elements' not in self.definition:
             return
+        
+        self.elements = []
         
         for element in self.definition['elements']:
             if element['type'] == 'generic_button':
@@ -51,12 +67,18 @@ class CollapsiblePanelHeader(Button):
                 self.elements.append(GenericButton(self.Timing, self.Mouse, self.open_button_surface, self.button_surface.get_rect(), element, function, self))
     
     def render(self):
+        """
+        Render the button and its shadow
+        """
         self.render_shadow()
         self.render_panel(self.button_surface)
         self.render_button(self.button_surface, self.definition["button"]["closed_colour"])
         self.render_text(self.button_surface)
     
     def __get_rect_and_surface(self):
+        """
+        Get the rects and surfaces for the button
+        """
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
@@ -69,22 +91,37 @@ class CollapsiblePanelHeader(Button):
         self.arrow_rect = pygame.Rect(padd//2 + 11, padd//2, width, height)
         
     def render_button(self, surface, colour):
+        """
+        Render the button
+        """
         pygame.draw.rect(surface, hex_to_rgb(colour), self.arrow_rect, border_radius=5)
         
     def render_panel(self, surface):
+        """
+        Render the panel
+        """
         draw_solid_colour(surface, self.definition['background']['colour'], surface.get_rect())
         draw_border(surface, self.definition['border'], surface.get_rect())
         
     def render_shadow(self):
+        """
+        Render the shadow of the panel
+        """
         pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rect.width - 4 * self.shadow_radius, self.shadow_rect.height - 4 * self.shadow_radius))
         self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
         pygame.draw.rect(self.shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.width, self.height))
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
          
     def render_text(self, surface):
+        """
+        Render the text of the button
+        """
         self.main_font.draw(surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 86, -3)
     
     def get_state_overlays(self):
+        """
+        Switch the hover and pressed overlays for the button based on its state
+        """
         if self.open:
             self.button_surface = self.open_button_surface
             self.hover_surface = self.open_hover_surface
@@ -95,13 +132,18 @@ class CollapsiblePanelHeader(Button):
             self.pressed_surface = self.closed_pressed_surface
             
     def get_overlays(self):
+        """
+        Get the hover and pressed overlays for the button
+        """
         if self.style is None:
             return
         
         self.__get_lighten_overlay()
         
     def __get_lighten_overlay(self):
-       
+        """
+        Get the hover and pressed overlays for the button for its open and closed states
+        """
         self.closed_hover_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.draw_closed_state(self.closed_hover_surface)
         brightness_maintain_alpha(self.closed_hover_surface, 1.5)
@@ -139,23 +181,34 @@ class CollapsiblePanelHeader(Button):
         self.open_pressed_surface = self.temp_surface
         
     def __render_states(self):
-        
+        """
+        Render the open and closed states of the button
+        """
         self.open_button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.__render_open_state()
         self.closed_button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.__get_closed_state()
         
     def __render_open_state(self):
+        """
+        Render the open state of the button
+        """
         self.render_panel(self.open_button_surface)
         self.render_button(self.open_button_surface, self.definition["button"]["open_colour"])
         self.draw_open_state(self.open_button_surface)
     
     def __get_closed_state(self):
+        """
+        Render the closed state of the button
+        """
         self.render_panel(self.closed_button_surface)
         self.render_button(self.closed_button_surface, self.definition["button"]["closed_colour"])
         self.draw_closed_state(self.closed_button_surface)
         
     def click(self):
+        """
+        Handle the click event for the button
+        """
         self.open = not self.open
         self.get_state_overlays()
         if self.function is None:
@@ -163,7 +216,9 @@ class CollapsiblePanelHeader(Button):
         self.function()
           
     def draw_open_state(self, surface):
-    
+        """
+        Draw the open state of the button
+        """
         self.render_text(surface)
         pygame.draw.polygon(
             surface, 
@@ -176,7 +231,9 @@ class CollapsiblePanelHeader(Button):
         )
     
     def draw_closed_state(self, surface):
-      
+        """
+        Draw the closed state of the button
+        """
         self.render_text(surface)
         pygame.draw.polygon(
             surface, 
@@ -189,12 +246,20 @@ class CollapsiblePanelHeader(Button):
         )
     
     def update(self, in_dialog):
+        """
+        Update the button
+        """
         self.update_elements(in_dialog)
         super().update(in_dialog)
        
-       
     def update_elements(self, in_dialog):
+        """
+        Update the elements of the button
+        """
         if not self.open:
+            return
+        
+        if self.elements is None:
             return
         
         for element in self.elements:

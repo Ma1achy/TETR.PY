@@ -11,7 +11,7 @@ class Four():
         Create an instance of the game Four
         
         args:
-         (Core): The core instance of the game
+            (Core): The core instance of the game
             rotation_system (str): The rotation system to use
             
         methods:

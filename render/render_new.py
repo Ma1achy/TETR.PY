@@ -48,30 +48,7 @@ class Render():
         
         self.__toggle_fullscreen()
         self.window.blit(self.image, (0, 0))
-        self.darken_overlay_layer.fill((0, 0, 0, self.darken_overlay_layer_alpha))
-        self.window.blit(self.darken_overlay_layer, (0, 0))
-                    
-        self.MenuManager.current_menu.update(self.MenuManager.in_dialog)
-         
-        if self.MenuManager.debug_overlay:
-            self.MenuManager.GUI_debug.draw(self.window)
         
-        if not self.MenuManager.is_focused:
-            self.MenuManager.GUI_focus.draw(self.window)
-            
-        if self.MenuManager.in_dialog:
-
-            self.darken_overlay_layer.fill((0, 0, 0, self.MenuManager.darken_overlay_layer_alpha))
-
-                
-            self.window.blit(self.darken_overlay_layer, (0, 0))
-            self.MenuManager.current_dialog.update()
-        else:
-            self.darken_overlay_layer_alpha = 200
-            
-        self.MenuManager.copy_to_clipboard_animation()     
-        pygame.display.flip()
-    
     def __load_background_image(self):
         self.image = pygame.image.load(self.background_image_path).convert_alpha()
         self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
