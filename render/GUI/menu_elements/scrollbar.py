@@ -3,7 +3,7 @@ from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha
 from render.GUI.menu_elements.nested_element import NestedElement
 
 class ScrollBar(NestedElement):
-    def __init__(self, container, y_scroll, y_diff, scrollable):
+    def __init__(self, container, y_scroll, y_diff, scrollable, RENDER_SCALE):
         """
         A scrollbar for a scrollable area
         
@@ -14,17 +14,19 @@ class ScrollBar(NestedElement):
             scrollable (bool): whether the current menu is scrollable
         """
         super().__init__(parent = None)
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.container = container
         self.y_scroll = y_scroll 
         self.y_diff = y_diff  
         self.scrollable = scrollable  
 
-        self.width = 30
-        self.shadow_radius = 5
+        self.width = int(30 * self.RENDER_SCALE)
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
         self.height = container.get_rect().height
 
         self.get_rect_and_surface()
-        self.bar = Bar(self.rect, self.y_scroll, self.y_diff, self.scrollable)
+        self.bar = Bar(self.rect, self.y_scroll, self.y_diff, self.scrollable, self.RENDER_SCALE)
         self.render()
 
     def get_local_position(self):
@@ -53,7 +55,7 @@ class ScrollBar(NestedElement):
         Render the scrollbar container and its shadow
         """
         draw_solid_colour(self.surface, '#111111', self.surface.get_rect())
-        draw_border(self.surface, {'left': [2, '#1a1a1a']}, self.surface.get_rect())
+        draw_border(self.surface, {'left': [2, '#1a1a1a']}, self.surface.get_rect(), self.RENDER_SCALE)
         self.render_shadow()
         
     def render_shadow(self):
@@ -84,20 +86,23 @@ class ScrollBar(NestedElement):
         self.bar.update(y_scroll, self.container)
 
 class Bar():
-    def __init__(self, scrollbar_rect, y_scroll, y_diff, scrollable):
+    def __init__(self, scrollbar_rect, y_scroll, y_diff, scrollable, RENDER_SCALE = 1):
+        
+        self.RENDER_SCALE = RENDER_SCALE
         
         self.scrollbar_rect = scrollbar_rect
         self.y_scroll = y_scroll
         self.y_diff = y_diff
         self.scrollable = scrollable
 
-        self.width = scrollbar_rect.width - 12
-        self.min_height = 10
+        self.width = scrollbar_rect.width - int(12 * self.RENDER_SCALE)
+        self.min_height = int(10 * self.RENDER_SCALE)
+        
         self.height = self.calculate_height()
-        self.x = scrollbar_rect.x + 7
+        self.x = scrollbar_rect.x + int(7 * self.RENDER_SCALE)
         self.y = self.calculate_position()
 
-        self.shadow_radius = 2
+        self.shadow_radius = int(2 * self.RENDER_SCALE)
         
         self.get_rect_and_surface()
         self.render()
@@ -125,10 +130,10 @@ class Bar():
         """
         self.render_shadow()
         draw_solid_colour(self.surface, '#242424', self.surface.get_rect())
-        draw_border(self.surface, {'left': [2, '#3d3d3d']}, self.surface.get_rect())
-        draw_border(self.surface, {'right': [2, '#181818']}, self.surface.get_rect())
-        draw_border(self.surface, {'top': [2, '#3d3d3d']}, self.surface.get_rect())
-        draw_border(self.surface, {'bottom': [2, '#0e0e0e']}, self.surface.get_rect())
+        draw_border(self.surface, {'left': [2, '#3d3d3d']}, self.surface.get_rect(), self.RENDER_SCALE)
+        draw_border(self.surface, {'right': [2, '#181818']}, self.surface.get_rect(), self.RENDER_SCALE)
+        draw_border(self.surface, {'top': [2, '#3d3d3d']}, self.surface.get_rect(), self.RENDER_SCALE)
+        draw_border(self.surface, {'bottom': [2, '#0e0e0e']}, self.surface.get_rect(), self.RENDER_SCALE)
         
     def render_shadow(self):
         """

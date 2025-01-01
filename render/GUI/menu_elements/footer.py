@@ -4,7 +4,7 @@ from render.GUI.font import Font
 import math
 
 class Footer:
-    def __init__(self, container, height, definition, image = None):
+    def __init__(self, container, height, definition, image = None, RENDER_SCALE = 1):
         """
         A footer that can be used at the bottom of a menu
         
@@ -17,7 +17,8 @@ class Footer:
         self.container = container
         self.height = height
         self.definition = definition
-
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.border_image = None  
         self.get_footer_style()
         self.border_image_repeats = self.calculate_repeat()
@@ -26,10 +27,10 @@ class Footer:
         self.background = self.get_background()
         self.border = self.get_border()
 
-        self.font = Font('hun2', 30)
+        self.font = Font('hun2', int(30 * self.RENDER_SCALE))
         self.image = image
 
-        self.shadow_radius = 5
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
 
         self.__get_rect_and_surface()
         self.__load_image()
@@ -126,7 +127,7 @@ class Footer:
         if 'border' not in self.definition:
             return
         
-        draw_border(self.footer_surface, self.border, self.footer_surface.get_rect())
+        draw_border(self.footer_surface, self.border, self.footer_surface.get_rect(), self.RENDER_SCALE)
     
     def __render_text(self):
         """
@@ -135,7 +136,7 @@ class Footer:
         if 'text' not in self.definition:
             return
         
-        self.font.draw(self.footer_surface, self.text['display_text'], self.text['colour'], 'left', 20, 0)
+        self.font.draw(self.footer_surface, self.text['display_text'], self.text['colour'], 'left', int(20 * self.RENDER_SCALE), 0)
          
     def __render_image(self):
         """
@@ -145,13 +146,13 @@ class Footer:
             return
         
         aspect_ratio = self.image.get_width() / self.image.get_height()
-        new_height = self.height - 25
+        new_height = self.height - int(25 * self.RENDER_SCALE)
         new_width = int(new_height * aspect_ratio)
         
         image = pygame.transform.smoothscale(self.image, (new_width, new_height))
         image_rect = align_centre(self.footer_surface.get_rect(), image.get_width(), image.get_height(), 0, 0)
 
-        self.footer_surface.blit(image, (image_rect.left + self.footer_surface.get_rect().width//2 - new_width - 45, image_rect.top))
+        self.footer_surface.blit(image, (image_rect.left + self.footer_surface.get_rect().width // 2 - new_width - int(45 * self.RENDER_SCALE), image_rect.top))
     
     def __render_shadow(self):
         """

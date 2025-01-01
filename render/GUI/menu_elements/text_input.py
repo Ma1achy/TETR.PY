@@ -6,10 +6,12 @@ from app.input.keyboard.text_input_manager import TextInputManager
 from render.GUI.text_input_visualiser import TextInputVisualizer
 
 class TextInput():
-    def __init__(self, allowed_input = 'str', no_empty_input = True, max_chars = 32, force_caps = True, font_colour = '#000000', cursor_colour = '#000000', font_type = 'hun2.ttf', font_size = 30, pygame_events_queue = [], function = None):
+    def __init__(self, allowed_input = 'str', no_empty_input = True, max_chars = 32, force_caps = True, font_colour = '#000000', cursor_colour = '#000000', font_type = 'hun2.ttf', font_size = 30, pygame_events_queue = [], function = None, RENDER_SCALE = 1):
         """
         Utility class to quickly create a text input field that only accepts certain input and passes the input to a function when the user presses enter.
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         pygame.key.set_repeat(500, 33)
         
         self.function = function
@@ -21,7 +23,7 @@ class TextInput():
         self.cursor_colour = hex_to_rgb(cursor_colour)
         
         self.font_type = font_type
-        self.font_size = font_size
+        self.font_size = int(font_size * self.RENDER_SCALE)
         
         self.base_path = 'resources/font/'
         
@@ -61,7 +63,7 @@ class TextInput():
         self.textinput = TextInputVisualizer(self.manager, self.font, font_color = self.font_colour, cursor_color = self.cursor_colour)
         
         self.textinput.cursor_blink_interval = 500
-        self.textinput.cursor_width = 2
+        self.textinput.cursor_width = int(2 * self.RENDER_SCALE)
         
     def update(self):
         """
@@ -73,7 +75,7 @@ class TextInput():
         if not self.focused:
             self.textinput.cursor_visible = False
             
-        self.surface.blit(self.textinput.surface, (10, 10))
+        self.surface.blit(self.textinput.surface, (int(10 * self.RENDER_SCALE), int(10 * self.RENDER_SCALE)))
         
     def __handle_events(self):
         """

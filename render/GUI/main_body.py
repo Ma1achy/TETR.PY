@@ -12,7 +12,7 @@ from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.nested_element import NestedElement
 
 class MainBody(NestedElement):
-    def __init__(self, Mouse, Timing, rect, button_functions, definition, parent):
+    def __init__(self, Mouse, Timing, rect, button_functions, definition, parent, RENDER_SCALE = 1):
         super().__init__(parent)
         """
         The main body of the menu
@@ -27,6 +27,7 @@ class MainBody(NestedElement):
         """
         self.Mouse = Mouse
         self.Timing = Timing
+        self.RENDER_SCALE = RENDER_SCALE
         
         self.button_functions = button_functions
         self.definition = definition
@@ -59,6 +60,12 @@ class MainBody(NestedElement):
         """
         Get the rects and surfaces for the panel
         """
+        if self.rect.width <=0:
+            self.rect.width = 1
+            
+        if self.rect.height <= 0:
+            self.rect.height = 1
+            
         self.body_surface = pygame.Surface((self.rect.width, self.rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
 
     def __init_elements(self):
@@ -77,48 +84,48 @@ class MainBody(NestedElement):
         if 'menu' not in self.definition:
             return
         
-        y = 35
+        y = int(35 * self.RENDER_SCALE)
         
         for idx, element in enumerate(self.definition['menu']['elements']):
             if element['type'] == 'bar_button':
-                y += 10
+                y += int(10 * self.RENDER_SCALE)
                 func = self.button_functions[element['function']]
-                button = ButtonBarMain(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 120, parent = self)
+                button = ButtonBarMain(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = int(120 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 button.y_position = y
                 self.menu_elements.append(button)
-                y += button.height + 10
+                y += button.height + int(10 * self.RENDER_SCALE)
                 
             elif element['type'] == 'bar_button_sub':
-                y += 7
+                y += int(7 * self.RENDER_SCALE)
                 func = self.button_functions[element['function']] 
-                button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = 90, parent = self)
+                button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = int(90 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 button.y_position = y
                 self.menu_elements.append(button)
-                y += button.height + 7
+                y += button.height + int(7 * self.RENDER_SCALE)
                 
             elif element['type'] == 'collapsible_panel_header':
-                y += 7
-                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y, parent = self)
+                y += int(7 * self.RENDER_SCALE)
+                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.menu_elements.append(panel)
-                y += panel.height + 7
+                y += panel.height + int(7 * self.RENDER_SCALE)
             
             elif element['type'] == 'collapsible_panel':
        
-                panel = CollapsiblePanel(self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self)
+                panel = CollapsiblePanel(self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.menu_elements.append(panel)
                
             elif element['type'] == 'floating_text':
-                y += 3
-                text = FloatingText(self.Timing, self.body_surface, element['content'], y)
+                y += int(3 * self.RENDER_SCALE)
+                text = FloatingText(self.Timing, self.body_surface, element['content'], y, RENDER_SCALE = self.RENDER_SCALE)
                 self.menu_elements.append(text)
-                y += text.height + 3
+                y += text.height + int(3 * self.RENDER_SCALE)
         
         self.content_height = y
         self.y_diff = y - self.rect.height
         self.scrollable = self.y_diff > 0
 
         if self.scrollable:
-            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable)
+            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
                         
     def __init_back_button(self):
         """
@@ -128,7 +135,7 @@ class MainBody(NestedElement):
             return
         
         func = self.button_functions[self.definition['back_button']['function']]
-        self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'], parent = self)
+        self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'], parent = self, RENDER_SCALE = self.RENDER_SCALE)
     
     def __init_logo(self):
         """
@@ -137,7 +144,7 @@ class MainBody(NestedElement):
         if 'logo' not in self.definition:
             return
         
-        self.logo = Logo(self.body_surface.get_rect(), self.definition['logo'])
+        self.logo = Logo(self.body_surface.get_rect(), self.definition['logo'], self.RENDER_SCALE)
  
     def render(self):
         """
@@ -305,42 +312,42 @@ class MainBody(NestedElement):
         Update the y positions of the elements
         """
         self.old_content_height = self.content_height
-        y = 35  # Initialize y outside the loop
+        y = int(35 * self.RENDER_SCALE)  
         for element in self.menu_elements:
             element.scroll_y = self.scroll_y
             
             if isinstance(element, ButtonBarMain):
-                y += 10
+                y += int(10 * self.RENDER_SCALE)
                 element.y_position = y 
-                y += element.height + 10
+                y += element.height + int(10 * self.RENDER_SCALE)
             
             elif isinstance(element, ButtonBarSub):
-                y += 7
+                y += int(7 * self.RENDER_SCALE)
                 element.y_position = y
-                y += element.height + 7
+                y += element.height + int(7 * self.RENDER_SCALE)
             
             elif isinstance(element, CollapsiblePanelHeader):
-                y += 7
+                y += int(7 * self.RENDER_SCALE)
                 element.y_position = y 
-                y += element.height + 7
+                y += element.height + int(7 * self.RENDER_SCALE)
             
             elif isinstance(element, CollapsiblePanel):
                 if element.open:
-                    y -= 10
+                    y -= int(10 * self.RENDER_SCALE)
                     element.y_position = y
-                    y += element.height + 7
+                    y += element.height + int(7 * self.RENDER_SCALE)
             
             elif isinstance(element, FloatingText):
-                y += 3
+                y += int(3 * self.RENDER_SCALE)
                 element.y_position = y 
-                y += element.height + 3
+                y += element.height + int(3 * self.RENDER_SCALE)
              
         self.content_height = y
         self.y_diff = y - self.body_surface.get_rect().height
         self.scrollable = self.y_diff > 0 
 
         if self.old_content_height != self.content_height and self.scrollable:
-            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable)
+            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
         
         elif not self.scrollable:
             self.scroll_bar = None

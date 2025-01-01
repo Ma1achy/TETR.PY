@@ -3,7 +3,7 @@ import pygame
 from app.input.mouse.mouse import MouseEvents
 from render.GUI.menu_elements.nested_element import NestedElement
 class Button(NestedElement):
-    def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None):
+    def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None, RENDER_SCALE = 1):
         super().__init__(parent)
         """
         Base button class
@@ -20,6 +20,8 @@ class Button(NestedElement):
             maintain_alpha (bool): whether to maintain the alpha of the button
             slider (str): the direction the button slides in
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Timing = Timing
         self.surface = surface
         self.Mouse = Mouse
@@ -27,8 +29,8 @@ class Button(NestedElement):
         # button properties
         self.function = function
         self.container = container
-        self.width = width
-        self.height = height
+        self.width = int(width * self.RENDER_SCALE)
+        self.height = int(height * self.RENDER_SCALE)
         
         # styling
         self.style = style
@@ -58,7 +60,7 @@ class Button(NestedElement):
         # shadow
         self.shadow_surface = pygame.Surface((1, 1), pygame.HWSURFACE|pygame.SRCALPHA)
         self.shadow_rect = pygame.Rect(0, 0, 1, 1)
-        self.shadow_radius = 5
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
         
         # hover and pressed surface transition animation
         self.hover_surface_transition_time = 0.2

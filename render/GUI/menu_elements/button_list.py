@@ -4,7 +4,7 @@ from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.buttons.button_list_buttons import ButtonListButtons
 
 class ButtonList(NestedElement):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent):
+    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
         super().__init__(parent)
         """
         A list of buttons where only one can be active at a time
@@ -18,6 +18,8 @@ class ButtonList(NestedElement):
             y_position (int): the y position of the button list
             parent (Object): the parent UI element
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Timing = Timing
         self.Mouse = Mouse
         
@@ -27,16 +29,16 @@ class ButtonList(NestedElement):
         self.definition = definition
         self.themeing = self.definition['themeing']
         
-        self.title_font_size = 23
-        self.title_padding = self.title_font_size + 5
-        self.x_padding = 25
+        self.title_font_size = int(23 * self.RENDER_SCALE)
+        self.title_padding = self.title_font_size + int(5 * self.RENDER_SCALE)
+        self.x_padding = int(25 * self.RENDER_SCALE)
         self.y_padding = 0
         
         self.x_position = self.x_padding
         self.y_position = self.y_padding + y_position
 
         self.width = self.container.width - self.x_padding * 2
-        self.height = 65
+        self.height = int(65 * self.RENDER_SCALE)
         
         self.buttons = []
         
@@ -84,16 +86,16 @@ class ButtonList(NestedElement):
         """
         button_rect = self.get_button_rect(idx) 
         function = None
-        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.button_list_surface, button_rect, button, self.themeing, function, parent = self))     
+        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.button_list_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE))     
     
     def get_button_rect(self, idx):
         """
         Get the rect for a button in the button list.
         """
         num_buttons = len(self.definition['buttons'])
-        edge_padding = 15
-        inter_button_padding = 7
-        y_padd = 15
+        edge_padding = int(15 * self.RENDER_SCALE)
+        inter_button_padding = int(7 * self.RENDER_SCALE)
+        y_padd = int(15 * self.RENDER_SCALE)
         
         total_padding = edge_padding * 2 + inter_button_padding * (num_buttons - 1)
         button_width = (self.width - total_padding) // num_buttons
@@ -118,7 +120,7 @@ class ButtonList(NestedElement):
         if not self.title:
             return
         
-        self.title_font.draw(self.button_list_surface, self.title_text, self.themeing["title_colour"], 'left_top', 15, 0)
+        self.title_font.draw(self.button_list_surface, self.title_text, self.themeing["title_colour"], 'left_top', int(15 * self.RENDER_SCALE), 0)
         
     def render_background(self):
         """

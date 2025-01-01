@@ -2,7 +2,7 @@ import pygame
 from utils import load_image, align_bottom_left
 
 class Logo():
-    def __init__(self, container, definition):
+    def __init__(self, container, definition, RENDER_SCALE):
         """
         A logo element that can be displayed on the menu
         
@@ -10,6 +10,7 @@ class Logo():
             container (pygame.Rect): the container the logo is in
             definition (dict): the definition of the logo
         """
+        self.RENDER_SCALE = RENDER_SCALE
         self.container = container
         self.definition = definition
         self.width = self.container.width // 8.5
@@ -34,7 +35,7 @@ class Logo():
         Align the image in the container
         """
         if self.definition['alignment'] == 'bottom_left':
-            self.rect = align_bottom_left(self.container, self.image.get_width(), self.image.get_height(), self.definition['padding'][0], self.definition['padding'][1])
+            self.rect = align_bottom_left(self.container, self.image.get_width(), self.image.get_height(), int(self.definition['padding'][0] * self.RENDER_SCALE), int(self.definition['padding'][1] * self.RENDER_SCALE))
     
     def draw(self, surface):
         """

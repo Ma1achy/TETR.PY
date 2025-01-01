@@ -4,7 +4,7 @@ from render.GUI.menu_elements.button_list import ButtonList
 from render.GUI.menu_elements.nested_element import NestedElement
 
 class CollapsiblePanel(NestedElement):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, linked_header, parent):
+    def __init__(self, Timing, Mouse, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1):
         super().__init__(parent = parent)
         """
         A panel that can be collapsed and expanded
@@ -19,6 +19,8 @@ class CollapsiblePanel(NestedElement):
             linked_header (Object): the header that is linked to the panel
             parent (Object): the parent UI element
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Timing = Timing
         self.Mouse = Mouse
         self.surface = surface
@@ -34,9 +36,9 @@ class CollapsiblePanel(NestedElement):
         self.open = False
         
         self.width = self.container.width - self.container.width // 3
-        self.height = 200
+        self.height = int(200 * self.RENDER_SCALE)
         
-        self.shadow_radius = 5
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
         
         self.__get_height()
         self.__get_rect_and_surface()
@@ -82,11 +84,11 @@ class CollapsiblePanel(NestedElement):
         y = 0
         for element in self.definition['elements']:
             if element['type'] == "button_list":
-                button_list = ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self)
+                button_list = ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.elements.append(button_list)
                 y += button_list.height
         
-        y += 25
+        y += int(25 * self.RENDER_SCALE)
         return y   
       
     def render(self):
@@ -101,7 +103,7 @@ class CollapsiblePanel(NestedElement):
         Render the panel
         """
         draw_solid_colour(self.panel_surface, self.definition['background']['colour'], self.panel_surface.get_rect())
-        draw_border(self.panel_surface, self.definition['border'], self.panel_surface.get_rect())
+        draw_border(self.panel_surface, self.definition['border'], self.panel_surface.get_rect(), self.RENDER_SCALE)
     
     def render_shadow(self):
         """

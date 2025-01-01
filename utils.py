@@ -492,7 +492,7 @@ def draw_solid_colour(surface, colour, rect):
     """
     pygame.draw.rect(surface, hex_to_rgb(colour), rect)
 
-def draw_border(surface, border, rect):
+def draw_border(surface, border, rect, RENDER_SCALE = 1):
     """
     Draw a border around a rectangle
     
@@ -503,6 +503,8 @@ def draw_border(surface, border, rect):
     """
     for side, value in border.items():
         width, colour = value
+        width = int(width * RENDER_SCALE)
+        
         if side == 'top':
             pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.left, rect.top, rect.width, width))
         elif side == 'bottom':

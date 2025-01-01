@@ -5,8 +5,8 @@ from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
 
 class CollapsiblePanelHeader(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent):
-        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent)
+    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
+        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent, RENDER_SCALE = RENDER_SCALE)
         """
         A button that can be clicked to open or close a collapsible panel
         
@@ -19,6 +19,8 @@ class CollapsiblePanelHeader(Button):
             y_position (int): the y position of the button
             parent (Object): the parent UI element
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Timing = Timing
         self.Mouse = Mouse
         
@@ -29,7 +31,7 @@ class CollapsiblePanelHeader(Button):
         self.open = False
         self.elements = None
         
-        self.height = 75
+        self.height = int(75 * self.RENDER_SCALE)
         self.width = self.container.width - self.container.width // 3
         
         self.x_position = self.container.width // 6
@@ -40,8 +42,8 @@ class CollapsiblePanelHeader(Button):
 
         self.y_position = y_position
         
-        self.main_font = Font('d_din_bold', 45)
-        self.shadow_radius = 5
+        self.main_font = Font('d_din_bold', int(45 * self.RENDER_SCALE))
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
         
         self.__get_rect_and_surface()
         self.get_overlays()
@@ -64,7 +66,7 @@ class CollapsiblePanelHeader(Button):
         for element in self.definition['elements']:
             if element['type'] == 'generic_button':
                 function = None
-                self.elements.append(GenericButton(self.Timing, self.Mouse, self.open_button_surface, self.button_surface.get_rect(), element, function, self))
+                self.elements.append(GenericButton(self.Timing, self.Mouse, self.open_button_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE))
     
     def render(self):
         """
@@ -85,10 +87,10 @@ class CollapsiblePanelHeader(Button):
         self.shadow_rect = pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
 
-        padd = 25
+        padd = int(25 * self.RENDER_SCALE)
         height = self.height - padd
         width = height
-        self.arrow_rect = pygame.Rect(padd//2 + 11, padd//2, width, height)
+        self.arrow_rect = pygame.Rect(padd // 2 + int(11 * self.RENDER_SCALE), padd // 2, width, height)
         
     def render_button(self, surface, colour):
         """
@@ -101,7 +103,7 @@ class CollapsiblePanelHeader(Button):
         Render the panel
         """
         draw_solid_colour(surface, self.definition['background']['colour'], surface.get_rect())
-        draw_border(surface, self.definition['border'], surface.get_rect())
+        draw_border(surface, self.definition['border'], surface.get_rect(), self.RENDER_SCALE)
         
     def render_shadow(self):
         """
@@ -116,7 +118,7 @@ class CollapsiblePanelHeader(Button):
         """
         Render the text of the button
         """
-        self.main_font.draw(surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', 86, -3)
+        self.main_font.draw(surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'left', int(86 * self.RENDER_SCALE), int(- 3 * self.RENDER_SCALE)) 
     
     def get_state_overlays(self):
         """

@@ -81,7 +81,7 @@ class MenuManager():
             window (pygame.Surface): The window to draw the menus on
         """
         self.window = window
-        self.darken_overlay = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.darken_overlay = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
         self.darken_overlay.fill((0, 0, 0))
         
         self.GUI_debug = GUIDebug(self.window, self.Timing, self.RenderStruct, self.Debug)
@@ -109,7 +109,8 @@ class MenuManager():
                 font_type = 'hun2.ttf',
                 font_size = 25,
                 pygame_events_queue = self.pygame_events_queue,
-                function = self.login
+                function = self.login,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
             )
         )
         
@@ -139,20 +140,20 @@ class MenuManager():
             width = 500
         )
         
-        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/login_menu.json')
-        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
-        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
-        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/multi_menu.json')
-        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/records_menu.json')
-        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/about_menu.json')
-        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
-        
-        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/account_menu.json')
-        
-        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/40_lines_menu.json')
-        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/blitz_menu.json')
-        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/zen_menu.json')
-        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.button_functions, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
+        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/login_menu.json')
+        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
+        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
+        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/multi_menu.json')
+        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/records_menu.json')
+        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/config_menu.json')
+
+        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/account_menu.json')
+
+        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/40_lines_menu.json')
+        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/blitz_menu.json')
+        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/zen_menu.json')
+        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None

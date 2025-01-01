@@ -2,7 +2,7 @@ import pygame
 from render.GUI.font import Font
 from utils import smoothstep, smoothstep_interpolate
 class FloatingText():
-    def __init__(self, Timing, surface, definition, y_position):
+    def __init__(self, Timing, surface, definition, y_position, RENDER_SCALE = 1):
         """
         A text element that can floats on the page
         
@@ -12,6 +12,8 @@ class FloatingText():
             definition (dict): the definition of the text
             y_position (int): the y position of the text
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Timing = Timing
         self.surface = surface
         self.container = surface.get_rect()
@@ -21,9 +23,9 @@ class FloatingText():
         self.font_type = self.definition["font"]
         self.font_colour = self.definition["colour"]
         self.font_alpha = self.definition["alpha"]
-        self.font_size = self.definition["size"]
+        self.font_size = int(self.definition["size"] * self.RENDER_SCALE)
         self.alignment = self.definition["alignment"]
-        self.x_padding, self.y_padding = self.definition["padding"][0], self.definition["padding"][1]
+        self.x_padding, self.y_padding = int(self.definition["padding"][0] * self.RENDER_SCALE), int(self.definition["padding"][1] * self.RENDER_SCALE)
         self.display_text = self.definition["display_text"]
         
         self.main_font = Font(self.font_type, self.font_size)

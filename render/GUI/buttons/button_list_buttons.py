@@ -4,11 +4,13 @@ from render.GUI.font import Font
 import pygame
 
 class ButtonListButtons(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, themeing, function, parent):
-        super().__init__(Timing, surface, Mouse, function, container, container.width, container.height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent)
+    def __init__(self, Timing, Mouse, surface, container, definition, themeing, function, parent, RENDER_SCALE = 1):
+        super().__init__(Timing, surface, Mouse, function, container, container.width, container.height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
         """
         A list of buttons where only one can be active at a time
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Timing = Timing
         self.Mouse = Mouse
         
@@ -30,7 +32,7 @@ class ButtonListButtons(Button):
         self.active_themeing = self.themeing['active']
         
         self.y_position = container.top
-        self.font = Font('hun2', 23)
+        self.font = Font('hun2', int(23 * self.RENDER_SCALE))
         
         self.__get_rect_and_surface()
         self.render()
@@ -64,7 +66,7 @@ class ButtonListButtons(Button):
         Render the button in its inactive state
         """
         draw_solid_colour(self.inactive_surface, self.inactive_themeing['background']['colour'], self.inactive_surface.get_rect())
-        draw_border(self.inactive_surface, self.inactive_themeing['border'], self.inactive_surface.get_rect())
+        draw_border(self.inactive_surface, self.inactive_themeing['border'], self.inactive_surface.get_rect(), self.RENDER_SCALE)
         self.render_text(self.inactive_surface, self.inactive_themeing['text_colour'], self.display_text)
         
     def render_active_state(self):
@@ -72,7 +74,7 @@ class ButtonListButtons(Button):
         Render the button in its active state
         """
         draw_solid_colour(self.active_surface, self.active_themeing['background']['colour'], self.active_surface.get_rect())
-        draw_border(self.active_surface, self.active_themeing['border'], self.active_surface.get_rect())
+        draw_border(self.active_surface, self.active_themeing['border'], self.active_surface.get_rect(), self.RENDER_SCALE)
         self.render_text(self.active_surface, self.active_themeing['text_colour'], self.display_text)
     
     def render_text(self, surface, colour, text):

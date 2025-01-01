@@ -31,7 +31,7 @@ class DialogBox(NestedElement):
         """
         self.Timing = Timing
         self.window = window
-        
+            
         self.title = title
         self.message = message
         
@@ -47,20 +47,21 @@ class DialogBox(NestedElement):
         self.funcs = funcs
         self.Mouse = Mouse
         self.RenderStruct = RenderStruct
+        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         
         self.click_off_dissmiss = click_off_dissmiss
         
-        self.main_font = Font('hun2', 30)
-        self.sub_font = Font('hun2', 20)
+        self.main_font = Font('hun2', int(30 * self.RENDER_SCALE))
+        self.sub_font = Font('hun2', int(20 * self.RENDER_SCALE))
         
-        self.width = width
-        self.button_height = 50
-        self.height = 0
-        self.text_entry_height = 40
+        self.width = int(width * self.RENDER_SCALE)
+        self.button_height = int(50 * self.RENDER_SCALE)
+        self.height = 0 
+        self.text_entry_height = int(40 * self.RENDER_SCALE)
         
-        self.x_padding = 10
-        self.y_padding = 7
-        self.border_radius = 5   
+        self.x_padding = int(10 * self.RENDER_SCALE)
+        self.y_padding = int(7 * self.RENDER_SCALE)
+        self.border_radius = int(5 * self.RENDER_SCALE)  
         
         self.closed = False
         self.alpha = 0
@@ -97,7 +98,7 @@ class DialogBox(NestedElement):
         """
         self.is_validating_size = True
         self.height = 0
-        self.width += 400
+        self.width += int(400 * self.RENDER_SCALE)
         self.__wrap_text(self.message, self.sub_font.font, self.width - 2 * self.x_padding)
         self.__get_height()
         self.is_validating_size = False
@@ -160,10 +161,10 @@ class DialogBox(NestedElement):
         """
         Get the height of the dialog box
         """
-        self.height += 50
+        self.height += int(50 * self.RENDER_SCALE)
         
         if self.title:
-            self.height += 50
+            self.height += int(50 * self.RENDER_SCALE)
         
         if self.message:
             wrapped_message = []
@@ -174,9 +175,9 @@ class DialogBox(NestedElement):
             self.height += len(wrapped_message) * self.sub_font.font.get_height()
             
         if self.TextEntry is not None:
-            self.height += 50
+            self.height += int(50 * self.RENDER_SCALE)
                 
-        if self.height > self.RenderStruct.WINDOW_HEIGHT - 10:
+        if self.height > self.RenderStruct.RENDER_HEIGHT - int(10 * self.RENDER_SCALE):
             if not self.is_validating_size:
                 self.__validate_size()
           
@@ -184,7 +185,7 @@ class DialogBox(NestedElement):
         """
         Get the rect and surface for the dialog box
         """
-        self.dialog_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)
+        self.dialog_rect = pygame.Rect(self.RenderStruct.RENDER_WIDTH // 2 - self.width // 2, self.RenderStruct.RENDER_HEIGHT // 2 - self.height // 2, self.width, self.height)
         self.dialog_surface = pygame.Surface((self.dialog_rect.width, self.dialog_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
     
     def render(self):
@@ -200,8 +201,8 @@ class DialogBox(NestedElement):
                 self.title,
                 '#222222',
                 'left_top',
-                10,
-                3,
+                int(10 * self.RENDER_SCALE),
+                int(3 * self.RENDER_SCALE),
             )
         
         if self.message:
@@ -295,10 +296,10 @@ class DialogBox(NestedElement):
         self.__get_click_off_buttons()
          
         if self.num_buttons == 1:
-            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self)
+            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
         else:
-            self.primary_button   = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self)
-            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self)
+            self.primary_button   = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
     
     def __create_text_entry(self):
         """
@@ -334,7 +335,7 @@ class DialogBox(NestedElement):
         """
         Resize the dialog box
         """
-        self.dialog_rect.topleft = (self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2)
+        self.dialog_rect.topleft = (self.RenderStruct.RENDER_WIDTH // 2 - self.width // 2, self.RenderStruct.RENDER_HEIGHT // 2 - self.height // 2)
         
         if self.primary_button is not None:
             self.primary_button.offset = (self.dialog_rect.left, self.dialog_rect.top)
@@ -384,7 +385,7 @@ class DialogBox(NestedElement):
         self.alpha = min(255, smoothstep(self.timer / self.animation_length) * 255)
         self.dialog_surface.set_alpha(self.alpha)
 
-        self.animation_surface = TransformSurface(self.dialog_surface, smoothstep(self.timer / self.animation_length), 0, pygame.Vector2(self.dialog_rect.width//2, self.dialog_rect.height//2), pygame.Vector2(self.RenderStruct.WINDOW_WIDTH//2, self.RenderStruct.WINDOW_HEIGHT//2), pygame.Vector2(0, 0))
+        self.animation_surface = TransformSurface(self.dialog_surface, smoothstep(self.timer / self.animation_length), 0, pygame.Vector2(self.dialog_rect.width // 2, self.dialog_rect.height // 2), pygame.Vector2(self.RenderStruct.RENDER_WIDTH // 2, self.RenderStruct.RENDER_HEIGHT // 2), pygame.Vector2(0, 0))
         self.window.blit(self.animation_surface[0], self.animation_surface[1].topleft)
     
     def animate_disappear(self):
@@ -404,7 +405,7 @@ class DialogBox(NestedElement):
         self.alpha = max(0, 255 - smoothstep(self.timer / self.animation_length) * 255)
         self.dialog_surface.set_alpha(self.alpha)
         
-        self.animation_surface = TransformSurface(self.dialog_surface, max(0, 1 - smoothstep(self.timer / self.animation_length)), 0, pygame.Vector2(self.dialog_rect.width//2, self.dialog_rect.height//2), pygame.Vector2(self.RenderStruct.WINDOW_WIDTH//2, self.RenderStruct.WINDOW_HEIGHT//2), pygame.Vector2(0, 0))
+        self.animation_surface = TransformSurface(self.dialog_surface, max(0, 1 - smoothstep(self.timer / self.animation_length)), 0, pygame.Vector2(self.dialog_rect.width // 2, self.dialog_rect.height // 2), pygame.Vector2(self.RenderStruct.RENDER_WIDTH // 2, self.RenderStruct.RENDER_HEIGHT // 2), pygame.Vector2(0, 0))
         self.window.blit(self.animation_surface[0], self.animation_surface[1].topleft)
             
     def close(self):
@@ -419,14 +420,15 @@ class DialogTextEntryBox(Button):
         super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, parent = parent)
         
         self.RenderStruct = RenderStruct
-        self.y_position = self.container.top + padding[1]
+        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+        self.y_position = self.container.top + int(padding[1] * self.RENDER_SCALE)
         self.text = text
         self.text_colour = text_colour
         self.colour = colour
         self.style = style
         self.alignment = alignment
         self.border_radius = border_radius
-        self.x_padding, self.y_padding = padding
+        self.x_padding, self.y_padding = int(padding[0] * self.RENDER_SCALE), int(padding[1] * self.RENDER_SCALE)
         self.dialog_rect = dialog_rect
         
         self.__get_rect_and_surface()
@@ -524,7 +526,7 @@ class DialogTextEntryBox(Button):
         """
         if self.focused:
             pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)
-            pygame.draw.rect(self.button_surface, hex_to_rgb('#E59700'), (0, 0, self.width, self.height), width = 3, border_radius = self.border_radius) 
+            pygame.draw.rect(self.button_surface, hex_to_rgb('#E59700'), (0, 0, self.width, self.height), width = int(3 * self.RENDER_SCALE), border_radius = self.border_radius) 
         else:
             pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)          
     

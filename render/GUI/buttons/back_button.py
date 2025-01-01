@@ -4,8 +4,8 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class BackButton(Button):
-    def __init__(self, function, Mouse, Timing, surface, container, definition, parent):
-        super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent)
+    def __init__(self, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1):
+        super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent, RENDER_SCALE = RENDER_SCALE)
         """
         Back button for a menu
         
@@ -18,18 +18,20 @@ class BackButton(Button):
             definition (dict): the definition of the button
             parent (Object): the parent UI element
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.definition = definition
 
-        self.default_x_position = 150
-        self.hovered_x_position = 170
-        self.pressed_x_position = 185
+        self.default_x_position = int(150 * self.RENDER_SCALE)
+        self.hovered_x_position = int(170 * self.RENDER_SCALE)
+        self.pressed_x_position = int(185 * self.RENDER_SCALE)
         
         self.x_position = self.default_x_position
         
-        self.y_position = 15
+        self.y_position = int(15 * self.RENDER_SCALE)
         
-        self.font = Font('hun2', 33)
-        self.shadow_radius = 5
+        self.font = Font('hun2', int(33 * self.RENDER_SCALE))
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
         
         self.__get_rect_and_surface()
         self.render()
@@ -53,14 +55,14 @@ class BackButton(Button):
         """
         self.render_shadow()
         draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.button_surface.get_rect())
-        draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect())
+        draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect(), self.RENDER_SCALE)
         self.render_text()
     
     def render_text(self):
         """
         Render the text on the button
         """
-        self.font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'right', 20, 0)
+        self.font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'right', int(20 * self.RENDER_SCALE), 0)
     
     def render_shadow(self):
         """

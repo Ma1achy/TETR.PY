@@ -14,17 +14,20 @@ class GUIFocus():
         """
         self.window = window
         self.RenderStruct = RenderStruct
-        self.width = 500
-        self.height = 180
         
-        self.window_width = self.RenderStruct.WINDOW_WIDTH
-        self.window_height = self.RenderStruct.WINDOW_HEIGHT
+        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         
-        self.focus_rect = pygame.Rect(self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2, self.width, self.height)
+        self.width = int(500 * self.RENDER_SCALE)
+        self.height = int(180 * self.RENDER_SCALE)
+        
+        self.window_width = self.RenderStruct.RENDER_WIDTH
+        self.window_height = self.RenderStruct.RENDER_HEIGHT
+        
+        self.focus_rect = pygame.Rect(self.RenderStruct.RENDER_WIDTH // 2 - self.width // 2, self.RenderStruct.RENDER_HEIGHT // 2 - self.height // 2, self.width, self.height)
         self.focus_surface = pygame.Surface((self.focus_rect.width, self.focus_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
         
-        self.main_font = Font('hun2', 85)
-        self.sub_font = Font('hun2', 36)
+        self.main_font = Font('hun2', int(85 * self.RENDER_SCALE))
+        self.sub_font = Font('hun2', int(36 * self.RENDER_SCALE))
 
         self.render()
         
@@ -33,16 +36,16 @@ class GUIFocus():
         Render the focus overlay
         """
         self.focus_surface.fill((0, 0, 0, 200))
-        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (0, 0, self.focus_rect.width, self.focus_rect.height), 5)
-        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (10, 10, self.focus_rect.width - 20, self.focus_rect.height - 20), 2)
+        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (0, 0, self.focus_rect.width, self.focus_rect.height), int(5 * self.RENDER_SCALE))
+        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (int(10 * self.RENDER_SCALE), int(10 * self.RENDER_SCALE), self.focus_rect.width - int(20 * self.RENDER_SCALE), self.focus_rect.height - int(20 * self.RENDER_SCALE)), int(2 * self.RENDER_SCALE))
         
         self.main_font.draw(
             self.focus_surface,
             'out of focus',
             '#FF0000',
             'top',
-            0,
-            30,
+            int(0 * self.RENDER_SCALE),
+            int(30 * self.RENDER_SCALE),
         )
         
         self.sub_font.draw(
@@ -50,8 +53,8 @@ class GUIFocus():
             'click to return to TETR.PY',
             '#FFFFFF',
             'bottom',
-            0,
-            30,
+            int(0 * self.RENDER_SCALE),
+            int(30 * self.RENDER_SCALE),
         )
         
     def draw(self):
@@ -64,7 +67,7 @@ class GUIFocus():
         """
         Handle the window resize
         """
-        self.focus_rect.topleft = (self.RenderStruct.WINDOW_WIDTH//2 - self.width // 2, self.RenderStruct.WINDOW_HEIGHT//2 - self.height // 2)
+        self.focus_rect.topleft = (self.RenderStruct.RENDER_WIDTH // 2 - self.width // 2, self.RenderStruct.RENDER_HEIGHT // 2 - self.height // 2)
         
     def update(self):
         """

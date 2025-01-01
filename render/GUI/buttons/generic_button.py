@@ -4,8 +4,8 @@ import pygame
 from utils import draw_border, draw_solid_colour, align_element
 
 class GenericButton(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, function, parent):
-        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = False, slider = None, parent = parent)
+    def __init__(self, Timing, Mouse, surface, container, definition, function, parent, RENDER_SCALE = 1):
+        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
         """
         A generic button that can be used for any purpose
         
@@ -18,6 +18,8 @@ class GenericButton(Button):
             function (callable): the function to call when the button is pressed
             parent (Object): the parent UI element
         """
+        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Timing = Timing
         self.Mouse = Mouse
         
@@ -26,13 +28,13 @@ class GenericButton(Button):
         
         self.definition = definition
         
-        self.width = definition['size']['width']
-        self.height = definition['size']['height']
+        self.width = int(definition['size']['width'] * self.RENDER_SCALE)
+        self.height = int(definition['size']['height'] * self.RENDER_SCALE)
         
-        self.x_position = definition['position']['x']
-        self.y_position = definition['position']['y']
+        self.x_position = int(definition['position']['x'] * self.RENDER_SCALE)
+        self.y_position = int(definition['position']['y'] * self.RENDER_SCALE)
         
-        self.font = Font('hun2', 23)
+        self.font = Font('hun2', int(23 * self.RENDER_SCALE))
         
         self.__get_rect_and_surface()
         self.render()
@@ -64,7 +66,7 @@ class GenericButton(Button):
         Render the background and border of the button
         """
         draw_solid_colour(self.button_surface, self.definition['background']['colour'], self.button_surface.get_rect())
-        draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect())
+        draw_border(self.button_surface, self.definition['border'], self.button_surface.get_rect(), self.RENDER_SCALE)
     
     def render_text(self):
         """

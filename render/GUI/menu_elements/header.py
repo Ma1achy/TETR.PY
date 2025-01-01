@@ -4,7 +4,7 @@ from render.GUI.font import Font
 import math
 
 class Header:
-    def __init__(self, container, height, definition, image = None):
+    def __init__(self, container, height, definition, image = None, RENDER_SCALE = 1):
         """
         A header that can be used at the top of a menu
         
@@ -17,6 +17,7 @@ class Header:
         self.container = container
         self.height = height
         self.definition = definition
+        self.RENDER_SCALE = RENDER_SCALE
         
         self.image = image
         
@@ -28,10 +29,10 @@ class Header:
         self.background = self.get_background()
         self.border = self.get_border()
 
-        self.font = Font('hun2', 40)
+        self.font = Font('hun2', int(40 * self.RENDER_SCALE))
         
-        self.shadow_radius = 5
-        
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
+                
         self.__load_image()
         self.__get_rect_and_surface()
         self.render()
@@ -127,7 +128,7 @@ class Header:
         if 'border' not in self.definition:
             return
         
-        draw_border(self.header_surface, self.border, self.rect)
+        draw_border(self.header_surface, self.border, self.rect, self.RENDER_SCALE)
     
     def __render_text(self):
         """
@@ -136,7 +137,7 @@ class Header:
         if 'text' not in self.definition:
             return
         
-        self.font.draw(self.header_surface, self.text['display_text'], self.text['colour'], 'left', 20, 0)
+        self.font.draw(self.header_surface, self.text['display_text'], self.text['colour'], 'left', int(20 * self.RENDER_SCALE), 0)
     
     def __render_shadow(self):
         """
@@ -166,11 +167,11 @@ class Header:
             return
         
         aspect_ratio = self.image.get_width() / self.image.get_height()
-        new_height = self.height - 25
+        new_height = self.height - int(25 * self.RENDER_SCALE)
         new_width = int(new_height * aspect_ratio)
         
         image = pygame.transform.smoothscale(self.image, (new_width, new_height))
-        image_rect = align_center_left(self.header_surface.get_rect(), image.get_width(), image.get_height(), 20, 5)
+        image_rect = align_center_left(self.header_surface.get_rect(), image.get_width(), image.get_height(), int(20 * self.RENDER_SCALE), int(5 * self.RENDER_SCALE))
 
         self.header_surface.blit(image, (image_rect.left, image_rect.top))
              
