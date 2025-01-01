@@ -74,7 +74,7 @@ class Render():
     
     def draw_frame(self):
         
-        self.__toggle_fullscreen()
+        self.__check_if_fullscreen_toggled()
         
         self.window.blit(self.image, (0, 0))
         self.MenuManager.tick()
@@ -118,7 +118,7 @@ class Render():
         except Exception as e:
             print(f"\033[91mError setting window title bar mode: {e}\033[0m")
     
-    def __toggle_fullscreen(self):
+    def __check_if_fullscreen_toggled(self):
         """
         Toggles the fullscreen mode while adjusting window and render sizes appropriately.
         """
@@ -154,7 +154,7 @@ class Render():
 @dataclass
 class StructRender():
     CAPTION = 'TETR.PY'
-    WINDOW_WIDTH = 1600
+    WINDOW_WIDTH = 1600 
     WINDOW_HEIGHT = 900
     
     USE_RENDER_SCALE = False
