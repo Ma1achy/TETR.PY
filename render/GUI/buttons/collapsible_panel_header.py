@@ -96,7 +96,7 @@ class CollapsiblePanelHeader(Button):
         """
         Render the button
         """
-        pygame.draw.rect(surface, hex_to_rgb(colour), self.arrow_rect, border_radius=5)
+        pygame.draw.rect(surface, hex_to_rgb(colour), self.arrow_rect, border_radius = int(5 * self.RENDER_SCALE))
         
     def render_panel(self, surface):
         """

@@ -126,7 +126,7 @@ class ButtonList(NestedElement):
         """
         Render the background of the button list
         """
-        pygame.draw.rect(self.button_list_surface, self.themeing['background_colour'], self.button_list_surface.get_rect(), border_radius = 5)
+        pygame.draw.rect(self.button_list_surface, self.themeing['background_colour'], self.button_list_surface.get_rect(), border_radius = int(5 * self.RENDER_SCALE))
     
     def draw(self):
         """

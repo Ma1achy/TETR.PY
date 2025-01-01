@@ -83,7 +83,7 @@ class Render():
         
     def __load_background_image(self):
         self.image = pygame.image.load(self.background_image_path).convert_alpha()
-        self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT))
+        self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT))
     
     def __get_darken_overlay(self):
         self.darken_overlay_layer = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
@@ -91,10 +91,6 @@ class Render():
     def handle_window_resize(self):
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = self.window.get_size()
         
-        if not self.RenderStruct.USE_RENDER_SCALE:
-            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
-            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
-       
         self.__load_background_image()
         self.__get_darken_overlay()
         self.MenuManager.handle_window_resize()
@@ -127,6 +123,10 @@ class Render():
 
         self.fullscreen = self.RenderStruct.fullscreen
 
+        self.recreate_window()
+        self.handle_window_resize()
+    
+    def recreate_window(self):
         if self.RenderStruct.fullscreen:
             width, height = self.monitor_width, self.monitor_height
         else:
@@ -134,8 +134,9 @@ class Render():
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
-        self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
-        self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
+        if self.RenderStruct.RENDER_SCALE_APPLYS_FULLSCREEN: # recalculate render size when fullscreen is toggled (makes ui appear the same size on screen but are rendered at a different resolution)
+            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
+            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
 
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF
         
@@ -149,16 +150,16 @@ class Render():
             flags |= pygame.RESIZABLE
         
         self.window = pygame.display.set_mode((width, height), flags)
-        self.handle_window_resize()
-
+        
 @dataclass
 class StructRender():
     CAPTION = 'TETR.PY'
     WINDOW_WIDTH = 1600 
     WINDOW_HEIGHT = 900
     
-    USE_RENDER_SCALE = False
-    RENDER_SCALE = 1
+    USE_RENDER_SCALE = True
+    RENDER_SCALE_APPLYS_FULLSCREEN = True
+    RENDER_SCALE = 0.75
     
     fullscreen = False
     

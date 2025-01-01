@@ -2,6 +2,7 @@ from render.render_new import StructRender
 import pygame
 from utils import hex_to_rgb
 from render.GUI.font import Font
+import math
 
 class GUIFocus():
     def __init__(self, window, RenderStruct:StructRender):
@@ -36,8 +37,8 @@ class GUIFocus():
         Render the focus overlay
         """
         self.focus_surface.fill((0, 0, 0, 200))
-        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (0, 0, self.focus_rect.width, self.focus_rect.height), int(5 * self.RENDER_SCALE))
-        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (int(10 * self.RENDER_SCALE), int(10 * self.RENDER_SCALE), self.focus_rect.width - int(20 * self.RENDER_SCALE), self.focus_rect.height - int(20 * self.RENDER_SCALE)), int(2 * self.RENDER_SCALE))
+        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (0, 0, self.focus_rect.width, self.focus_rect.height), math.ceil(5 * self.RENDER_SCALE))
+        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (int(10 * self.RENDER_SCALE), int(10 * self.RENDER_SCALE), self.focus_rect.width - int(20 * self.RENDER_SCALE), self.focus_rect.height - int(20 * self.RENDER_SCALE)), math.ceil(2 * self.RENDER_SCALE))
         
         self.main_font.draw(
             self.focus_surface,

@@ -171,20 +171,20 @@ class MenuManager():
         
         if self.current_menu is not None:
             self.current_menu.update(self.in_dialog)
-            
-        if self.debug_overlay:
-            self.GUI_debug.update()
-        
-        if not self.is_focused:
-            self.GUI_focus.update()
-        
+             
         if self.current_dialog:
             self.darken_overlay.fill((0, 0, 0, self.darken_overlay_layer_alpha))
             self.window.blit(self.darken_overlay, (0, 0))
             self.current_dialog.update()
             
         self.copy_to_clipboard_animation()
-            
+        
+        if self.debug_overlay:
+            self.GUI_debug.update()
+        
+        if not self.is_focused:
+            self.GUI_focus.update()
+              
         self.__wait_for_dialog_close()
         self.update_darken_overlay_alpha()
         self.reset_dialogs()
