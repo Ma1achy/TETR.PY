@@ -32,7 +32,8 @@ class Render():
         
         self.fullscreen = self.RenderStruct.fullscreen
     
-    def get_window_size(self):
+    # ---------------------------------------------- WINDOW CREATION ----------------------------------------------
+    def __get_maximum_window_size(self):
         """
         Get the monitor size excluding taskbar and other system UI elements.
         """
@@ -46,7 +47,7 @@ class Render():
             monitor_width = self.monitor_width
             monitor_height = self.monitor_height - 80
         return monitor_width, monitor_height
-    
+                
     def __init_window(self):
         """
         Create the window to draw to.
@@ -55,11 +56,12 @@ class Render():
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
 
+        width, height = self.__get_maximum_window_size()
+        self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
+        
         self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
         self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
 
-        width, height = self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT
-        
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE
         
         if self.RenderStruct.fullscreen:
@@ -71,33 +73,6 @@ class Render():
             
         self.window = pygame.display.set_mode((width, height), flags)
         self.__set_dark_mode()
-    
-    def draw_frame(self):
-        
-        self.__check_if_fullscreen_toggled()
-        
-        self.window.blit(self.image, (0, 0))
-        self.MenuManager.tick()
-        
-        pygame.display.flip()
-        
-    def __load_background_image(self):
-        self.image = pygame.image.load(self.background_image_path).convert_alpha()
-        self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT))
-    
-    def __get_darken_overlay(self):
-        self.darken_overlay_layer = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
-
-    def handle_window_resize(self):
-        self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = self.window.get_size()
-        
-        if not self.RenderStruct.USE_RENDER_SCALE:
-            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
-            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
-    
-        self.__load_background_image()
-        self.__get_darken_overlay()
-        self.MenuManager.handle_window_resize()
     
     def __set_taskbar_icon_windows(self):
         if not platform.system() == 'Windows':
@@ -118,6 +93,19 @@ class Render():
         except Exception as e:
             print(f"\033[91mError setting window title bar mode: {e}\033[0m")
     
+    # ---------------------------------------------- WINDOW RESIZING ----------------------------------------------
+    
+    def handle_window_resize(self):
+        self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = self.window.get_size()
+        
+        if not self.RenderStruct.USE_RENDER_SCALE:
+            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
+            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
+    
+        self.__load_background_image()
+        self.__get_darken_overlay()
+        self.MenuManager.handle_window_resize()
+    
     def __check_if_fullscreen_toggled(self):
         """
         Toggles the fullscreen mode while adjusting window and render sizes appropriately.
@@ -127,10 +115,10 @@ class Render():
 
         self.fullscreen = self.RenderStruct.fullscreen
 
-        self.recreate_window()
+        self.__recreate_window()
         self.handle_window_resize()
-    
-    def recreate_window(self):
+        
+    def __recreate_window(self):
         if self.RenderStruct.fullscreen:
             width, height = self.monitor_width, self.monitor_height
         else:
@@ -151,9 +139,27 @@ class Render():
             flags |= pygame.SCALED
             width, height = self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT
         else:
-            flags |= pygame.RESIZABLE
+            flags |= pygame.RESIZABLE # somhow i can create a scaled resizable window when i start pygame but when i try to recreate it after a fullscreen end event it crashes ????????????????????????
         
         self.window = pygame.display.set_mode((width, height), flags)
+    
+    # ---------------------------------------------- RENDERING TO WINDOW ----------------------------------------------
+        
+    def __load_background_image(self):
+        self.image = pygame.image.load(self.background_image_path).convert_alpha()
+        self.image = pygame.transform.smoothscale(self.image, (self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT))
+    
+    def __get_darken_overlay(self):
+        self.darken_overlay_layer = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+             
+    def draw_frame(self):
+        
+        self.__check_if_fullscreen_toggled()
+        
+        self.window.blit(self.image, (0, 0))
+        self.MenuManager.tick()
+        
+        pygame.display.flip()
         
 @dataclass
 class StructRender():
