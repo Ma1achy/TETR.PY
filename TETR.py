@@ -6,11 +6,11 @@ import time
 from instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
 from instance.state.flags import set_flag_attr
-from render.render_new import StructRender
+from render.render import StructRender
 from app.state.clock import Clock
 import pygame
 import os
-from render.render_new import Render
+from render.render import Render
 from app.input.keyboard.keyboard_input_manager import KeyboardInputManager
 from app.core.game_instance_manager import GameInstanceManager
 from app.input.keyboard.menu_kb_input_handler import MenuKeyboardInputHandler, UIAction
@@ -355,7 +355,7 @@ class TETRPY():
         
         args:
             event (pygame.event): the event to handle
-        """
+        """    
         self.Render.handle_window_resize()
     
     def __window_close_event(self, event):

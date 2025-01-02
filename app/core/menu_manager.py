@@ -8,6 +8,7 @@ import webbrowser
 from utils import copy2clipboard, smoothstep, TransformSurface
 import pygame
 from render.GUI.menu_elements.text_input import TextInput
+
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager):
         """
@@ -716,7 +717,7 @@ class MenuManager():
         self.close_dialog()
         self.ErrorDialog = None
         self.switch_menus(self.home_menu)
-        
+
     def update_darken_overlay_alpha(self):
         """
         Update the darken overlay alpha

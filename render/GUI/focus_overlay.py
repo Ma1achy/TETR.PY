@@ -1,4 +1,4 @@
-from render.render_new import StructRender
+from render.render import StructRender
 import pygame
 from utils import hex_to_rgb
 from render.GUI.font import Font
