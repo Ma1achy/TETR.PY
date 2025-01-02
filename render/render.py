@@ -33,7 +33,7 @@ class Render():
         self.fullscreen = self.RenderStruct.fullscreen
     
     # ---------------------------------------------- WINDOW CREATION ----------------------------------------------
-    def __get_maximum_window_size(self):
+    def __get_available_display_area(self):
         """
         Get the monitor size excluding taskbar and other system UI elements.
         """
@@ -56,7 +56,7 @@ class Render():
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
 
-        width, height = self.__get_maximum_window_size()
+        width, height = self.__get_available_display_area()
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
         self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
@@ -122,7 +122,7 @@ class Render():
         if self.RenderStruct.fullscreen:
             width, height = self.monitor_width, self.monitor_height
         else:
-            width, height = 1600, 900
+            width, height = self.__get_available_display_area()
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
