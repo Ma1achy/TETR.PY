@@ -60,10 +60,10 @@ class Render():
 
         width, height = self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT
         
+        flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE
+        
         if self.RenderStruct.fullscreen:
-            flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.FULLSCREEN
-        else:
-            flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE
+            flags |= pygame.FULLSCREEN
 
         if self.RenderStruct.USE_RENDER_SCALE:
             flags |= pygame.SCALED
@@ -138,7 +138,7 @@ class Render():
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
-        if self.RenderStruct.RENDER_SCALE_APPLYS_FULLSCREEN or not self.RenderStruct.USE_RENDER_SCALE: # recalculate render size when fullscreen is toggled (makes ui appear the same size on screen but are rendered at a different resolution)
+        if self.RenderStruct.APPLY_RENDER_SCALE_TO_FULLSCREEN or not self.RenderStruct.USE_RENDER_SCALE: # recalculate render size when fullscreen is toggled (makes ui appear the same size on screen but are rendered at a different resolution)
             self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
             self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
 
