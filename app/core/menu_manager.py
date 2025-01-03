@@ -175,9 +175,11 @@ class MenuManager():
         if self.current_menu is not None:
             self.current_menu.update(self.in_dialog)
              
-        if self.current_dialog:
+        if self.current_dialog and self.current_dialog is not self.LoginDialog: # to prevent weird bug on macos where the login dialog makes the banner images render as black squares ???
             self.darken_overlay.fill((0, 0, 0, self.darken_overlay_layer_alpha))
             self.window.blit(self.darken_overlay, (0, 0))
+            
+        if self.current_dialog:
             self.current_dialog.update()
             
         self.copy_to_clipboard_animation()
