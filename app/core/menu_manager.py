@@ -83,7 +83,9 @@ class MenuManager():
         """
         self.window = window
         self.darken_overlay = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
-        self.darken_overlay.fill((0, 0, 0))
+        self.gradient_overlay = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.render_darken_gradient()
+        self.darken_overlay.fill((0, 0, 0, 200))
         
         self.GUI_debug = GUIDebug(self.window, self.Timing, self.RenderStruct, self.Debug)
         self.GUI_focus = GUIFocus(self.window, self.RenderStruct)
@@ -168,8 +170,8 @@ class MenuManager():
         Update the menus and GUI elements
         """
         self.darken_overlay.fill((0, 0, 0, 200))
-        self.window.blit(self.darken_overlay, (0, 0))
-        
+        self.window.blit(self.gradient_overlay, (0, 0))
+         
         if self.current_menu is not None:
             self.current_menu.update(self.in_dialog)
              
@@ -192,6 +194,26 @@ class MenuManager():
         self.get_actions()
         self.handle_exceptions()
         self.handle_menu_transitions()
+    
+    def render_darken_gradient(self):
+        """
+        Draw a transparent gradient from transparent to black on the gradient overlay surface.
+        """
+        darken = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        darken.fill((0, 0, 0, 200))
+        # Define the starting x position offset
+        start_x = self.RenderStruct.RENDER_WIDTH // 2
+
+        width, height = self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT
+        for x in range(start_x, width):
+            # Calculate alpha value based on a quadratic curve
+            normalized_x = (x - start_x) / (width - start_x)
+            alpha = normalized_x **2 * 255
+            alpha = min(200, alpha)
+            pygame.draw.line(self.gradient_overlay, (0, 0, 0, alpha), (x, 0), (x, height))
+
+        darken.blit(self.gradient_overlay, (0, 0))
+        self.gradient_overlay = darken
         
     def if_doing_animation(self):
         """
@@ -279,6 +301,8 @@ class MenuManager():
         Handle the window resize
         """
         self.darken_overlay = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.gradient_overlay = pygame.Surface((self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.render_darken_gradient()
         
         self.login_menu.handle_window_resize()
         self.home_menu.handle_window_resize()

@@ -2,7 +2,7 @@ import pygame
 from utils import draw_border, draw_solid_colour, apply_gaussian_blur_with_alpha, smoothstep, smoothstep_interpolate
 from render.GUI.menu_elements.button_list import ButtonList
 from render.GUI.menu_elements.nested_element import NestedElement
-
+from render.GUI.menu_elements.config_slider import ConfigSlider
 class CollapsiblePanel(NestedElement):
     def __init__(self, Timing, Mouse, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1):
         super().__init__(parent = parent)
@@ -73,7 +73,10 @@ class CollapsiblePanel(NestedElement):
         Get the height of the panel based on the elements in it
         """
         self.__get_rect_and_surface()
-        self.height = self.__init_elements()
+        height = self.__init_elements() - int(15 * self.RENDER_SCALE)
+        if height <= 0:
+            height = 1
+        self.height = height
         
     def __init_elements(self):
         """
@@ -83,11 +86,19 @@ class CollapsiblePanel(NestedElement):
         
         y = 0
         for element in self.definition['elements']:
+            
             if element['type'] == "button_list":
                 button_list = ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.elements.append(button_list)
                 y += button_list.height
-        
+              
+            elif element['type'] == 'config_slider':
+                config_slider = ConfigSlider(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                self.elements.append(config_slider)
+                y += config_slider.height
+                
+            y += int(10 * self.RENDER_SCALE)
+            
         y += int(25 * self.RENDER_SCALE)
         return y   
       

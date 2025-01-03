@@ -56,7 +56,12 @@ class Render():
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION)
 
-        width, height = self.__get_available_display_area()
+        if not self.RenderStruct.USE_RENDER_SCALE:
+            self.RenderStruct.RENDER_SCALE = 1
+            width, height = self.__get_available_display_area()
+        else:
+            width, height = 1600, 900
+
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
         self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
@@ -122,7 +127,11 @@ class Render():
         if self.RenderStruct.fullscreen:
             width, height = self.monitor_width, self.monitor_height
         else:
-            width, height = self.__get_available_display_area()
+            if not self.RenderStruct.USE_RENDER_SCALE:
+                self.RenderStruct.RENDER_SCALE = 1
+                width, height = self.__get_available_display_area()
+            else:
+                width, height = 1600, 900
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
@@ -170,7 +179,7 @@ class StructRender():
     
     USE_RENDER_SCALE = False
     APPLY_RENDER_SCALE_TO_FULLSCREEN = True
-    RENDER_SCALE = 1
+    RENDER_SCALE = 0.5
     
     fullscreen = False
     

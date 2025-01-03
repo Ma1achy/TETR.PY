@@ -374,7 +374,138 @@
                         ] 
                     },
                     "elements": [
-                        
+                        {
+                            "type": "config_slider",
+                            "title": "ARR",
+                            "left_end_text": "SLOW",
+                            "right_end_text": "FAST",
+                            "start_x": 80,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "DAS",
+                            "left_end_text": "SLOW",
+                            "right_end_text": "FAST",
+                            "start_x": 80,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "DCD",
+                            "left_end_text": "SLOW",
+                            "right_end_text": "FAST",
+                            "start_x": 80,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "SDF",
+                            "left_end_text": "SLOW",
+                            "right_end_text": "FAST",
+                            "start_x": 80,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        }
                     ]
                 },
                 {
@@ -476,6 +607,105 @@
                         ] 
                     },
                     "elements": [
+                        {
+                            "type": "config_slider",
+                            "title": "MUSIC",
+                            "left_end_text": "QUIET",
+                            "right_end_text": "LOUD",
+                            "start_x": 110,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "SFX",
+                            "left_end_text": "QUIET",
+                            "right_end_text": "LOUD",
+                            "start_x": 110,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "stereo",
+                            "left_end_text": "NO STEREO",
+                            "right_end_text": "SUPER STEREO",
+                            "start_x": 110,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        }
                     ]
                 },
                 {
@@ -609,6 +839,204 @@
                                     }
                                     }
                                 }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "board bounciness",
+                            "left_end_text": "STIFF",
+                            "right_end_text": "BOUNCY",
+                            "start_x": 230,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "damage shakiness",
+                            "left_end_text": "STILL",
+                            "right_end_text": "SHAKY",
+                            "start_x": 230,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "grid visibility",
+                            "left_end_text": "TRANSPARENT",
+                            "right_end_text": "OPAQUE",
+                            "start_x": 230,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "board visibility",
+                            "left_end_text": "TRANSPARENT",
+                            "right_end_text": "OPAQUE",
+                            "start_x": 230,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "shadow visibility",
+                            "left_end_text": "TRANSPARENT",
+                            "right_end_text": "OPAQUE",
+                            "start_x": 230,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "board zoom",
+                            "left_end_text": "FAR",
+                            "right_end_text": "NEAR",
+                            "start_x": 230,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
                         }
                     ]
                 },
@@ -748,6 +1176,181 @@
                                     }
                                     }
                                 }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "particle count",
+                            "left_end_text": "NONE",
+                            "right_end_text": "LOTS",
+                            "start_x": 275,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "background visibility",
+                            "left_end_text": "TRANSPARENT",
+                            "right_end_text": "OPAQUE",
+                            "start_x": 275,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "button_list",
+                            "title": "RENDER SCALING",
+                            "buttons": [
+                                {
+                                    "display_text": "OFF",
+                                    "function": "turn_off_render_scale",
+                                    "hover_text": "Turn off render scaling, and render the game at the current resolution of the window."
+                                },
+                                {
+                                    "display_text": "DYNAMIC",
+                                    "function": "toggle_dynamic_render_scale",
+                                    "hover_text": "Apply render scaling, but adjust the internal resolution of the game when the game is fullscreened."
+                                },
+                                {
+                                    "display_text": "RESTRICTED",
+                                    "function": "toggle_restricted_render_scale",
+                                    "hover_text": "Apply render scaling, but restrict the internal resolution of the game to a set value."
+                                }
+                            ],
+                            "themeing": {
+                                "title_colour": "#7b89ad",
+                                "background_colour": "#12151D",
+                                "inactive": {
+                                    "text_colour": "#7f9ddf",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#22293b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#2d364b"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e232d"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#33405c"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#1b1f28"
+                                        ]
+                                    }
+                                },
+                                "active": {
+                                    "text_colour": "#aec0ee",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#11141b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0e1015"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1d222f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#0b0c10"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#252c3d"
+                                        ]
+                                    }
+                                    }
+                                }
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "render scale",
+                            "left_end_text": "LOW",
+                            "right_end_text": "HIGH",
+                            "start_x": 170,
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ] 
+                                    }
+                                }
+                            },
+                            "hover_text": "The factor of the windows resolution that the game is rendered at. Lower values will increase performance, but increase pixelation."
                         }
                     ]
                 },

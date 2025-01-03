@@ -102,7 +102,7 @@ class Bar():
         self.x = scrollbar_rect.x + int(7 * self.RENDER_SCALE)
         self.y = self.calculate_position()
 
-        self.shadow_radius = int(2 * self.RENDER_SCALE)
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
         
         self.get_rect_and_surface()
         self.render()
