@@ -14,7 +14,7 @@ class AccountManager():
         """
         Get the accounts from the config file
         """
-        self.parser.read('app\core\config\login.cfg')
+        self.parser.read('app/core/config/login.cfg')
         accounts = self.parser['USERS']['ACCOUNTS']
         
         if accounts == "[]":
@@ -26,7 +26,7 @@ class AccountManager():
         """
         Read the saved login from the config file
         """
-        self.parser.read('app\core\config\login.cfg')
+        self.parser.read('app/core/config/login.cfg')
         user = self.parser['LOGIN']['USER']
         
         if user == "":
