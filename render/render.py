@@ -60,7 +60,7 @@ class Render():
             self.RenderStruct.RENDER_SCALE = 1
             width, height = self.__get_available_display_area()
         else:
-            width, height = 1600, 900
+            width, height = 1500, 900
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
@@ -131,7 +131,7 @@ class Render():
                 self.RenderStruct.RENDER_SCALE = 1
                 width, height = self.__get_available_display_area()
             else:
-                width, height = 1600, 900
+                width, height = 1500, 900
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
@@ -174,12 +174,12 @@ class Render():
 class StructRender():
     
     CAPTION = 'TETR.PY'
-    WINDOW_WIDTH = 1600 
+    WINDOW_WIDTH = 1500 
     WINDOW_HEIGHT = 900
     
-    USE_RENDER_SCALE = False
+    USE_RENDER_SCALE = True
     APPLY_RENDER_SCALE_TO_FULLSCREEN = True
-    RENDER_SCALE = 0.5
+    RENDER_SCALE = 1
     
     fullscreen = False
     
