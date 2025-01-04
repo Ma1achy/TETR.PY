@@ -204,14 +204,14 @@ class MenuManager():
         darken = pygame.Surface((self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT), pygame.SRCALPHA|pygame.HWSURFACE)
         darken.fill((0, 0, 0, 200))
         # Define the starting x position offset
-        start_x = self.RenderStruct.RENDER_WIDTH // 2
+        start_x = 2 * self.RenderStruct.RENDER_WIDTH // 3
 
         width, height = self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT
         for x in range(start_x, width):
             # Calculate alpha value based on a quadratic curve
             normalized_x = (x - start_x) / (width - start_x)
             alpha = normalized_x **2 * 255
-            alpha = min(200, alpha)
+            alpha = min(180, alpha)
             pygame.draw.line(self.gradient_overlay, (0, 0, 0, alpha), (x, 0), (x, height))
 
         darken.blit(self.gradient_overlay, (0, 0))
