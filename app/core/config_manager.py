@@ -1,9 +1,17 @@
 import configparser
 import ast
 import os
+import sys
 import tkinter as tk
+from PyQt5.QtWidgets import QApplication, QFileDialog
+from PyQt5.QtGui import QIcon
 from tkinter import filedialog
+import threading
 
+if sys.platform == "darwin":
+    import os
+    os.environ["TK_SILENCE_DEPRECATION"] = "1"
+    
 class ConfigManager():
     def __init__(self, WorkerManager):
         """
@@ -111,27 +119,68 @@ class ConfigManager():
         
         args:
             user (str): the user to export the settings for
-        """
+        """        
+        if self.in_export_window:
+            return
+        
         self.user = user
-    
-        if not self.in_export_window:
+        
+        if sys.platform == 'win32':
             self.in_export_window = True
-            self.WorkerManager.add_task(self.save_file)
+            self.WorkerManager.add_task(self.export_file_windows)
+        else:
+            self.export_file_unix()
+        
                 
-    def save_file(self):
+    def export_file_windows(self):
         """
-        Save the settings to a configuration file
+        Open a file dialog to export the settings to a configuration file
+        """
+        cfg = f'@{self.user}.cfg'
+
+        print(f"Current thread: {threading.current_thread().name}")
+        root = tk.Tk()
+        root.withdraw()
+            
+        if sys.platform == 'win32':
+            root.iconbitmap('resources/icon.ico')
+        try:
+            save_path = filedialog.asksaveasfilename(defaultextension = ".cfg", initialfile = cfg, title = "TETR.PY: Export Configuration File", filetypes = [("Config Files", "*.cfg"), ("All Files", "*.*")])
+           
+            if save_path:
+                with open(save_path, 'w') as configfile:
+                    self.parser.write(configfile)
+                    
+        except Exception as e:
+            print(f"\033[91mError exporting configuration file: {e}\033[0m")
+        finally:
+            root.destroy()
+                
+        self.in_export_window = False
+    
+    def export_file_unix(self):
+        """
+        Open a file dialog to export the settings to a configuration file
+        Have to use PyQt5 here because tkinter was giving me issues on macOS ??
         """
         cfg = f'@{self.user}.cfg'
         
-        root = tk.Tk()
-        root.withdraw()
-        root.iconbitmap('resources/icon.ico')
+        print(f"Current thread: {threading.current_thread().name}")
+        app = QApplication([])
+        app.setWindowIcon(QIcon('resources/icon.png'))
         
-        save_path = filedialog.asksaveasfilename(defaultextension = ".cfg", initialfile = cfg, title = "TETR.PY: Export Configuration File", filetypes = [("Config Files", "*.cfg"), ("All Files", "*.*")])
-        
-        if save_path:
-            with open(save_path, 'w') as configfile:
-                self.parser.write(configfile)
+        try:
+            default_directory = os.path.expanduser("~/Desktop")
+            default_file_path = os.path.join(default_directory, cfg)
+            save_path, _ = QFileDialog.getSaveFileName(None, "TETR.PY: Export Configuration File", default_file_path, "Config Files (*.cfg);;All Files (*)")
+            
+            if save_path:
+                with open(save_path, 'w') as configfile:
+                    self.parser.write(configfile)
+                    
+        except Exception as e:
+            print(f"\033[91mError exporting configuration file: {e}\033[0m")
+        finally:
+            app.quit()
             
         self.in_export_window = False
