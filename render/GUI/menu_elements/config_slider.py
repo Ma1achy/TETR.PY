@@ -1,6 +1,7 @@
 import pygame
 from render.GUI.font import Font
 from render.GUI.menu_elements.nested_element import NestedElement
+from render.GUI.buttons.config_slider_field_button import ConfigSliderFieldButton
 
 class ConfigSlider(NestedElement):
     def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
@@ -10,10 +11,10 @@ class ConfigSlider(NestedElement):
         args:
             Timing (Timing): the Timing object
             Mouse (Mouse): the Mouse object
-            surface (pygame.Surface): the surface to draw the button list on
-            container (pygame.Rect): the container the button list is in
-            definition (dict): the definition of the button list
-            y_position (int): the y position of the button list
+            surface (pygame.Surface): the surface to draw the slider on
+            container (pygame.Rect): the container the slider is in
+            definition (dict): the definition of the slider
+            y_position (int): the y position of the slider
             parent (Object): the parent UI element
         """
         self.RENDER_SCALE = RENDER_SCALE
@@ -51,12 +52,24 @@ class ConfigSlider(NestedElement):
         
         self.title_font = Font('hun2', self.title_font_size)
         self.title_text = self.get_title()
+          
+        self.value_field_definiton = {
+            "unit_font_colour": self.themeing['value_unit_colour'],
+            "value_font_colour": self.themeing['value_value_colour'],
+            "unit": self.definition['unit'],
+            "background_colour": self.themeing['colour'],
+        }
+        
         self.__get_rect_and_surface()
+        
+        field_function = None
+        self.ValueField = ConfigSliderFieldButton(self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE)
+        
         self.render()
     
     def get_title(self):
         """
-        Get the title of the button list
+        Get the title of the slider
         """
         if 'title' in self.definition:
             self.title = True
@@ -65,21 +78,29 @@ class ConfigSlider(NestedElement):
         
     def get_local_position(self):
         """
-        Get the position of the button list relative to the container it is in for collision detection.
+        Get the position of the slider relative to the container it is in for collision detection.
         """
         return self.rect.topleft
     
     def __get_rect_and_surface(self):
         """
-        Get the rects and surfaces for the button list
+        Get the rects and surfaces for the slider
         """ 
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.slider_bar_rect = pygame.Rect(self.start_x, self.height // 2 - self.bar_height // 2, self.width - self.start_x - self.end_x, self.bar_height)
-        self.button_list_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-    
+        self.slider_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        
+        value_button_x_padding = int(6 * self.RENDER_SCALE)
+        value_button_width = int(135 * self.RENDER_SCALE) - value_button_x_padding * 2
+        
+        value_button_y_padding = int(6 * self.RENDER_SCALE)
+        value_button_height = self.height - value_button_y_padding * 2
+        
+        self.value_button_rect = pygame.Rect(self.slider_bar_rect.right + value_button_x_padding * 2, value_button_y_padding, value_button_width, value_button_height)
+       
     def render(self):
         """
-        Render the button list
+        Render the slider
         """
         self.render_background()
         self.render_title()
@@ -88,40 +109,33 @@ class ConfigSlider(NestedElement):
     
     def render_title(self):
         """
-        Render the title of the button list
+        Render the title of the slider
         """
         if not self.title:
             return
         
-        self.title_font.draw(self.button_list_surface, self.title_text, self.themeing["title_colour"], 'left', int(15 * self.RENDER_SCALE), 0)
+        self.title_font.draw(self.slider_surface, self.title_text, self.themeing["title_colour"], 'left', int(15 * self.RENDER_SCALE), 0)
     
     def render_end_text(self):
         """
-        Render the end text of the button list
+        Render the end text of the slider
         """
-        self.end_text_font.draw(self.button_list_surface, self.left_end_text, self.end_text_colour, 'left_bottom', self.start_x, int(5 * self.RENDER_SCALE))
-        self.end_text_font.draw(self.button_list_surface, self.right_end_text, self.end_text_colour, 'right_bottom', self.end_x, int(5 * self.RENDER_SCALE))
+        self.end_text_font.draw(self.slider_surface, self.left_end_text, self.end_text_colour, 'left_bottom', self.start_x, int(5 * self.RENDER_SCALE))
+        self.end_text_font.draw(self.slider_surface, self.right_end_text, self.end_text_colour, 'right_bottom', self.end_x, int(5 * self.RENDER_SCALE))
     
     def render_slider_bar(self):
-        pygame.draw.rect(self.button_list_surface, self.themeing['colour'], self.slider_bar_rect)
+        pygame.draw.rect(self.slider_surface, self.themeing['colour'], self.slider_bar_rect)
         
     def render_background(self):
         """
-        Render the background of the button list
+        Render the background of the slider
         """
-        pygame.draw.rect(self.button_list_surface, self.themeing['background_colour'], self.button_list_surface.get_rect(), border_radius = int(5 * self.RENDER_SCALE))
-    
-    def draw(self):
-        """
-        Draw the button list
-        """
-        self.surface.blit(self.button_list_surface, (self.x_position, self.y_position))
+        pygame.draw.rect(self.slider_surface, self.themeing['background_colour'], self.slider_surface.get_rect(), border_radius = int(5 * self.RENDER_SCALE))
+        pygame.draw.rect(self.slider_surface, self.themeing['colour'], self.value_button_rect, border_radius = int(5 * self.RENDER_SCALE))
+            
+    def draw(self):   
+        self.surface.blit(self.slider_surface, (self.x_position, self.y_position))
 
     def update(self, in_dialog):
-        """
-        Update the button list
-        """
         self.draw()
-        
-        if in_dialog:
-            return
+        self.ValueField.update(in_dialog)

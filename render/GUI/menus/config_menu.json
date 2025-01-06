@@ -380,11 +380,17 @@
                             "left_end_text": "SLOW",
                             "right_end_text": "FAST",
                             "start_x": 80,
+                            "unit": "ms",
+                            "max_value": 83,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -413,11 +419,17 @@
                             "left_end_text": "SLOW",
                             "right_end_text": "FAST",
                             "start_x": 80,
+                            "unit": "ms",
+                            "max_value": 333,
+                            "min_value": 17,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -446,10 +458,16 @@
                             "left_end_text": "SLOW",
                             "right_end_text": "FAST",
                             "start_x": 80,
+                            "unit": "ms",
+                            "max_value": 333,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "colour": "#0b0d11",
                                 "knob": {
                                     "background": {
@@ -479,11 +497,17 @@
                             "left_end_text": "SLOW",
                             "right_end_text": "FAST",
                             "start_x": 80,
+                            "unit": "X",
+                            "max_value": 41,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -613,11 +637,17 @@
                             "left_end_text": "QUIET",
                             "right_end_text": "LOUD",
                             "start_x": 110,
+                            "unit": "%",
+                            "max_value": 200,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -646,11 +676,17 @@
                             "left_end_text": "QUIET",
                             "right_end_text": "LOUD",
                             "start_x": 110,
+                            "unit": "%",
+                            "max_value": 200,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -679,11 +715,17 @@
                             "left_end_text": "NO STEREO",
                             "right_end_text": "SUPER STEREO",
                             "start_x": 110,
+                            "unit": "%",
+                            "max_value": 100,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -846,11 +888,17 @@
                             "left_end_text": "STIFF",
                             "right_end_text": "BOUNCY",
                             "start_x": 230,
+                            "unit": "%",
+                            "max_value": 200,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -879,11 +927,17 @@
                             "left_end_text": "STILL",
                             "right_end_text": "SHAKY",
                             "start_x": 230,
+                            "unit": "%",
+                            "max_value": 110,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -912,11 +966,17 @@
                             "left_end_text": "TRANSPARENT",
                             "right_end_text": "OPAQUE",
                             "start_x": 230,
+                            "unit": "%",
+                            "max_value": 100,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -945,11 +1005,17 @@
                             "left_end_text": "TRANSPARENT",
                             "right_end_text": "OPAQUE",
                             "start_x": 230,
+                            "unit": "%",
+                            "max_value": 100,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -978,11 +1044,17 @@
                             "left_end_text": "TRANSPARENT",
                             "right_end_text": "OPAQUE",
                             "start_x": 230,
+                            "unit": "%",
+                            "max_value": 100,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -1011,11 +1083,17 @@
                             "left_end_text": "FAR",
                             "right_end_text": "NEAR",
                             "start_x": 230,
+                            "unit": "%",
+                            "max_value": 130,
+                            "min_value": 50,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -1183,11 +1261,17 @@
                             "left_end_text": "NONE",
                             "right_end_text": "LOTS",
                             "start_x": 275,
+                            "unit": "%",
+                            "max_value": 100,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -1216,11 +1300,14 @@
                             "left_end_text": "TRANSPARENT",
                             "right_end_text": "OPAQUE",
                             "start_x": 275,
+                            "unit": "%",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
@@ -1324,11 +1411,17 @@
                             "left_end_text": "LOW",
                             "right_end_text": "HIGH",
                             "start_x": 170,
+                            "unit": "%",
+                            "max_value": 100,
+                            "min_value": 0,
+                            "step": 1,
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
                                 "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
                                 "knob": {
                                     "background": {
                                         "style": "solid",
