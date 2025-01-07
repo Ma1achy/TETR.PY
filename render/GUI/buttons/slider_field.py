@@ -36,7 +36,11 @@ class SliderField(Button):
         self.value = 100
         self.value_str = str(self.value) if not isinstance(self.value, str) else self.value
         
-        if self.value == 'inf':
+        self.min_value = 0
+        self.max_value = 0
+        self.max_value_to_inf = False
+        
+        if self.value == self.max_value and self.max_value_to_inf:
             self.value_str = '∞'
         
         self.value_font = Font('hun2', int(27 * self.RENDER_SCALE))
@@ -82,6 +86,12 @@ class SliderField(Button):
         super().animate_hover_surface_transition()
         self.surface.blit(self.value_surface, (self.x_position, self.y_position))
     
+    def update_value(self):
+        self.value_str = str(self.value) if not isinstance(self.value, str) else self.value
+        
+        if self.value == self.max_value and self.max_value_to_inf:
+            self.value_str = '∞'
+            
     def animate_pressed_surface_transition(self):
         """
         Animate the transition into the pressed surface.
@@ -89,3 +99,6 @@ class SliderField(Button):
         super().animate_pressed_surface_transition()
         self.surface.blit(self.value_surface, (self.x_position, self.y_position))
     
+    def update(self, in_dialog=False):
+        self.update_value()
+        super().update(in_dialog)

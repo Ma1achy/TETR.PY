@@ -30,11 +30,27 @@ class ConfigSlider(NestedElement):
         self.bar_height = int(7 * self.RENDER_SCALE)
         
         self.definition = definition
+        
+        if 'flipped' in self.definition:
+            self.flipped = self.definition['flipped']
+        else:
+            self.flipped = False
+            
+        if 'max_value_to_inf' in self.definition:
+            self.max_value_to_inf = self.definition['max_value_to_inf']
+        else:
+            self.max_value_to_inf = False
+        
         self.themeing = self.definition['themeing']
         
         self.left_end_text = self.definition['left_end_text']
         self.right_end_text = self.definition['right_end_text']
         self.end_text_colour = self.themeing['end_text_colour']
+        
+        self.max_value = self.definition['max_value']
+        self.min_value = self.definition['min_value']
+        self.value_range = self.max_value - self.min_value
+        
         self.end_text_font_size = int(12 * self.RENDER_SCALE) 
         self.end_text_font = Font('hun2', self.end_text_font_size)
         
@@ -68,6 +84,11 @@ class ConfigSlider(NestedElement):
         
         field_function = None
         self.ValueField = SliderField(self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE)
+        self.ValueField.min_value = self.min_value
+        self.ValueField.max_value = self.max_value
+        self.ValueField.max_value_to_inf = self.max_value_to_inf
+        
+        self.ValueField.value = self.max_value
         self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, field_function, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE)
         
         self.render()
@@ -147,5 +168,69 @@ class ConfigSlider(NestedElement):
         
     def update(self, in_dialog):
         self.draw()
-        self.ValueField.update(in_dialog)
+        self.update_field(in_dialog)
+        self.update_knob(in_dialog)
+    
+    def value_to_position(self, value):
+        """
+        Convert the value to a position on the slider
+        """
+        min_position = self.slider_bar_rect.left + self.knob_rect.width
+        max_position = self.slider_bar_rect.right 
+        length = max_position - min_position
+              
+        percentage = (value - self.min_value) / self.value_range
+        
+        if self.flipped:
+            position = max_position - (length * percentage)
+        else:
+            position = min_position + (length * percentage)
+        
+        if position < min_position:
+            return min_position
+        elif position > max_position:
+            return max_position
+        
+        return position
+    
+    def position_to_value(self):
+        """
+        Convert the position of the knob to a value
+        """
+        min_position = self.slider_bar_rect.left + self.knob_rect.width
+        max_position = self.slider_bar_rect.right - 1
+        length = max_position - min_position
+        
+        step = length / (self.value_range)  
+        
+        position = self.knob_rect.x
+            
+        if self.flipped:
+            value = (max_position - position) / step + self.min_value
+        else:
+            value = (position - min_position) / step + self.min_value
+                
+    def update_knob_position(self, position):
+        """
+        Update the position of the knob
+        """
+        self.knob_rect.x = position
+        self.Knob.shadow_rect.x = position - self.Knob.shadow_radius * 2
+    
+    def update_knob(self, in_dialog):
+        """
+        Update the knob
+        """
+        self.update_knob_position(self.value_to_position(self.ValueField.value))
+        self.position_to_value()
+        
         self.Knob.update(in_dialog)
+    
+    def update_field(self, in_dialog):
+        if self.ValueField.value < self.min_value:
+            self.ValueField.value = self.min_value
+            
+        elif self.ValueField.value > self.max_value:
+            self.ValueField.value = self.max_value
+                
+        self.ValueField.update(in_dialog)

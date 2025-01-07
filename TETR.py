@@ -1,15 +1,23 @@
 import threading
 import queue
 import concurrent.futures
-
 import time
+import pygame
+import os
+import logging
+import traceback
+import datetime
+import sys
+import json
+import pkg_resources
+from collections import deque
+
 from instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
 from instance.state.flags import set_flag_attr
 from render.render import StructRender
 from app.state.clock import Clock
-import pygame
-import os
+
 from render.render import Render
 from app.input.keyboard.keyboard_input_manager import KeyboardInputManager
 from app.core.game_instance_manager import GameInstanceManager
@@ -21,15 +29,9 @@ from app.core.menu_manager import MenuManager
 from app.input.mouse.mouse_input_handler import MouseInputManager
 from app.input.keyboard.keyboard import Keyboard
 from app.input.mouse.mouse import Mouse
-import logging
-import traceback
-import datetime
-import sys
-import json
-import pkg_resources
+
 from app.core.account_manager import AccountManager
 from app.core.config_manager import ConfigManager
-from collections import deque
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 

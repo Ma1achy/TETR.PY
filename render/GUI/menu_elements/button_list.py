@@ -72,6 +72,7 @@ class ButtonList(NestedElement):
             
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.button_list_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.buttons_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
     def __init_buttons(self):
         """
@@ -86,7 +87,7 @@ class ButtonList(NestedElement):
         """
         button_rect = self.get_button_rect(idx) 
         function = None
-        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.button_list_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE))     
+        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.buttons_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE))     
     
     def get_button_rect(self, idx):
         """
@@ -133,6 +134,7 @@ class ButtonList(NestedElement):
         Draw the button list
         """
         self.surface.blit(self.button_list_surface, (self.x_position, self.y_position))
+        self.surface.blit(self.buttons_surface, (self.x_position, self.y_position))
 
     def update(self, in_dialog):
         """
@@ -149,6 +151,7 @@ class ButtonList(NestedElement):
         """
         Update the buttons in the button list
         """
+        self.buttons_surface.fill((0, 0, 0, 0))
         for button in self.buttons:
             button.update(in_dialog)
     

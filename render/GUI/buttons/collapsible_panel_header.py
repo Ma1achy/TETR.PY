@@ -1,5 +1,5 @@
 import pygame
-from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha, hex_to_rgb, brightness_maintain_alpha
+from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha, hex_to_rgb, brightness_maintain_alpha, smoothstep
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
@@ -66,7 +66,7 @@ class CollapsiblePanelHeader(Button):
         for element in self.definition['elements']:
             if element['type'] == 'generic_button':
                 function = None
-                self.elements.append(GenericButton(self.Timing, self.Mouse, self.open_button_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE))
+                self.elements.append(GenericButton(self.Timing, self.Mouse, self.element_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE))
     
     def render(self):
         """
@@ -83,6 +83,7 @@ class CollapsiblePanelHeader(Button):
         """
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.element_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
         self.shadow_rect = pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
@@ -247,6 +248,17 @@ class CollapsiblePanelHeader(Button):
             ]
         )
     
+    def draw(self):
+        """
+        Draw the button.
+        """
+        if not hasattr(self, 'button_surface') or self.button_surface is None:
+            return 
+        
+        self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+        self.surface.blit(self.button_surface, self.rect.topleft)
+        self.surface.blit(self.element_surface, self.rect.topleft)
+    
     def update(self, in_dialog):
         """
         Update the button
@@ -258,6 +270,8 @@ class CollapsiblePanelHeader(Button):
         """
         Update the elements of the button
         """
+        self.element_surface.fill((0, 0, 0, 0))
+        
         if not self.open:
             return
         
@@ -266,6 +280,21 @@ class CollapsiblePanelHeader(Button):
         
         for element in self.elements:
             element.update(in_dialog)
-       
     
+    def animate_menu_transition_alpha(self, progress, is_enter):
+        """
+        Animate the alpha of the button surface during a menu transition.
+        
+            progress (float): Progress percentage of the animation.
+            is_enter (bool): Whether the transition is entering or leaving the menu.
+        """
+        p = smoothstep(progress)
+        alpha = ((p) * 255) if is_enter else (((1 - p)) * 255)
+        alpha = max(0, min(255, alpha))
+        
+        self.button_surface.set_alpha(alpha)
+        self.hover_surface.set_alpha(alpha)
+        self.pressed_surface.set_alpha(alpha)
+        self.shadow_surface.set_alpha(alpha)
+        self.element_surface.set_alpha(alpha)
         

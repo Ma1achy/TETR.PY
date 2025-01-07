@@ -1,5 +1,5 @@
 from render.GUI.buttons.button import Button
-from utils import draw_border, draw_solid_colour, brightness
+from utils import draw_border, draw_solid_colour, brightness, apply_gaussian_blur_with_alpha
 from render.GUI.font import Font
 import pygame
 
@@ -34,6 +34,8 @@ class ButtonListButtons(Button):
         self.y_position = container.top
         self.font = Font('hun2', int(23 * self.RENDER_SCALE))
         
+        self.shadow_radius = int(3 * self.RENDER_SCALE)
+        
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
@@ -53,6 +55,9 @@ class ButtonListButtons(Button):
         """
         self.active_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.inactive_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        
+        self.shadow_rect = pygame.Rect(self.rect.x - self.shadow_radius * 2, self.rect.y - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
+        self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
     
     def render(self):
         """
@@ -60,6 +65,7 @@ class ButtonListButtons(Button):
         """
         self.render_inactive_state()
         self.render_active_state()
+        self.render_shadow()
     
     def render_inactive_state(self):
         """
@@ -137,3 +143,22 @@ class ButtonListButtons(Button):
         """
         self.update_apperance()
         super().update(in_dialog)
+    
+    def draw(self):
+        """
+        Draw the button.
+        """
+        if not hasattr(self, 'button_surface') or self.button_surface is None:
+            return 
+        
+        if not self.active:
+            self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+        self.surface.blit(self.button_surface, self.rect.topleft)
+    
+    def render_shadow(self):
+        """
+        Render the shadow of the button
+        """
+        pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rect.width - 4 * self.shadow_radius, self.shadow_rect.height - 4 * self.shadow_radius))
+        self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
+        pygame.draw.rect(self.shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.width, self.height))

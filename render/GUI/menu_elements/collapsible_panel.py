@@ -64,6 +64,7 @@ class CollapsiblePanel(NestedElement):
         """
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
         self.panel_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.element_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
         self.shadow_rect = pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
@@ -88,12 +89,12 @@ class CollapsiblePanel(NestedElement):
         for element in self.definition['elements']:
             
             if element['type'] == "button_list":
-                button_list = ButtonList(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                button_list = ButtonList(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.elements.append(button_list)
                 y += button_list.height
               
             elif element['type'] == 'config_slider':
-                config_slider = ConfigSlider(self.Timing, self.Mouse, self.panel_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                config_slider = ConfigSlider(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.elements.append(config_slider)
                 y += config_slider.height
                 
@@ -131,7 +132,9 @@ class CollapsiblePanel(NestedElement):
         Draw the panel and its shadow
         """
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+        self.panel_surface.blit(self.element_surface, (0, 0))
         self.surface.blit(self.panel_surface, self.rect.topleft)
+        
     
     def update(self, in_dialog):
         """
@@ -152,6 +155,8 @@ class CollapsiblePanel(NestedElement):
         """
         Update the elements in the panel
         """
+        self.element_surface.fill((0, 0, 0, 0))
+        
         for element in self.elements:
             element.update(in_dialog)
     

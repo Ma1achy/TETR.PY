@@ -54,7 +54,7 @@ class Render():
         """
         self.__set_taskbar_icon_windows()
         pygame.display.set_icon(self.icon)
-        pygame.display.set_caption(self.RenderStruct.CAPTION)
+        pygame.display.set_caption(self.RenderStruct.CAPTION, icontitle = self.RenderStruct.CAPTION)
 
         if not self.RenderStruct.USE_RENDER_SCALE:
             self.RenderStruct.RENDER_SCALE = 1
@@ -177,7 +177,7 @@ class StructRender():
     WINDOW_WIDTH = 1500 
     WINDOW_HEIGHT = 900
     
-    USE_RENDER_SCALE = True
+    USE_RENDER_SCALE = False
     APPLY_RENDER_SCALE_TO_FULLSCREEN = True
     RENDER_SCALE = 1
     
