@@ -3,7 +3,7 @@ from render.GUI.font import Font
 import pygame
 from utils import hex_to_rgb
 
-class ConfigSliderFieldButton(Button):
+class SliderField(Button):
     def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1):
         super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
         """

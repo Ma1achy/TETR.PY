@@ -23,8 +23,8 @@ class BackButton(Button):
         self.definition = definition
 
         self.default_x_position = int(150 * self.RENDER_SCALE)
-        self.hovered_x_position = int(170 * self.RENDER_SCALE)
-        self.pressed_x_position = int(190 * self.RENDER_SCALE)
+        self.hovered_x_position = int(180 * self.RENDER_SCALE)
+        self.pressed_x_position = int(200 * self.RENDER_SCALE)
         
         self.x_position = self.default_x_position
         

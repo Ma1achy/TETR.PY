@@ -300,7 +300,6 @@ class TETRPY():
         
         self.Debug.get_metrics()  
         self.Render.draw_frame()
-        #self.MenuManager.tick()
         self.FrameClock.tick()
         
         while not self.Mouse.events.empty():

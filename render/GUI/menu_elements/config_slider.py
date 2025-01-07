@@ -1,7 +1,9 @@
 import pygame
 from render.GUI.font import Font
 from render.GUI.menu_elements.nested_element import NestedElement
-from render.GUI.buttons.config_slider_field_button import ConfigSliderFieldButton
+from render.GUI.buttons.slider_field import SliderField
+from render.GUI.buttons.slider_knob import SliderKnob
+from utils import draw_border, draw_solid_colour
 
 class ConfigSlider(NestedElement):
     def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
@@ -60,10 +62,13 @@ class ConfigSlider(NestedElement):
             "background_colour": self.themeing['colour'],
         }
         
+        self.knob_definition = self.themeing['knob']
+            
         self.__get_rect_and_surface()
         
         field_function = None
-        self.ValueField = ConfigSliderFieldButton(self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE)
+        self.ValueField = SliderField(self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE)
+        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, field_function, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE)
         
         self.render()
     
@@ -86,17 +91,21 @@ class ConfigSlider(NestedElement):
         """
         Get the rects and surfaces for the slider
         """ 
+        self.x_padding = int(6 * self.RENDER_SCALE)
+        self.value_button_width = int(135 * self.RENDER_SCALE) - self.x_padding * 2
+        
+        self.y_padding = int(6 * self.RENDER_SCALE)
+        self.value_button_height = self.height - self.y_padding * 2
+        
+        self.knob_width = int(25 * self.RENDER_SCALE)
+        self.knob_height = self.value_button_height - self.y_padding
+         
         self.rect = pygame.Rect(self.x_position, self.y_position, self.width, self.height)
-        self.slider_bar_rect = pygame.Rect(self.start_x, self.height // 2 - self.bar_height // 2, self.width - self.start_x - self.end_x, self.bar_height)
+        self.slider_bar_rect = pygame.Rect(self.start_x, (self.height - self.bar_height) // 2, self.width - self.start_x - self.end_x, self.bar_height)
         self.slider_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
-        value_button_x_padding = int(6 * self.RENDER_SCALE)
-        value_button_width = int(135 * self.RENDER_SCALE) - value_button_x_padding * 2
-        
-        value_button_y_padding = int(6 * self.RENDER_SCALE)
-        value_button_height = self.height - value_button_y_padding * 2
-        
-        self.value_button_rect = pygame.Rect(self.slider_bar_rect.right + value_button_x_padding * 2, value_button_y_padding, value_button_width, value_button_height)
+        self.value_button_rect = pygame.Rect(self.slider_bar_rect.right + self.x_padding * 2, self.y_padding, self.value_button_width, self.value_button_height)
+        self.knob_rect = pygame.Rect(self.rect.left + self.slider_bar_rect.left, self.rect.top + self.y_padding * 1.5, self.knob_width, self.knob_height)
        
     def render(self):
         """
@@ -122,7 +131,7 @@ class ConfigSlider(NestedElement):
         """
         self.end_text_font.draw(self.slider_surface, self.left_end_text, self.end_text_colour, 'left_bottom', self.start_x, int(5 * self.RENDER_SCALE))
         self.end_text_font.draw(self.slider_surface, self.right_end_text, self.end_text_colour, 'right_bottom', self.end_x, int(5 * self.RENDER_SCALE))
-    
+        
     def render_slider_bar(self):
         pygame.draw.rect(self.slider_surface, self.themeing['colour'], self.slider_bar_rect)
         
@@ -132,10 +141,11 @@ class ConfigSlider(NestedElement):
         """
         pygame.draw.rect(self.slider_surface, self.themeing['background_colour'], self.slider_surface.get_rect(), border_radius = int(5 * self.RENDER_SCALE))
         pygame.draw.rect(self.slider_surface, self.themeing['colour'], self.value_button_rect, border_radius = int(5 * self.RENDER_SCALE))
-            
+             
     def draw(self):   
         self.surface.blit(self.slider_surface, (self.x_position, self.y_position))
-
+        
     def update(self, in_dialog):
         self.draw()
         self.ValueField.update(in_dialog)
+        self.Knob.update(in_dialog)
