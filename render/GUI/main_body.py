@@ -111,7 +111,7 @@ class MainBody(NestedElement):
             
             elif element['type'] == 'collapsible_panel':
        
-                panel = CollapsiblePanel(self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                panel = CollapsiblePanel(self.button_functions, self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.menu_elements.append(panel)
                
             elif element['type'] == 'floating_text':

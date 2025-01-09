@@ -1,10 +1,11 @@
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 import pygame
-from utils import hex_to_rgb
+from render.GUI.diaglog_box import DialogBox
+from render.GUI.menu_elements.text_input import TextInput
 
 class SliderField(Button):
-    def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1):
+    def __init__(self, button_functions, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1):
         super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
         """
         A field value button for a slider of the config menu
@@ -20,6 +21,7 @@ class SliderField(Button):
             definition (dict): the definition of the button
             parent (Object): the parent UI element
         """
+        self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
         self.x_position = rect.x
         self.y_position = container.y
@@ -44,7 +46,7 @@ class SliderField(Button):
             self.value_str = '∞'
         
         self.value_font = Font('hun2', int(27 * self.RENDER_SCALE))
-        
+         
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
@@ -99,6 +101,6 @@ class SliderField(Button):
         super().animate_pressed_surface_transition()
         self.surface.blit(self.value_surface, (self.x_position, self.y_position))
     
-    def update(self, in_dialog=False):
+    def update(self, in_dialog = False):
         self.update_value()
         super().update(in_dialog)

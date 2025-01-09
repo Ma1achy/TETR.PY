@@ -4,7 +4,7 @@ from render.GUI.menu_elements.button_list import ButtonList
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.menu_elements.config_slider import ConfigSlider
 class CollapsiblePanel(NestedElement):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1):
+    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1):
         super().__init__(parent = parent)
         """
         A panel that can be collapsed and expanded
@@ -19,6 +19,7 @@ class CollapsiblePanel(NestedElement):
             linked_header (Object): the header that is linked to the panel
             parent (Object): the parent UI element
         """
+        self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
         
         self.Timing = Timing
@@ -89,12 +90,12 @@ class CollapsiblePanel(NestedElement):
         for element in self.definition['elements']:
             
             if element['type'] == "button_list":
-                button_list = ButtonList(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                button_list = ButtonList(self.button_functions, self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.elements.append(button_list)
                 y += button_list.height
               
             elif element['type'] == 'config_slider':
-                config_slider = ConfigSlider(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                config_slider = ConfigSlider(self.button_functions, self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.elements.append(config_slider)
                 y += config_slider.height
                 

@@ -6,6 +6,7 @@ from render.GUI.buttons.dialog_button import DialogButton
 from render.GUI.buttons.invisible_button import InvisibleButton
 import re
 from render.GUI.menu_elements.nested_element import NestedElement
+import math
 
 from render.GUI.buttons.button import Button
 from app.input.mouse.mouse import MouseEvents
@@ -309,8 +310,8 @@ class DialogBox(NestedElement):
             return
         
         function = None
-        self.text_entry_container = pygame.Rect(self.button_container.left, self.button_container.top - self.text_entry_height - self.y_padding * 2, self.button_container.width, self.text_entry_height)
-        self.text_entry_box = DialogTextEntryBox(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.text_entry_box, function = function, width = self.dialog_rect.width - 2 * self.x_padding, height = self.text_entry_height, colour = '#222222', text_colour = '#eeeeee', style = None, container = self.text_entry_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, TextEntry = self.TextEntry)
+        self.text_entry_container = pygame.Rect(self.button_container.left, self.button_container.top - self.text_entry_height - self.y_padding * 2, self.width, self.text_entry_height)
+        self.text_entry_box = DialogTextEntryBox(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, function = function, width = self.width - self.x_padding * 2, height = self.text_entry_height, colour = '#222222', text_colour = '#eeeeee', style = None, container = self.text_entry_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, TextEntry = self.TextEntry)
         
     def __get_click_off_buttons(self):
         """
@@ -416,13 +417,13 @@ class DialogBox(NestedElement):
         self.timer = 0
 
 class DialogTextEntryBox(Button):
-    def __init__(self, Timing, surface, Mouse, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, TextEntry):
+    def __init__(self, Timing, surface, Mouse, RenderStruct, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, TextEntry):
         super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, parent = parent)
         
         self.RenderStruct = RenderStruct
         self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         self.y_position = self.container.top + int(padding[1] * self.RENDER_SCALE)
-        self.text = text
+     
         self.text_colour = text_colour
         self.colour = colour
         self.style = style
@@ -526,7 +527,7 @@ class DialogTextEntryBox(Button):
         """
         if self.focused:
             pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)
-            pygame.draw.rect(self.button_surface, hex_to_rgb('#E59700'), (0, 0, self.width, self.height), width = int(3 * self.RENDER_SCALE), border_radius = self.border_radius) 
+            pygame.draw.rect(self.button_surface, hex_to_rgb('#E59700'), (0, 0, self.width, self.height), width = math.ceil(3 * self.RENDER_SCALE), border_radius = self.border_radius) 
         else:
             pygame.draw.rect(self.button_surface, hex_to_rgb(self.colour), (0, 0, self.width, self.height), border_radius = self.border_radius)          
     

@@ -4,7 +4,7 @@ from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.buttons.button_list_buttons import ButtonListButtons
 
 class ButtonList(NestedElement):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
+    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
         super().__init__(parent)
         """
         A list of buttons where only one can be active at a time
@@ -18,6 +18,7 @@ class ButtonList(NestedElement):
             y_position (int): the y position of the button list
             parent (Object): the parent UI element
         """
+        self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
         
         self.Timing = Timing

@@ -3,10 +3,9 @@ from render.GUI.font import Font
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.buttons.slider_field import SliderField
 from render.GUI.buttons.slider_knob import SliderKnob
-from utils import draw_border, draw_solid_colour
 
 class ConfigSlider(NestedElement):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
+    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
         super().__init__(parent)
         """
         
@@ -19,6 +18,7 @@ class ConfigSlider(NestedElement):
             y_position (int): the y position of the slider
             parent (Object): the parent UI element
         """
+        self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
         
         self.Timing = Timing
@@ -82,14 +82,18 @@ class ConfigSlider(NestedElement):
             
         self.__get_rect_and_surface()
         
-        field_function = None
-        self.ValueField = SliderField(self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE)
+        if 'field_function' in self.definition:
+            field_function = self.button_functions[self.definition['field_function']]
+        else:
+            field_function = None
+        
+        self.ValueField = SliderField(self.button_functions, self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE)
         self.ValueField.min_value = self.min_value
         self.ValueField.max_value = self.max_value
         self.ValueField.max_value_to_inf = self.max_value_to_inf
         
         self.ValueField.value = self.max_value
-        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, field_function, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE)
+        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE)
         
         self.render()
     
@@ -234,3 +238,5 @@ class ConfigSlider(NestedElement):
             self.ValueField.value = self.max_value
                 
         self.ValueField.update(in_dialog)
+        
+    

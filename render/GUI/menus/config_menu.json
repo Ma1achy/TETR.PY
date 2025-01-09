@@ -385,6 +385,7 @@
                             "max_value": 83,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_arr_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -429,6 +430,7 @@
                             "max_value": 333,
                             "min_value": 17,
                             "step": 1,
+                            "field_function": "open_edit_das_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -473,6 +475,7 @@
                             "max_value": 333,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_dcd_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -517,6 +520,7 @@
                             "min_value": 5,
                             "max_value_to_inf": true,
                             "step": 1,
+                            "field_function": "open_edit_sdf_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -661,6 +665,7 @@
                             "max_value": 200,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_music_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -704,6 +709,7 @@
                             "max_value": 200,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_sfx_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -747,6 +753,7 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_stereo_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -924,6 +931,7 @@
                             "max_value": 200,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_board_bounciness_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -967,6 +975,7 @@
                             "max_value": 110,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_damage_shakiness_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1010,6 +1019,7 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_grid_visibility_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1053,6 +1063,7 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_board_visibility_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1096,6 +1107,7 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_shadow_visibility_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1139,6 +1151,7 @@
                             "max_value": 130,
                             "min_value": 50,
                             "step": 1,
+                            "field_function": "open_edit_board_zoom_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1321,6 +1334,7 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
+                            "field_function": "open_edit_particle_count_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1363,6 +1377,8 @@
                             "max_value": 100,
                             "min_value": 0,
                             "unit": "%",
+                            "step": 1,
+                            "field_function": "open_edit_background_visibility_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1481,6 +1497,7 @@
                             "max_value": 100,
                             "min_value": 25,
                             "step": 1,
+                            "field_function": "open_edit_render_scale_dialog",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",

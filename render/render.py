@@ -177,7 +177,7 @@ class StructRender():
     WINDOW_WIDTH = 1500 
     WINDOW_HEIGHT = 900
     
-    USE_RENDER_SCALE = False
+    USE_RENDER_SCALE = True
     APPLY_RENDER_SCALE_TO_FULLSCREEN = True
     RENDER_SCALE = 1
     

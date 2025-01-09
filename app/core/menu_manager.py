@@ -59,10 +59,35 @@ class MenuManager():
             "go_to_zen": self.go_to_zen,
             "go_to_custom": self.go_to_custom,
             
+            # config menu
             "go_to_account_settings": self.go_to_account_settings,
             "export_settings": self.export_settings,
-            "open_logout_dialog": self.open_logout_dialog
-    }
+            "open_logout_dialog": self.open_logout_dialog,
+            
+            # config handling
+            "open_edit_arr_dialog": self.open_edit_arr_dialog,
+            "open_edit_das_dialog": self.open_edit_das_dialog,
+            "open_edit_dcd_dialog": self.open_edit_dcd_dialog,
+            "open_edit_sdf_dialog": self.open_edit_sdf_dialog,
+            
+            # config audio
+            "open_edit_music_dialog": self.open_edit_music_dialog,
+            "open_edit_sfx_dialog": self.open_edit_sfx_dialog,
+            "open_edit_stereo_dialog": self.open_edit_stereo_dialog,
+            
+            # config gameplay
+            "open_edit_board_bounciness_dialog": self.open_edit_board_bounciness_dialog,
+            "open_edit_damage_shakiness_dialog": self.open_edit_damage_shakiness_dialog,
+            "open_edit_grid_visibility_dialog": self.open_edit_grid_visibility_dialog,
+            "open_edit_board_visibility_dialog": self.open_edit_board_visibility_dialog,
+            "open_edit_shadow_visibility_dialog": self.open_edit_shadow_visibility_dialog,
+            "open_edit_board_zoom_dialog": self.open_edit_board_zoom_dialog,
+            
+            # config video
+            "open_edit_particle_count_dialog": self.open_edit_particle_count_dialog,
+            "open_edit_background_visibility_dialog": self.open_edit_background_visibility_dialog,
+            "open_edit_render_scale_dialog": self.open_edit_render_scale_dialog,
+        }
         
         self.render_copied_text()
         
@@ -143,6 +168,438 @@ class MenuManager():
             width = 500
         )
         
+        self.EditARRDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'AUTO REPEAT RATE', 
+            message = "The speed at which tetrominoes move when holding down the movement keys." ,
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 2,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+
+        self.EditDASDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'DELAYED AUTO SHIFT', 
+            message = "The time between the initial key press and the automatic repeat movement." ,
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditDCDDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'DAS CUT DELAY',
+            message = "If non-zero, any ongoing DAS movement will pause for a set amount of time after dropping or rotating a piece." ,
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditSDFDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'SOFT DROP FACTOR',
+            message = "The factor the soft drop key scales the current gravity by.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 2,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditMusicDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'MUSIC',
+            message = "The volume at which music and jingles play.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditSFXDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'SOUND EFFECTS',
+            message = "The volume at which sound effects play.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditStereoDialog = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'STEREO',
+            message = "The stereo balance of the left and right channels.\nLarger values increase the difference between the left and right channels.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditBoardBounciness = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'BOARD BOUNCINESS',
+            message = "How much the board reacts when you move pieces around.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditDamageShakiness = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'DAMAGE SHAKINESS',
+            message = "How much the board reacts when you recieve damage.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditGridVisibility = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'GRID VISIBILITY',
+            message = "How visible the grid of the matrix is, 0% is invisible.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditBoardVisibility = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'BOARD VISIBILITY',
+            message = "How visible the board is, 0% is invisible.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditShadowVisibility = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'SHADOW VISIBILITY',
+            message = "How visible the shadow of the current tetromino is, 0% is invisible.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditBoardZoom = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'BOARD ZOOM',
+            message = "How large the board displays, values above 100% may cause the board to be cut off.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditParticleCount = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'PARTICLE COUNT',
+            message = "The number of particles to display.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditBackgroundVisibility = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'BACKGROUND VISIBILITY',
+            message = "How visible the background images are, 0% makes the background entirely black.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditRenderScale = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'RENDER SCALE',
+            message = "The factor of the windows resolution that the game is rendered at. Lower values will increase performance, but increase pixelation.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+               
         self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/login_menu.json')
         self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/home_menu.json')
         self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, menu_definition = 'render/GUI/menus/solo_menu.json')
@@ -327,6 +784,26 @@ class MenuManager():
         self.LogOutDialog.handle_window_resize()
         self.LoginDialog.handle_window_resize()
         
+        self.EditARRDialog.handle_window_resize()
+        self.EditDASDialog.handle_window_resize()
+        self.EditDCDDialog.handle_window_resize()
+        self.EditSDFDialog.handle_window_resize()
+        
+        self.EditMusicDialog.handle_window_resize()
+        self.EditSFXDialog.handle_window_resize()
+        self.EditStereoDialog.handle_window_resize()
+        
+        self.EditBoardBounciness.handle_window_resize()
+        self.EditDamageShakiness.handle_window_resize()
+        self.EditGridVisibility.handle_window_resize()
+        self.EditBoardVisibility.handle_window_resize()
+        self.EditShadowVisibility.handle_window_resize()
+        self.EditBoardZoom.handle_window_resize()
+        
+        self.EditParticleCount.handle_window_resize()
+        self.EditBackgroundVisibility.handle_window_resize()
+        self.EditRenderScale.handle_window_resize()
+    
         if self.ErrorDialog:
             self.ErrorDialog.handle_window_resize()
         
@@ -712,6 +1189,118 @@ class MenuManager():
         Export the user settings
         """
         self.ConfigManager.export_user_settings(self.AccountManager.user)
+        
+    def open_edit_arr_dialog(self):
+        """
+        Open the edit arr dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditARRDialog)
+        
+    def open_edit_das_dialog(self):
+        """
+        Open the edit das dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditDASDialog)
+    
+    def open_edit_dcd_dialog(self):
+        """
+        Open the edit dcd dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditDCDDialog)
+    
+    def open_edit_sdf_dialog(self):
+        """
+        Open the edit sdf dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditSDFDialog)
+    
+    def open_edit_music_dialog(self):
+        """
+        Open the edit music dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditMusicDialog)
+    
+    def open_edit_sfx_dialog(self):
+        """
+        Open the edit sfx dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditSFXDialog)
+    
+    def open_edit_stereo_dialog(self):
+        """
+        Open the edit stereo dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditStereoDialog)
+    
+    def open_edit_board_bounciness_dialog(self):
+        """
+        Open the edit board bounciness dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditBoardBounciness)
+    
+    def open_edit_damage_shakiness_dialog(self):
+        """
+        Open the edit damage shakiness dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditDamageShakiness)
+    
+    def open_edit_grid_visibility_dialog(self):
+        """
+        Open the edit grid visibility dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditGridVisibility)
+    
+    def open_edit_board_visibility_dialog(self):
+        """
+        Open the edit board visibility dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditBoardVisibility)
+    
+    def open_edit_shadow_visibility_dialog(self):
+        """
+        Open the edit shadow visibility dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditShadowVisibility)
+        
+    def open_edit_board_zoom_dialog(self):
+        """
+        Open the edit board zoom dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditBoardZoom)
+    
+    def open_edit_particle_count_dialog(self):
+        """
+        Open the edit particle count dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditParticleCount)
+    
+    def open_edit_background_visibility_dialog(self):
+        """
+        Open the edit background visibility dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditBackgroundVisibility)
+    
+    def open_edit_render_scale_dialog(self):
+        """
+        Open the edit render scale dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditRenderScale)
     
     # error dialog 
     

@@ -23,6 +23,7 @@ class TextInput():
         self.cursor_colour = hex_to_rgb(cursor_colour)
         
         self.font_type = font_type
+        
         self.font_size = int(font_size * self.RENDER_SCALE)
         
         self.base_path = 'resources/font/'
@@ -95,6 +96,9 @@ class TextInput():
         Get the value of the text within the input field
         """
         value = self.manager.value
+        
+        if value == '' or value is None:
+            return None
         
         match self.allowed_input:
             case 'int':
