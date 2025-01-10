@@ -3,6 +3,7 @@ from utils import draw_border, draw_solid_colour, apply_gaussian_blur_with_alpha
 from render.GUI.menu_elements.button_list import ButtonList
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.menu_elements.config_slider import ConfigSlider
+from render.GUI.buttons.checkbox_button import CheckboxButton
 class CollapsiblePanel(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1):
         super().__init__(parent = parent)
@@ -94,14 +95,20 @@ class CollapsiblePanel(NestedElement):
                 self.elements.append(button_list)
                 y += button_list.height
               
-            elif element['type'] == 'config_slider':
+            elif element['type'] == "config_slider":
                 config_slider = ConfigSlider(self.button_functions, self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
                 self.elements.append(config_slider)
                 y += config_slider.height
+            
+            elif element['type'] ==  "checkbox":
+                checkbox = CheckboxButton(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE)
+                self.elements.append(checkbox)
+                y += checkbox.height - int(12 * self.RENDER_SCALE)
                 
             y += int(10 * self.RENDER_SCALE)
             
-        y += int(25 * self.RENDER_SCALE)
+        y += int(30 * self.RENDER_SCALE)
+        
         return y   
       
     def render(self):
@@ -136,7 +143,6 @@ class CollapsiblePanel(NestedElement):
         self.panel_surface.blit(self.element_surface, (0, 0))
         self.surface.blit(self.panel_surface, self.rect.topleft)
         
-    
     def update(self, in_dialog):
         """
         Update the panel

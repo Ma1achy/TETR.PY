@@ -470,7 +470,7 @@ class WorkerManager:
         self.tasks.put(None)  # Stop signal
         self.tasks.join()     # Wait for all tasks to finish
         self.worker_thread.join()
-        self.executor.shutdown(wait=True)
+        self.executor.shutdown(wait = True)
 
 def main():
     app = TETRPY()

@@ -553,6 +553,234 @@
                                     }
                                 }
                             }
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "prevent accidental hard drops",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "When a piece locks on its own, the hard drop action is disabled for a few frames to prevent accidental hard drops."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "cancel DAS when changing directions",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                } 
+                            },
+                            "hover_text": "When changing directions the DAS charge is reset."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "prefer softdrop over movement",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "At very high speeds, the soft drop action will be performed before horziontal movement."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "prioritise the most recent direction",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "The most recent direction input will be prioritised when multiple directions are pressed."
                         }
                     ]
                 },
@@ -786,6 +1014,405 @@
                                     }
                                 }
                             }
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "scroll to change volume",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "Whether to allow scrolling ingame (or holding ALT and scrolling anywhere) to change the volume."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "mute music when hidden",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                } 
+                            },
+                            "hover_text": "If enabled, the background music will be muted when TETR.PY is minimised or tabbed away."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "hear next pieces",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "Wether to play a sound effect that signifies the next piece to spawn in."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "hear other players",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "Wether to hear the sound effects of of other players in multiplayer games."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "hear attacks",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "Wether to hear the sound effects of sent and received attacks in multiplayer games."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "do not reset music when retrying",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, the background music won't be reset when retrying a game."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "disable sound entirely",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, no audio will ever play. This will speed up the game, with a rather obvious drawback."
                         }
                     ]
                 },
@@ -1184,6 +1811,348 @@
                                     }
                                 }
                             }
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "show duels side-by-side",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "Wether to display a duel side-by-side, this causes your board to be shifted to the left slightly."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "spin the board when you spin a piece",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "When enabled, the board reactions to spins by rotating a little bit with it."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "alert me when i KO someone",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, show a popup when you KO someone or you get KO'd."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "warn me when i'm in danger",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, the board will turn red and a warning sound will play when you're in danger."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "coloured shadow piece",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, the shadow piece will be coloured to match the piece it represents."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "grey out locked held piece",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, the held piece will be greyed out when it's locked."
                         }
                     ]
                 },
@@ -1531,6 +2500,291 @@
                                 }
                             },
                             "hover_text": "The factor of the windows resolution that the game is rendered at. Lower values will increase performance, but increase pixelation."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "fullscreen",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "Wether to enable fullscreen mode."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "always simplify other players boards",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, the boards of other players will always be simplified. This will increase performance, but looks less nice."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "no background in menus",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, the background will not be rendered when in menus. This will majorly increase performance, however you will no longer see the backgrounds."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "keep replay tools open",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, the replay tools do not collapse when you're not using them."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "warn me when the game is not focused",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "If enabled, a warning is displayed when TETR.PY is not in focus."
                         }
                     ]
                 },
