@@ -3,6 +3,7 @@ from render.GUI.font import Font
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.buttons.slider_field import SliderField
 from render.GUI.buttons.slider_knob import SliderKnob
+from render.GUI.buttons.invisible_button import InvisibleButton
 
 class ConfigSlider(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
@@ -96,7 +97,14 @@ class ConfigSlider(NestedElement):
         self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE)
         
         self.render()
-    
+        
+        self.slider_bar_button = InvisibleButton(self.Timing, self.slider_surface, self.Mouse, None, self.slider_bar_rect, None, self.RENDER_SCALE)
+        
+        self.title_width = self.title_font.get_width()
+        self.title_height = self.title_font.font.get_height()
+        self.title_rect = pygame.Rect(self.x_padding * 2, self.y_padding, self.title_width + self.x_padding, self.height - self.y_padding * 2)
+        self.title_invisible_button = InvisibleButton(self.Timing, self.slider_surface, self.Mouse, None, self.title_rect, None, self.RENDER_SCALE)
+     
     def get_title(self):
         """
         Get the title of the slider
@@ -173,9 +181,11 @@ class ConfigSlider(NestedElement):
     def update(self, in_dialog):
         
         self.update_field(in_dialog)
+        self.update_slider_bar(in_dialog)
         self.draw()
+        self.update_title_invisible_button(in_dialog)
         self.update_knob(in_dialog)
-    
+       
     def value_to_position(self, value):
         """
         Convert the value to a position on the slider
@@ -230,6 +240,12 @@ class ConfigSlider(NestedElement):
         self.position_to_value()
         
         self.Knob.update(in_dialog)
+    
+    def update_slider_bar(self, in_dialog):
+        self.slider_bar_button.update(in_dialog)
+    
+    def update_title_invisible_button(self, in_dialog):
+        self.title_invisible_button.update(in_dialog)
     
     def update_field(self, in_dialog):
         if self.ValueField.value < self.min_value:

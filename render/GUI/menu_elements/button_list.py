@@ -2,6 +2,7 @@ import pygame
 from render.GUI.font import Font
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.buttons.button_list_buttons import ButtonListButtons
+from render.GUI.buttons.invisible_button import InvisibleButton
 
 class ButtonList(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
@@ -42,12 +43,14 @@ class ButtonList(NestedElement):
         self.height = int(65 * self.RENDER_SCALE)
         
         self.buttons = []
+        self.title_hover_button = None
         
         self.title_font = Font('d_din_bold', self.title_font_size)
         self.title_text = self.get_title()
         self.__get_rect_and_surface()
         self.__init_buttons()
         self.render()
+        self.get_title_hover_button()
     
     def get_title(self):
         """
@@ -57,6 +60,15 @@ class ButtonList(NestedElement):
             self.title = True
             return self.definition['title']
         self.title = False
+    
+    def get_title_hover_button(self):
+        if 'title' not in self.definition:
+            return
+        
+        self.title_width = self.title_font.get_width()
+        self.title_height = self.title_font.font.get_height()
+        self.title_rect = pygame.Rect(int(15 * self.RENDER_SCALE), int(10 * self.RENDER_SCALE), self.title_width, self.title_height) 
+        self.title_hover_button = InvisibleButton(self.Timing, self.button_list_surface, self.Mouse, None, self.title_rect, None, self.RENDER_SCALE)
         
     def get_local_position(self):
         """
@@ -155,6 +167,17 @@ class ButtonList(NestedElement):
         self.buttons_surface.fill((0, 0, 0, 0))
         for button in self.buttons:
             button.update(in_dialog)
+        
+        self.update_title_hover_button(in_dialog)
+    
+    def update_title_hover_button(self, in_dialog):
+        """
+        Update the hover button for the title
+        """
+        if self.title_hover_button is None:
+            return
+        
+        self.title_hover_button.update(in_dialog)
     
     def on_click(self):
         """

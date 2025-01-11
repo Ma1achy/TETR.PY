@@ -230,8 +230,9 @@
                                             "#252c3d"
                                         ]
                                     }
-                                    }
                                 }
+                            },
+                            "hover_text": "Change the keybinding scheme."
                         }
                     ]
                 },
@@ -1545,8 +1546,9 @@
                                             "#252c3d"
                                         ]
                                     }
-                                    }
                                 }
+                            },
+                            "hover_text": "Change the amount of action text that is displayed when doing special attacks."
                         },
                         {
                             "type": "config_slider",
@@ -2290,8 +2292,9 @@
                                             "#252c3d"
                                         ]
                                     }
-                                    }
                                 }
+                            },
+                            "hover_text": "The grahical quality preset to be used."
                         },
                         {
                             "type": "config_slider",
@@ -2458,8 +2461,9 @@
                                             "#252c3d"
                                         ]
                                     }
-                                    }
                                 }
+                            },
+                            "hover_text": "The target frame rate the game will try to achieve."
                         },
                         {
                             "type": "button_list",
@@ -2533,8 +2537,9 @@
                                             "#252c3d"
                                         ]
                                     }
-                                    }
                                 }
+                            },
+                            "hover_text": "EXPERIMENTAL: This can increase performance even when the render scale is set to 100%. Visual artifacts and other bugs may occur."
                         },
                         {
                             "type": "config_slider",
@@ -3099,8 +3104,9 @@
                                             "#252c3d"
                                         ]
                                     }
-                                    }
                                 }
+                            },
+                            "hover_text": "Change the way the tetromino blocks look."
                         }     
                     ]
                 },

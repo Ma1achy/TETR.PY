@@ -23,4 +23,6 @@ class InvisibleButton(Button):
         Get the position of the button relative to the container it is in for collision detection
         """
         return self.container.topleft
-        
+    
+    def draw(self): # debug drawing, so you can see the button
+        pygame.draw.rect(self.surface, (255, 0, 0), self.collision_rect, 1)
