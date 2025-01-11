@@ -71,7 +71,7 @@ class CheckboxButton(Button):
         
         self.active_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.inactive_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-    
+        
     def render_shadow(self):
         pygame.draw.rect(self.shadow_surf, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rectangle.width - 4 * self.shadow_radius, self.shadow_rectangle.height - 4 * self.shadow_radius))
         self.shadow_surf = apply_gaussian_blur_with_alpha(self.shadow_surf, self.shadow_radius)

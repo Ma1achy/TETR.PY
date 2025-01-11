@@ -35,7 +35,11 @@ class CollapsiblePanel(NestedElement):
         self.x_position = self.container.width // 6
     
         self.elements = []
+        
         self.open = False
+        
+        self.currently_open = False
+        self.previous_open = False
         
         self.width = self.container.width - self.container.width // 3
         self.height = int(200 * self.RENDER_SCALE)
@@ -53,7 +57,15 @@ class CollapsiblePanel(NestedElement):
         self.do_menu_leave_transition = False
         self.menu_transition_timer = 0
         self.menu_transition_time = 0.2
-    
+        
+        self.on_screen = False
+        
+        self.currently_hovered = False
+        self.previous_hovered = False
+        self.use_cached_image = False
+        
+        self.on_screen_rect = self.surface.get_rect()
+        
     def get_local_position(self):
         """
         Get the position of the panel relative to the container it is in for collision detection.
@@ -70,7 +82,11 @@ class CollapsiblePanel(NestedElement):
         
         self.shadow_rect = pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
-    
+        
+        self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        
+        self.cached_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        
     def __get_height(self):
         """
         Get the height of the panel based on the elements in it
@@ -139,6 +155,14 @@ class CollapsiblePanel(NestedElement):
         """
         Draw the panel and its shadow
         """
+        if not self.on_screen:
+            return
+        
+        if self.use_cached_image:
+            self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+            self.surface.blit(self.cached_surface, self.rect.topleft)
+            return
+        
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.panel_surface.blit(self.element_surface, (0, 0))
         self.surface.blit(self.panel_surface, self.rect.topleft)
@@ -147,14 +171,29 @@ class CollapsiblePanel(NestedElement):
         """
         Update the panel
         """
+        self.previous_open = self.currently_open
         self.open = self.linked_header.open
+        self.currently_open = self.open
+        
+        if self.currently_open and not self.previous_open:
+            self.create_inital_cached_image()
+            return
             
         if not self.open:
             self.reset_state()
             return
         
         self.handle_scroll()
-        self.update_elements(in_dialog)
+        self.check_if_on_screen()
+        
+        if not self.on_screen:
+            return
+        
+        self.update_hover(in_dialog)
+        
+        if self.currently_hovered and not self.use_cached_image:
+            self.update_elements(in_dialog)  
+             
         self.animate_menu_enter_transition()
         self.animate_menu_leave_transition()
     
@@ -187,12 +226,18 @@ class CollapsiblePanel(NestedElement):
         """
         Start the menu enter transition animation
         """
+        if not self.on_screen:
+            return
+        
         self.do_menu_enter_transition = True
     
     def do_menu_leave_transition_animation(self):
         """
         Start the menu leave transition animation
         """
+        if not self.on_screen:
+            return
+        
         self.do_menu_leave_transition = True
     
     def animate_menu_enter_transition(self):
@@ -285,3 +330,65 @@ class CollapsiblePanel(NestedElement):
         
         self.panel_surface.set_alpha(alpha)
         self.shadow_surface.set_alpha(alpha)
+        self.cached_surface.set_alpha(alpha)
+    
+    def check_if_on_screen(self):
+        """
+        Check if the panel is on screen
+        """
+        if self.rect.bottom > 0 and self.rect.top < self.on_screen_rect.height:
+            self.on_screen = True
+            return
+        self.on_screen = False
+        
+    def check_hover(self):
+        """
+        Check if the mouse is hovering over the panel.
+        """
+        x, y = self.Mouse.position
+        
+        self.collision_rect.topleft = self.get_screen_position()
+        
+        if self.collision_rect.collidepoint((x, y)):
+            self.currently_hovered = True
+            return
+        self.currently_hovered = False
+    
+    def update_hover(self, in_dialog):
+        """
+        Update the hover state of the panel
+        """
+        if in_dialog and not self.use_cached_image:
+            self.create_cached_image()
+            self.use_cached_image = True
+            return
+            
+        self.previous_hovered = self.currently_hovered
+        self.check_hover()
+        
+        if self.currently_hovered:
+            self.use_cached_image = False
+            return
+        
+        if not self.currently_hovered and self.previous_hovered and not self.use_cached_image:
+            self.create_cached_image()
+            self.use_cached_image = True
+            
+    def create_cached_image(self):
+        """
+        Create a cached image of the panel
+        """ 
+        self.cached_surface.fill((0, 0, 0, 0))
+        
+        for element in self.elements:
+            element.reset_state()
+            element.update(in_dialog = True)
+
+        self.draw()
+        self.cached_surface.blit(self.panel_surface, (0, 0))
+        self.cached_surface.blit(self.element_surface, (0, 0))
+   
+    def create_inital_cached_image(self):
+        for i in range(3):
+            self.update_elements(in_dialog = False)
+            self.create_cached_image()

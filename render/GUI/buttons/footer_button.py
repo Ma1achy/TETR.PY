@@ -45,7 +45,7 @@ class FooterButton(Button):
         
         self.shadow_rect =  pygame.Rect(self.x_position - self.shadow_radius * 2, self.y_position - self.shadow_radius * 2, self.rect.width + self.shadow_radius * 4, self.rect.height + self.shadow_radius * 4)
         self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
-    
+        
     def render(self):
         """
         Render the button and its shadow

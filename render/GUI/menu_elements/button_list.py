@@ -163,7 +163,12 @@ class ButtonList(NestedElement):
         for button in self.buttons:
             button.active = False
     
-        
+    def reset_state(self):
+        """
+        Reset the state of the button list
+        """
+        for button in self.buttons:
+            button.reset_state()
         
     
         

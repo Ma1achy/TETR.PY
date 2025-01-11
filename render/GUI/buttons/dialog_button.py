@@ -57,7 +57,7 @@ class DialogButton(Button):
         """
         self.__get_alignment(self.alignment)
         self.button_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA | pygame.HWSURFACE)
-    
+        
     def __get_alignment(self, alignment):
         """
         Align the button within the container

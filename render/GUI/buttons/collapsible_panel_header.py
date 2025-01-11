@@ -255,6 +255,9 @@ class CollapsiblePanelHeader(Button):
         if not hasattr(self, 'button_surface') or self.button_surface is None:
             return 
         
+        if not self.on_screen:
+            return
+        
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.surface.blit(self.button_surface, self.rect.topleft)
         self.surface.blit(self.element_surface, self.rect.topleft)
@@ -270,6 +273,9 @@ class CollapsiblePanelHeader(Button):
         """
         Update the elements of the button
         """
+        if not self.on_screen:
+            return
+        
         self.element_surface.fill((0, 0, 0, 0))
         
         if not self.open:

@@ -238,5 +238,12 @@ class ConfigSlider(NestedElement):
             self.ValueField.value = self.max_value
                 
         self.ValueField.update(in_dialog)
+    
+    def reset_state(self):
+        """
+        Reset the state of the slider
+        """
+        self.ValueField.reset_state()
+        self.Knob.reset_state()
         
     

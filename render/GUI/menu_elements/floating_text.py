@@ -44,6 +44,8 @@ class FloatingText():
         self.menu_transition_timer = 0
         self.menu_transition_time = 0.20
         
+        self.on_screen = False
+        
     def get_rect_and_surface(self):
         """
         Get the rects and surfaces for the text
@@ -54,11 +56,16 @@ class FloatingText():
         
         self.font_rect = self.main_font.rendered_text.get_rect(topleft = self.get_alignment())
         self.font_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        
+        self.on_screen_rect = self.surface.get_rect()
     
     def draw(self):
         """
         Draw the text
         """
+        if not self.on_screen:
+            return
+        
         self.surface.blit(self.font_surface, self.font_rect)
 
     def render(self):
@@ -73,6 +80,7 @@ class FloatingText():
         Update the text
         """
         self.handle_scroll()
+        self.check_if_on_screen()
         self.animate_menu_enter_transition()
         self.animate_menu_leave_transition()
     
@@ -210,6 +218,17 @@ class FloatingText():
         alpha = max(0, min(self.font_alpha, alpha))
         
         self.font_surface.set_alpha(alpha)
+    
+    def check_if_on_screen(self):
+        """
+        Check if the panel is on screen
+        """
+        if self.font_rect.bottom > 0 and self.font_rect.top < self.on_screen_rect.height:
+            self.on_screen = True
+            return
+        self.on_screen = False
+        
+
         
         
         

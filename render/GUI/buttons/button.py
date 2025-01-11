@@ -91,6 +91,9 @@ class Button(NestedElement):
         
         self.menu_transition_timer = 0
         self.menu_transition_time = 0.20
+        
+        self.on_screen = False
+        self.on_screen_rect = self.surface.get_rect()
          
     def get_local_position(self):
         """
@@ -169,6 +172,9 @@ class Button(NestedElement):
         """
         if not hasattr(self, 'button_surface') or self.button_surface is None:
             return 
+        
+        if not self.on_screen:
+            return
         
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.surface.blit(self.button_surface, self.rect.topleft)
@@ -256,6 +262,9 @@ class Button(NestedElement):
         if self.do_menu_enter_transition or self.do_menu_leave_transition:
             return
         
+        if not self.on_screen:
+            return
+        
         self.check_hover()
         self.update_click()
         self.check_events()
@@ -265,6 +274,7 @@ class Button(NestedElement):
         Update the button.
         """
         self.handle_scroll()
+        self.check_if_on_screen()
         self.update_state(in_dialog)
             
         if self.state is None and self.previous_state is None:
@@ -303,6 +313,9 @@ class Button(NestedElement):
         """
         Handle the start of the hover state.
         """
+        if not self.on_screen:
+            return
+        
         self.slider_hover_end_timer = 0
         self.slider_hover_start_animation()
  
@@ -318,6 +331,9 @@ class Button(NestedElement):
         """
         Handle the end of the hover state.
         """
+        if not self.on_screen:
+            return
+        
         self.slider_hover_start_timer = 0
         self.slider_hover_end_animation()
      
@@ -333,6 +349,9 @@ class Button(NestedElement):
         """
         Handle the start of the pressed state.
         """
+        if not self.on_screen:
+            return
+        
         self.slider_pressed_end_timer = 0
         self.slider_pressed_start_animation()
 
@@ -348,6 +367,9 @@ class Button(NestedElement):
         """
         Handle the end of the pressed state.
         """
+        if not self.on_screen:
+            return
+        
         self.slider_pressed_start_timer = 0
         self.slider_pressed_end_animation()
 
@@ -722,4 +744,13 @@ class Button(NestedElement):
         self.hover_surface.set_alpha(alpha)
         self.pressed_surface.set_alpha(alpha)
         self.shadow_surface.set_alpha(alpha)
+    
+    def check_if_on_screen(self):
+        """
+        Check if the panel is on screen
+        """
+        if self.rect.bottom > 0 and self.rect.top < self.on_screen_rect.height:
+            self.on_screen = True
+            return
+        self.on_screen = False
         
