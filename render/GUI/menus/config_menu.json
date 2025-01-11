@@ -2380,6 +2380,86 @@
                                     }
                                 }
                             }
+                        },    
+                        {
+                            "type": "button_list",
+                            "title": "TARGET FPS",
+                            "buttons": [
+                                {
+                                    "display_text": "30",
+                                    "function": "turn_off_render_scale",
+                                    "hover_text": "Limit the frame rate to 30 frames per second."
+                                },
+                                {
+                                    "display_text": "60",
+                                    "function": "toggle_dynamic_render_scale",
+                                    "hover_text": "Limit the frame rate to 60 frames per second."
+                                },
+                                {
+                                    "display_text": "144",
+                                    "function": "toggle_restricted_render_scale",
+                                    "hover_text": "Limit the frame rate to 144 frames per second."
+                                },
+                                {
+                                    "display_text": "UNLIMITED",
+                                    "function": "toggle_restricted_render_scale",
+                                    "hover_text": "Don't limit the frame rate."
+                                }
+                            ],
+                            "themeing": {
+                                "title_colour": "#7b89ad",
+                                "background_colour": "#12151D",
+                                "inactive": {
+                                    "text_colour": "#7f9ddf",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#22293b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#2d364b"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e232d"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#33405c"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#1b1f28"
+                                        ]
+                                    }
+                                },
+                                "active": {
+                                    "text_colour": "#aec0ee",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#11141b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0e1015"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1d222f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#0b0c10"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#252c3d"
+                                        ]
+                                    }
+                                    }
+                                }
                         },
                         {
                             "type": "button_list",
@@ -2501,6 +2581,51 @@
                             },
                             "hover_text": "The factor of the windows resolution that the game is rendered at. Lower values will increase performance, but increase pixelation."
                         },
+                        {
+                            "type": "config_slider",
+                            "title": "GUI scale",
+                            "left_end_text": "LOW",
+                            "right_end_text": "HIGH",
+                            "start_x": 170,
+                            "unit": "%",
+                            "max_value": 200,
+                            "min_value": 25,
+                            "step": 1,
+                            "field_function": "open_edit_gui_scale_dialog",
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#283145"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "The size of the GUI elements, 100% is the default size."
+                        },  
                         {
                             "type": "checkbox",
                             "text": "fullscreen",
@@ -2845,7 +2970,138 @@
                         ] 
                     },
                     "elements": [
-                        
+                        {
+                            "type": "checkbox",
+                            "text": "use custom background image",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#94a8dc",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#687ca3"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#7990be"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#4f5f7e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#91ace2"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#485673"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#6275a7",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#0f1116"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "0c0d0f"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e2026"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#070708"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#23262c"
+                                        ]
+                                    }
+                                }
+                            },
+                            "hover_text": "Wether to use provided custom backgrond image(s)."
+                        },
+                        {
+                            "type": "button_list",
+                            "title": "BLOCK SKIN",
+                            "buttons": [
+                                {
+                                    "display_text": "DEFAULT",
+                                    "function": "turn_off_render_scale",
+                                    "hover_text": "Use the default textures for the tetromino blocks."
+                                },
+                                {
+                                    "display_text": "PROGRAMMER",
+                                    "function": "toggle_dynamic_render_scale",
+                                    "hover_text": "Draw the tetromino blocks as a singular solid colour, this is more performant as no textures are used."
+                                },
+                                {
+                                    "display_text": "CUSTOM",
+                                    "function": "toggle_restricted_render_scale",
+                                    "hover_text": "Use a provided custom texture for the tetromino blocks."
+                                }
+                            ],
+                            "themeing": {
+                                "title_colour": "#7b89ad",
+                                "background_colour": "#12151D",
+                                "inactive": {
+                                    "text_colour": "#7f9ddf",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#22293b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#2d364b"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1e232d"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#33405c"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#1b1f28"
+                                        ]
+                                    }
+                                },
+                                "active": {
+                                    "text_colour": "#aec0ee",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#11141b"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0e1015"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#1d222f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#0b0c10"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#252c3d"
+                                        ]
+                                    }
+                                    }
+                                }
+                        }     
                     ]
                 },
                 {

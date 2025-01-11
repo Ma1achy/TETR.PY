@@ -87,6 +87,7 @@ class MenuManager():
             "open_edit_particle_count_dialog": self.open_edit_particle_count_dialog,
             "open_edit_background_visibility_dialog": self.open_edit_background_visibility_dialog,
             "open_edit_render_scale_dialog": self.open_edit_render_scale_dialog,
+            'open_edit_gui_scale_dialog': self.open_edit_gui_scale_dialog,
         }
         
         self.render_copied_text()
@@ -553,6 +554,33 @@ class MenuManager():
             self.RenderStruct, 
             title = 'BACKGROUND VISIBILITY',
             message = "How visible the background images are, 0% makes the background entirely black.",
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.close_dialog, lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
+            
+            TextEntry = TextInput(
+                allowed_input = 'int',
+                no_empty_input = True,
+                max_chars = 3,
+                force_caps = True,
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue = self.pygame_events_queue,
+                function = None,
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+            )
+        )
+        
+        self.EditGUIScale = DialogBox(
+            self.Timing, 
+            self.window, 
+            self.Mouse, 
+            self.RenderStruct, 
+            title = 'GUI SCALE',
+            message = "The size of the GUI elements, 100% is the default size.",
             buttons = ['CANCEL', 'SUBMIT'],
             funcs = [self.close_dialog, lambda: None], 
             click_off_dissmiss = True, 
@@ -1295,6 +1323,13 @@ class MenuManager():
         self.current_menu.reset_state()
         self.open_dialog(self.EditBackgroundVisibility)
     
+    def open_edit_gui_scale_dialog(self):
+        """
+        Open the edit gui scale dialog
+        """
+        self.current_menu.reset_state()
+        self.open_dialog(self.EditGUIScale)
+        
     def open_edit_render_scale_dialog(self):
         """
         Open the edit render scale dialog

@@ -171,8 +171,9 @@ class ConfigSlider(NestedElement):
         self.surface.blit(self.slider_surface, (self.x_position, self.y_position))
         
     def update(self, in_dialog):
-        self.draw()
+        
         self.update_field(in_dialog)
+        self.draw()
         self.update_knob(in_dialog)
     
     def value_to_position(self, value):

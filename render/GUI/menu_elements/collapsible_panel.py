@@ -341,10 +341,20 @@ class CollapsiblePanel(NestedElement):
             return
         self.on_screen = False
         
-    def check_hover(self):
+    def check_hover(self, in_dialog):
         """
         Check if the mouse is hovering over the panel.
         """
+        self.previous_hovered = self.currently_hovered
+        
+        if in_dialog:
+            self.currently_hovered = False
+            return
+        
+        if not self.on_screen:
+            self.currently_hovered = False
+            return
+        
         x, y = self.Mouse.position
         
         self.collision_rect.topleft = self.get_screen_position()
@@ -358,19 +368,18 @@ class CollapsiblePanel(NestedElement):
         """
         Update the hover state of the panel
         """
-        if in_dialog and not self.use_cached_image:
+        self.check_hover(in_dialog)
+        
+        if in_dialog:
             self.create_cached_image()
             self.use_cached_image = True
             return
             
-        self.previous_hovered = self.currently_hovered
-        self.check_hover()
-        
         if self.currently_hovered:
             self.use_cached_image = False
             return
         
-        if not self.currently_hovered and self.previous_hovered and not self.use_cached_image:
+        if not self.currently_hovered and self.previous_hovered:
             self.create_cached_image()
             self.use_cached_image = True
             
@@ -378,17 +387,20 @@ class CollapsiblePanel(NestedElement):
         """
         Create a cached image of the panel
         """ 
+        if self.use_cached_image:
+            return
+        
         self.cached_surface.fill((0, 0, 0, 0))
         
         for element in self.elements:
             element.reset_state()
             element.update(in_dialog = True)
-
-        self.draw()
+        
+        self.panel_surface.set_alpha(255)
+        self.element_surface.set_alpha(255)
         self.cached_surface.blit(self.panel_surface, (0, 0))
         self.cached_surface.blit(self.element_surface, (0, 0))
-   
+        
     def create_inital_cached_image(self):
-        for i in range(3):
-            self.update_elements(in_dialog = False)
-            self.create_cached_image()
+        self.update_elements(in_dialog = False)
+        self.create_cached_image()
