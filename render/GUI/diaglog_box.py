@@ -3,7 +3,7 @@ import pygame
 from utils import hex_to_rgb, smoothstep, TransformSurface, align_left_edge, align_right_edge, align_centre
 from render.GUI.font import Font
 from render.GUI.buttons.dialog_button import DialogButton
-from render.GUI.buttons.invisible_button import InvisibleButton
+from render.GUI.buttons.dialog_click_off_button import DialogClickOffButton
 import re
 from render.GUI.menu_elements.nested_element import NestedElement
 import math
@@ -320,10 +320,10 @@ class DialogBox(NestedElement):
         if not self.click_off_dissmiss:
             return
         
-        self.invisible_button1 = InvisibleButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.window.get_rect().top, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None)
-        self.invisible_button2 = InvisibleButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, (self.window.get_rect().bottom + self.height)//2, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None)
-        self.invisible_button3 = InvisibleButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None)
-        self.invisible_button4 = InvisibleButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.dialog_rect.right, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None)
+        self.invisible_button1 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.window.get_rect().top, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None, RENDER_SCALE = 1)
+        self.invisible_button2 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, (self.window.get_rect().bottom + self.height)//2, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None, RENDER_SCALE = 1)
+        self.invisible_button3 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None, RENDER_SCALE = 1)
+        self.invisible_button4 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.dialog_rect.right, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None, RENDER_SCALE = 1)
     
     def handle_window_resize(self):
         """

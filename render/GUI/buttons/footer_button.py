@@ -2,8 +2,8 @@ import pygame
 from utils import load_image, draw_solid_colour, draw_border, align_centre, apply_gaussian_blur_with_alpha
 from render.GUI.buttons.button import Button
 class FooterButton(Button):
-    def __init__(self, Timing, function, Mouse, surface, container, definition, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, 70, 100, style = 'lighten', maintain_alpha = False, slider = 'up', parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, Timing, function, Mouse, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, 70, 100, style = 'lighten', maintain_alpha = False, slider = 'up', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = None)
         """
         A button that is used in the footer of the screen
         
@@ -33,6 +33,7 @@ class FooterButton(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+        self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
         

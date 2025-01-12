@@ -4,8 +4,8 @@ from render.GUI.font import Font
 import pygame
 
 class ButtonListButtons(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, themeing, function, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, container.width, container.height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, Timing, Mouse, surface, container, definition, themeing, function, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, container.width, container.height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A list of buttons where only one can be active at a time
         """
@@ -40,7 +40,8 @@ class ButtonListButtons(Button):
         self.render()
         self.get_overlays()
         self.update_apperance()
-
+        self.init_tooltip(self.definition)
+        
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
         
     def get_local_position(self):

@@ -4,8 +4,8 @@ from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 
 class CheckboxButton(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, background_colour, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, None, container, width = container.width, height = container.height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, background_colour, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, None, container, width = container.width, height = container.height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         
         self.RENDER_SCALE = RENDER_SCALE
         
@@ -55,7 +55,8 @@ class CheckboxButton(Button):
         self.__get_rect_and_surface()
         self.render_shadow()
         self.render_states()
-    
+        self.init_tooltip(self.definition)
+        
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
     
     def get_local_position(self):

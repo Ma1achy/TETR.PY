@@ -5,8 +5,8 @@ from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
 
 class CollapsiblePanelHeader(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A button that can be clicked to open or close a collapsible panel
         
@@ -20,6 +20,7 @@ class CollapsiblePanelHeader(Button):
             parent (Object): the parent UI element
         """
         self.RENDER_SCALE = RENDER_SCALE
+        self.ToolTips = ToolTips
         
         self.Timing = Timing
         self.Mouse = Mouse
@@ -51,6 +52,7 @@ class CollapsiblePanelHeader(Button):
         self.__render_states()
         self.get_state_overlays()
         self.__init_elements()
+        self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
     
@@ -66,7 +68,7 @@ class CollapsiblePanelHeader(Button):
         for element in self.definition['elements']:
             if element['type'] == 'generic_button':
                 function = None
-                self.elements.append(GenericButton(self.Timing, self.Mouse, self.element_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE))
+                self.elements.append(GenericButton(self.Timing, self.Mouse, self.element_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips))
     
     def render(self):
         """

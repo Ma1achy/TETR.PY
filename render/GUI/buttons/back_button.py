@@ -4,8 +4,8 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class BackButton(Button):
-    def __init__(self, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         Back button for a menu
         
@@ -36,6 +36,7 @@ class BackButton(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+        self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
           
@@ -73,5 +74,7 @@ class BackButton(Button):
         
         pygame.draw.rect(self.shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.width, self.height)) # remove the area the button takes up from the shadow
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+    
+    
 
         

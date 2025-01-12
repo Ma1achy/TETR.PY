@@ -2,27 +2,37 @@ from render.GUI.buttons.button import Button
 import pygame
 
 class InvisibleButton(Button):
-    def __init__(self, Timing, surface, Mouse, function, container, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, width = container.width, height = container.height, style = None, maintain_alpha = False, parent = parent, RENDER_SCALE = RENDER_SCALE)
-        """
-        An invisible button that can be used for any purpose
+    def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+       
+        self.RENDER_SCALE = RENDER_SCALE
+        self.x_position = rect.x
+        self.y_position = container.y
         
-        args:
-            Timing (Timing): the Timing object
-            surface (pygame.Surface): the surface to draw the button on
-            Mouse (Mouse): the Mouse object
-            function (callable): the function to call when the button is pressed
-            container (pygame.Rect): the container the button is in
-            parent (Object): the parent UI element
-        """
-        self.get_rect_and_surface()
+        self.width = width
+        self.height = height
+        self.rect = rect
+                  
+        self.definition = definition
+ 
+        self.__get_rect_and_surface()
+        self.render()
+        self.init_tooltip(self.definition)
+        
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
-    
+     
     def get_local_position(self):
-        """
-        Get the position of the button relative to the container it is in for collision detection
-        """
-        return self.container.topleft
+        return self.rect.topleft
     
-    def draw(self): # debug drawing, so you can see the button
-        pygame.draw.rect(self.surface, (255, 0, 0), self.collision_rect, 1)
+    def __get_rect_and_surface(self):
+        self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
+        
+    def render(self):
+        return
+        self.render_button()
+    
+    def render_button(self):
+        pygame.draw.rect(self.button_surface, (255, 0, 0), self.button_surface.get_rect(), 1)
+
+    def draw(self):
+        super().draw()

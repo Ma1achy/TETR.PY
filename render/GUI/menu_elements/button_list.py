@@ -5,7 +5,7 @@ from render.GUI.buttons.button_list_buttons import ButtonListButtons
 from render.GUI.buttons.invisible_button import InvisibleButton
 
 class ButtonList(NestedElement):
-    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
+    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
         """
         A list of buttons where only one can be active at a time
@@ -21,6 +21,7 @@ class ButtonList(NestedElement):
         """
         self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
+        self.ToolTips = ToolTips
         
         self.Timing = Timing
         self.Mouse = Mouse
@@ -45,6 +46,8 @@ class ButtonList(NestedElement):
         self.buttons = []
         self.title_hover_button = None
         
+        self.tooltip = {"tooltip": self.definition['tooltip']} if 'tooltip' in self.definition else None
+        
         self.title_font = Font('d_din_bold', self.title_font_size)
         self.title_text = self.get_title()
         self.__get_rect_and_surface()
@@ -68,7 +71,8 @@ class ButtonList(NestedElement):
         self.title_width = self.title_font.get_width()
         self.title_height = self.title_font.font.get_height()
         self.title_rect = pygame.Rect(int(15 * self.RENDER_SCALE), int(10 * self.RENDER_SCALE), self.title_width, self.title_height) 
-        self.title_hover_button = InvisibleButton(self.Timing, self.button_list_surface, self.Mouse, None, self.title_rect, None, self.RENDER_SCALE)
+        
+        self.title_hover_button = InvisibleButton(self.title_width, self.title_height, self.title_rect, None, self.Mouse, self.Timing, self.button_list_surface, self.title_rect, self.tooltip, self, self.RENDER_SCALE, self.ToolTips)
         
     def get_local_position(self):
         """
@@ -100,7 +104,7 @@ class ButtonList(NestedElement):
         """
         button_rect = self.get_button_rect(idx) 
         function = None
-        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.buttons_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE))     
+        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.buttons_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips))     
     
     def get_button_rect(self, idx):
         """

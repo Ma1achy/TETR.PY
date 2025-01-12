@@ -55,7 +55,6 @@
             }
         },
         "menu": {
-            "scrollable": true,
             "elements": [
                 {
                     "type": "bar_button",

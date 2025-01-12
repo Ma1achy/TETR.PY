@@ -5,8 +5,8 @@ from render.GUI.diaglog_box import DialogBox
 from render.GUI.menu_elements.text_input import TextInput
 
 class SliderField(Button):
-    def __init__(self, button_functions, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, button_functions, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A field value button for a slider of the config menu
         
@@ -50,6 +50,7 @@ class SliderField(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+        self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
      

@@ -3,7 +3,7 @@ import pygame
 from app.input.mouse.mouse import MouseEvents
 from render.GUI.menu_elements.nested_element import NestedElement
 class Button(NestedElement):
-    def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None, RENDER_SCALE = 1):
+    def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
         """
         Base button class
@@ -21,6 +21,9 @@ class Button(NestedElement):
             slider (str): the direction the button slides in
         """
         self.RENDER_SCALE = RENDER_SCALE
+        
+        self.ToolTips = ToolTips
+        self.tooltip = None
         
         self.Timing = Timing
         self.surface = surface
@@ -288,7 +291,7 @@ class Button(NestedElement):
                   
         if self.state == 'hovered':
             self.handle_hover_start_events()
-        
+            
         elif self.state is None and self.previous_state == 'hovered':
             self.handle_hover_end_events()
         
@@ -324,7 +327,8 @@ class Button(NestedElement):
         
         if self.hover_timer >= self.hover_surface_transition_time:
             self.hover_timer = self.hover_surface_transition_time
-        
+            self.draw_tooltip()
+            
         self.previous_state = 'hovered'
     
     def handle_hover_end_events(self):
@@ -753,4 +757,27 @@ class Button(NestedElement):
             self.on_screen = True
             return
         self.on_screen = False
+    
+    # ------------------------------------------------- TOOLTIPS -------------------------------------------------
+    
+    def init_tooltip(self, definition):
+        if definition is None:
+            return
         
+        if self.ToolTips is None:
+            return
+        
+        if 'tooltip' not in definition:
+            return
+        
+        self.tooltip = definition['tooltip']
+        self.ToolTips.add_tooltip(self.tooltip)
+    
+    def draw_tooltip(self):
+        if self.tooltip is None:
+            return
+        
+        if self.ToolTips is None:
+            return
+        
+        self.ToolTips.draw_tooltip(self.tooltip)

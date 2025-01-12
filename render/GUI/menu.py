@@ -4,6 +4,8 @@ from render.GUI.menu_elements.header import Header
 from render.GUI.menu_elements.footer import Footer
 from render.GUI.main_body import MainBody
 from render.GUI.buttons.footer_button import FooterButton
+from render.GUI.font import Font
+import re
 
 class Menu():
     def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, menu_definition):
@@ -49,6 +51,7 @@ class Menu():
         """
         Initialise the elements of the menu
         """
+        self.__init__tooltips()
         self.__init_header()
         self.__init_footer()  
         self.__init_menu_body()
@@ -98,8 +101,22 @@ class Menu():
             return
             
         self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body = MainBody(self.Mouse, self.Timing, self.main_body_rect, self.button_functions, self.definition['menu_body'], parent = None, RENDER_SCALE = self.RENDER_SCALE)
+        self.main_body = MainBody(self.Mouse, self.Timing, self.ToolTips, self.main_body_rect, self.button_functions, self.definition['menu_body'], parent = None, RENDER_SCALE = self.RENDER_SCALE)
     
+    def __init__tooltips(self):
+        if 'menu_body' not in self.definition:
+            return
+        
+        if 'tooltips' not in self.definition['menu_body']:
+            self.ToolTips = None
+            return
+    
+        if not self.definition['menu_body']['tooltips']:
+            self.ToolTips = None
+            return
+        
+        self.ToolTips = ToolTips(self.Mouse, self.Timing, self.surface, self.RENDER_SCALE)
+        
     def __init_footer_widgets(self):
         """
         Initialise the footer widgets of the menu
@@ -111,7 +128,13 @@ class Menu():
             if element['type'] == 'footer_button':
                 func = self.button_functions[element['function']]
                 self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element, parent = None, RENDER_SCALE = self.RENDER_SCALE))
-             
+    
+    def update_tooltips(self):
+        if self.ToolTips is None:
+            return
+        
+        self.ToolTips.update()
+           
     def update(self, in_dialog):
         """
         Update the menu
@@ -123,6 +146,7 @@ class Menu():
         self.main_body.update(in_dialog)
         self.draw(self.surface)
         self.update_footer_widgets(in_dialog)
+        self.update_tooltips()
             
     def handle_window_resize(self):
         """
@@ -270,3 +294,160 @@ class Menu():
                 
             self.doing_transition_animation = False
             self.transition_animation_timer = 0
+
+class ToolTips():
+    def __init__(self, Mouse, Timing, surface, RENDER_SCALE):
+        """
+        Tooltips for the menu
+        
+        args:
+            Mouse (Mouse): The Mouse object
+            Timing (Timing): The Timing object
+            surface (pygame.Surface): The surface to draw the tooltips on
+            RENDER_SCALE (int): The render scale
+        """
+        self.Mouse = Mouse
+        self.Timing = Timing
+        self.surface = surface
+        self.RENDER_SCALE = RENDER_SCALE
+        
+        self.tooltips = {}
+        self.tooltip_to_draw = None
+        
+        self.max_width = int(300 * self.RENDER_SCALE)
+        
+        self.font = Font('cr', int(15 * self.RENDER_SCALE))
+        
+    def add_tooltip(self, tooltip):
+        """
+        Add a tooltip
+        
+        args:
+            tooltip (str): The tooltip to add
+        """
+        if tooltip in self.tooltips:
+            return
+        
+        self.tooltips[tooltip] = self.render_tooltop(tooltip)
+        
+    def render_tooltop(self, tooltip):
+        """
+        Render a tooltip
+        
+        args:
+            tooltip (str): The tooltip to render
+        """
+        text = self.__wrap_text(tooltip, self.font.font, self.max_width)
+        
+        if text is None:
+            return pygame.Surface((1, 1), pygame.HWSURFACE|pygame.SRCALPHA)
+        
+        width = 0
+        height = 0
+        
+        for line in text:
+            width = max(width, self.font.font.size(line)[0])
+            height += self.font.font.size(line)[1]
+        
+        tooltip_surface = pygame.Surface((width + int(10 * self.RENDER_SCALE), height + int(10 * self.RENDER_SCALE)), pygame.HWSURFACE|pygame.SRCALPHA)
+        tooltip_surface.fill((32, 32, 32, 200))
+        pygame.draw.rect(tooltip_surface, (255, 255, 255, 64), tooltip_surface.get_rect(), int(2 * self.RENDER_SCALE))
+        
+        for i, line in enumerate(text):
+            self.font.draw(tooltip_surface, line, "#ffffff", 'left_top', int(5 * self.RENDER_SCALE), i * self.font.font.size(line)[1] - int(2.5 * self.RENDER_SCALE))
+        
+        return tooltip_surface
+
+    def __strip_tags(self, text):
+        """
+        Strip colour tags from the text
+        
+        args:
+            text (str): The text to strip the tags from
+        """
+        tag_pattern = r"\[colour=#[0-9A-Fa-f]{6}\]|\[\/colour\]"
+        return re.sub(tag_pattern, "", text)
+
+    def __wrap_text(self, text, font, max_width):
+        """	
+        Wrap text to fit inside a given width
+        
+        args:
+            text (str): The text to wrap
+            font (pygame.font.Font): The font to use
+            max_width (int): The maximum width of the text
+        """
+        if text is None:
+            return
+        
+        words = re.split(r"(\s+)", text)
+        lines = []
+        current_line = ""
+
+        for word in words:
+            stripped_word = self.__strip_tags(current_line + word)
+            
+            if font.size(stripped_word.strip())[0] > max_width:
+                
+                if font.size(word.strip())[0] > max_width:
+                    
+                    while font.size(word.strip())[0] > max_width:  # Split the word if it's too long
+                        for i in range(1, len(word) + 1):
+                            if font.size(word[:i].strip())[0] > max_width - font.size(current_line.strip())[0]:
+            
+                                lines.append(current_line.strip() + word[:i-1])
+                                word = word[i-1:]
+                                current_line = ""
+                                break
+                            
+                    current_line += word
+                else:
+                    lines.append(current_line.strip())   # Add the current line to lines and start a new line with the word
+                    current_line = word
+            else:
+                current_line += word
+
+        if current_line:
+            lines.append(current_line.strip())
+
+        return lines
+            
+    def draw_tooltip(self, tooltip):
+        """
+        Draw a tooltip
+        
+        args:
+            tooltip (str): The tooltip to draw
+        """
+        self.tooltip_to_draw = self.tooltips[tooltip]
+    
+    def update(self):
+        """
+        Update the tooltips
+        """
+        if self.tooltip_to_draw is None:
+            return
+        
+        self.draw()
+        self.tooltip_to_draw = None
+        
+    def draw(self):
+        pos = self.Mouse.position
+        offset = int(12 * self.RENDER_SCALE)
+
+        pos = (pos[0] + offset, pos[1] + offset)
+        
+        if pos[0] + self.tooltip_to_draw.get_width() > self.surface.get_width():
+            pos = (pos[0] - self.tooltip_to_draw.get_width() - 2 * offset, pos[1])
+        
+        if pos[1] + self.tooltip_to_draw.get_height() > self.surface.get_height():
+            pos = (pos[0], pos[1] - self.tooltip_to_draw.get_height() - 2 * offset)
+        
+        self.surface.blit(self.tooltip_to_draw, pos)
+    
+       
+        
+        
+    
+    
+    

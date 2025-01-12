@@ -4,8 +4,8 @@ import pygame
 from utils import draw_border, draw_solid_colour, align_element, apply_gaussian_blur_with_alpha
 
 class GenericButton(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, function, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, Timing, Mouse, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A generic button that can be used for any purpose
         
@@ -41,6 +41,7 @@ class GenericButton(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+        self.init_tooltip(self.definition)
 
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
     

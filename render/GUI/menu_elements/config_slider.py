@@ -6,7 +6,7 @@ from render.GUI.buttons.slider_knob import SliderKnob
 from render.GUI.buttons.invisible_button import InvisibleButton
 
 class ConfigSlider(NestedElement):
-    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1):
+    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
         """
         
@@ -21,6 +21,7 @@ class ConfigSlider(NestedElement):
         """
         self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
+        self.ToolTips = ToolTips
         
         self.Timing = Timing
         self.Mouse = Mouse
@@ -71,15 +72,19 @@ class ConfigSlider(NestedElement):
         
         self.title_font = Font('hun2', self.title_font_size)
         self.title_text = self.get_title()
-          
+        
+        self.tool_tip_definition = {"tooltip": self.definition['tooltip']}
+        
         self.value_field_definiton = {
             "unit_font_colour": self.themeing['value_unit_colour'],
             "value_font_colour": self.themeing['value_value_colour'],
             "unit": self.definition['unit'],
             "background_colour": self.themeing['colour'],
+            "tooltip": self.definition['tooltip']
         }
         
         self.knob_definition = self.themeing['knob']
+        self.knob_definition['tooltip'] = self.definition['tooltip']
             
         self.__get_rect_and_surface()
         
@@ -87,23 +92,25 @@ class ConfigSlider(NestedElement):
             field_function = self.button_functions[self.definition['field_function']]
         else:
             field_function = None
-        
-        self.ValueField = SliderField(self.button_functions, self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE)
+            
+        self.ValueField = SliderField(self.button_functions, self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
         self.ValueField.min_value = self.min_value
         self.ValueField.max_value = self.max_value
         self.ValueField.max_value_to_inf = self.max_value_to_inf
         
         self.ValueField.value = self.max_value // 2
-        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE)
+        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
         
         self.render()
         
-        self.slider_bar_button = InvisibleButton(self.Timing, self.slider_surface, self.Mouse, None, self.slider_bar_rect, None, self.RENDER_SCALE)
+        self.slider_bar_invisible_button = InvisibleButton(self.slider_bar_rect.width, self.slider_bar_rect.height, self.slider_bar_rect, None, self.Mouse, self.Timing, self.slider_surface, self.slider_bar_rect, self.tool_tip_definition, self, self.RENDER_SCALE, self.ToolTips)
         
         self.title_width = self.title_font.get_width()
         self.title_height = self.title_font.font.get_height()
+        
         self.title_rect = pygame.Rect(self.x_padding * 2, self.y_padding, self.title_width + self.x_padding, self.height - self.y_padding * 2)
-        self.title_invisible_button = InvisibleButton(self.Timing, self.slider_surface, self.Mouse, None, self.title_rect, None, self.RENDER_SCALE)
+        
+        self.title_invisible_button = InvisibleButton(self.title_rect.width, self.title_rect.height, self.title_rect, None, self.Mouse, self.Timing, self.slider_surface, self.title_rect, self.tool_tip_definition, self, self.RENDER_SCALE, self.ToolTips)
      
     def get_title(self):
         """
@@ -183,9 +190,9 @@ class ConfigSlider(NestedElement):
         self.update_field(in_dialog)
         self.update_slider_bar(in_dialog)
         self.draw()
-        self.update_title_invisible_button(in_dialog)
         self.update_knob(in_dialog)
-       
+        self.update_invisible_buttons(in_dialog)
+        
     def value_to_position(self, value):
         """
         Convert the value to a position on the slider
@@ -242,10 +249,11 @@ class ConfigSlider(NestedElement):
         self.Knob.update(in_dialog)
     
     def update_slider_bar(self, in_dialog):
-        self.slider_bar_button.update(in_dialog)
+        self.slider_bar_invisible_button.update(in_dialog)
     
-    def update_title_invisible_button(self, in_dialog):
+    def update_invisible_buttons(self, in_dialog):
         self.title_invisible_button.update(in_dialog)
+        self.slider_bar_invisible_button.update(in_dialog)
     
     def update_field(self, in_dialog):
         if self.ValueField.value < self.min_value:

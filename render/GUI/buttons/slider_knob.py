@@ -3,8 +3,8 @@ import pygame
 from utils import draw_border, draw_solid_colour, apply_gaussian_blur_with_alpha
 
 class SliderKnob(Button):
-    def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE)
+    def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         
         self.RENDER_SCALE = RENDER_SCALE
         self.x_position = rect.x
@@ -24,6 +24,7 @@ class SliderKnob(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+        self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
         

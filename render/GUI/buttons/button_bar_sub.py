@@ -4,8 +4,8 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class ButtonBarSub(Button):
-    def __init__(self, function:callable, Mouse, Timing, surface, container, definition, y_position, height, parent, RENDER_SCALE = 1):
-        super().__init__(Timing, surface, Mouse, function, container, container.width, height, style = 'lighten', maintain_alpha = False, slider = 'left', parent = parent, RENDER_SCALE = 1)
+    def __init__(self, function:callable, Mouse, Timing, surface, container, definition, y_position, height, parent, RENDER_SCALE = 1, ToolTips = None):
+        super().__init__(Timing, surface, Mouse, function, container, container.width, height, style = 'lighten', maintain_alpha = False, slider = 'left', parent = parent, RENDER_SCALE = 1, ToolTips = ToolTips)
         """
         A button bar that displays an image, along with big main text and smaller sub text
         
@@ -40,6 +40,7 @@ class ButtonBarSub(Button):
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()
+        self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
             

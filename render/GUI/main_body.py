@@ -12,7 +12,7 @@ from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.nested_element import NestedElement
 
 class MainBody(NestedElement):
-    def __init__(self, Mouse, Timing, rect, button_functions, definition, parent, RENDER_SCALE = 1):
+    def __init__(self, Mouse, Timing, ToolTips, rect, button_functions, definition, parent, RENDER_SCALE = 1):
         super().__init__(parent)
         """
         The main body of the menu
@@ -27,6 +27,8 @@ class MainBody(NestedElement):
         """
         self.Mouse = Mouse
         self.Timing = Timing
+        self.ToolTips = ToolTips
+        
         self.RENDER_SCALE = RENDER_SCALE
         
         self.button_functions = button_functions
@@ -90,7 +92,7 @@ class MainBody(NestedElement):
             if element['type'] == 'bar_button':
                 y += int(10 * self.RENDER_SCALE)
                 func = self.button_functions[element['function']]
-                button = ButtonBarMain(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = int(120 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                button = ButtonBarMain(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = int(120 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 button.y_position = y
                 self.menu_elements.append(button)
                 y += button.height + int(10 * self.RENDER_SCALE)
@@ -98,20 +100,20 @@ class MainBody(NestedElement):
             elif element['type'] == 'bar_button_sub':
                 y += int(7 * self.RENDER_SCALE)
                 func = self.button_functions[element['function']] 
-                button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = int(90 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                button = ButtonBarSub(func, self.Mouse, self.Timing, self.body_surface, self.rect, element, y, height = int(90 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 button.y_position = y
                 self.menu_elements.append(button)
                 y += button.height + int(7 * self.RENDER_SCALE)
                 
             elif element['type'] == 'collapsible_panel_header':
                 y += int(7 * self.RENDER_SCALE)
-                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.body_surface, self.rect, element, y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.menu_elements.append(panel)
                 y += panel.height + int(7 * self.RENDER_SCALE)
             
             elif element['type'] == 'collapsible_panel':
        
-                panel = CollapsiblePanel(self.button_functions, self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE)
+                panel = CollapsiblePanel(self.button_functions, self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.menu_elements.append(panel)
                
             elif element['type'] == 'floating_text':
@@ -135,7 +137,7 @@ class MainBody(NestedElement):
             return
         
         func = self.button_functions[self.definition['back_button']['function']]
-        self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'], parent = self, RENDER_SCALE = self.RENDER_SCALE)
+        self.back_button = BackButton(func, self.Mouse, self.Timing, self.body_surface, self.rect, self.definition['back_button'], parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
     
     def __init_logo(self):
         """
@@ -291,7 +293,7 @@ class MainBody(NestedElement):
             
         elif self.scroll_y < -self.y_diff - 35:
             self.scroll_y = -self.y_diff - 35  # Clamp scroll position to valid range
-
+        
     def update(self, in_dialog):
         """
         Update the panel
