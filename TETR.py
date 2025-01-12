@@ -453,7 +453,7 @@ class WorkerManager:
         """
         while True:
             task = self.tasks.get()
-            if task is None:  # Stop signal
+            if task is None:
                 self.tasks.task_done()
                 break
             try:
@@ -467,8 +467,8 @@ class WorkerManager:
         """
         Stop the worker thread and wait for all tasks to finish.
         """
-        self.tasks.put(None)  # Stop signal
-        self.tasks.join()     # Wait for all tasks to finish
+        self.tasks.put(None) 
+        self.tasks.join()     
         self.worker_thread.join()
         self.executor.shutdown(wait = True)
 
