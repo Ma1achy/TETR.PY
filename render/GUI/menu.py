@@ -6,6 +6,7 @@ from render.GUI.main_body import MainBody
 from render.GUI.buttons.footer_button import FooterButton
 from render.GUI.font import Font
 import re
+from utils import apply_gaussian_blur_with_alpha
 
 class Menu():
     def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, menu_definition):
@@ -312,9 +313,12 @@ class ToolTips():
         self.RENDER_SCALE = RENDER_SCALE
         
         self.tooltips = {}
+        self.shadows = {}
+        
         self.tooltip_to_draw = None
         
         self.max_width = int(300 * self.RENDER_SCALE)
+        self.shadow_radius = int(5 * self.RENDER_SCALE)
         
         self.font = Font('cr', int(15 * self.RENDER_SCALE))
         
@@ -328,7 +332,7 @@ class ToolTips():
         if tooltip in self.tooltips:
             return
         
-        self.tooltips[tooltip] = self.render_tooltop(tooltip)
+        self.tooltips[tooltip], self.shadows[tooltip] = self.render_tooltop(tooltip)
         
     def render_tooltop(self, tooltip):
         """
@@ -353,10 +357,16 @@ class ToolTips():
         tooltip_surface.fill((32, 32, 32, 200))
         pygame.draw.rect(tooltip_surface, (255, 255, 255, 64), tooltip_surface.get_rect(), int(2 * self.RENDER_SCALE))
         
+        shadow_surface = pygame.Surface((tooltip_surface.get_width() + self.shadow_radius * 4, tooltip_surface.get_height() + self.shadow_radius * 4), pygame.HWSURFACE|pygame.SRCALPHA)
+        pygame.draw.rect(shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, tooltip_surface.get_width(), tooltip_surface.get_height())) 
+        shadow_surface = apply_gaussian_blur_with_alpha(shadow_surface, self.shadow_radius)
+        
+        pygame.draw.rect(shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, tooltip_surface.get_width(), tooltip_surface.get_height()))
+        
         for i, line in enumerate(text):
             self.font.draw(tooltip_surface, line, "#ffffff", 'left_top', int(5 * self.RENDER_SCALE), i * self.font.font.size(line)[1] - int(2.5 * self.RENDER_SCALE))
         
-        return tooltip_surface
+        return tooltip_surface, shadow_surface
 
     def __strip_tags(self, text):
         """
@@ -420,6 +430,7 @@ class ToolTips():
             tooltip (str): The tooltip to draw
         """
         self.tooltip_to_draw = self.tooltips[tooltip]
+        self.shadow_to_draw = self.shadows[tooltip]
     
     def update(self):
         """
@@ -430,6 +441,7 @@ class ToolTips():
         
         self.draw()
         self.tooltip_to_draw = None
+        self.shadow_to_draw = None
         
     def draw(self):
         pos = self.Mouse.position
@@ -443,7 +455,9 @@ class ToolTips():
         if pos[1] + self.tooltip_to_draw.get_height() > self.surface.get_height():
             pos = (pos[0], pos[1] - self.tooltip_to_draw.get_height() - 2 * offset)
         
+        self.surface.blit(self.shadow_to_draw, (pos[0] - self.shadow_radius * 2, pos[1] - self.shadow_radius * 2))
         self.surface.blit(self.tooltip_to_draw, pos)
+        
     
        
         

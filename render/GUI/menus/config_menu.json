@@ -2492,12 +2492,12 @@
                                 {
                                     "display_text": "DYNAMIC",
                                     "function": "toggle_dynamic_render_scale",
-                                    "tooltip": "Apply render scaling, but adjust the internal resolution of the game when the game is fullscreened."
+                                    "tooltip": "Apply render scaling, but adjust the internal resolution of the game when fullscreen is toggled."
                                 },
                                 {
-                                    "display_text": "RESTRICTED",
-                                    "function": "toggle_restricted_render_scale",
-                                    "tooltip": "Apply render scaling, but restrict the internal resolution of the game to a set value."
+                                    "display_text": "LOCKED",
+                                    "function": "toggle_locked_render_scale",
+                                    "tooltip": "Apply render scaling, but lock the internal resolution of the game to a set value."
                                 }
                             ],
                             "themeing": {
@@ -2600,6 +2600,96 @@
                                 }
                             },
                             "tooltip": "The factor of the windows resolution that the game is rendered at. Lower values will increase performance, but increase pixelation."
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "resolution x",
+                            "left_end_text": "SMALL",
+                            "right_end_text": "LARGE",
+                            "start_x": 170,
+                            "unit": "px",
+                            "max_value": 5000,
+                            "min_value": 100,
+                            "step": 1,
+                            "field_function": "open_edit_render_scale_dialog",
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#283145"
+                                        ]
+                                    }
+                                }
+                            },
+                            "tooltip": "The window width in pixels."
+                        },
+                        {
+                            "type": "config_slider",
+                            "title": "resolution y",
+                            "left_end_text": "SMALL",
+                            "right_end_text": "LARGE",
+                            "start_x": 170,
+                            "unit": "px",
+                            "max_value": 5000,
+                            "min_value": 100,
+                            "step": 1,
+                            "field_function": "open_edit_render_scale_dialog",
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#283145"
+                                        ]
+                                    }
+                                }
+                            },
+                            "tooltip": "The window height in pixels."
                         },
                         {
                             "type": "config_slider",
