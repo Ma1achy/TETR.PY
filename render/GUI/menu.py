@@ -452,8 +452,11 @@ class ToolTips():
         if pos[0] + self.tooltip_to_draw.get_width() > self.surface.get_width():
             pos = (pos[0] - self.tooltip_to_draw.get_width() - 2 * offset, pos[1])
         
-        if pos[1] + self.tooltip_to_draw.get_height() > self.surface.get_height():
+        elif pos[1] + self.tooltip_to_draw.get_height() > self.surface.get_height():
             pos = (pos[0], pos[1] - self.tooltip_to_draw.get_height() - 2 * offset)
+        
+        else:
+            pos = (pos[0], pos[1])
         
         self.surface.blit(self.shadow_to_draw, (pos[0] - self.shadow_radius * 2, pos[1] - self.shadow_radius * 2))
         self.surface.blit(self.tooltip_to_draw, pos)
