@@ -154,7 +154,8 @@ class CollapsiblePanelHeader(Button):
         brightness_maintain_alpha(self.closed_hover_surface, 1.5)
         
         self.temp_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.render_button(self.temp_surface, "#0B0D12")
+        self.render_button(self.temp_surface, self.definition["button"]["closed_colour"])
+        brightness_maintain_alpha(self.temp_surface, 0.8)
         self.temp_surface.blit(self.closed_hover_surface, (0, 0))
         self.closed_hover_surface = self.temp_surface
         
@@ -163,7 +164,8 @@ class CollapsiblePanelHeader(Button):
         brightness_maintain_alpha(self.open_hover_surface, 1.5)
         
         self.temp_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.render_button(self.temp_surface, "#0B0D12")
+        self.render_button(self.temp_surface, self.definition["button"]["open_colour"])
+        brightness_maintain_alpha(self.temp_surface, 0.8)
         self.temp_surface.blit(self.open_hover_surface, (0, 0))
         self.open_hover_surface = self.temp_surface
 
@@ -172,7 +174,8 @@ class CollapsiblePanelHeader(Button):
         brightness_maintain_alpha(self.closed_pressed_surface, 2.0)
         
         self.temp_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.render_button(self.temp_surface, "#0e0f11")
+        self.render_button(self.temp_surface, self.definition["button"]["closed_colour"])
+        brightness_maintain_alpha(self.temp_surface, 0.8)
         self.temp_surface.blit(self.closed_pressed_surface, (0, 0))
         self.closed_pressed_surface = self.temp_surface
         
@@ -181,7 +184,8 @@ class CollapsiblePanelHeader(Button):
         brightness_maintain_alpha(self.open_pressed_surface, 2.0)
         
         self.temp_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        self.render_button(self.temp_surface, "#0e0f11")
+        self.render_button(self.temp_surface, self.definition["button"]["open_colour"])
+        brightness_maintain_alpha(self.temp_surface, 0.8)
         self.temp_surface.blit(self.open_pressed_surface, (0, 0))
         self.open_pressed_surface = self.temp_surface
         

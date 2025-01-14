@@ -19,6 +19,7 @@
         }
     },
     "menu_body": {
+        "tooltips": true,
         "logo": {
             "image": "resources/logos/LogoLightGlow.png",
             "alignment": "bottom_left",
@@ -53,6 +54,445 @@
                     "#181818"
                 ]
             }
+        },
+        "menu": {
+            "elements": [
+                {
+                    "type": "floating_text",
+                    "content": {
+                        "font": "hun2",
+                        "colour": "#ffffff",
+                        "alpha": 0.25,
+                        "size": 14,
+                        "alignment": "center",
+                        "padding": [
+                            0,
+                            0
+                        ],
+                        "display_text": "hover over a setting for more information"
+                    }
+                },  
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "#9c85d5",
+                        "display_text": "OBJECTIVE"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "181626",
+                        "open_colour": "13121f"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Customise the objective of the gamemode."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "##9c85d5",
+                        "display_text": "GENERAL"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "181626",
+                        "open_colour": "13121f"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Customise the engines general parameters, such as board size, rotation system, and the piece randomiser."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "##9c85d5",
+                        "display_text": "GRAVITY & LEVELLING"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "181626",
+                        "open_colour": "13121f"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Customise how the gravity and levelling behaves."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "##9c85d5",
+                        "display_text": "ACTIONS & INFORMATION"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "181626",
+                        "open_colour": "13121f"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Customise what actions players can perform, such as 180 rotation and piece holding, or what information is visible to the player."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "##9c85d5",
+                        "display_text": "SURVIVAL"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "181626",
+                        "open_colour": "13121f"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Customise the garbage survival mode, such as the garbage messiness."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "##9c85d5",
+                        "display_text": "COUNTERS"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "181626",
+                        "open_colour": "13121f"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Customise what counters are displayed on the board."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                },
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "##9c85d5",
+                        "display_text": "INTRODUCTION"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "181626",
+                        "open_colour": "13121f"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Customise the introduction to the gamemode, such as the mission to display, and the intro animation."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                }
+            ]
         }
     },
     "menu_footer": {

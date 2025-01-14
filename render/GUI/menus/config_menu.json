@@ -139,7 +139,6 @@
                 },
                 {
                     "type": "collapsible_panel",
-                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -355,7 +354,6 @@
                 },
                 {
                     "type": "collapsible_panel",
-                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -419,7 +417,7 @@
                                     }
                                 }
                             },
-                            "tooltip": "The speed at which tetrominoes move when holding down the movement keys."
+                            "tooltip": "Auto Repeat Rate: The time interval between each repeat movement a tetromino does when holding down the movement keys, measured in ms."
                         },
                         {
                             "type": "config_slider",
@@ -465,7 +463,7 @@
                                     }
                                 }
                             },
-                            "tooltip": "The time between the initial key press and the automatic repeat movement."
+                            "tooltip": "Delayed Auto Shift: The time between the initial key press and the automatic repeat movement, measured in ms."
                         },
                         {
                             "type": "config_slider",
@@ -511,7 +509,7 @@
                                     }
                                 }
                             },
-                            "tooltip": "If non-zero, any ongoing DAS movement will pause for a set amount of time after dropping or rotating a piece."
+                            "tooltip": "DAS Cut Delay: If non-zero, any ongoing DAS movement will pause for a set amount of time after dropping or rotating a piece, measured in ms."
                         },
                         {
                             "type": "config_slider",
@@ -557,7 +555,7 @@
                                     }
                                 }
                             },
-                            "tooltip": "The factor the soft drop key scales the current gravity by."
+                            "tooltip": "Soft Drop Factor: The factor the soft drop key scales the current gravity by."
                         },
                         {
                             "type": "checkbox",
@@ -868,7 +866,6 @@
                 },
                 {
                     "type": "collapsible_panel",
-                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -2208,7 +2205,6 @@
                 },
                 {
                     "type": "collapsible_panel",
-                    "height": 200,
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -2311,6 +2307,52 @@
                         },
                         {
                             "type": "config_slider",
+                            "title": "target fps",
+                            "left_end_text": "LOW",
+                            "right_end_text": "HIGH",
+                            "start_x": 275,
+                            "unit": "fps",
+                            "max_value": 256,
+                            "min_value": 20,
+                            "max_value_to_inf": true,
+                            "step": 1,
+                            "field_function": "open_edit_render_scale_dialog",
+                            "themeing": {
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
+                                "background_colour": "#12151D",
+                                "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
+                                "knob": {
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#181c27"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#232936"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#151922"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#0f1117"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#283145"
+                                        ]
+                                    }
+                                }
+                            },
+                            "tooltip": "The target frame rate the game will try to achieve."
+                        },
+                        {
+                            "type": "config_slider",
                             "title": "particle count",
                             "left_end_text": "NONE",
                             "right_end_text": "LOTS",
@@ -2398,88 +2440,52 @@
                                 }
                             },
                             "tooltip": "How visible the background images are, 0% makes the background entirely black."
-                        },    
+                        },
                         {
-                            "type": "button_list",
-                            "title": "TARGET FPS",
-                            "buttons": [
-                                {
-                                    "display_text": "30",
-                                    "function": "turn_off_render_scale",
-                                    "tooltip": "Limit the frame rate to 30 frames per second."
-                                },
-                                {
-                                    "display_text": "60",
-                                    "function": "toggle_dynamic_render_scale",
-                                    "tooltip": "Limit the frame rate to 60 frames per second."
-                                },
-                                {
-                                    "display_text": "144",
-                                    "function": "toggle_restricted_render_scale",
-                                    "tooltip": "Limit the frame rate to 144 frames per second."
-                                },
-                                {
-                                    "display_text": "UNLIMITED",
-                                    "function": "toggle_restricted_render_scale",
-                                    "tooltip": "Don't limit the frame rate."
-                                }
-                            ],
+                            "type": "config_slider",
+                            "title": "GUI scale",
+                            "left_end_text": "LOW",
+                            "right_end_text": "HIGH",
+                            "start_x": 275,
+                            "unit": "%",
+                            "max_value": 200,
+                            "min_value": 25,
+                            "step": 1,
+                            "field_function": "open_edit_gui_scale_dialog",
                             "themeing": {
-                                "title_colour": "#7b89ad",
+                                "title_colour": "#6275a7",
+                                "end_text_colour": "#3d4457",
                                 "background_colour": "#12151D",
-                                "inactive": {
-                                    "text_colour": "#7f9ddf",
+                                "colour": "#0b0d11",
+                                "value_unit_colour": "#3d4457",
+                                "value_value_colour": "##aec0ee",
+                                "knob": {
                                     "background": {
                                         "style": "solid",
-                                        "colour": "#22293b"
+                                        "colour": "#181c27"
                                     },
                                     "border": {
                                         "left": [
                                             3,
-                                            "#2d364b"
+                                            "#232936"
                                         ],
                                         "right": [
                                             3,
-                                            "#1e232d"
-                                        ],
-                                        "top": [
-                                            3,
-                                            "#33405c"
+                                            "#151922"
                                         ],
                                         "bottom": [
                                             3,
-                                            "#1b1f28"
-                                        ]
-                                    }
-                                },
-                                "active": {
-                                    "text_colour": "#aec0ee",
-                                    "background": {
-                                        "style": "solid",
-                                        "colour": "#11141b"
-                                    },
-                                    "border": {
-                                        "left": [
-                                            3,
-                                            "#0e1015"
-                                        ],
-                                        "right": [
-                                            3,
-                                            "#1d222f"
+                                            "#0f1117"
                                         ],
                                         "top": [
                                             3,
-                                            "#0b0c10"
-                                        ],
-                                        "bottom": [
-                                            3,
-                                            "#252c3d"
+                                            "#283145"
                                         ]
                                     }
                                 }
                             },
-                            "tooltip": "The target frame rate the game will try to achieve."
-                        },
+                            "tooltip": "The size of the GUI elements, 100% is the default size."
+                        },  
                         {
                             "type": "button_list",
                             "title": "RENDER SCALING",
@@ -2601,51 +2607,6 @@
                             },
                             "tooltip": "The factor of the windows resolution that the game is rendered at. Lower values will increase performance, but increase pixelation."
                         },
-                        {
-                            "type": "config_slider",
-                            "title": "GUI scale",
-                            "left_end_text": "LOW",
-                            "right_end_text": "HIGH",
-                            "start_x": 170,
-                            "unit": "%",
-                            "max_value": 200,
-                            "min_value": 25,
-                            "step": 1,
-                            "field_function": "open_edit_gui_scale_dialog",
-                            "themeing": {
-                                "title_colour": "#6275a7",
-                                "end_text_colour": "#3d4457",
-                                "background_colour": "#12151D",
-                                "colour": "#0b0d11",
-                                "value_unit_colour": "#3d4457",
-                                "value_value_colour": "##aec0ee",
-                                "knob": {
-                                    "background": {
-                                        "style": "solid",
-                                        "colour": "#181c27"
-                                    },
-                                    "border": {
-                                        "left": [
-                                            3,
-                                            "#232936"
-                                        ],
-                                        "right": [
-                                            3,
-                                            "#151922"
-                                        ],
-                                        "bottom": [
-                                            3,
-                                            "#0f1117"
-                                        ],
-                                        "top": [
-                                            3,
-                                            "#283145"
-                                        ]
-                                    }
-                                }
-                            },
-                            "tooltip": "The size of the GUI elements, 100% is the default size."
-                        },  
                         {
                             "type": "checkbox",
                             "text": "fullscreen",
@@ -2935,7 +2896,6 @@
                 },
                 {
                     "type": "collapsible_panel_header",
-                    "height": 200,
                     "main_text": {
                         "colour": "#657497",
                         "display_text": "CUSTOMISATION"

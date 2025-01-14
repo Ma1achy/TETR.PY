@@ -116,7 +116,7 @@ class Menu():
             self.ToolTips = None
             return
         
-        self.ToolTips = ToolTips(self.Mouse, self.Timing, self.surface, self.RENDER_SCALE)
+        self.ToolTips = ToolTips(self.Mouse, self.Timing, self.surface, self.RenderStruct)
         
     def __init_footer_widgets(self):
         """
@@ -229,6 +229,10 @@ class Menu():
         if 'footer_widgets' in self.definition:
             for widget in self.footer_widgets:
                 widget.reset_state()
+        
+        if self.ToolTips is not None:
+            self.ToolTips.tooltip_to_draw = None
+            self.ToolTips.tooltip_timer = 0
           
     def draw(self, surface):
         """
@@ -297,7 +301,7 @@ class Menu():
             self.transition_animation_timer = 0
 
 class ToolTips():
-    def __init__(self, Mouse, Timing, surface, RENDER_SCALE):
+    def __init__(self, Mouse, Timing, surface, RenderStruct):
         """
         Tooltips for the menu
         
@@ -310,7 +314,8 @@ class ToolTips():
         self.Mouse = Mouse
         self.Timing = Timing
         self.surface = surface
-        self.RENDER_SCALE = RENDER_SCALE
+        self.RenderStruct = RenderStruct
+        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         
         self.tooltips = {}
         self.shadows = {}
@@ -321,6 +326,9 @@ class ToolTips():
         self.shadow_radius = int(5 * self.RENDER_SCALE)
         
         self.font = Font('cr', int(15 * self.RENDER_SCALE))
+        
+        self.tooltip_appear_time = 2
+        self.tooltip_timer = 0
         
     def add_tooltip(self, tooltip):
         """
@@ -437,9 +445,18 @@ class ToolTips():
         Update the tooltips
         """
         if self.tooltip_to_draw is None:
+            self.tooltip_timer -= self.Timing.frame_delta_time
+            
+            if self.tooltip_timer < self.tooltip_appear_time - 0.25:
+                self.tooltip_timer = 0
             return
         
-        self.draw()
+        self.tooltip_timer += self.Timing.frame_delta_time
+        
+        if self.tooltip_timer >= self.tooltip_appear_time:
+            self.tooltip_timer = self.tooltip_appear_time
+            self.draw()
+            
         self.tooltip_to_draw = None
         self.shadow_to_draw = None
         

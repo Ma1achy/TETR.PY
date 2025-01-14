@@ -97,7 +97,7 @@ class Button(NestedElement):
         
         self.on_screen = False
         self.on_screen_rect = self.surface.get_rect()
-         
+        
     def get_local_position(self):
         """
         Get the local position of the button for collision detection.
@@ -248,9 +248,12 @@ class Button(NestedElement):
         """
         Execute the button's function.
         """
+        if self.ToolTips:
+            self.ToolTips.tooltip_timer = 0
+            
         if self.function is None:
             return
-        
+         
         self.function()
     
     # -------------------------------------------------------------------------- UPDATE LOGIC --------------------------------------------------------------------------

@@ -19,6 +19,7 @@
         }
     },
     "menu_body": {
+        "tooltips": true,
         "logo": {
             "image": "resources/logos/LogoLightGlow.png",
             "alignment": "bottom_left",
@@ -53,6 +54,70 @@
                     "#181818"
                 ]
             }
+        },
+        "menu": {
+            "elements": [
+                {
+                    "type": "collapsible_panel_header",
+                    "main_text": {
+                        "colour": "#dba1a1",
+                        "display_text": "ADVANCED"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#3e2424"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#623d3d"
+                        ],
+                        "right": [
+                            3,
+                            "#321d1d"
+                        ],
+                        "bottom": [
+                            3,
+                            "#241616"
+                        ],
+                        "top": [
+                            3,
+                            "#794545"
+                        ]
+                    },
+                    "button": {
+                        "function": "toggle_panel",
+                        "closed_colour": "2b1b1b", 
+                        "open_colour": "1f1414"
+                    },
+                    "elements": [
+                    ],
+                    "tooltip": "Further customise this mode."
+                },
+                {
+                    "type": "collapsible_panel",
+                    "background": {
+                        "style": "solid",
+                        "colour": "#3e2424"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#623d3d"
+                        ],
+                        "right": [
+                            3,
+                            "#321d1d"
+                        ],
+                        "bottom": [
+                            3,
+                            "#241616"
+                        ]
+                    },
+                    "elements": [
+                    ]
+                }
+            ]
         }
     },
     "menu_footer": {

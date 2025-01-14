@@ -98,7 +98,7 @@ class ConfigSlider(NestedElement):
         self.ValueField.max_value = self.max_value
         self.ValueField.max_value_to_inf = self.max_value_to_inf
         
-        self.ValueField.value = self.max_value // 2
+        self.ValueField.value = self.max_value if not self.flipped else self.min_value
         self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
         
         self.render()
