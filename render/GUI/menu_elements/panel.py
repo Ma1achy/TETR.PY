@@ -74,6 +74,7 @@ class Panel(NestedElement):
         self.use_cached_image = False
         
         self.on_screen_rect = self.surface.get_rect()
+        self.create_inital_cached_image()
         
     def get_local_position(self):
         """
@@ -137,8 +138,7 @@ class Panel(NestedElement):
             
         for line in self.body_text_lines:
             y += self.body_font.font.size(line)[1] + int(2 * self.RENDER_SCALE)
-        
-        y += int(10 * self.RENDER_SCALE)
+            y += int(10 * self.RENDER_SCALE)
             
         for element in self.definition['elements']:
             
