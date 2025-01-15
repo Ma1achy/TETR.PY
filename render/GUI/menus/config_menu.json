@@ -417,7 +417,7 @@
                                     }
                                 }
                             },
-                            "tooltip": "Auto Repeat Rate: The time interval between each repeat movement a tetromino does when holding down the movement keys, measured in ms."
+                            "tooltip": "Auto Repeat Rate: The time interval between each automatic repeat movement a tetromino performs when holding down the movement keys, measured in ms."
                         },
                         {
                             "type": "config_slider",
@@ -463,7 +463,7 @@
                                     }
                                 }
                             },
-                            "tooltip": "Delayed Auto Shift: The time between the initial key press and the automatic repeat movement, measured in ms."
+                            "tooltip": "Delayed Auto Shift: The time interval between the initial key press and the automatic repeat movement, measured in ms."
                         },
                         {
                             "type": "config_slider",

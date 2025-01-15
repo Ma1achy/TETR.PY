@@ -75,7 +75,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "#9c85d5",
+                        "colour": "#a18dd8",
                         "display_text": "OBJECTIVE"
                     },
                     "background": {
@@ -135,7 +135,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##9c85d5",
+                        "colour": "##a18dd8",
                         "display_text": "GENERAL"
                     },
                     "background": {
@@ -195,7 +195,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##9c85d5",
+                        "colour": "##a18dd8",
                         "display_text": "GRAVITY & LEVELLING"
                     },
                     "background": {
@@ -255,7 +255,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##9c85d5",
+                        "colour": "##a18dd8",
                         "display_text": "ACTIONS & INFORMATION"
                     },
                     "background": {
@@ -315,7 +315,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##9c85d5",
+                        "colour": "##a18dd8",
                         "display_text": "SURVIVAL"
                     },
                     "background": {
@@ -375,7 +375,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##9c85d5",
+                        "colour": "##a18dd8",
                         "display_text": "COUNTERS"
                     },
                     "background": {
@@ -435,7 +435,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##9c85d5",
+                        "colour": "##a18dd8",
                         "display_text": "INTRODUCTION"
                     },
                     "background": {
