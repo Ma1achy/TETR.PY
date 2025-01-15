@@ -36,6 +36,8 @@ class ButtonListButtons(Button):
         
         self.shadow_radius = int(3 * self.RENDER_SCALE)
         
+        self.pressed_surface_transition_time = 0
+        
         self.__get_rect_and_surface()
         self.render()
         self.get_overlays()

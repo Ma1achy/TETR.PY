@@ -10,6 +10,7 @@ from render.GUI.menu_elements.logo import Logo
 from app.input.mouse.mouse import MouseEvents
 from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.nested_element import NestedElement
+from render.GUI.menu_elements.panel import Panel
 
 class MainBody(NestedElement):
     def __init__(self, Mouse, Timing, ToolTips, rect, button_functions, definition, parent, RENDER_SCALE = 1):
@@ -104,6 +105,13 @@ class MainBody(NestedElement):
                 button.y_position = y
                 self.menu_elements.append(button)
                 y += button.height + int(7 * self.RENDER_SCALE)
+            
+            elif element['type'] == 'panel':
+                y += int(7 * self.RENDER_SCALE)
+                panel = Panel(self.button_functions, self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                self.menu_elements.append(panel)
+                
+                y += panel.height + int(7 * self.RENDER_SCALE)
                 
             elif element['type'] == 'collapsible_panel_header':
                 y += int(7 * self.RENDER_SCALE)
@@ -115,7 +123,7 @@ class MainBody(NestedElement):
        
                 panel = CollapsiblePanel(self.button_functions, self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.menu_elements.append(panel)
-               
+            
             elif element['type'] == 'floating_text':
                 y += int(3 * self.RENDER_SCALE)
                 text = FloatingText(self.Timing, self.body_surface, element['content'], y, RENDER_SCALE = self.RENDER_SCALE)
@@ -328,6 +336,11 @@ class MainBody(NestedElement):
                 element.y_position = y
                 y += element.height + int(7 * self.RENDER_SCALE)
             
+            elif isinstance(element, Panel):
+                y += int(7 * self.RENDER_SCALE)
+                element.y_position = y 
+                y += element.height + int(7 * self.RENDER_SCALE)
+                
             elif isinstance(element, CollapsiblePanelHeader):
                 y += int(7 * self.RENDER_SCALE)
                 element.y_position = y 

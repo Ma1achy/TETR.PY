@@ -58,6 +58,301 @@
         "menu": {
             "elements": [
                 {
+                    "type": "panel",
+                    "title": {
+                        "colour": "#e9b58e",
+                        "display_text": "40 LINES"
+                    },
+                    "body_text": {
+                        "colour": "#f4c19b",
+                        "display_text": "clear 40 lines in the shorest amount of time possible.\n score doesn't matter here, just go for the fastest time!"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#523d2d"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#77563e"
+                        ],
+                        "right": [
+                            3,
+                            "#3b291c"
+                        ],
+                        "bottom": [
+                            3,
+                            "271c14"
+                        ],
+                        "top": [
+                            3,
+                            "#99633b"
+                        ]
+                    },
+                    "elements": [
+
+                    ]
+                },
+                {
+                    "type": "panel",
+                    "title": {
+                        "colour": "#e9b58e",
+                        "display_text": "OPTIONS"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#523d2d"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#77563e"
+                        ],
+                        "right": [
+                            3,
+                            "#3b291c"
+                        ],
+                        "bottom": [
+                            3,
+                            "271c14"
+                        ],
+                        "top": [
+                            3,
+                            "#99633b"
+                        ]
+                    },
+                    "elements": [
+                        {
+                            "type": "checkbox",
+                            "text": "pro mode",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#dbb293",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#a38268"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#bf987a"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#7d634f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#e3b591"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#735b48"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#a67f62",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#171310"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0f0d0c"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#26211e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#080707"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#2b2623"
+                                        ]
+                                    }
+                                }
+                            },
+                            "tooltip": "Show extra information, such as finesse and pieces per second."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "alert on finesse fault",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#dbb293",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#a38268"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#bf987a"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#7d634f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#e3b591"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#735b48"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#a67f62",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#171310"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0f0d0c"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#26211e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#080707"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#2b2623"
+                                        ]
+                                    }
+                                }
+                            },
+                            "tooltip": "Alert me when I make a finesse fault."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "retry on finesse fault",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#dbb293",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#a38268"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#bf987a"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#7d634f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#e3b591"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#735b48"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#a67f62",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#171310"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0f0d0c"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#26211e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#080707"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#2b2623"
+                                        ]
+                                    }
+                                }
+                            },
+                            "tooltip": "Restart the game upon a finesse fault."
+                        },
+                        {
+                            "type": "checkbox",
+                            "text": "stride mode",
+                            "themeing": {
+                                "active_state": {
+                                    "text_colour": "#dbb293",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#a38268"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#bf987a"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#7d634f"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#e3b591"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#735b48"
+                                        ]
+                                    }
+                                },
+                                "inactive_state": {
+                                    "text_colour": "#a67f62",
+                                    "background": {
+                                        "style": "solid",
+                                        "colour": "#171310"
+                                    },
+                                    "border": {
+                                        "left": [
+                                            3,
+                                            "#0f0d0c"
+                                        ],
+                                        "right": [
+                                            3,
+                                            "#26211e"
+                                        ],
+                                        "top": [
+                                            3,
+                                            "#080707"
+                                        ],
+                                        "bottom": [
+                                            3,
+                                            "#2b2623"
+                                        ]
+                                    }
+                                }
+                            },
+                            "tooltip": "Speed up animations and the countdown, enables retrying by tapping the reset key, and prevents the first piece from being S, Z, or O."
+                        }
+                    ]
+                },
+                {
                     "type": "collapsible_panel_header",
                     "main_text": {
                         "colour": "#e9b58e",

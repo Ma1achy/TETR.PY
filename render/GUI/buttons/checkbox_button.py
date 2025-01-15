@@ -52,6 +52,8 @@ class CheckboxButton(Button):
         self.font = Font('hun2', self.font_size)      
         self.text = self.definition['text']
         
+        self.pressed_surface_transition_time = 0
+        
         self.__get_rect_and_surface()
         self.render_shadow()
         self.render_states()
