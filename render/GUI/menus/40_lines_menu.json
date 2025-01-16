@@ -65,7 +65,7 @@
                     },
                     "body_text": {
                         "colour": "#f4c19b",
-                        "display_text": "clear 40 lines in the shorest amount of time possible.\n score doesn't matter here, just go for the fastest time!"
+                        "display_text": "clear 40 lines in the shorest amount of time possible.\n score doesn't matter here, just go for the fastest time!\n "
                     },
                     "background": {
                         "style": "solid",
@@ -91,6 +91,73 @@
                     },
                     "elements": [
 
+                    ]	
+                },
+                {
+                    "type": "panel",
+                    "always_update": true,
+                    "background": {
+                        "style": "solid",
+                        "colour": "#523d2d"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#77563e"
+                        ],
+                        "right": [
+                            3,
+                            "#3b291c"
+                        ],
+                        "bottom": [
+                            3,
+                            "271c14"
+                        ],
+                        "top": [
+                            3,
+                            "#99633b"
+                        ]
+                    },
+                    "elements": [
+                        {   
+                            "type": "start_button",
+                            "function": "start_40_lines",
+                            "text": {
+                                "display_text": "START",
+                                "colour": "#f4c19b"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#70523c"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#b3825d"
+                                ],
+                                "right": [
+                                    3,
+                                    "#3b291c"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "271c14"
+                                ],
+                                "top": [
+                                    3,
+                                    "#99633b"
+                                ]
+                            },
+                            "size": {
+                                "width": 250,
+                                "height": 90
+                            },
+                            "position": {
+                                "x": 0,
+                                "y": 0
+                            },
+                            "alignment": "center_right"
+                        }
                     ]
                 },
                 {

@@ -5,7 +5,9 @@ from render.GUI.menu_elements.button_list import ButtonList
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.menu_elements.config_slider import ConfigSlider
 from render.GUI.buttons.checkbox_button import CheckboxButton
+from render.GUI.buttons.start_button import StartButton
 from render.GUI.font import Font
+from render.GUI.buttons.generic_button import GenericButton
 
 class Panel(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
@@ -76,6 +78,11 @@ class Panel(NestedElement):
         self.on_screen_rect = self.surface.get_rect()
         self.create_inital_cached_image()
         
+        if 'always_update' in self.definition and self.definition['always_update']:
+            self.always_update = True
+        else:
+            self.always_update = False
+        
     def get_local_position(self):
         """
         Get the position of the panel relative to the container it is in for collision detection.
@@ -118,11 +125,7 @@ class Panel(NestedElement):
         Get the height of the panel based on the elements in it
         """
         self.__get_rect_and_surface()
-        height = self.__init_elements() - int(15 * self.RENDER_SCALE)
-        
-        if height <= 0:
-            height = 1
-                
+        height = self.__init_elements()
         self.height = height
         
     def __init_elements(self):
@@ -138,8 +141,7 @@ class Panel(NestedElement):
             
         for line in self.body_text_lines:
             y += self.body_font.font.size(line)[1] + int(2 * self.RENDER_SCALE)
-            y += int(10 * self.RENDER_SCALE)
-            
+        
         for element in self.definition['elements']:
             
             if element['type'] == "button_list":
@@ -156,10 +158,29 @@ class Panel(NestedElement):
                 checkbox = CheckboxButton(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(checkbox)
                 y += checkbox.height - int(12 * self.RENDER_SCALE)
-                       
-            y += int(10 * self.RENDER_SCALE)
             
-        y += int(30 * self.RENDER_SCALE)
+            elif element['type'] == "start_button":
+                start_button = StartButton(self.Timing, self.Mouse, self.element_surface, self.panel_surface.get_rect(), element, None, self, self.RENDER_SCALE, self.ToolTips)
+                self.elements.append(start_button)
+                y += start_button.height
+                y -= int(25 * self.RENDER_SCALE)
+            
+            elif element['type'] == "generic_button":
+                function = None
+                button = GenericButton(self.Timing, self.Mouse, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
+                
+                surf = button.shadow_surface
+                temp = pygame.Surface((surf.get_width(), surf.get_height()), pygame.HWSURFACE|pygame.SRCALPHA)
+                temp.fill(self.definition['background']['colour'])
+                temp.blit(surf, (0, 0))
+                button.shadow_surface = temp
+                
+                self.elements.append(button)
+                y -= int(10 * self.RENDER_SCALE)    
+                
+            y += int(10 * self.RENDER_SCALE)
+    
+        y += int(15 * self.RENDER_SCALE)
         
         return y   
       
@@ -213,7 +234,7 @@ class Panel(NestedElement):
     def draw(self):
         """
         Draw the panel and its shadow
-        """
+        """                
         if not self.on_screen:
             return
         
@@ -225,7 +246,7 @@ class Panel(NestedElement):
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.panel_surface.blit(self.element_surface, (0, 0))
         self.surface.blit(self.panel_surface, self.rect.topleft)
-        
+         
     def update(self, in_dialog):
         """
         Update the panel
@@ -240,7 +261,7 @@ class Panel(NestedElement):
         
         if self.currently_hovered and not self.use_cached_image:
             self.update_elements(in_dialog)  
-             
+        
         self.animate_menu_enter_transition()
         self.animate_menu_leave_transition()
     
@@ -417,11 +438,16 @@ class Panel(NestedElement):
         """
         self.check_hover(in_dialog)
         
+        if self.always_update:
+            self.currently_hovered = True
+            self.used_cached_image = False
+            return
+        
         if in_dialog:
             self.create_cached_image()
             self.use_cached_image = True
             return
-            
+         
         if self.currently_hovered:
             self.use_cached_image = False
             return
@@ -429,15 +455,16 @@ class Panel(NestedElement):
         if not self.currently_hovered and self.previous_hovered:
             self.create_cached_image()
             self.use_cached_image = True
-            
+        
     def create_cached_image(self):
         """
         Create a cached image of the panel
-        """ 
+        """
         if self.use_cached_image:
             return
         
         self.cached_surface.fill((0, 0, 0, 0))
+        self.element_surface.fill((0, 0, 0, 0))
         
         for element in self.elements:
             element.reset_state()

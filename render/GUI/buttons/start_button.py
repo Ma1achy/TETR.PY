@@ -1,11 +1,12 @@
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 import pygame
-from utils import draw_border, draw_solid_colour, align_element, apply_gaussian_blur_with_alpha
+from utils import draw_border, draw_solid_colour, align_element, brightness
+import math
 
-class GenericButton(Button):
+class StartButton(Button):
     def __init__(self, Timing, Mouse, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = None, maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A generic button that can be used for any purpose
         
@@ -34,9 +35,7 @@ class GenericButton(Button):
         self.x_position = int(definition['position']['x'] * self.RENDER_SCALE)
         self.y_position = int(definition['position']['y'] * self.RENDER_SCALE)
         
-        self.shadow_radius = int(3 * self.RENDER_SCALE)
-         
-        self.font = Font('hun2', int(23 * self.RENDER_SCALE))
+        self.font = Font('hun2', int(65 * self.RENDER_SCALE))
         
         self.__get_rect_and_surface()
         self.render()
@@ -44,6 +43,10 @@ class GenericButton(Button):
         self.init_tooltip(self.definition)
 
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        
+        self.glow_alpha = 0
+        self.glow_time = 1
+        self.glow_timer = 0
     
     def get_local_position(self):
         """
@@ -63,16 +66,12 @@ class GenericButton(Button):
             
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
-        self.shadow_rect = pygame.Rect(self.rect.x - self.shadow_radius * 2, self.rect.y - self.shadow_radius * 2, self.width + self.shadow_radius * 4, self.height + self.shadow_radius * 4)
-        self.shadow_surface = pygame.Surface((self.shadow_rect.width, self.shadow_rect.height), pygame.HWSURFACE|pygame.SRCALPHA)
-        
     def render(self):
         """
         Render the button
         """
         self.render_button()
         self.render_text()
-        self.render_shadow()
 
     def render_button(self):
         """
@@ -87,29 +86,12 @@ class GenericButton(Button):
         """
         self.font.draw(self.button_surface, self.definition['text']['display_text'], self.definition['text']['colour'], 'center', 0, 0)
     
-    def render_shadow(self):
-        """
-        Render the shadow of the button
-        """
-        pygame.draw.rect(self.shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.shadow_rect.width - 4 * self.shadow_radius, self.shadow_rect.height - 4 * self.shadow_radius))
-        self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
-        pygame.draw.rect(self.shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.width, self.height))
-          
-    def draw(self):
-        """
-        Draw the button.
-        """
-        if not hasattr(self, 'button_surface') or self.button_surface is None:
-            return 
-        
-        self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
-        self.surface.blit(self.button_surface, self.rect.topleft)
-        
     def update(self, in_dialog):
         """
         Update the button
         """
         self.disable_layer_below()
+        self.animate_glow()
         super().update(in_dialog)
         
     def disable_layer_below(self):
@@ -121,10 +103,34 @@ class GenericButton(Button):
             self.parent.reset_state()
         else:
             self.parent.ignore_events = False
-           
-        
     
+    def get_overlays(self):
+        self.__get_lighten_overlay()
 
-     
+    def __get_lighten_overlay(self):
+        self.glow_surface = self.button_surface.copy()
+        brightness(self.glow_surface, 1.75)
         
+    def animate_glow(self):
+        self.glow_timer += self.Timing.frame_delta_time
+        alpha = self.beat(self.glow_timer, intensity = 2, frequency = 2) * 255
+        self.glow_alpha = max(0, min(255, alpha)) 
+        self.glow_surface.set_alpha(self.glow_alpha)
+    
+    def beat(self, value, intensity, frequency):
+    
+        v = math.atan(math.sin(value * math.pi * frequency) * intensity)
+        return (v + math.pi / 2) / math.pi
+
+    def draw(self):
+        """
+        Draw the button.
+        """
+        if not hasattr(self, 'button_surface') or self.button_surface is None:
+            return 
         
+        if not self.on_screen:
+            return
+        
+        self.surface.blit(self.button_surface, self.rect.topleft)
+        self.surface.blit(self.glow_surface, self.rect.topleft)

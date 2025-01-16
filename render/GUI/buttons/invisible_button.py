@@ -25,6 +25,12 @@ class InvisibleButton(Button):
         return self.rect.topleft
     
     def __get_rect_and_surface(self):
+        if self.width < 1:
+            self.width = 1
+        
+        if self.height < 1:
+            self.height = 1
+            
         self.button_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         
     def render(self):

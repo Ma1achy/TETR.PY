@@ -654,7 +654,6 @@ class MenuManager():
         """
         Update the menus and GUI elements
         """
-        self.darken_overlay.fill((0, 0, 0, 200))
         self.window.blit(self.gradient_overlay, (0, 0))
          
         if self.current_menu is not None:

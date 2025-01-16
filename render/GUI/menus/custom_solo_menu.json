@@ -58,6 +58,148 @@
         "menu": {
             "elements": [
                 {
+                    "type": "panel",
+                    "title": {
+                        "colour": "736597",
+                        "display_text": "CUSTOM"
+                    },
+                    "body_text": {
+                        "colour": "#8c7ac8",
+                        "display_text": "play as you wish or create custom gamemodes! \nreplays are not submitted.\n "
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "elements": [
+                        {   
+                            "type": "generic_button",
+                            "function": "export_custom_solo_config",
+                            "tooltip": "Export a .ctm file containing the custom game settings.",
+                            "text": {
+                                "display_text": "EXPORT SETTINGS",
+                                "colour": "#937fdf"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#2a223b"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#382d4b"
+                                ],
+                                "right": [
+                                    3,
+                                    "#211e2d"
+                                ],
+                                "top": [
+                                    3,
+                                    "#40335c"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "#1f1b28"
+                                ]
+                            },
+                            "size": {
+                                "width": 230,
+                                "height": 35
+                            },
+                            "position": {
+                                "x": 25,
+                                "y": 20
+                            },
+                            "alignment": "center_right"
+                        }
+                    ]	
+                },
+                {
+                    "type": "panel",
+                    "always_update": true,
+                    "background": {
+                        "style": "solid",
+                        "colour": "#201e36"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262336"
+                        ],
+                        "right": [
+                            3,
+                            "#181522"
+                        ],
+                        "bottom": [
+                            3,
+                            "#110f17"
+                        ],
+                        "top": [
+                            3,
+                            "#332f5c"
+                        ]
+                    },
+                    "elements": [
+                        {   
+                            "type": "start_button",
+                            "function": "start_custom_solo",
+                            "text": {
+                                "display_text": "START",
+                                "colour": "#c5b3f4"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#29223d"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#4b3f6e"
+                                ],
+                                "right": [
+                                    3,
+                                    "#181522"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "#110f17"
+                                ],
+                                "top": [
+                                    3,
+                                    "#332f5c"
+                                ]
+                            },
+                            "size": {
+                                "width": 250,
+                                "height": 90
+                            },
+                            "position": {
+                                "x": 0,
+                                "y": 0
+                            },
+                            "alignment": "center_right"
+                        }
+                    ]
+                },
+                {
                     "type": "floating_text",
                     "content": {
                         "font": "hun2",
@@ -75,7 +217,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "#a18dd8",
+                        "colour": "#736597",
                         "display_text": "OBJECTIVE"
                     },
                     "background": {
@@ -135,7 +277,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##a18dd8",
+                        "colour": "##736597",
                         "display_text": "GENERAL"
                     },
                     "background": {
@@ -195,7 +337,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##a18dd8",
+                        "colour": "##736597",
                         "display_text": "GRAVITY & LEVELLING"
                     },
                     "background": {
@@ -255,7 +397,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##a18dd8",
+                        "colour": "##736597",
                         "display_text": "ACTIONS & INFORMATION"
                     },
                     "background": {
@@ -315,7 +457,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##a18dd8",
+                        "colour": "##736597",
                         "display_text": "SURVIVAL"
                     },
                     "background": {
@@ -375,7 +517,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##a18dd8",
+                        "colour": "##736597",
                         "display_text": "COUNTERS"
                     },
                     "background": {
@@ -435,7 +577,7 @@
                 {
                     "type": "collapsible_panel_header",
                     "main_text": {
-                        "colour": "##a18dd8",
+                        "colour": "##736597",
                         "display_text": "INTRODUCTION"
                     },
                     "background": {

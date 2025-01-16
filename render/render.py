@@ -58,7 +58,8 @@ class Render():
 
         if not self.RenderStruct.USE_RENDER_SCALE:
             self.RenderStruct.RENDER_SCALE = 1
-            width, height = self.__get_available_display_area()
+            #width, height = self.__get_available_display_area()
+            width, height = 1500, 900
         else:
             width, height = 1500, 900
 
@@ -129,7 +130,8 @@ class Render():
         else:
             if not self.RenderStruct.USE_RENDER_SCALE:
                 self.RenderStruct.RENDER_SCALE = 1
-                width, height = self.__get_available_display_area()
+                #width, height = self.__get_available_display_area()
+                width, height = 1500, 900
             else:
                 width, height = 1500, 900
 
@@ -164,7 +166,6 @@ class Render():
     def draw_frame(self):
         
         self.__check_if_fullscreen_toggled()
-        
         self.window.blit(self.image, (0, 0))
         self.MenuManager.tick()
         
@@ -177,7 +178,7 @@ class StructRender():
     WINDOW_WIDTH = 1500 
     WINDOW_HEIGHT = 900
     
-    USE_RENDER_SCALE = True
+    USE_RENDER_SCALE = False
     APPLY_RENDER_SCALE_TO_FULLSCREEN = True
     RENDER_SCALE = 1
     

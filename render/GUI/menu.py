@@ -45,7 +45,7 @@ class Menu():
         args:
             path (str): The path to the definition file
         """
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             self.definition = json.load(f)
                
     def __init_elements(self):
@@ -130,11 +130,11 @@ class Menu():
                 func = self.button_functions[element['function']]
                 self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element, parent = None, RENDER_SCALE = self.RENDER_SCALE))
     
-    def update_tooltips(self):
+    def update_tooltips(self, in_dialog):
         if self.ToolTips is None:
             return
         
-        self.ToolTips.update()
+        self.ToolTips.update(in_dialog)
            
     def update(self, in_dialog):
         """
@@ -147,7 +147,7 @@ class Menu():
         self.main_body.update(in_dialog)
         self.draw(self.surface)
         self.update_footer_widgets(in_dialog)
-        self.update_tooltips()
+        self.update_tooltips(in_dialog)
             
     def handle_window_resize(self):
         """
@@ -440,10 +440,16 @@ class ToolTips():
         self.tooltip_to_draw = self.tooltips[tooltip]
         self.shadow_to_draw = self.shadows[tooltip]
     
-    def update(self):
+    def update(self, in_dialog):
         """
         Update the tooltips
         """
+        if in_dialog:
+            self.tooltip_to_draw = None
+            self.shadow_to_draw = None
+            self.tooltip_timer = 0
+            return
+            
         if self.tooltip_to_draw is None:
             self.tooltip_timer -= self.Timing.frame_delta_time
             

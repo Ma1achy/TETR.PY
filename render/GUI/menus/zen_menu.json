@@ -19,6 +19,7 @@
         }
     },
     "menu_body": {
+        "tooltips": true,
         "logo": {
             "image": "resources/logos/LogoLightGlow.png",
             "alignment": "bottom_left",
@@ -53,6 +54,152 @@
                     "#181818"
                 ]
             }
+        },
+        "menu": {
+            "elements": [
+                {
+                    "type": "panel",
+                    "title": {
+                        "colour": "#d8a1db",
+                        "display_text": "ZEN"
+                    },
+                    "body_text": {
+                        "colour": "#f0c5f3",
+                        "display_text": "relax or train in a neverending mode! your progress is stored across games. \nadjust the feel or help train using the zen sidebar. \nyou can undo and redo placements with ctrl+z and ctrl+y!\n "
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#312133"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#5f3d62"
+                        ],
+                        "right": [
+                            3,
+                            "#301d32"
+                        ],
+                        "bottom": [
+                            3,
+                            "#231624"
+                        ],
+                        "top": [
+                            3,
+                            "#754579"
+                        ]
+                    },
+                    "elements": [
+                        {   
+                            "type": "generic_button",
+                            "function": "reset_zen_progress",
+                            "tooltip": "Destory all ZEN progress and start again.",
+                            "text": {
+                                "display_text": "RESET",
+                                "colour": "#dcabda"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#4c314c"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#5a3e5c"
+                                ],
+                                "right": [
+                                    3,
+                                    "#3c293d"
+                                ],
+                                "top": [
+                                    3,
+                                    "6b456c"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "#302130"
+                                ]
+                            },
+                            "size": {
+                                "width": 95,
+                                "height": 35
+                            },
+                            "position": {
+                                "x": 25,
+                                "y": 20
+                            },
+                            "alignment": "center_right"
+                        }
+                    ]	
+                },
+                {
+                    "type": "panel",
+                    "always_update": true,
+                    "background": {
+                        "style": "solid",
+                        "colour": "#312133"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#5f3d62"
+                        ],
+                        "right": [
+                            3,
+                            "#301d32"
+                        ],
+                        "bottom": [
+                            3,
+                            "#231624"
+                        ],
+                        "top": [
+                            3,
+                            "#754579"
+                        ]
+                    },
+                    "elements": [
+                        {   
+                            "type": "start_button",
+                            "function": "start_zen",
+                            "text": {
+                                "display_text": "START",
+                                "colour": "#e3aceb"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#774b79"
+                            },
+                            "border": {
+                                "left": [
+                                    3,
+                                    "#ab63b0"
+                                ],
+                                "right": [
+                                    3,
+                                    "#301d32"
+                                ],
+                                "bottom": [
+                                    3,
+                                    "#231624"
+                                ],
+                                "top": [
+                                    3,
+                                    "#754579"
+                                ]
+                            },
+                            "size": {
+                                "width": 250,
+                                "height": 90
+                            },
+                            "position": {
+                                "x": 0,
+                                "y": 0
+                            },
+                            "alignment": "center_right"
+                        }
+                    ]
+                }
+            ]
         }
     },
     "menu_footer": {
