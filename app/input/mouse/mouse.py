@@ -8,6 +8,8 @@ class Mouse():
     position: tuple[int, int] = (0, 0)
     motion: tuple[int, int] = (0, 0)
     events: queue.Queue = field(default_factory = queue.Queue)
+    
+    slider_interaction_event: bool = False
 
 class MouseEvents(Enum):
     MOUSEBUTTON1 = auto()

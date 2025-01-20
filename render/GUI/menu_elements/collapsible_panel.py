@@ -4,6 +4,7 @@ from render.GUI.menu_elements.button_list import ButtonList
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.menu_elements.config_slider import ConfigSlider
 from render.GUI.buttons.checkbox_button import CheckboxButton
+
 class CollapsiblePanel(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent = parent)
