@@ -40,6 +40,7 @@ class MenuManager():
         self.wait_for_dialog_close = False
         
         self.ErrorDialog = None
+        self.close_attempts = 0
             
         self.button_functions = {
             "go_to_exit": self.open_exit_dialog,
@@ -1020,6 +1021,7 @@ class MenuManager():
         self.current_dialog.do_animate_appear = False
         self.current_dialog.timer = 0
         self.wait_for_dialog_close = True
+        self.close_attempts = 0
 
     def reset_dialogs(self):
         """

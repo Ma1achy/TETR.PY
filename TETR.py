@@ -366,6 +366,11 @@ class TETRPY():
         args:
             event (pygame.event): the event to handle   
         """
+        self.MenuManager.close_attempts += 1
+        
+        if self.MenuManager.current_dialog == self.MenuManager.ExitDialog and self.MenuManager.close_attempts > 5:
+            self.Timing.exited = True
+        
         self.MenuManager.open_exit_dialog()
     
     def handle_exception(self, e):
