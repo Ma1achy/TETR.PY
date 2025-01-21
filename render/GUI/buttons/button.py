@@ -53,6 +53,7 @@ class Button(NestedElement):
         self.state = None
         self.previous_state = None
         self.doing_click = False
+        self.being_dragged = False
         
         # surface and rect
         self.get_rect_and_surface()
@@ -204,6 +205,7 @@ class Button(NestedElement):
         Check for input events.
         """
         events_to_remove = []
+        mouse_x, mouse_y = self.Mouse.position
         
         for event in self.Mouse.events.queue:
             for button, info in event.items():
@@ -211,7 +213,6 @@ class Button(NestedElement):
                     return
                 
                 event_x, event_y = info['pos']
-                mouse_x, mouse_y = self.Mouse.position
 
                 if button is MouseEvents.MOUSEBUTTON1 and info['down'] and self.collision_rect.collidepoint((event_x, event_y)) and self.collision_rect.collidepoint((mouse_x, mouse_y)):
                     self.state = 'pressed'
@@ -262,15 +263,18 @@ class Button(NestedElement):
         """
         Update the state of the button and check for input events.
         """
+        if not self.on_screen:
+            return
+        
         if in_dialog or self.ignore_events:
             return
         
         if self.do_menu_enter_transition or self.do_menu_leave_transition:
             return
-        
-        if not self.on_screen:
+           
+        if self.Mouse.slider_interaction_event and not self.being_dragged:
             return
-        
+            
         self.check_hover()
         self.update_click()
         self.check_events()

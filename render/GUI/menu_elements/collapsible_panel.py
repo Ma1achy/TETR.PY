@@ -104,8 +104,8 @@ class CollapsiblePanel(NestedElement):
         Initialise the elements in the panel
         """
         self.elements = []
-        
         y = 0
+        
         for element in self.definition['elements']:
             
             if element['type'] == "button_list":
@@ -191,7 +191,8 @@ class CollapsiblePanel(NestedElement):
         if not self.on_screen:
             return
         
-        self.update_hover(in_dialog)
+        if not self.Mouse.slider_interaction_event:
+            self.update_hover(in_dialog)
         
         if self.currently_hovered and not self.use_cached_image:
             self.update_elements(in_dialog)  
@@ -276,12 +277,12 @@ class CollapsiblePanel(NestedElement):
             return
         
         if is_enter:
-            start_x = self.default_x_position + self.container.width//12
+            start_x = self.default_x_position + self.container.width // 12
             end_x = self.default_x_position
             
         elif not is_enter:
             start_x = self.default_x_position
-            end_x = self.default_x_position + self.container.width//12
+            end_x = self.default_x_position + self.container.width // 12
          
         self.menu_transition_timer, progress = self.animate_slide(
             self.menu_transition_timer,

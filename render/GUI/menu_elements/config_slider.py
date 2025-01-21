@@ -5,6 +5,7 @@ from render.GUI.buttons.slider_field import SliderField
 from render.GUI.buttons.slider_knob import SliderKnob
 from render.GUI.buttons.invisible_button import InvisibleButton
 from render.GUI.buttons.slider_bar_button import SliderBarButton
+from app.input.mouse.mouse import MouseEvents
 
 class ConfigSlider(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
@@ -195,6 +196,7 @@ class ConfigSlider(NestedElement):
         self.draw()
         self.update_knob(in_dialog)
         self.update_invisible_buttons(in_dialog)
+        self.perform_drag()
         
     def value_to_position(self, value):
         """
@@ -249,7 +251,7 @@ class ConfigSlider(NestedElement):
         if position - self.Knob.rect.width < self.slider_bar_rect.left:
             position = self.slider_bar_rect.left + self.Knob.rect.width
      
-        elif position > self.slider_bar_rect.right - self.knob_rect.width:
+        elif position > self.slider_bar_rect.right - self.knob_rect.width // 2:
             position = self.slider_bar_rect.right
         else:
             position += self.knob_rect.width // 2
@@ -291,4 +293,13 @@ class ConfigSlider(NestedElement):
         self.ValueField.reset_state()
         self.Knob.reset_state()
         
-    
+    def perform_drag(self):
+        """
+        Check for input events.
+        """
+        mouse_x, _ = self.Mouse.position
+        
+        if self.Knob.being_dragged and self.Mouse.slider_interaction_event:
+            tl = self.get_screen_position() 
+            pos = mouse_x - tl[0]
+            self.update_knob_position(pos)

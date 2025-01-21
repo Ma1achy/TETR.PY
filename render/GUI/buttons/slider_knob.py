@@ -1,6 +1,7 @@
 from render.GUI.buttons.button import Button
 import pygame
 from utils import draw_border, draw_solid_colour, apply_gaussian_blur_with_alpha
+from app.input.mouse.mouse import MouseEvents
 
 class SliderKnob(Button):
     def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None, slider = None):
@@ -69,4 +70,49 @@ class SliderKnob(Button):
         self.shadow_rect.x = x_position - self.shadow_radius * 2
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
         
+    def check_hover(self):
+        """
+        Check if the mouse is hovering over the button.
+        """
+        if self.state == 'pressed':
+            return
         
+        x, y = self.Mouse.position
+        
+        self.collision_rect.topleft = self.get_screen_position()
+        
+        if self.collision_rect.collidepoint((x, y)):
+            if self.state == 'pressed':
+                return
+            self.state = 'hovered'
+        else:
+            self.state = None
+    
+    def check_events(self):
+        """
+        Check for input events.
+        """
+        events_to_remove = []
+        mouse_x, mouse_y = self.Mouse.position
+        
+        for event in self.Mouse.events.queue:
+            for button, info in event.items():
+                if button is MouseEvents.SCROLLWHEEL:
+                    return
+                
+                event_x, event_y = info['pos']
+
+                if button is MouseEvents.MOUSEBUTTON1 and info['down'] and self.collision_rect.collidepoint((event_x, event_y)) and self.collision_rect.collidepoint((mouse_x, mouse_y)):
+                    self.state = 'pressed'
+                    self.Mouse.slider_interaction_event = True
+                    self.being_dragged = True
+                    events_to_remove.append(event)
+                
+                if button is MouseEvents.MOUSEBUTTON1 and info['up'] and self.being_dragged and self.Mouse.slider_interaction_event:
+                    events_to_remove.append(event)
+                    self.Mouse.slider_interaction_event = False
+                    self.being_dragged = False
+                    self.state = None
+                    
+        for event in events_to_remove:
+            self.Mouse.events.queue.remove(event)
