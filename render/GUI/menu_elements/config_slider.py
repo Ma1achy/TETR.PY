@@ -248,7 +248,7 @@ class ConfigSlider(NestedElement):
         """
         Update the position of the knob
         """
-        if position - self.Knob.rect.width < self.slider_bar_rect.left:
+        if position - self.Knob.rect.width // 2 < self.slider_bar_rect.left:
             position = self.slider_bar_rect.left + self.Knob.rect.width
      
         elif position > self.slider_bar_rect.right - self.knob_rect.width // 2:
