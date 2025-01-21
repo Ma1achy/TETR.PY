@@ -46,6 +46,7 @@ class SliderField(Button):
             self.value_str = '∞'
         
         self.value_font = Font('hun2', int(27 * self.RENDER_SCALE))
+        self.sub_font =  Font('hun2', int(13 * self.RENDER_SCALE))
          
         self.__get_rect_and_surface()
         self.render()
@@ -76,6 +77,13 @@ class SliderField(Button):
     def draw_value(self):
         self.value_surface.fill((0, 0, 0, 0))
         self.value_font.draw(self.value_surface, self.value_str, self.definition['value_font_colour'], 'right', h_padding = self.unit_font.get_width() + int(10 * self.RENDER_SCALE), v_padding = 0)    
+        
+        if self.definition['unit'] == 'ms':
+            val_in_ms = int(self.value_str)
+            val_in_frames = val_in_ms / (1000 / 60)
+            val_str = f'{val_in_frames:.1f}'
+            self.sub_font.draw(self.value_surface, val_str + 'F', self.definition['unit_font_colour'], 'left_bottom', h_padding = int(5 * self.RENDER_SCALE), v_padding = int(5 * self.RENDER_SCALE) )
+        
         self.surface.blit(self.value_surface, (self.x_position, self.y_position))
         
     def draw(self):
