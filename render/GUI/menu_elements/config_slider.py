@@ -5,10 +5,12 @@ from render.GUI.buttons.slider_field import SliderField
 from render.GUI.buttons.slider_knob import SliderKnob
 from render.GUI.buttons.invisible_button import InvisibleButton
 from render.GUI.buttons.slider_bar_button import SliderBarButton
-from app.input.mouse.mouse import MouseEvents
+
+from render.GUI.diaglog_box import DialogBox
+from render.GUI.menu_elements.text_input import TextInput
 
 class ConfigSlider(NestedElement):
-    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, button_functions, dialogs, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
         """
         
@@ -22,6 +24,8 @@ class ConfigSlider(NestedElement):
             parent (Object): the parent UI element
         """
         self.button_functions = button_functions
+        self.dialogs = dialogs
+        
         self.RENDER_SCALE = RENDER_SCALE
         self.ToolTips = ToolTips
         
@@ -92,11 +96,35 @@ class ConfigSlider(NestedElement):
             
         self.__get_rect_and_surface()
         
-        if 'field_function' in self.definition:
-            self.value_field_function = self.button_functions[self.definition['field_function']]
-        else:
-            self.value_field_function = None
+        self.edit_field_value_dialog = DialogBox(
+            self.Timing, 
+            self.dialogs["window"],
+            self.Mouse, 
+            self.dialogs["render_struct"],
+            title = self.definition["dialog_title"],
+            message = self.definition["dialog_message"],
+            buttons = ['CANCEL', 'SUBMIT'],
+            funcs = [self.button_functions["close_dialog"], lambda: None], 
+            click_off_dissmiss = True, 
+            width = 550, 
             
+            TextEntry = TextInput(
+                allowed_input = self.definition["text_entry_params"]["allowed_input"],
+                no_empty_input = self.definition["text_entry_params"]["no_empty_input"],
+                max_chars = self.definition["text_entry_params"]["max_chars"],
+                force_caps = self.definition["text_entry_params"]["force_caps"],
+                font_colour = '#ffffff',
+                cursor_colour = '#ffffff',
+                font_type = 'hun2.ttf',
+                font_size = 25,
+                pygame_events_queue =  self.dialogs["pygame_event_queue"],
+                function = None,
+                RENDER_SCALE = self.RENDER_SCALE
+            )
+        )
+     
+        self.value_field_function = self.open_edit_field_value_dialog
+        
         self.ValueField = SliderField(self.button_functions, self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, self.value_field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
         self.ValueField.min_value = self.min_value
         self.ValueField.max_value = self.max_value
@@ -115,7 +143,7 @@ class ConfigSlider(NestedElement):
         self.title_rect = pygame.Rect(self.x_padding * 2, self.y_padding, self.title_width + self.x_padding, self.height - self.y_padding * 2)
         
         self.title_invisible_button = InvisibleButton(self.title_rect.width, self.title_rect.height, self.title_rect, None, self.Mouse, self.Timing, self.slider_surface, self.title_rect, self.tool_tip_definition, self, self.RENDER_SCALE, self.ToolTips)
-            
+        
     def get_title(self):
         """
         Get the title of the slider
@@ -303,3 +331,6 @@ class ConfigSlider(NestedElement):
             tl = self.get_screen_position() 
             pos = mouse_x - tl[0]
             self.update_knob_position(pos)
+        
+    def open_edit_field_value_dialog(self):
+        self.button_functions['open_dialog'](self.edit_field_value_dialog)

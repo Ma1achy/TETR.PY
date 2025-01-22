@@ -384,7 +384,14 @@
                             "max_value": 83,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_arr_dialog",
+                            "dialog_title": "AUTO REPEAT RATE",
+                            "dialog_message": "The time interval between each automatic repeat movement a tetromino performs when holding down the movement keys, measured in ms.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 2,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -430,7 +437,14 @@
                             "max_value": 333,
                             "min_value": 17,
                             "step": 1,
-                            "field_function": "open_edit_das_dialog",
+                            "dialog_title": "DELAYED AUTO SHIFT",
+                            "dialog_message": "The time interval between the initial key press and the automatic repeat movement, measured in ms.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -476,7 +490,14 @@
                             "max_value": 333,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_dcd_dialog",
+                            "dialog_title": "DAS CUT DELAY",
+                            "dialog_message": "If non-zero, any ongoing DAS movement will pause for a set amount of time after dropping or rotating a piece, measured in ms.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -522,7 +543,14 @@
                             "min_value": 5,
                             "max_value_to_inf": true,
                             "step": 1,
-                            "field_function": "open_edit_sdf_dialog",
+                            "dialog_title": "SOFT DROP FACTOR",
+                            "dialog_message": "The factor the soft drop key scales the current gravity by.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 2,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -895,7 +923,14 @@
                             "max_value": 200,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_music_dialog",
+                            "dialog_title": "MUSIC",
+                            "dialog_message": "The volume at which music and jingles play.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -940,7 +975,14 @@
                             "max_value": 200,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_sfx_dialog",
+                            "dialog_title": "SOUND EFFECTS",
+                            "dialog_message": "The volume at which sound effects play.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -985,7 +1027,14 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_stereo_dialog",
+                            "dialog_title": "STEREO",
+                            "dialog_message": "The stereo balance of the left and right channels.\nLarger values increase the difference between the left and right channels.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1564,7 +1613,14 @@
                             "max_value": 200,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_board_bounciness_dialog",
+                            "dialog_title": "BOARD BOUNCINESS",
+                            "dialog_message": "How much the board reacts when you move pieces around.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1609,7 +1665,14 @@
                             "max_value": 110,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_damage_shakiness_dialog",
+                            "dialog_title": "DAMAGE SHAKINESS",
+                            "dialog_message": "How much the board reacts when you recieve damage.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1654,7 +1717,14 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_grid_visibility_dialog",
+                            "dialog_title": "GRID VISIBILITY",
+                            "dialog_message": "How visible the grid of the matrix is, 0% is invisible.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1699,7 +1769,14 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_board_visibility_dialog",
+                            "dialog_title": "BOARD VISIBILITY",
+                            "dialog_message": "How visible the board is, 0% is invisible.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1744,7 +1821,14 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_shadow_visibility_dialog",
+                            "dialog_title": "SHADOW VISIBILITY",
+                            "dialog_message": "How visible the shadow of the current tetromino is, 0% is invisible.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1789,7 +1873,14 @@
                             "max_value": 130,
                             "min_value": 50,
                             "step": 1,
-                            "field_function": "open_edit_board_zoom_dialog",
+                            "dialog_title": "BOARD ZOOM",
+                            "dialog_message": "How large the board displays, values above 100% may cause the board to be cut off.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2316,7 +2407,14 @@
                             "min_value": 20,
                             "max_value_to_inf": true,
                             "step": 1,
-                            "field_function": "open_edit_render_scale_dialog",
+                            "dialog_title": "TARGET FPS",
+                            "dialog_message": "The target frame rate the game will try to achieve.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2361,7 +2459,14 @@
                             "max_value": 100,
                             "min_value": 0,
                             "step": 1,
-                            "field_function": "open_edit_particle_count_dialog",
+                            "dialog_title": "PARTICLE COUNT",
+                            "dialog_message": "The number of particles to display.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2406,7 +2511,14 @@
                             "min_value": 0,
                             "unit": "%",
                             "step": 1,
-                            "field_function": "open_edit_background_visibility_dialog",
+                            "dialog_title": "BACKGROUND VISIBILITY",
+                            "dialog_message": "How visible the background images are, 0% makes the background entirely black.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2451,7 +2563,14 @@
                             "max_value": 200,
                             "min_value": 25,
                             "step": 1,
-                            "field_function": "open_edit_gui_scale_dialog",
+                            "dialog_title": "GUI SCALE",
+                            "dialog_message": "The size of the GUI elements, 100% is the default size.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2572,7 +2691,14 @@
                             "max_value": 100,
                             "min_value": 25,
                             "step": 1,
-                            "field_function": "open_edit_render_scale_dialog",
+                            "dialog_title": "RENDER SCALE",
+                            "dialog_message": "The factor of the windows resolution that the game is rendered at. Lower values will increase performance, but increase pixelation.",
+                            "text_entry_params": {
+                                "allowed_input": "int",
+                                "no_empty_input": true,
+                                "max_chars": 3,
+                                "force_caps": true
+                            },
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
