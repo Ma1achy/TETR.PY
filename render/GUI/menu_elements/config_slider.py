@@ -104,7 +104,7 @@ class ConfigSlider(NestedElement):
             title = self.definition["dialog_title"],
             message = self.definition["dialog_message"],
             buttons = ['CANCEL', 'SUBMIT'],
-            funcs = [self.button_functions["close_dialog"], lambda: None], 
+            funcs = [self.button_functions["close_dialog"], lambda: self.submit_value(self.edit_field_value_dialog.TextEntry.get_value())], 
             click_off_dissmiss = True, 
             width = 550, 
             
@@ -118,7 +118,7 @@ class ConfigSlider(NestedElement):
                 font_type = 'hun2.ttf',
                 font_size = 25,
                 pygame_events_queue =  self.dialogs["pygame_event_queue"],
-                function = None,
+                function = self.submit_value,
                 RENDER_SCALE = self.RENDER_SCALE
             )
         )
@@ -231,29 +231,31 @@ class ConfigSlider(NestedElement):
         Convert the value to a position on the slider
         """
         min_position = self.slider_bar_rect.left + self.knob_rect.width
-        max_position = self.slider_bar_rect.right - 1
+        max_position = self.slider_bar_rect.right
         length = max_position - min_position
               
         percentage = (value - self.min_value) / self.value_range
         
         if self.flipped:
-            position = max_position - (length * percentage)
+            position = int(max_position - (length * percentage))
         else:
-            position = min_position + (length * percentage)
+            min_position = self.slider_bar_rect.left + self.knob_rect.width + 1
+            position = int(min_position + (length * percentage))
         
-        if position < min_position:
-            return min_position
-        elif position > max_position:
-            return max_position
-        
-        return position
+        if position < self.slider_bar_rect.left:
+            position = self.slider_bar_rect.left + self.knob_rect.width
+            
+        elif position > self.slider_bar_rect.right:
+            position = self.slider_bar_rect.right
+             
+        self.Knob.update_position(position)
     
     def position_to_value(self):
         """
         Convert the position of the knob to a value
-        """
+        """ 
         min_position = self.slider_bar_rect.left + self.knob_rect.width
-        max_position = self.slider_bar_rect.right - 1
+        max_position = self.slider_bar_rect.right
         length = max_position - min_position
         
         percentage = (self.knob_rect.x - min_position) / length
@@ -282,7 +284,7 @@ class ConfigSlider(NestedElement):
         elif position > self.slider_bar_rect.right - self.knob_rect.width // 2:
             position = self.slider_bar_rect.right
         else:
-            position += self.knob_rect.width // 2
+            position += self.knob_rect.width // 2 - 1
             
         self.knob_rect.x = position
         self.Knob.shadow_rect.x = position - self.Knob.shadow_radius * 2
@@ -334,3 +336,21 @@ class ConfigSlider(NestedElement):
         
     def open_edit_field_value_dialog(self):
         self.button_functions['open_dialog'](self.edit_field_value_dialog)
+        self.edit_field_value_dialog.TextEntry.manager.value = str(self.ValueField.value)
+        self.edit_field_value_dialog.TextEntry.manager.cursor_pos = len(self.edit_field_value_dialog.TextEntry.manager.value)
+        self.edit_field_value_dialog.text_entry_box.focused = True
+        self.edit_field_value_dialog.TextEntry.is_focused = True
+    
+    def submit_value(self, value):
+        
+        if value < self.min_value:
+            value = self.min_value
+            
+        elif value > self.max_value:
+            value = self.max_value
+            
+        self.value_to_position(value)
+        self.ValueField.value = value
+        self.ValueField.update_value()
+        self.button_functions['close_dialog']()
+        self.reset_state()

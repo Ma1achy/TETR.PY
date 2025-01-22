@@ -436,7 +436,7 @@ class DialogTextEntryBox(Button):
         self.render()
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))    
-        self.focused = False
+        self.focused = True
         
         self.TextEntry = TextEntry
         self.TextEntry.init(self.button_surface)

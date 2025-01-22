@@ -380,6 +380,10 @@ class MenuManager():
 
         self.current_menu.reset_state()
         self.current_menu = self.login_menu
+        
+        self.LoginDialog.text_entry_box.focused = True
+        self.LoginDialog.TextEntry.is_focused = True
+        
         self.open_dialog(self.LoginDialog)
 
     # login dialog
