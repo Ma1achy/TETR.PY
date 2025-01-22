@@ -1,5 +1,5 @@
 import pygame
-from utils import smoothstep_interpolate, draw_linear_gradient, draw_solid_colour
+from utils import smoothstep_interpolate, draw_linear_gradient, draw_solid_colour, smoothstep_interpolate
 from render.GUI.buttons.button_bar_main import ButtonBarMain
 from render.GUI.buttons.button_bar_sub import ButtonBarSub
 from render.GUI.buttons.back_button import BackButton
@@ -49,6 +49,11 @@ class MainBody(NestedElement):
         self.scroll_bar = None
         self.scroll_timer = 0
         self.scroll_timer_duration = 0.1
+        
+        self.do_reset_scroll_animation = False
+        self.animation_timer = 0
+        self.reset_scroll_timer = 0
+        self.reset_scroll_length = 0.35
         
         self.__get_rect_and_surface()
         self.__init_elements()
@@ -317,6 +322,7 @@ class MainBody(NestedElement):
         self.__update_menu(in_dialog)
         self.__update_back_button(in_dialog)
         self.__update_scroll_bar(in_dialog)
+        self.__do_reset_scroll_animation()
     
     def __update_y_positions(self):
         """
@@ -438,7 +444,7 @@ class MainBody(NestedElement):
         
         if 'back_button' in self.definition and animate_back_button:
             self.back_button.do_menu_enter_transition_animation()
-          
+                 
     def do_menu_leave_transition_animation(self, animate_back_button):
         """
         Start the menu leave transition animation
@@ -453,4 +459,40 @@ class MainBody(NestedElement):
         if 'back_button' in self.definition and animate_back_button:
             self.back_button.do_menu_leave_transition_animation()
             
-
+    def menu_enter_reset_scroll(self):
+        """
+        Reset the scroll position
+        """
+        self.do_reset_scroll_animation = True
+    
+    def __do_reset_scroll_animation(self):
+        if self.scroll_y == 0:
+            self.do_reset_scroll_animation = False
+            self.animation_timer = 0
+            self.reset_scroll_timer = 0
+            return
+        
+        if self.do_reset_scroll_animation:
+            self.animation_timer += self.Timing.frame_delta_time
+            
+            if self.animation_timer <= 0.19 - self.Timing.frame_delta_time:
+                return
+            
+            if self.reset_scroll_timer >= self.reset_scroll_length:
+                self.scroll_y = 0
+                self.animation_timer = 0
+                self.reset_scroll_timer = 0
+                self.do_reset_scroll_animation = False
+                
+            self.reset_scroll_timer += self.Timing.frame_delta_time
+            progress = self.reset_scroll_timer / self.reset_scroll_length
+            progress = max(0, min(1, progress))
+            self.scroll_y = smoothstep_interpolate(self.scroll_y, 0, progress)
+    
+    
+        
+        
+        
+                    
+                
+                

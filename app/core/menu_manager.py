@@ -320,6 +320,13 @@ class MenuManager():
         """
         Go back to the previous menu or close the current dialog
         """
+        if self.current_menu.doing_transition_animation:
+            return
+        
+        if self.current_menu.main_body.do_reset_scroll_animation:
+            self.current_menu.reset_state()
+            return
+            
         if self.in_dialog:
             if self.current_dialog.primary_button is None:
                 return
@@ -651,6 +658,7 @@ class MenuManager():
         animate_back_button, animate_footer_widget = self.animate_diff(self.previous_menu, self.current_menu)
         self.current_menu.do_menu_enter_transition_animation(animate_back_button, animate_footer_widget)
         self.next_menu = None
+        self.current_menu.menu_enter_reset_scroll()
         
     def switch_menus(self, next_menu):
         """
@@ -660,14 +668,14 @@ class MenuManager():
             next_menu (Menu): The menu to switch to
         """
         self.next_menu = next_menu
-        
+             
         animate_back_button, animate_footer_widget = self.animate_diff(self.current_menu, next_menu)
         self.current_menu.do_menu_leave_transition_animation(animate_back_button, animate_footer_widget)
         
         if self.previous_menu is not None:
             self.previous_menu.reset_state()
             self.previous_menu = None
-        
+            
     def go_to_home(self):
         """
         Go to the home menu

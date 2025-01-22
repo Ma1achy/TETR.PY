@@ -301,6 +301,15 @@ class Menu():
             self.doing_transition_animation = False
             self.transition_animation_timer = 0
 
+    def menu_enter_reset_scroll(self):
+        """
+        Reset the scroll position
+        """
+        if 'menu_body' not in self.definition:
+            return
+        
+        self.main_body.menu_enter_reset_scroll()
+        
 class ToolTips():
     def __init__(self, Mouse, Timing, surface, RenderStruct):
         """
