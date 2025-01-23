@@ -532,7 +532,6 @@ class Button(NestedElement):
         if self.slider is None:
             return
         
-        
         if self.slider == 'left' or self.slider == 'right':
             self.slider_hover_start_timer, progress = self.animate_slider(
                 self.slider_hover_start_timer,
@@ -558,7 +557,6 @@ class Button(NestedElement):
         """
         if self.slider is None:
             return
-        
         
         if self.slider == 'left' or self.slider == 'right':
             self.slider_hover_end_timer, progress = self.animate_slider(

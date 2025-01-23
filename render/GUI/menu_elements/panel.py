@@ -160,7 +160,8 @@ class Panel(NestedElement):
                 y += checkbox.height - int(12 * self.RENDER_SCALE)
             
             elif element['type'] == "start_button":
-                start_button = StartButton(self.Timing, self.Mouse, self.element_surface, self.panel_surface.get_rect(), element, None, self, self.RENDER_SCALE, self.ToolTips)
+                function = self.button_functions[element['function']]
+                start_button = StartButton(self.Timing, self.Mouse, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
                 self.elements.append(start_button)
                 y += start_button.height
                 y -= int(25 * self.RENDER_SCALE)
@@ -293,19 +294,13 @@ class Panel(NestedElement):
     def do_menu_enter_transition_animation(self):
         """
         Start the menu enter transition animation
-        """
-        # if not self.on_screen:
-        #     return
-        
+        """        
         self.do_menu_enter_transition = True
     
     def do_menu_leave_transition_animation(self):
         """
         Start the menu leave transition animation
         """
-        # if not self.on_screen:
-        #     return
-        
         self.do_menu_leave_transition = True
     
     def animate_menu_enter_transition(self):
@@ -399,6 +394,7 @@ class Panel(NestedElement):
         self.panel_surface.set_alpha(alpha)
         self.shadow_surface.set_alpha(alpha)
         self.cached_surface.set_alpha(alpha)
+        self.element_surface.set_alpha(alpha)
     
     def check_if_on_screen(self):
         """

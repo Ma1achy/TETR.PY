@@ -55,6 +55,8 @@ class MainBody(NestedElement):
         self.reset_scroll_timer = 0
         self.reset_scroll_length = 0.35
         
+        self.back_button = None
+         
         self.__get_rect_and_surface()
         self.__init_elements()
         self.render()

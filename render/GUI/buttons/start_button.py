@@ -3,6 +3,7 @@ from render.GUI.font import Font
 import pygame
 from utils import draw_border, draw_solid_colour, align_element, brightness
 import math
+from app.input.mouse.mouse import MouseEvents
 
 class StartButton(Button):
     def __init__(self, Timing, Mouse, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
@@ -98,9 +99,8 @@ class StartButton(Button):
         """
         Disable the parent in the layer below the button when it is being hovered or pressed
         """
-        if self.state is not None:
+        if self.state is 'hovered':
             self.parent.ignore_events = True
-            self.parent.reset_state()
         else:
             self.parent.ignore_events = False
     

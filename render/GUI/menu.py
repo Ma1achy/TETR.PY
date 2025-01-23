@@ -34,6 +34,12 @@ class Menu():
         self.footer_widgets = []
 
         self.__open_definition(menu_definition)
+        
+        self.main_body = None
+        self.menu_header = None
+        self.menu_footer = None
+        self.ToolTips = None
+        
         self.__init_elements()
         
         self.transition_animation_timer = 0
@@ -145,7 +151,10 @@ class Menu():
             in_dialog (bool): Whether the menu is in a dialog
         """
         self.count_transition_animation()
-        self.main_body.update(in_dialog)
+        
+        if self.main_body is not None:
+            self.main_body.update(in_dialog)
+            
         self.draw(self.surface)
         self.update_footer_widgets(in_dialog)
         self.update_tooltips(in_dialog)

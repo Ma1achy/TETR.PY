@@ -49,6 +49,12 @@ class MenuManager():
             "go_to_exit": self.open_exit_dialog,
             "go_to_home": self.go_to_home,
             
+            "go_to_game": self.go_to_game,
+            "start_40_lines": self.start_40_lines,
+            "start_blitz": self.start_blitz,
+            "start_zen": self.start_zen,
+            "start_custom_solo": self.start_custom_solo,
+            
             # home menu
             "go_to_multi": self.go_to_multi,
             "go_to_solo": self.go_to_solo,
@@ -194,6 +200,8 @@ class MenuManager():
         self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/zen_menu.json')
         self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
         
+        self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/game_menu.json')
+        
         self.current_menu = self.home_menu
         self.next_menu = None
         self.previous_menu = None
@@ -328,10 +336,8 @@ class MenuManager():
             return
         
         if self.in_dialog:
-            if self.current_dialog.primary_button is None:
-                return
-            self.current_dialog.primary_button.click()
-        else:
+            self.close_dialog()
+        elif self.current_menu.main_body is not None and self.current_menu.main_body.back_button is not None:
             self.current_menu.main_body.back_button.click()
     
     def __menu_debug(self):
@@ -369,6 +375,8 @@ class MenuManager():
         self.LogOutDialog.handle_window_resize()
         self.LoginDialog.handle_window_resize()
         
+        self.game_menu.handle_window_resize()
+        
         if self.ErrorDialog:
             self.ErrorDialog.handle_window_resize()
         
@@ -376,6 +384,38 @@ class MenuManager():
             self.current_dialog.handle_window_resize()
         
         self.copied_text_surface_rect = pygame.Rect((self.RenderStruct.WINDOW_WIDTH - self.copied_text_surface_width)//2, (self.RenderStruct.WINDOW_HEIGHT - self.copied_text_surface_height)//2, self.copied_text_surface_width, self.copied_text_surface_height)
+    
+    def go_to_game(self):
+        """
+        Go to the game menu
+        """
+        self.switch_menus(self.game_menu)
+    
+    def start_40_lines(self):
+        """
+        Start the 40 lines game
+        """
+        self.go_to_game()
+    
+    def start_blitz(self):
+        """
+        Start the blitz game
+        """
+        self.go_to_game()
+    
+    def start_zen(self):
+        """
+        Start the zen game
+        """
+        self.go_to_game()
+    
+    def start_custom_solo(self):
+        """
+        Start the custom solo game
+        """
+        self.go_to_game()
+        
+    # login menu
     
     def go_to_login(self):
         """
@@ -611,6 +651,9 @@ class MenuManager():
         """
         animate_back_button = False
         
+        if 'main_body' not in next_menu.definition:
+            return True, False
+            
         if 'back_button' in current_menu.main_body.definition and 'back_button' not in next_menu.main_body.definition:
             animate_back_button = True
         
@@ -901,7 +944,7 @@ class MenuManager():
         
         info, error, trace = self.Debug.ERROR
         self.Debug.ERROR = None
-        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n \n [colour=#BBBBBB]{trace}[/colour]\nPlease report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_error_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = False, width = 700)
+        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n Please report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_error_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = False, width = 700)
     
     def close_error_dialog(self):
         """
