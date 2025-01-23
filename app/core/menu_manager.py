@@ -324,12 +324,9 @@ class MenuManager():
         """
         Go back to the previous menu or close the current dialog
         """
-        if self.current_menu.doing_transition_animation:
+        if self.if_doing_animation():
             return
         
-        if self.current_menu.main_body.do_reset_scroll_animation:
-            return
-            
         if self.in_dialog:
             if self.current_dialog.primary_button is None:
                 return
