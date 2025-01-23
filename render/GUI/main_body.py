@@ -475,7 +475,7 @@ class MainBody(NestedElement):
         if self.do_reset_scroll_animation:
             self.animation_timer += self.Timing.frame_delta_time
             
-            if self.animation_timer <= 0.19 - self.Timing.frame_delta_time:
+            if self.animation_timer <= 0.2:
                 return
             
             if self.reset_scroll_timer >= self.reset_scroll_length:
