@@ -4,7 +4,7 @@ from utils import draw_border, draw_solid_colour, apply_gaussian_blur_with_alpha
 from app.input.mouse.mouse import MouseEvents
 
 class SliderKnob(Button):
-    def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None, slider = None):
+    def __init__(self, width, height, rect, function, Mouse, Timing, Sound, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None, slider = None):
         super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         
         self.RENDER_SCALE = RENDER_SCALE

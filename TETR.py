@@ -32,6 +32,8 @@ from app.input.mouse.mouse import Mouse
 
 from app.core.account_manager import AccountManager
 from app.core.config_manager import ConfigManager
+from app.core.sound.sound_manager import SoundManager
+from app.core.sound.sound import Sound
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -48,6 +50,8 @@ class TETRPY():
         self.is_focused = False
         self.game_instances = []
         
+        self.Sound = Sound()
+        
         self.Keyboard = Keyboard()
         self.Mouse = Mouse()
         
@@ -60,7 +64,7 @@ class TETRPY():
         
         self.DebugStruct.PRINT_WARNINGS = True
         
-        self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self.Timing, self.DebugStruct)
+        self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self. Timing, self.DebugStruct)
         self.MouseInputManager = MouseInputManager(self.Mouse)
         
         self.__init_pygame()
@@ -78,9 +82,10 @@ class TETRPY():
             UIAction.MENU_DEBUG:        ['f3'],
             UIAction.WINDOW_FULLSCREEN: ['f11'],
         }
-   
+        
+        self.SoundManager = SoundManager(self.Sound)
         self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing)
-        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager)
+        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager, self.Sound)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
         self.Render = Render(self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Timing, self.RenderStruct, self.DebugStruct)
@@ -299,6 +304,7 @@ class TETRPY():
         
         self.__update_mouse_position()
         self.MenuInputHandler.tick()
+        self.SoundManager.tick()
         
         self.Debug.get_metrics()  
         self.Render.draw_frame()

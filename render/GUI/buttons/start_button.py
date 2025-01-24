@@ -6,7 +6,7 @@ import math
 from app.input.mouse.mouse import MouseEvents
 
 class StartButton(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, Timing, Mouse, Sound, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = None, maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A generic button that can be used for any purpose

@@ -12,7 +12,7 @@ from render.GUI.buttons.button import Button
 from app.input.mouse.mouse import MouseEvents
 
 class DialogBox(NestedElement):
-    def __init__(self, Timing, window, Mouse, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width, TextEntry = None):
+    def __init__(self, Timing, window, Mouse, Sound, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width, TextEntry = None):
         super().__init__(parent = None)
         """
         A dialog box that can be used for any purpose
@@ -32,6 +32,7 @@ class DialogBox(NestedElement):
         """
         self.Timing = Timing
         self.window = window
+        self.Sound = Sound
             
         self.title = title
         self.message = message
@@ -297,10 +298,10 @@ class DialogBox(NestedElement):
         self.__get_click_off_buttons()
          
         if self.num_buttons == 1:
-            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.Sound, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
         else:
-            self.primary_button   = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
-            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+            self.primary_button   = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.Sound, self.RenderStruct, text = self.buttons[0], function = self.funcs[0], width = self.button_width, height = self.button_height, colour = '#AAAAAA', text_colour = '#222222', style = 'darken', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'left', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
+            self.secondary_button = DialogButton(self.Timing, self.dialog_surface, self.Mouse, self.Sound, self.RenderStruct, text = self.buttons[1], function = self.funcs[1], width = self.button_width, height = self.button_height, colour = '#1E48FF', text_colour = '#CBD5FF', style = 'lighten', container = self.button_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, RENDER_SCALE = self.RENDER_SCALE)
     
     def __create_text_entry(self):
         """
@@ -311,7 +312,7 @@ class DialogBox(NestedElement):
         
         function = None
         self.text_entry_container = pygame.Rect(self.button_container.left, self.button_container.top - self.text_entry_height - self.y_padding * 2, self.width, self.text_entry_height)
-        self.text_entry_box = DialogTextEntryBox(self.Timing, self.dialog_surface, self.Mouse, self.RenderStruct, function = function, width = self.width - self.x_padding * 2, height = self.text_entry_height, colour = '#222222', text_colour = '#eeeeee', style = None, container = self.text_entry_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, TextEntry = self.TextEntry)
+        self.text_entry_box = DialogTextEntryBox(self.Timing, self.dialog_surface, self.Mouse, self.Sound, self.RenderStruct, function = function, width = self.width - self.x_padding * 2, height = self.text_entry_height, colour = '#222222', text_colour = '#eeeeee', style = None, container = self.text_entry_container, dialog_rect = self.dialog_rect, alignment = 'right', padding = (self.x_padding, self.y_padding), border_radius = self.border_radius, parent = self, TextEntry = self.TextEntry)
         
     def __get_click_off_buttons(self):
         """
@@ -320,10 +321,10 @@ class DialogBox(NestedElement):
         if not self.click_off_dissmiss:
             return
         
-        self.invisible_button1 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.window.get_rect().top, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None, RENDER_SCALE = 1)
-        self.invisible_button2 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, (self.window.get_rect().bottom + self.height)//2, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None, RENDER_SCALE = 1)
-        self.invisible_button3 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None, RENDER_SCALE = 1)
-        self.invisible_button4 = DialogClickOffButton(self.Timing, self.window, self.Mouse, function = self.funcs[0], container = pygame.Rect(self.dialog_rect.right, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None, RENDER_SCALE = 1)
+        self.invisible_button1 = DialogClickOffButton(self.Timing, self.window, self.Mouse, self.Sound, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.window.get_rect().top, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None, RENDER_SCALE = 1)
+        self.invisible_button2 = DialogClickOffButton(self.Timing, self.window, self.Mouse, self.Sound, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, (self.window.get_rect().bottom + self.height)//2, self.window.get_rect().width, (self.window.get_rect().height - self.height)//2), parent = None, RENDER_SCALE = 1)
+        self.invisible_button3 = DialogClickOffButton(self.Timing, self.window, self.Mouse, self.Sound, function = self.funcs[0], container = pygame.Rect(self.window.get_rect().left, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None, RENDER_SCALE = 1)
+        self.invisible_button4 = DialogClickOffButton(self.Timing, self.window, self.Mouse, self.Sound, function = self.funcs[0], container = pygame.Rect(self.dialog_rect.right, self.dialog_rect.top, (self.window.get_rect().width - self.dialog_rect.width)//2, self.dialog_rect.height), parent = None, RENDER_SCALE = 1)
     
     def handle_window_resize(self):
         """
@@ -417,7 +418,7 @@ class DialogBox(NestedElement):
         self.timer = 0
 
 class DialogTextEntryBox(Button):
-    def __init__(self, Timing, surface, Mouse, RenderStruct, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, TextEntry):
+    def __init__(self, Timing, surface, Mouse, Sound, RenderStruct, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, TextEntry):
         super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, parent = parent)
         
         self.RenderStruct = RenderStruct

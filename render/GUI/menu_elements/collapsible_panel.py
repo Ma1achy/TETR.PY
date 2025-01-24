@@ -6,7 +6,7 @@ from render.GUI.menu_elements.config_slider import ConfigSlider
 from render.GUI.buttons.checkbox_button import CheckboxButton
 
 class CollapsiblePanel(NestedElement):
-    def __init__(self, button_functions, dialog_resources, Timing, Mouse, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, button_functions, dialog_resources, Timing, Mouse, Sound, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent = parent)
         """
         A panel that can be collapsed and expanded
@@ -24,6 +24,7 @@ class CollapsiblePanel(NestedElement):
         self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
         self.ToolTips = ToolTips
+        self.Sound = Sound
         
         self.Timing = Timing
         self.Mouse = Mouse
@@ -110,17 +111,17 @@ class CollapsiblePanel(NestedElement):
         for element in self.definition['elements']:
             
             if element['type'] == "button_list":
-                button_list = ButtonList(self.button_functions, self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                button_list = ButtonList(self.button_functions, self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(button_list)
                 y += button_list.height
               
             elif element['type'] == "config_slider":
-                config_slider = ConfigSlider(self.button_functions, self.dialog_resources, self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                config_slider = ConfigSlider(self.button_functions, self.dialog_resources, self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(config_slider)
                 y += config_slider.height
             
             elif element['type'] ==  "checkbox":
-                checkbox = CheckboxButton(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                checkbox = CheckboxButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(checkbox)
                 y += checkbox.height - int(12 * self.RENDER_SCALE)
                 

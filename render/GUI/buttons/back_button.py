@@ -4,7 +4,7 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class BackButton(Button):
-    def __init__(self, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, function, Mouse, Timing, Sound, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         Back button for a menu

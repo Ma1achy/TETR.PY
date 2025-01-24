@@ -2,7 +2,7 @@ from render.GUI.buttons.button import Button
 import pygame
 
 class DialogClickOffButton(Button):
-    def __init__(self, Timing, surface, Mouse, function, container, parent, RENDER_SCALE, ToolTips = None, definition = None):
+    def __init__(self, Timing, surface, Mouse, Sound, function, container, parent, RENDER_SCALE, ToolTips = None, definition = None):
         super().__init__(Timing, surface, Mouse, function, container, width = container.width, height = container.height, style = None, maintain_alpha = False, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A button that is used to close a dialog box, when the user clicks off the dialog box

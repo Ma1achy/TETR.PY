@@ -4,7 +4,7 @@ from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 
 class CheckboxButton(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, background_colour, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, background_colour, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(Timing, surface, Mouse, None, container, width = container.width, height = container.height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         
         self.RENDER_SCALE = RENDER_SCALE

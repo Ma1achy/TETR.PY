@@ -5,7 +5,7 @@ from render.GUI.buttons.button_list_buttons import ButtonListButtons
 from render.GUI.buttons.invisible_button import InvisibleButton
 
 class ButtonList(NestedElement):
-    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, button_functions, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
         """
         A list of buttons where only one can be active at a time
@@ -22,6 +22,7 @@ class ButtonList(NestedElement):
         self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
         self.ToolTips = ToolTips
+        self.Sound = Sound
         
         self.Timing = Timing
         self.Mouse = Mouse
@@ -104,7 +105,7 @@ class ButtonList(NestedElement):
         """
         button_rect = self.get_button_rect(idx) 
         function = None
-        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.buttons_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips))     
+        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.Sound, self.buttons_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips))     
     
     def get_button_rect(self, idx):
         """

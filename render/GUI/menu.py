@@ -9,7 +9,7 @@ import re
 from utils import apply_gaussian_blur_with_alpha
 
 class Menu():
-    def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, dialog_resources, menu_definition):
+    def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, dialog_resources, Sound, menu_definition):
         """
         A menu object
         
@@ -23,6 +23,8 @@ class Menu():
         self.surface = surface
         self.Timing = Timing
         self.Mouse = Mouse
+        self.Sound = Sound
+        
         self.RenderStruct = RenderStruct
         self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         self.button_functions = button_functions
@@ -109,7 +111,7 @@ class Menu():
             return
             
         self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body = MainBody(self.Mouse, self.Timing, self.ToolTips, self.main_body_rect, self.button_functions, self.dialog_resources, self.definition['menu_body'], parent = None, RENDER_SCALE = self.RENDER_SCALE)
+        self.main_body = MainBody(self.Mouse, self.Timing, self.ToolTips, self.Sound, self.main_body_rect, self.button_functions, self.dialog_resources, self.definition['menu_body'], parent = None, RENDER_SCALE = self.RENDER_SCALE)
     
     def __init__tooltips(self):
         if 'menu_body' not in self.definition:
@@ -135,7 +137,7 @@ class Menu():
         for element in self.definition["footer_widgets"]['elements']:
             if element['type'] == 'footer_button':
                 func = self.button_functions[element['function']]
-                self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.surface, self.surface.get_rect(), element, parent = None, RENDER_SCALE = self.RENDER_SCALE))
+                self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.Sound, self.surface, self.surface.get_rect(), element, parent = None, RENDER_SCALE = self.RENDER_SCALE))
     
     def update_tooltips(self, in_dialog):
         if self.ToolTips is None:

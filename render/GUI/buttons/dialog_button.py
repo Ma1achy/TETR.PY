@@ -4,7 +4,7 @@ from utils import hex_to_rgb, align_left_edge, align_right_edge, align_centre, b
 from render.GUI.font import Font
 
 class DialogButton(Button):
-    def __init__(self, Timing, surface, Mouse, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, Timing, surface, Mouse, Sound, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(Timing, surface, Mouse, function, container, width, height, style = style, maintain_alpha = True, parent = parent, RENDER_SCALE = 1, ToolTips = ToolTips)
         """
         A button for a dialog box

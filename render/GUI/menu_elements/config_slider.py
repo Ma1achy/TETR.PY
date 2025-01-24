@@ -10,7 +10,7 @@ from render.GUI.diaglog_box import DialogBox
 from render.GUI.menu_elements.text_input import TextInput
 
 class ConfigSlider(NestedElement):
-    def __init__(self, button_functions, dialog_resources, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, button_functions, dialog_resources, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
         """
         
@@ -31,6 +31,7 @@ class ConfigSlider(NestedElement):
         
         self.Timing = Timing
         self.Mouse = Mouse
+        self.Sound = Sound
         
         self.surface = surface
         self.container = container
@@ -100,6 +101,7 @@ class ConfigSlider(NestedElement):
             self.Timing, 
             self.dialog_resources["window"],
             self.Mouse, 
+            self.Sound,
             self.dialog_resources["render_struct"],
             title = self.definition["dialog_title"],
             message = self.definition["dialog_message"],
@@ -125,13 +127,13 @@ class ConfigSlider(NestedElement):
      
         self.value_field_function = self.open_edit_field_value_dialog
         
-        self.ValueField = SliderField(self.button_functions, self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, self.value_field_function, self.Mouse, self.Timing, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+        self.ValueField = SliderField(self.button_functions, self.value_button_rect.width, self.value_button_rect.height, self.value_button_rect, self.value_field_function, self.Mouse, self.Timing, self.Sound, self.slider_surface, self.value_button_rect, self.value_field_definiton, self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
         self.ValueField.min_value = self.min_value
         self.ValueField.max_value = self.max_value
         self.ValueField.max_value_to_inf = self.max_value_to_inf
         
         self.ValueField.value = self.max_value if not self.flipped else self.min_value
-        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips, slider = self)
+        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.Sound, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips, slider = self)
         
         self.render()
         

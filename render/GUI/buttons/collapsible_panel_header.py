@@ -5,7 +5,7 @@ from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
 
 class CollapsiblePanelHeader(Button):
-    def __init__(self, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
         """
         A button that can be clicked to open or close a collapsible panel
@@ -24,6 +24,7 @@ class CollapsiblePanelHeader(Button):
         
         self.Timing = Timing
         self.Mouse = Mouse
+        self.Sound = Sound
         
         self.surface = surface
         self.container = container
@@ -68,7 +69,7 @@ class CollapsiblePanelHeader(Button):
         for element in self.definition['elements']:
             if element['type'] == 'generic_button':
                 function = None
-                self.elements.append(GenericButton(self.Timing, self.Mouse, self.element_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips))
+                self.elements.append(GenericButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips))
     
     def render(self):
         """

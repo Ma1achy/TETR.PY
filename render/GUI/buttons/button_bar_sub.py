@@ -4,7 +4,7 @@ from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 
 class ButtonBarSub(Button):
-    def __init__(self, function:callable, Mouse, Timing, surface, container, definition, y_position, height, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, function:callable, Mouse, Timing, Sound, surface, container, definition, y_position, height, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(Timing, surface, Mouse, function, container, container.width, height, style = 'lighten', maintain_alpha = False, slider = 'left', parent = parent, RENDER_SCALE = 1, ToolTips = ToolTips)
         """
         A button bar that displays an image, along with big main text and smaller sub text

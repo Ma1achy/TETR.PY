@@ -10,7 +10,7 @@ from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
 
 class Panel(NestedElement):
-    def __init__(self, button_functions, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, button_functions, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent = parent)
         """
         A panel that can contain other elements.
@@ -30,6 +30,8 @@ class Panel(NestedElement):
         
         self.Timing = Timing
         self.Mouse = Mouse
+        self.Sound = Sound
+        
         self.surface = surface
         self.container = container
         self.definition = definition
@@ -145,30 +147,30 @@ class Panel(NestedElement):
         for element in self.definition['elements']:
             
             if element['type'] == "button_list":
-                button_list = ButtonList(self.button_functions, self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                button_list = ButtonList(self.button_functions, self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(button_list)
                 y += button_list.height
             
             elif element['type'] == "config_slider":
-                config_slider = ConfigSlider(self.button_functions, self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                config_slider = ConfigSlider(self.button_functions, self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(config_slider)
                 y += config_slider.height
             
             elif element['type'] ==  "checkbox":
-                checkbox = CheckboxButton(self.Timing, self.Mouse, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                checkbox = CheckboxButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(checkbox)
                 y += checkbox.height - int(12 * self.RENDER_SCALE)
             
             elif element['type'] == "start_button":
                 function = self.button_functions[element['function']]
-                start_button = StartButton(self.Timing, self.Mouse, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
+                start_button = StartButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
                 self.elements.append(start_button)
                 y += start_button.height
                 y -= int(25 * self.RENDER_SCALE)
             
             elif element['type'] == "generic_button":
                 function = None
-                button = GenericButton(self.Timing, self.Mouse, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
+                button = GenericButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
                 
                 surf = button.shadow_surface
                 temp = pygame.Surface((surf.get_width(), surf.get_height()), pygame.HWSURFACE|pygame.SRCALPHA)

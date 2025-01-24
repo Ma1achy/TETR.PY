@@ -10,7 +10,7 @@ import pygame
 from render.GUI.menu_elements.text_input import TextInput
 
 class MenuManager():
-    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager):
+    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, Sound):
         """
         The menu manager, manages the current menu and GUI elements and transitions
         
@@ -33,6 +33,7 @@ class MenuManager():
         
         self.AccountManager = AccountManager
         self.ConfigManager = ConfigManager
+        self.Sound = Sound
         
         self.debug_overlay = False
         self.is_focused = False
@@ -130,6 +131,7 @@ class MenuManager():
             self.Timing, 
             self.window, 
             self.Mouse, 
+            self.Sound,
             self.RenderStruct, 
             title = 'WELCOME TO TETR.PY', 
             message = "Enter a username to login" ,
@@ -157,6 +159,7 @@ class MenuManager():
             self.Timing,
             self.window,
             self.Mouse,
+            self.Sound,
             self.RenderStruct,
             title = 'EXIT TETR.PY?',
             message = None ,
@@ -170,6 +173,7 @@ class MenuManager():
             self.Timing,
             self.window,
             self.Mouse,
+            self.Sound,
             self.RenderStruct,
             title = 'LOGOUT?',
             message = None,
@@ -185,22 +189,22 @@ class MenuManager():
             "pygame_event_queue": self.pygame_events_queue,
         }
                
-        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/login_menu.json')
-        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/home_menu.json')
-        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/solo_menu.json')
-        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/multi_menu.json')
-        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/records_menu.json')
-        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/about_menu.json')
-        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/config_menu.json')
+        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/login_menu.json')
+        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/home_menu.json')
+        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/solo_menu.json')
+        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/multi_menu.json')
+        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/records_menu.json')
+        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/config_menu.json')
 
-        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/account_menu.json')
+        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/account_menu.json')
 
-        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/40_lines_menu.json')
-        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/blitz_menu.json')
-        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/zen_menu.json')
-        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
-        
-        self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/game_menu.json')
+        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/40_lines_menu.json')
+        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/blitz_menu.json')
+        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/zen_menu.json')
+        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
+
+        self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/game_menu.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None
@@ -939,7 +943,7 @@ class MenuManager():
         
         info, error, trace = self.Debug.ERROR
         self.Debug.ERROR = None
-        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n Please report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_error_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = False, width = 700)
+        self.ErrorDialog = DialogBox(self.Timing, self.window, self.Mouse, self.Sound, self.RenderStruct, title = 'UH OH . . .', message = f"TETR.PY has encountered a problem!\n [colour=#FF0000]{error}[/colour]\n Please report this problem at: \n https://github.com/Ma1achy/TETR.PY/issues", buttons = ['DISMISS', 'COPY'], funcs = [self.close_error_dialog, lambda: self.copy_to_clipboard(info)], click_off_dissmiss = False, width = 700)
     
     def close_error_dialog(self):
         """
