@@ -179,28 +179,28 @@ class MenuManager():
             width = 500
         )
                 
-        self.dialogs = {
+        self.dialog_resources = {
             "window": self.window,
             "render_struct": self.RenderStruct,
             "pygame_event_queue": self.pygame_events_queue,
         }
                
-        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/login_menu.json')
-        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/home_menu.json')
-        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/solo_menu.json')
-        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/multi_menu.json')
-        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/records_menu.json')
-        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/about_menu.json')
-        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/config_menu.json')
+        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/login_menu.json')
+        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/home_menu.json')
+        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/solo_menu.json')
+        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/multi_menu.json')
+        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/records_menu.json')
+        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/config_menu.json')
 
-        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/account_menu.json')
+        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/account_menu.json')
 
-        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/40_lines_menu.json')
-        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/blitz_menu.json')
-        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/zen_menu.json')
-        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
+        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/40_lines_menu.json')
+        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/blitz_menu.json')
+        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/zen_menu.json')
+        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
         
-        self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialogs, menu_definition = 'render/GUI/menus/game_menu.json')
+        self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, menu_definition = 'render/GUI/menus/game_menu.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None
@@ -452,7 +452,6 @@ class MenuManager():
         """
         Open the logout dialog
         """
-        self.current_menu.reset_state()
         self.open_dialog(self.LogOutDialog)
     
     def logout(self):
@@ -476,7 +475,6 @@ class MenuManager():
         """
         Open the exit dialog
         """
-        self.current_menu.reset_state()
         self.open_dialog(self.ExitDialog)
     
     def quit_game(self):
@@ -583,8 +581,8 @@ class MenuManager():
         self.current_dialog = dialog
         self.in_dialog = True
         
-        if self.current_menu:
-            self.current_menu.reset_state()
+        # if self.current_menu:
+        #     self.current_menu.reset_state()
 
         dialog.do_animate_appear = True
         dialog.do_animate_disappear = False
@@ -641,9 +639,6 @@ class MenuManager():
             else:
                 self.in_dialog = False
                 self.wait_for_dialog_close = False
-                
-                if self.current_menu:
-                    self.current_menu.reset_state()
     
     def animate_diff(self, current_menu, next_menu):
         """

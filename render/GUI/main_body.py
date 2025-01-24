@@ -13,7 +13,7 @@ from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.menu_elements.panel import Panel
 
 class MainBody(NestedElement):
-    def __init__(self, Mouse, Timing, ToolTips, rect, button_functions, dialogs, definition, parent, RENDER_SCALE = 1):
+    def __init__(self, Mouse, Timing, ToolTips, rect, button_functions, dialog_resources, definition, parent, RENDER_SCALE = 1):
         super().__init__(parent)
         """
         The main body of the menu
@@ -33,7 +33,7 @@ class MainBody(NestedElement):
         self.RENDER_SCALE = RENDER_SCALE
         
         self.button_functions = button_functions
-        self.dialogs = dialogs
+        self.dialog_resources = dialog_resources
         self.definition = definition
         
         self.rect = rect
@@ -129,7 +129,7 @@ class MainBody(NestedElement):
             
             elif element['type'] == 'collapsible_panel':
        
-                panel = CollapsiblePanel(self.button_functions, self.dialogs, self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                panel = CollapsiblePanel(self.button_functions, self.dialog_resources, self.Timing, self.Mouse, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.menu_elements.append(panel)
             
             elif element['type'] == 'floating_text':

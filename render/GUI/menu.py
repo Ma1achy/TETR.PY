@@ -9,7 +9,7 @@ import re
 from utils import apply_gaussian_blur_with_alpha
 
 class Menu():
-    def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, dialogs, menu_definition):
+    def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, dialog_resources, menu_definition):
         """
         A menu object
         
@@ -26,7 +26,7 @@ class Menu():
         self.RenderStruct = RenderStruct
         self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         self.button_functions = button_functions
-        self.dialogs = dialogs
+        self.dialog_resources = dialog_resources
         
         self.header_height = 0
         self.footer_height = 0
@@ -109,7 +109,7 @@ class Menu():
             return
             
         self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body = MainBody(self.Mouse, self.Timing, self.ToolTips, self.main_body_rect, self.button_functions, self.dialogs, self.definition['menu_body'], parent = None, RENDER_SCALE = self.RENDER_SCALE)
+        self.main_body = MainBody(self.Mouse, self.Timing, self.ToolTips, self.main_body_rect, self.button_functions, self.dialog_resources, self.definition['menu_body'], parent = None, RENDER_SCALE = self.RENDER_SCALE)
     
     def __init__tooltips(self):
         if 'menu_body' not in self.definition:

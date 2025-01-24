@@ -10,7 +10,7 @@ from render.GUI.diaglog_box import DialogBox
 from render.GUI.menu_elements.text_input import TextInput
 
 class ConfigSlider(NestedElement):
-    def __init__(self, button_functions, dialogs, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, button_functions, dialog_resources, Timing, Mouse, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
         """
         
@@ -24,7 +24,7 @@ class ConfigSlider(NestedElement):
             parent (Object): the parent UI element
         """
         self.button_functions = button_functions
-        self.dialogs = dialogs
+        self.dialog_resources = dialog_resources
         
         self.RENDER_SCALE = RENDER_SCALE
         self.ToolTips = ToolTips
@@ -98,9 +98,9 @@ class ConfigSlider(NestedElement):
         
         self.edit_field_value_dialog = DialogBox(
             self.Timing, 
-            self.dialogs["window"],
+            self.dialog_resources["window"],
             self.Mouse, 
-            self.dialogs["render_struct"],
+            self.dialog_resources["render_struct"],
             title = self.definition["dialog_title"],
             message = self.definition["dialog_message"],
             buttons = ['CANCEL', 'SUBMIT'],
@@ -117,7 +117,7 @@ class ConfigSlider(NestedElement):
                 cursor_colour = '#ffffff',
                 font_type = 'hun2.ttf',
                 font_size = 25,
-                pygame_events_queue =  self.dialogs["pygame_event_queue"],
+                pygame_events_queue =  self.dialog_resources["pygame_event_queue"],
                 function = self.submit_value,
                 RENDER_SCALE = self.RENDER_SCALE
             )
