@@ -4,10 +4,10 @@ import pygame
 from utils import draw_border, draw_solid_colour, align_element, brightness
 import math
 from app.input.mouse.mouse import MouseEvents
-
+from app.core.sound.sfx import SFX
 class StartButton(Button):
     def __init__(self, Timing, Mouse, Sound, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = None, maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = None, maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         """
         A generic button that can be used for any purpose
         
@@ -48,7 +48,9 @@ class StartButton(Button):
         self.glow_alpha = 0
         self.glow_time = 1
         self.glow_timer = 0
-    
+
+        self.click_sound = SFX.MenuConfirm
+        
     def get_local_position(self):
         """
         Get the position of the button relative to the container it is in for collision detection

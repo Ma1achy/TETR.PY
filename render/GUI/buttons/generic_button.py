@@ -2,10 +2,11 @@ from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 import pygame
 from utils import draw_border, draw_solid_colour, align_element, apply_gaussian_blur_with_alpha
+from app.core.sound.sfx import SFX
 
 class GenericButton(Button):
     def __init__(self, Timing, Mouse, Sound, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         """
         A generic button that can be used for any purpose
         
@@ -44,6 +45,7 @@ class GenericButton(Button):
         self.init_tooltip(self.definition)
 
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        self.hover_sound = SFX.MenuTap
     
     def get_local_position(self):
         """
@@ -109,19 +111,8 @@ class GenericButton(Button):
         """
         Update the button
         """
-        self.disable_layer_below()
         super().update(in_dialog)
-        
-    def disable_layer_below(self):
-        """
-        Disable the parent in the layer below the button when it is being hovered or pressed
-        """
-        if self.state is not None:
-            self.parent.ignore_events = True
-            self.parent.reset_state()
-        else:
-            self.parent.ignore_events = False
-           
+    
         
     
 

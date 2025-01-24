@@ -4,7 +4,7 @@ from app.input.mouse.mouse import MouseEvents
 
 class SliderBarButton(Button):
     def __init__(self, width, height, rect, function, Mouse, Timing, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = None)
        
         self.RENDER_SCALE = RENDER_SCALE
         self.x_position = rect.x

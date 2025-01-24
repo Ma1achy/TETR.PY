@@ -2,8 +2,10 @@ from utils import brightness_maintain_alpha, brightness, smoothstep, smoothstep_
 import pygame
 from app.input.mouse.mouse import MouseEvents
 from render.GUI.menu_elements.nested_element import NestedElement
+from app.core.sound.sound import Sound
+from app.core.sound.sfx import SFX
 class Button(NestedElement):
-    def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None, RENDER_SCALE = 1, ToolTips = None, Sound:Sound = None):
         super().__init__(parent)
         """
         Base button class
@@ -21,6 +23,11 @@ class Button(NestedElement):
             slider (str): the direction the button slides in
         """
         self.RENDER_SCALE = RENDER_SCALE
+        
+        self.Sound = Sound
+        
+        self.hover_sound = SFX.MenuHover
+        self.click_sound = SFX.MenuClick
         
         self.ToolTips = ToolTips
         self.tooltip = None
@@ -197,6 +204,7 @@ class Button(NestedElement):
             if self.state == 'pressed':
                 return
             self.state = 'hovered'
+            self.play_hover_sound()
         else:
             self.state = None
     
@@ -244,6 +252,7 @@ class Button(NestedElement):
         Start the click event.
         """
         self.doing_click = True
+        self.play_click_sound()
     
     def click(self):
         """
@@ -298,7 +307,7 @@ class Button(NestedElement):
                   
         if self.state == 'hovered':
             self.handle_hover_start_events()
-            
+  
         elif self.state is None and self.previous_state == 'hovered':
             self.handle_hover_end_events()
         
@@ -788,3 +797,24 @@ class Button(NestedElement):
             return
         
         self.ToolTips.draw_tooltip(self.tooltip)
+        
+    def play_hover_sound(self):
+        if self.Sound is None:
+            return
+        
+        if self.hover_sound is None:
+            return
+        
+        if self.previous_state is not None:
+            return
+        
+        self.Sound.sfx_queue.append(self.hover_sound)
+    
+    def play_click_sound(self):
+        if self.Sound is None:
+            return
+        
+        if self.click_sound is None:
+            return
+        
+        self.Sound.sfx_queue.append(self.click_sound)

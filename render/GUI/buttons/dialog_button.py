@@ -2,10 +2,11 @@ from render.GUI.buttons.button import Button
 import pygame
 from utils import hex_to_rgb, align_left_edge, align_right_edge, align_centre, brightness, brightness_maintain_alpha
 from render.GUI.font import Font
+from app.core.sound.sfx import SFX
 
 class DialogButton(Button):
-    def __init__(self, Timing, surface, Mouse, Sound, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, style = style, maintain_alpha = True, parent = parent, RENDER_SCALE = 1, ToolTips = ToolTips)
+    def __init__(self, Timing, surface, Mouse, Sound, RenderStruct, text, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, RENDER_SCALE = 1, ToolTips = None, primary = True):
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = style, maintain_alpha = True, parent = parent, RENDER_SCALE = 1, ToolTips = ToolTips, Sound = Sound)
         """
         A button for a dialog box
         
@@ -50,6 +51,13 @@ class DialogButton(Button):
         self.get_overlays()
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
+        
+        self.primary = primary
+        
+        self.hover_sound = SFX.MenuTap
+        
+        if not self.primary:
+            self.click_sound = SFX.MenuHit1
             
     def __get_rect_and_surface(self):
         """

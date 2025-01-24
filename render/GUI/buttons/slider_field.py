@@ -1,10 +1,11 @@
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 import pygame
+from app.core.sound.sfx import SFX
 
 class SliderField(Button):
     def __init__(self, button_functions, width, height, rect, function, Mouse, Timing, Sound, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         """
         A field value button for a slider of the config menu
         
@@ -52,6 +53,8 @@ class SliderField(Button):
         self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        
+        self.hover_sound = SFX.MenuTap
      
     def get_local_position(self):
         return self.rect.topleft

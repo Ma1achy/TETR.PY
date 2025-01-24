@@ -3,10 +3,11 @@ from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
+from app.core.sound.sfx import SFX
 
 class CollapsiblePanelHeader(Button):
     def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         """
         A button that can be clicked to open or close a collapsible panel
         
@@ -32,6 +33,7 @@ class CollapsiblePanelHeader(Button):
         
         self.open = False
         self.elements = None
+        self.ignore_events = False
         
         self.height = int(75 * self.RENDER_SCALE)
         self.width = self.container.width - self.container.width // 3
@@ -56,7 +58,9 @@ class CollapsiblePanelHeader(Button):
         self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
-    
+        
+        self.hover_sound = SFX.MenuTap
+        
     def __init_elements(self):
         """
         Initialise the elements of the button
@@ -269,26 +273,67 @@ class CollapsiblePanelHeader(Button):
         self.surface.blit(self.button_surface, self.rect.topleft)
         self.surface.blit(self.element_surface, self.rect.topleft)
     
+    def check_elements_state(self):
+        if self.elements is None:
+            return 
+        
+        if any([element.state is not None for element in self.elements]):
+            self.ignore_events = True
+            self.state = None
+            return
+        
+        self.ignore_events = False
+        
     def update(self, in_dialog):
         """
         Update the button
         """
+        self.check_elements_state()
+        self.handle_scroll()
+        self.check_if_on_screen()
+        
+        if not self.ignore_events:
+            self.update_state(in_dialog)
+            
+        if self.state is None and self.previous_state is None:
+            self.slider_hover_start_timer = 0
+            
+            if self.slider_hover_end_timer > 0 and self.slider_hover_end_timer < self.hover_slider_end_length:
+                self.slider_hover_end_animation()
+            
+            if self.slider_pressed_end_timer > 0 and self.slider_pressed_end_timer < self.pressed_slider_end_length:
+                self.slider_pressed_end_animation()
+                  
+        if self.state == 'hovered':
+            self.handle_hover_start_events()
+  
+        elif self.state is None and self.previous_state == 'hovered':
+            self.handle_hover_end_events()
+        
+        elif self.state == 'pressed':
+            self.handle_pressed_start_events()
+        
+        elif self.previous_state == 'pressed' and self.state is None:
+            self.handle_pressed_end_events()
+            
+        self.animate_menu_enter_transition()
+        self.animate_menu_leave_transition()
+
         self.update_elements(in_dialog)
-        super().update(in_dialog)
-       
+        
     def update_elements(self, in_dialog):
         """
         Update the elements of the button
         """
+        if self.elements is None:
+            return
+        
         if not self.on_screen:
             return
         
         self.element_surface.fill((0, 0, 0, 0))
         
         if not self.open:
-            return
-        
-        if self.elements is None:
             return
         
         for element in self.elements:

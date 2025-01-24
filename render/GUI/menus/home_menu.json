@@ -91,7 +91,8 @@
                             3,
                             "#271b22"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit1"
                 },
                 {
                     "type": "bar_button",
@@ -128,7 +129,8 @@
                             3,
                             "#12111b"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit1"
                 },
                 {
                     "type": "bar_button",
@@ -165,7 +167,8 @@
                             3,
                             "#0e130f"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit1"
                 },
                 {
                     "type": "bar_button",
@@ -202,7 +205,8 @@
                             3,
                             "#0e0f13"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit1"
                 },
                 {
                     "type": "bar_button",
@@ -239,7 +243,8 @@
                             3,
                             "#131313"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit1"
                 }
             ]
         }

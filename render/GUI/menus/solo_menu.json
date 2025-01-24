@@ -92,7 +92,8 @@
                             3,
                             "#13100e"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit2"
                 },
                 {
                     "type": "bar_button",
@@ -129,7 +130,8 @@
                             3,
                             "#2e1616"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit2"
                 },
                 {
                     "type": "bar_button",
@@ -166,7 +168,8 @@
                             3,
                             "#2e162e"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit2"
                 },
                 {
                     "type": "bar_button",
@@ -203,7 +206,8 @@
                             3,
                             "#12111b"
                         ]
-                    }
+                    },
+                    "click_sfx": "hit2"
                 }
                 
             ]

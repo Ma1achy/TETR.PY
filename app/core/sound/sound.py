@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-import queue
+from collections import deque
 
 @dataclass
 class Sound():
-    music_queue: queue.Queue = field(default_factory = queue.Queue)
-    sfx_queue: queue.Queue = field(default_factory = queue.Queue)
+    music_queue: deque = field(default_factory = deque)
+    sfx_queue: deque = field(default_factory = deque)

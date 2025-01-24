@@ -8,7 +8,7 @@ from render.GUI.buttons.slider_bar_button import SliderBarButton
 
 from render.GUI.diaglog_box import DialogBox
 from render.GUI.menu_elements.text_input import TextInput
-
+from app.core.sound.sfx import SFX
 class ConfigSlider(NestedElement):
     def __init__(self, button_functions, dialog_resources, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent)
@@ -335,7 +335,7 @@ class ConfigSlider(NestedElement):
             tl = self.get_screen_position() 
             pos = mouse_x - tl[0]
             self.update_knob_position(pos)
-        
+            
     def open_edit_field_value_dialog(self):
         self.button_functions['open_dialog'](self.edit_field_value_dialog)
         self.edit_field_value_dialog.TextEntry.manager.value = str(self.ValueField.value)

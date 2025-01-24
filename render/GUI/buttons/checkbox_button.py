@@ -2,10 +2,10 @@ import pygame
 from utils import draw_solid_colour, draw_border, brightness_maintain_alpha, load_image, apply_gaussian_blur_with_alpha
 from render.GUI.buttons.button import Button
 from render.GUI.font import Font
-
+from app.core.sound.sfx import SFX
 class CheckboxButton(Button):
     def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, background_colour, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, None, container, width = container.width, height = container.height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, None, container, width = container.width, height = container.height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         
         self.RENDER_SCALE = RENDER_SCALE
         
@@ -60,6 +60,8 @@ class CheckboxButton(Button):
         self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
+        
+        self.hover_sound = SFX.MenuTap
     
     def get_local_position(self):
         return self.rect.topleft

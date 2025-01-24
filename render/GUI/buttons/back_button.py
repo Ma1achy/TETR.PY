@@ -2,10 +2,11 @@ import pygame
 from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha
 from render.GUI.font import Font
 from render.GUI.buttons.button import Button
+from app.core.sound.sfx import SFX
 
 class BackButton(Button):
     def __init__(self, function, Mouse, Timing, Sound, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None):
-        super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, function, container, 300, 60, style = 'lighten', maintain_alpha = False, slider = 'right', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         """
         Back button for a menu
         
@@ -39,6 +40,8 @@ class BackButton(Button):
         self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
+        
+        self.click_sound = SFX.MenuBack
           
     def __get_rect_and_surface(self):
         """

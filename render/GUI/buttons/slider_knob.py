@@ -2,10 +2,10 @@ from render.GUI.buttons.button import Button
 import pygame
 from utils import draw_border, draw_solid_colour, apply_gaussian_blur_with_alpha
 from app.input.mouse.mouse import MouseEvents
-
+from app.core.sound.sfx import SFX
 class SliderKnob(Button):
     def __init__(self, width, height, rect, function, Mouse, Timing, Sound, surface, container, definition, parent, RENDER_SCALE = 1, ToolTips = None, slider = None):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips)
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         
         self.RENDER_SCALE = RENDER_SCALE
         self.slider = slider
@@ -30,6 +30,8 @@ class SliderKnob(Button):
         self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        
+        self.hover_sound = SFX.MenuTap
         
     def get_local_position(self):
         return self.rect.topleft
@@ -85,6 +87,7 @@ class SliderKnob(Button):
             if self.state == 'pressed':
                 return
             self.state = 'hovered'
+            self.play_hover_sound()
         else:
             self.state = None
     

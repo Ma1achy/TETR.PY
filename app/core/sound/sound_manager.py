@@ -24,7 +24,7 @@ class SoundManager():
             SFX.MenuHit3     : "resources\sound\SFX\menu_hit_3.ogg",
         }
         
-        self.num_channels = 32
+        self.num_channels = 16
         self.frequency = 44100
         self.bitsize = -16
         self.buffer_size = 512
@@ -69,12 +69,12 @@ class SoundManager():
         
     def __process_queues(self):
         
-        if not self.Sound.music_queue.empty():
-            music = self.Sound.music_queue.get()
+        if self.Sound.music_queue:
+            music = self.Sound.music_queue.popleft()  
             self.__play_music(music)
 
-        if not self.Sound.sfx_queue.empty():
-            sfx = self.Sound.sfx_queue.get()
+        if self.Sound.sfx_queue:
+            sfx = self.Sound.sfx_queue.popleft() 
             self.__play_sfx(sfx)
         
     def __play_sfx(self, sfx: SFX):
@@ -84,7 +84,7 @@ class SoundManager():
         args:
             sfx (SFX): The sound effect to play.
         """
-        if sfx in self.sound_effects:
+        if sfx not in self.sound_effects:
             return
         
         if self.sound_effects[sfx] is None:
