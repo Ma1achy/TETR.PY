@@ -5,3 +5,5 @@ from collections import deque
 class Sound():
     music_queue: deque = field(default_factory = deque)
     sfx_queue: deque = field(default_factory = deque)
+    
+    current_music = None

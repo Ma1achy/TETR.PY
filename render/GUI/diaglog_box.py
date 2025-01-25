@@ -10,6 +10,7 @@ import math
 
 from render.GUI.buttons.button import Button
 from app.input.mouse.mouse import MouseEvents
+from app.core.sound.sfx import SFX
 
 class DialogBox(NestedElement):
     def __init__(self, Timing, window, Mouse, Sound, RenderStruct:StructRender, title, message, buttons, funcs, click_off_dissmiss, width, TextEntry = None):
@@ -419,7 +420,7 @@ class DialogBox(NestedElement):
 
 class DialogTextEntryBox(Button):
     def __init__(self, Timing, surface, Mouse, Sound, RenderStruct, function, width, height, colour, text_colour, style, container, dialog_rect, alignment, padding, border_radius, parent, TextEntry):
-        super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, parent = parent)
+        super().__init__(Timing, surface, Mouse, function, container, width, height, style = None, maintain_alpha = False, parent = parent, Sound = Sound)
         
         self.RenderStruct = RenderStruct
         self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
@@ -441,7 +442,8 @@ class DialogTextEntryBox(Button):
         
         self.TextEntry = TextEntry
         self.TextEntry.init(self.button_surface)
-    
+
+        self.hover_sound = SFX.MenuTap
     def render(self):
         """
         Render the text entry box
@@ -505,7 +507,7 @@ class DialogTextEntryBox(Button):
         """
         super().click()
         self.focused = True
-        
+
     def update(self):
         """
         Update the text entry box

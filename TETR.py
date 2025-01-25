@@ -68,6 +68,9 @@ class TETRPY():
         self.MouseInputManager = MouseInputManager(self.Mouse)
         
         self.__init_pygame()
+        
+        self.SoundManager = SoundManager(self.Sound)
+        
         self.__register_event_handlers()
         
         self.pygame_events_queue = deque()
@@ -83,7 +86,6 @@ class TETRPY():
             UIAction.WINDOW_FULLSCREEN: ['f11'],
         }
         
-        self.SoundManager = SoundManager(self.Sound)
         self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing)
         self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager, self.Sound)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
@@ -155,6 +157,9 @@ class TETRPY():
         PygameEventHandler.register(pygame.MOUSEMOTION)(self.MouseInputManager.on_mouse_move)
         PygameEventHandler.register(pygame.MOUSEWHEEL)(self.MouseInputManager.on_mouse_scroll)
         
+        # loop current song
+        PygameEventHandler.register(pygame.USEREVENT)(self.SoundManager.loop_current_song)
+        
     def __init_pygame(self):
         """
         Initialise pygame
@@ -188,6 +193,7 @@ class TETRPY():
             pygame.MOUSEBUTTONDOWN,
             pygame.MOUSEMOTION,
             pygame.MOUSEWHEEL,
+            pygame.USEREVENT,
             ]
         )
         
@@ -298,7 +304,7 @@ class TETRPY():
             if event.type == pygame.QUIT or event.type == pygame.WINDOWCLOSE: # stop the window close event from being processed by pygame
                 self.__window_close_event(event)
                 return
-            
+        
             self.pygame_events_queue.append(event)
             PygameEventHandler.notify(event)
         

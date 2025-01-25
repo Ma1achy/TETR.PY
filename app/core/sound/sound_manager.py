@@ -10,7 +10,8 @@ class SoundManager():
         self.Sound = Sound
         
         self.music_tracks = {
-            
+            Music.CHK_019    : {"path": "resources\sound\music\CHK-019 - Aerial City (Chika) - Interface.mp3",      "loop": (11806, 92554)},
+            Music.KMY_090    : {"path": "resources\sound\music\KMY-090 - To The Limit (Kamiya) - Interface.mp3",    "loop": (1229, 90522)},
         }
         
         self.sound_effects = {
@@ -27,14 +28,17 @@ class SoundManager():
         self.num_channels = 16
         self.frequency = 44100
         self.bitsize = -16
-        self.buffer_size = 512
+        self.buffer_size = 1024
         
         self.initialized = True
         self.__init_pygame_mixer()
         self.set_number_of_channels(self.num_channels)
         self.__load_sfx()
-        self.__load_music()
-
+        
+        self.current_music = None
+        self.loop_start = 0  
+        self.loop_end = 0   
+        
     def __load_sfx(self):
         for sfx in self.sound_effects:
             if not os.path.exists(self.sound_effects[sfx]):
@@ -42,13 +46,6 @@ class SoundManager():
                 continue 
             self.sound_effects[sfx] = pygame.mixer.Sound(self.sound_effects[sfx])
            
-    def __load_music(self):
-        for music in self.music_tracks:
-            if not os.path.exists(self.music_tracks[music]):
-                self.music_tracks[music] = None
-                continue
-            self.music_tracks[music] = pygame.mixer.Sound(self.music_tracks[music])
-            
     def __init_pygame_mixer(self):
         pygame.mixer.init(
             frequency = self.frequency,
@@ -76,7 +73,14 @@ class SoundManager():
         if self.Sound.sfx_queue:
             sfx = self.Sound.sfx_queue.popleft() 
             self.__play_sfx(sfx)
-        
+    
+    def loop_current_song(self, event):
+        """
+        Handle Pygame events to manage music looping from specified loop points.
+        """
+        pygame.mixer.music.play(loops = 0, start = self.loop_start / 1000.0)
+        pygame.time.set_timer(pygame.USEREVENT, self.loop_end - self.loop_start) # timer plays loop end - loop start to only play the looped section
+
     def __play_sfx(self, sfx: SFX):
         """
         Play a sound effect if an available channel exists.
@@ -95,39 +99,37 @@ class SoundManager():
             channel.play(self.sound_effects[sfx])
     
     def __play_music(self, music: Music):
-        """
-        Play music on the reserved channel, stopping any current music.
-        
-        args:
-            music (Music): The music track to play.
-        """
         if music not in self.music_tracks:
             return
-        
-        if self.music_tracks[music] is None:
+
+        music_info = self.music_tracks[music]
+        music_path = music_info["path"]
+        loop_start, loop_end = music_info["loop"]
+
+        if not os.path.exists(music_path):
+            return
+
+        if self.current_music == music:
             return
         
-        if pygame.mixer.Channel(0).get_sound() == self.music_tracks[music]:
+        if pygame.mixer.music.get_busy():  # if already playing music, fade out and queue next song
+            pygame.mixer.music.fadeout(500)
+            pygame.mixer.music.queue(music_path)
+            self.__set_current_song(music, loop_start, loop_end)
             return
+
+        pygame.mixer.music.load(music_path)
+        pygame.mixer.music.play(loops = 0)
         
-        if pygame.mixer.Channel(0).get_busy(): # if already playing music, crossfade between the two
-            self.crossfade_music(music)
-            return
+        self.__set_current_song(music, loop_start, loop_end)
+ 
+    def __set_current_song(self, music, loop_start, loop_end):
+        self.current_music = music
+        self.loop_start, self.loop_end = loop_start, loop_end
         
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound(self.music_tracks[music]), loops = -1)
-    
-    def crossfade_music(self, new_music, fade_time = 500):
-        """
-        Crossfade between the currently playing music and the new music.
+        if self.loop_start and self.loop_end is not None:
+            pygame.time.set_timer(pygame.USEREVENT, self.loop_end)
         
-        Args:
-            new_music (str): The key of the new music track to play.
-            fade_time (int): The duration of the crossfade in milliseconds.
-        """
-        pygame.mixer.Channel(0).fadeout(fade_time)
-        new_song = pygame.mixer.Sound(self.music_tracks[new_music])
-        pygame.mixer.Channel(0).play(new_song, loops = -1, fade_ms = fade_time)
-    
     def set_sound_volume(self, sound_enum, volume):
         """
         Set the volume for a specific sound or music.

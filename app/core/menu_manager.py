@@ -8,6 +8,8 @@ import webbrowser
 from utils import copy2clipboard, smoothstep, TransformSurface
 import pygame
 from render.GUI.menu_elements.text_input import TextInput
+from app.core.sound.sfx import SFX
+from app.core.sound.music import Music
 
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, Sound):
@@ -236,13 +238,14 @@ class MenuManager():
         
         if not self.is_focused:
             self.GUI_focus.update()
-              
+             
         self.__wait_for_dialog_close()
         self.update_darken_overlay_alpha()
         self.reset_dialogs()
         self.get_actions()
         self.handle_exceptions()
         self.handle_menu_transitions()
+        self.handle_menu_music_transitions()
     
     def render_darken_gradient(self):
         """
@@ -341,8 +344,10 @@ class MenuManager():
         
         if self.in_dialog:
             self.close_dialog()
+            self.Sound.sfx_queue.append(SFX.MenuClick)
         elif self.current_menu.main_body is not None and self.current_menu.main_body.back_button is not None:
-            self.current_menu.main_body.back_button.click()
+            self.current_menu.main_body.back_button.start_click()
+            #self.Sound.sfx_queue.append(SFX.MenuBack)
     
     def __menu_debug(self):
         """
@@ -973,3 +978,11 @@ class MenuManager():
         self.copied_text = Font('d_din_bold', 90, None)
         self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FF7B10', 'center', 0, 5)
         self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FFD800', 'center', 0, 0)
+    
+    def handle_menu_music_transitions(self):
+        
+        if self.current_menu is self.home_menu and self.Sound.current_music is not Music.CHK_019:
+            self.Sound.music_queue.append(Music.CHK_019)
+        elif self.current_menu is self.records_menu and self.Sound.current_music is not Music.KMY_090:
+            self.Sound.music_queue.append(Music.KMY_090)
+        
