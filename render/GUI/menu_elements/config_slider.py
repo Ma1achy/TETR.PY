@@ -121,7 +121,8 @@ class ConfigSlider(NestedElement):
                 font_size = 25,
                 pygame_events_queue =  self.dialog_resources["pygame_event_queue"],
                 function = self.submit_value,
-                RENDER_SCALE = self.RENDER_SCALE
+                RENDER_SCALE = self.RENDER_SCALE,
+                Sound = self.Sound
             )
         )
      
@@ -145,6 +146,10 @@ class ConfigSlider(NestedElement):
         self.title_rect = pygame.Rect(self.x_padding * 2, self.y_padding, self.title_width + self.x_padding, self.height - self.y_padding * 2)
         
         self.title_invisible_button = InvisibleButton(self.title_rect.width, self.title_rect.height, self.title_rect, None, self.Mouse, self.Timing, self.slider_surface, self.title_rect, self.tool_tip_definition, self, self.RENDER_SCALE, self.ToolTips)
+        
+        self.old_x = 0
+        self.drag_sound_timer = 0
+        self.drag_sound_time = 0.066
         
     def get_title(self):
         """
@@ -330,12 +335,20 @@ class ConfigSlider(NestedElement):
         Check for input events.
         """
         mouse_x, _ = self.Mouse.position
+        self.old_x = self.Knob.x_position
         
         if self.Knob.being_dragged and self.Mouse.slider_interaction_event:
             tl = self.get_screen_position() 
             pos = mouse_x - tl[0]
             self.update_knob_position(pos)
             
+            if self.Knob.x_position != self.old_x:
+                self.drag_sound_timer += self.Timing.frame_delta_time
+                
+                if self.drag_sound_timer >= self.drag_sound_time:
+                    self.Sound.sfx_queue.append(SFX.Move)
+                    self.drag_sound_timer = 0
+
     def open_edit_field_value_dialog(self):
         self.button_functions['open_dialog'](self.edit_field_value_dialog)
         self.edit_field_value_dialog.TextEntry.manager.value = str(self.ValueField.value)

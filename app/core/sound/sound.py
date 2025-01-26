@@ -7,3 +7,6 @@ class Sound():
     sfx_queue: deque = field(default_factory = deque)
     
     current_music = None
+    
+    music_volume = 0.1
+    sfx_volume = 1.0

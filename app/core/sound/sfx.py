@@ -13,3 +13,4 @@ class SFX(Enum):
     MenuHit2 = auto()
     MenuHit3 = auto()
     
+    Move = auto()

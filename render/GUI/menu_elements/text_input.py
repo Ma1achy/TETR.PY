@@ -4,9 +4,10 @@ import os
 import pygame
 from app.input.keyboard.text_input_manager import TextInputManager
 from render.GUI.text_input_visualiser import TextInputVisualizer
+from app.core.sound.sfx import SFX
 
 class TextInput():
-    def __init__(self, allowed_input = 'str', no_empty_input = True, max_chars = 32, force_caps = True, font_colour = '#000000', cursor_colour = '#000000', font_type = 'hun2.ttf', font_size = 30, pygame_events_queue = [], function = None, RENDER_SCALE = 1):
+    def __init__(self, allowed_input = 'str', no_empty_input = True, max_chars = 32, force_caps = True, font_colour = '#000000', cursor_colour = '#000000', font_type = 'hun2.ttf', font_size = 30, pygame_events_queue = [], function = None, RENDER_SCALE = 1, Sound = None):
         """
         Utility class to quickly create a text input field that only accepts certain input and passes the input to a function when the user presses enter.
         """
@@ -40,6 +41,8 @@ class TextInput():
         
         self.focused = True
         self.no_empty_input = no_empty_input
+        
+        self.Sound = Sound
         
         match self.allowed_input:
             case 'str':
@@ -88,7 +91,8 @@ class TextInput():
         for event in self.events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 self.call_function()
-        
+                self.Sound.sfx_queue.append(SFX.MenuHit1)
+                
         self.events = []
     
     def get_value(self):

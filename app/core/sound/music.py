@@ -2,6 +2,12 @@ from enum import Enum, auto
 
 class Music(Enum):
     
+    NONE = auto()
+    
+    RANDOM = auto()
+    RANDOM_CALM = auto()
+    RANDOM_BATTLE = auto()
+    
     CHK_019 = auto()
     KMY_090 = auto()
     TKY_051 = auto()
@@ -53,3 +59,4 @@ class Music(Enum):
     CHK_041 = auto()
     CHK_021 = auto()
     CHK_014 = auto()
+    CHK_057 = auto()

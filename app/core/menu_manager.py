@@ -77,30 +77,23 @@ class MenuManager():
             "export_settings": self.export_settings,
             "open_logout_dialog": self.open_logout_dialog,
             
-            # config handling
-            "open_edit_arr_dialog": self.open_edit_arr_dialog,
-            "open_edit_das_dialog": self.open_edit_das_dialog,
-            "open_edit_dcd_dialog": self.open_edit_dcd_dialog,
-            "open_edit_sdf_dialog": self.open_edit_sdf_dialog,
+            # about menu
+            "open_music_room": self.open_music_room,
             
-            # config audio
-            "open_edit_music_dialog": self.open_edit_music_dialog,
-            "open_edit_sfx_dialog": self.open_edit_sfx_dialog,
-            "open_edit_stereo_dialog": self.open_edit_stereo_dialog,
-            
-            # config gameplay
-            "open_edit_board_bounciness_dialog": self.open_edit_board_bounciness_dialog,
-            "open_edit_damage_shakiness_dialog": self.open_edit_damage_shakiness_dialog,
-            "open_edit_grid_visibility_dialog": self.open_edit_grid_visibility_dialog,
-            "open_edit_board_visibility_dialog": self.open_edit_board_visibility_dialog,
-            "open_edit_shadow_visibility_dialog": self.open_edit_shadow_visibility_dialog,
-            "open_edit_board_zoom_dialog": self.open_edit_board_zoom_dialog,
-            
-            # config video
-            "open_edit_particle_count_dialog": self.open_edit_particle_count_dialog,
-            "open_edit_background_visibility_dialog": self.open_edit_background_visibility_dialog,
-            "open_edit_render_scale_dialog": self.open_edit_render_scale_dialog,
-            'open_edit_gui_scale_dialog': self.open_edit_gui_scale_dialog,
+            # music room menu
+            "play_random_song": self.play_random_song,
+            "play_random_calm_song": self.play_random_calm_song,
+            "play_random_battle_song": self.play_random_battle_song,
+            "play_CHK_019": self.play_CHK_019,
+            "play_KMY_090": self.play_KMY_090,
+            "play_TKY_051": self.play_TKY_051,
+            "play_KMK_048": self.play_KMK_048,
+            "play_MRR_051": self.play_MRR_051,
+            "play_YKW_055": self.play_YKW_055,
+            "play_KMK_040": self.play_KMK_040,
+            "play_LSD_040": self.play_LSD_040,
+            "play_FNK_040": self.play_FNK_040,
+            "play_OMG_040": self.play_OMG_040,
         }
         
         self.render_copied_text()
@@ -153,7 +146,8 @@ class MenuManager():
                 font_size = 25,
                 pygame_events_queue = self.pygame_events_queue,
                 function = self.login,
-                RENDER_SCALE = self.RenderStruct.RENDER_SCALE
+                RENDER_SCALE = self.RenderStruct.RENDER_SCALE,
+                Sound = self.Sound
             )
         )
         
@@ -196,7 +190,10 @@ class MenuManager():
         self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/solo_menu.json')
         self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/multi_menu.json')
         self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/records_menu.json')
+        
         self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.music_room_menu     = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/music_room_menu.json')
+        
         self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/config_menu.json')
 
         self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/account_menu.json')
@@ -368,7 +365,10 @@ class MenuManager():
         self.solo_menu.handle_window_resize()
         self.multi_menu.handle_window_resize()
         self.records_menu.handle_window_resize()
+        
         self.about_menu.handle_window_resize()
+        self.music_room_menu.handle_window_resize()
+        
         self.config_menu.handle_window_resize()
         
         self.account_menu.handle_window_resize()
@@ -477,6 +477,7 @@ class MenuManager():
 
         self.AccountManager.logout()
         self.go_to_login()
+        self.Sound.music_queue.append(Music.NONE)
  
     # exit dialog
     
@@ -807,125 +808,69 @@ class MenuManager():
         Export the user settings
         """
         self.ConfigManager.export_user_settings(self.AccountManager.user)
+
+    # about menu
+    
+    def open_music_room(self):
+        self.switch_menus(self.music_room_menu)
+    
+    # music room menu
+    
+    def play_CHK_019(self):
+        self.Sound.music_queue.append(Music.CHK_019)
+        self.switch_menus(self.about_menu)
+    
+    def play_KMY_090(self):
+        self.Sound.music_queue.append(Music.KMY_090)
+        self.switch_menus(self.about_menu)
+    
+    def play_TKY_051(self):
+        self.Sound.music_queue.append(Music.TKY_051)
+        self.switch_menus(self.about_menu)
+    
+    def play_KMK_048(self):
+        self.Sound.music_queue.append(Music.KMK_048)
+        self.switch_menus(self.about_menu)
+    
+    def play_MRR_051(self):
+        self.Sound.music_queue.append(Music.MRR_051)
+        self.switch_menus(self.about_menu)
+    
+    def play_YKW_055(self):
+        self.Sound.music_queue.append(Music.YKW_055)
+        self.switch_menus(self.about_menu)
+    
+    def play_KMK_040(self):
+        self.Sound.music_queue.append(Music.KMK_040)
+        self.switch_menus(self.about_menu)
+    
+    def play_KMK_041(self):
+        self.Sound.music_queue.append(Music.KMK_041)
+        self.switch_menus(self.about_menu)
         
-    def open_edit_arr_dialog(self):
-        """
-        Open the edit arr dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditARRDialog)
+    def play_LSD_040(self):
+        self.Sound.music_queue.append(Music.LSD_040)
+        self.switch_menus(self.about_menu)
+    
+    def play_FNK_040(self):
+        self.Sound.music_queue.append(Music.FNK_040)
+        self.switch_menus(self.about_menu)
+    
+    def play_OMG_040(self):
+        self.Sound.music_queue.append(Music.OMG_040)
+        self.switch_menus(self.about_menu)
         
-    def open_edit_das_dialog(self):
-        """
-        Open the edit das dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditDASDialog)
-    
-    def open_edit_dcd_dialog(self):
-        """
-        Open the edit dcd dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditDCDDialog)
-    
-    def open_edit_sdf_dialog(self):
-        """
-        Open the edit sdf dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditSDFDialog)
-    
-    def open_edit_music_dialog(self):
-        """
-        Open the edit music dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditMusicDialog)
-    
-    def open_edit_sfx_dialog(self):
-        """
-        Open the edit sfx dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditSFXDialog)
-    
-    def open_edit_stereo_dialog(self):
-        """
-        Open the edit stereo dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditStereoDialog)
-    
-    def open_edit_board_bounciness_dialog(self):
-        """
-        Open the edit board bounciness dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditBoardBounciness)
-    
-    def open_edit_damage_shakiness_dialog(self):
-        """
-        Open the edit damage shakiness dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditDamageShakiness)
-    
-    def open_edit_grid_visibility_dialog(self):
-        """
-        Open the edit grid visibility dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditGridVisibility)
-    
-    def open_edit_board_visibility_dialog(self):
-        """
-        Open the edit board visibility dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditBoardVisibility)
-    
-    def open_edit_shadow_visibility_dialog(self):
-        """
-        Open the edit shadow visibility dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditShadowVisibility)
+    def play_random_song(self):
+        self.Sound.music_queue.append(Music.RANDOM)
+        self.switch_menus(self.about_menu)
         
-    def open_edit_board_zoom_dialog(self):
-        """
-        Open the edit board zoom dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditBoardZoom)
-    
-    def open_edit_particle_count_dialog(self):
-        """
-        Open the edit particle count dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditParticleCount)
-    
-    def open_edit_background_visibility_dialog(self):
-        """
-        Open the edit background visibility dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditBackgroundVisibility)
-    
-    def open_edit_gui_scale_dialog(self):
-        """
-        Open the edit gui scale dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditGUIScale)
+    def play_random_calm_song(self):
+        self.Sound.music_queue.append(Music.RANDOM_CALM)
+        self.switch_menus(self.about_menu)
         
-    def open_edit_render_scale_dialog(self):
-        """
-        Open the edit render scale dialog
-        """
-        self.current_menu.reset_state()
-        self.open_dialog(self.EditRenderScale)
+    def play_random_battle_song(self):
+        self.Sound.music_queue.append(Music.RANDOM_BATTLE)
+        self.switch_menus(self.about_menu)
     
     # error dialog 
     
@@ -980,7 +925,6 @@ class MenuManager():
         self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FFD800', 'center', 0, 0)
     
     def handle_menu_music_transitions(self):
-        
         if self.current_menu is self.home_menu and self.Sound.current_music is not Music.CHK_019:
             self.Sound.music_queue.append(Music.CHK_019)
         elif self.current_menu is self.records_menu and self.Sound.current_music is not Music.KMY_090:

@@ -1,0 +1,484 @@
+{
+    "menu_header": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#242424",
+                "#161616"
+            ]
+        },
+        "border": {
+            "bottom": [
+                2,
+                "#2c2c2c"
+            ]
+        },
+        "text": {
+            "colour": "#606060",
+            "display_text": "ABOUT / MUSIC ROOM"
+        }
+    },
+    "menu_body": {
+        "logo": {
+            "image": "resources/logos/LogoLightGlow.png",
+            "alignment": "bottom_left",
+            "padding": [
+                20,
+                20
+            ],
+            "scale": 0.23,
+            "opacity": 32
+        },
+        "back_button": {
+            "function": "go_to_about",
+            "main_text": {
+                "colour": "#c9c9c9",
+                "display_text": "BACK"
+            },
+            "background": {
+                "style": "solid",
+                "colour": "#242424"
+            },
+            "border": {
+                "top": [
+                    3,
+                    "#3d3d3d"
+                ],
+                "bottom": [
+                    3,
+                    "#0e0e0e"
+                ],
+                "right": [
+                    3,
+                    "#181818"
+                ]
+            }
+        },
+        "menu": {
+            "elements": [
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_random_song",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "RANDOM"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "pick a completly random song for me"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_random_calm_song",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "RANDOM: CALM"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "pick a random calmer song for me"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_random_battle_song",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "RANDOM: BATTLE"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "pick an intenser battle song for me"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_CHK_019",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "AERIAL CITY"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "chika - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_KMY_090",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "TO THE LIMIT"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "kamiya - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_TKY_051",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "THE GREAT EASTERN EXPEDITION"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "takayuki - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_KMK_048",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "MORNING SUN"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "kamoking - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_MRR_051",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "IN SORROW AND PAINS"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "mirera - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_YKW_055",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "SUCESS STORY"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "shioyama - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_KMK_040",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "CLASSY CAT"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "kamoking - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_LSD_040",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "PHILOSOPHY"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "l-side - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_FNK_040",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "SMOKE"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "fujinawa kazuhiko - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_OMG_040",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "LOVER'S SONG"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "omegane - interface"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                }
+            ]
+        }
+    },
+    "menu_footer": {
+        "background": {
+            "style": "linear_gradient",
+            "colours": [
+                "#1f1f1f",
+                "#292929"
+            ]
+        },
+        "border": {
+            "top": [
+                2,
+                "#2f2f2f"
+            ]
+        },
+        "text": {
+            "colour": "#5c5c5c",
+            "display_text": "choose a song to listen to"
+        }
+    }
+}
