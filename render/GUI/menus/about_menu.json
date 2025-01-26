@@ -58,6 +58,37 @@
             "elements": [
                 {
                     "type": "bar_button_sub",
+                    "function": "go_to_github",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "GITHUB REPOSITORY"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "report bugs, suggest features, or contribute to TETR.PY"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit2"
+                },
+                {
+                    "type": "bar_button_sub",
                     "function": "open_music_room",
                     "main_text": {
                         "colour": "#c0c0c0",

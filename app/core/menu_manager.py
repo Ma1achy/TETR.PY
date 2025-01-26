@@ -804,7 +804,7 @@ class MenuManager():
     
     # music room menu
     def play_song(self, song):
-        self.Sound.music_queue.append(song)
+        self.Sound.music_queue.append((song, True))
         self.switch_menus(self.about_menu) 
 
     # error dialog 
@@ -861,7 +861,7 @@ class MenuManager():
     
     def handle_menu_music_transitions(self):
         if self.current_menu is self.home_menu and self.Sound.current_music is not Music.CHK_019:
-            self.Sound.music_queue.append(Music.CHK_019)
+            self.Sound.music_queue.append((Music.CHK_019, True))
         elif self.current_menu is self.records_menu and self.Sound.current_music is not Music.KMY_090:
-            self.Sound.music_queue.append(Music.KMY_090)
+            self.Sound.music_queue.append((Music.KMY_090, True))
         

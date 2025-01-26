@@ -158,19 +158,22 @@ class SoundManager():
         if channel:
             channel.play(self.sound_effects[sfx])
     
-    def __play_music(self, music: Music):
+    def __play_music(self, song):
+        
+        music, do_loop = song
+        
         if music is Music.NONE:
             pygame.mixer.music.fadeout(500)
             self.Sound.current_music = None
             return
         
-        if music is Music.RANDOM:
+        elif music is Music.RANDOM:
             music = self.__get_random_song()
         
-        if music is Music.RANDOM_CALM:
+        elif music is Music.RANDOM_CALM:
             music = self.__get_random_calm_song()
             
-        if music is Music.RANDOM_BATTLE:
+        elif music is Music.RANDOM_BATTLE:
             music = self.__get_random_battle_song()
         
         if music not in self.music_tracks:
@@ -178,7 +181,11 @@ class SoundManager():
 
         music_info = self.music_tracks[music]
         music_path = music_info["path"]
-        loop_start, loop_end = music_info["loop"]
+        
+        if do_loop:
+            loop = music_info["loop"]
+        else:
+            loop = None
 
         if not os.path.exists(music_path):
             return
@@ -189,20 +196,23 @@ class SoundManager():
         if pygame.mixer.music.get_busy():  # if already playing music, fade out and queue next song
             pygame.mixer.music.fadeout(500)
             pygame.mixer.music.queue(music_path)
-            self.__set_current_song(music, loop_start, loop_end)
+            self.__set_current_song(music, loop)
             return
 
         pygame.mixer.music.load(music_path)
         pygame.mixer.music.play(loops = 0)
         self.set_music_channel_volume(self.Sound.music_volume) 
-        self.__set_current_song(music, loop_start, loop_end)
+        self.__set_current_song(music, loop)
  
-    def __set_current_song(self, music, loop_start, loop_end):
+    def __set_current_song(self, music, loop):
         self.Sound.current_music = music
-        self.loop_start, self.loop_end = loop_start, loop_end
         
-        if self.loop_start and self.loop_end is not None:
-            pygame.time.set_timer(pygame.USEREVENT, self.loop_end)
+        if loop is None:
+            self.loop_start, self.loop_end = None, None
+            return
+        
+        self.loop_start, self.loop_end = loop
+        pygame.time.set_timer(pygame.USEREVENT, self.loop_end)
         
     def set_sound_volume(self, sound_enum, volume):
         """
