@@ -4,6 +4,7 @@ from app.core.sound.sfx import SFX
 from app.core.sound.sound import Sound
 import os
 from instance.engine.four import RNG
+import random
 
 class SoundManager():
     def __init__(self, Sound:Sound):
@@ -48,7 +49,7 @@ class SoundManager():
             Music.KMK_041   : {"path": "resources/sound/music/KMK-041 - Super Machine Soul (Kamoking) - Battle.mp3",                 "loop": (9000,     104999)}, 
             Music.KMK_039   : {"path": "resources/sound/music/KMK-039 - Universe 5239 (Kamoking) - Battle.mp3",                      "loop": (15533,    98651)},  
             Music.KMK_051   : {"path": "resources/sound/music/KMK-051 - Ultra Super Heroes (Kamoking) - Battle.mp3",                 "loop": (161,      105112)}, 
-            Music.KMK_018   : {"path": "resources/sound/music/KMK-018 - Hyper Velocity (Kamoking) - Special.mp3",                    "loop": (18624,    111952)}, 
+            Music.KMK_018   : {"path": "resources/sound/music/KMK-018 - Hyper Velocity (Kamoking) - Special.mp3",                    "loop": (21293,    117284)}, 
             Music.OMG_019   : {"path": "resources/sound/music/OMG-019 - Twenty-First Century People (Omegane) - Calm.mp3",           "loop": (0,        131816)}, 
             Music.OMG_016   : {"path": "resources/sound/music/OMG-016 - Waiting For Spring To Come (Omegane) - Calm.mp3",            "loop": (5805,     165802)}, 
             Music.NBH_022   : {"path": "resources/sound/music/NBH-022 - Go Go Go Summer (Nobuhamu) - Calm.mp3",                      "loop": (11112,    75455)},  
@@ -89,7 +90,7 @@ class SoundManager():
         
         self.loop_start = 0  
         self.loop_end = 0   
-        self.randomiser = RNG(seed = 0)
+        self.randomiser = RNG(seed = random.randint(0, 2**32 - 1))
         
         self.set_music_channel_volume(self.Sound.music_volume)
         
