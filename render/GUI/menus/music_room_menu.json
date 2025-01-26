@@ -155,6 +155,70 @@
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
+                    "song": "RANDOM_INTERFACE",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "RANDOM: INTERFACE"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "pick a random menu song for me"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_song",
+                    "song": "RANDOM_SPECIAL",
+                    "main_text": {
+                        "colour": "#c0c0c0",
+                        "display_text": "RANDOM: SPECIAL"
+                    },
+                    "sub_text": {
+                        "colour": "#a0a0a0",
+                        "display_text": "pick a special song for me"
+                    },
+                    "background": {
+                        "style": "solid",
+                        "colour": "#222222"
+                    },
+                    "border": {
+                        "left": [
+                            3,
+                            "#262626"
+                        ],
+                        "top": [
+                            3,
+                            "#2a2a2a"
+                        ],
+                        "bottom": [
+                            3,
+                            "#131313"
+                        ]
+                    },
+                    "click_sfx": "hit3"
+                },
+                {
+                    "type": "bar_button_sub",
+                    "function": "play_song",
                     "song": "CHK_019",
                     "main_text": {
                         "colour": "#c0c0c0",

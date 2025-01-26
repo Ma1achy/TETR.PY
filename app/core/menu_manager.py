@@ -257,16 +257,19 @@ class MenuManager():
         Check if the current menu is doing an animation
         """
         if self.current_menu.doing_transition_animation:
+            self.Mouse.ignore_events = True
             return True
         
         if 'menu_body' in self.current_menu.definition:
             if self.current_menu.main_body.do_reset_scroll_animation:
+                self.Mouse.ignore_events = True
                 return True
         
         if self.current_dialog is not None:
             if self.current_dialog.do_animate_appear or self.current_dialog.do_animate_disappear:
                 return True
         
+        self.Mouse.ignore_events = False
         return False
         
     def get_actions(self):

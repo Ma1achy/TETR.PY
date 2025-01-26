@@ -177,6 +177,12 @@ class SoundManager():
         elif music is Music.RANDOM_BATTLE:
             music = self.__get_random_battle_song()
         
+        elif music is Music.RANDOM_INTERFACE:
+            music = self.__get_random_interface_song()
+        
+        elif music is Music.RANDOM_SPECIAL:
+            music = self.__get_random_special_song()
+        
         if music not in self.music_tracks:
             return
 
@@ -310,7 +316,7 @@ class SoundManager():
         Returns:
             Music: A random calm music track.
         """
-        calm_songs = self.calm_songs
+        calm_songs = self.calm_songs.copy()
 
         if self.Sound.current_music in calm_songs:
             calm_songs.remove(self.Sound.current_music)
@@ -324,9 +330,37 @@ class SoundManager():
         Returns:
             Music: A random battle music track.
         """
-        battle_songs = self.battle_songs
+        battle_songs = self.battle_songs.copy()
         
         if self.Sound.current_music in battle_songs:
             battle_songs.remove(self.Sound.current_music)
             
         return self.randomiser.shuffle_array(battle_songs)[0]
+    
+    def __get_random_interface_song(self):
+        """
+        Get a random interface song from the music tracks.
+        
+        Returns:
+            Music: A random interface music track.
+        """
+        interface_songs = self.interface_songs.copy()
+        
+        if self.Sound.current_music in interface_songs:
+            interface_songs.remove(self.Sound.current_music)
+            
+        return self.randomiser.shuffle_array(interface_songs)[0]
+
+    def __get_random_special_song(self):
+        """
+        Get a random special song from the music tracks.
+        
+        Returns:
+            Music: A random special music track.
+        """
+        special_songs = self.special_songs.copy()
+        
+        if self.Sound.current_music in special_songs:
+            special_songs.remove(self.Sound.current_music)
+            
+        return self.randomiser.shuffle_array(special_songs)[0]

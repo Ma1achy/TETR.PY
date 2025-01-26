@@ -10,6 +10,7 @@ class Mouse():
     events: queue.Queue = field(default_factory = queue.Queue)
     
     slider_interaction_event: bool = False
+    ignore_events: bool = False
 
 class MouseEvents(Enum):
     MOUSEBUTTON1 = auto()

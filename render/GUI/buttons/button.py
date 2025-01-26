@@ -196,6 +196,9 @@ class Button(NestedElement):
         """
         Check if the mouse is hovering over the button.
         """
+        if self.Mouse.ignore_events:
+            return
+        
         x, y = self.Mouse.position
         
         self.collision_rect.topleft = self.get_screen_position()
@@ -212,6 +215,9 @@ class Button(NestedElement):
         """
         Check for input events.
         """
+        if self.Mouse.ignore_events:
+            return
+        
         events_to_remove = []
         mouse_x, mouse_y = self.Mouse.position
         

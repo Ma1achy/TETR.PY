@@ -7,6 +7,8 @@ class Music(Enum):
     RANDOM = auto()
     RANDOM_CALM = auto()
     RANDOM_BATTLE = auto()
+    RANDOM_INTERFACE = auto()
+    RANDOM_SPECIAL = auto()
     
     CHK_019 = auto()
     KMY_090 = auto()
