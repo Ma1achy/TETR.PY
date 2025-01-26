@@ -156,6 +156,7 @@ class SoundManager():
         
         channel = pygame.mixer.find_channel()
         if channel:
+            #channel.set_volume(left = left_volume, right = right_volume)
             channel.play(self.sound_effects[sfx])
     
     def __play_music(self, song):

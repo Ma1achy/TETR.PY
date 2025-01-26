@@ -8,5 +8,5 @@ class Sound():
     
     current_music = None
     
-    music_volume = 0.1
+    music_volume = 0.05
     sfx_volume = 1.0

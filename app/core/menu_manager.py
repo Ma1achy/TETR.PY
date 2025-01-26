@@ -465,7 +465,7 @@ class MenuManager():
 
         self.AccountManager.logout()
         self.go_to_login()
-        self.Sound.music_queue.append(Music.NONE)
+        self.Sound.music_queue.append((Music.NONE, False))
  
     # exit dialog
     
