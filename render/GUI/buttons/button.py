@@ -773,6 +773,7 @@ class Button(NestedElement):
             self.on_screen = True
             return
         self.on_screen = False
+        self.reset_state()
     
     # ------------------------------------------------- TOOLTIPS -------------------------------------------------
     

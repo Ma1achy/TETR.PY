@@ -81,19 +81,7 @@ class MenuManager():
             "open_music_room": self.open_music_room,
             
             # music room menu
-            "play_random_song": self.play_random_song,
-            "play_random_calm_song": self.play_random_calm_song,
-            "play_random_battle_song": self.play_random_battle_song,
-            "play_CHK_019": self.play_CHK_019,
-            "play_KMY_090": self.play_KMY_090,
-            "play_TKY_051": self.play_TKY_051,
-            "play_KMK_048": self.play_KMK_048,
-            "play_MRR_051": self.play_MRR_051,
-            "play_YKW_055": self.play_YKW_055,
-            "play_KMK_040": self.play_KMK_040,
-            "play_LSD_040": self.play_LSD_040,
-            "play_FNK_040": self.play_FNK_040,
-            "play_OMG_040": self.play_OMG_040,
+            "play_song": self.play_song,	
         }
         
         self.render_copied_text()
@@ -815,63 +803,10 @@ class MenuManager():
         self.switch_menus(self.music_room_menu)
     
     # music room menu
-    
-    def play_CHK_019(self):
-        self.Sound.music_queue.append(Music.CHK_019)
-        self.switch_menus(self.about_menu)
-    
-    def play_KMY_090(self):
-        self.Sound.music_queue.append(Music.KMY_090)
-        self.switch_menus(self.about_menu)
-    
-    def play_TKY_051(self):
-        self.Sound.music_queue.append(Music.TKY_051)
-        self.switch_menus(self.about_menu)
-    
-    def play_KMK_048(self):
-        self.Sound.music_queue.append(Music.KMK_048)
-        self.switch_menus(self.about_menu)
-    
-    def play_MRR_051(self):
-        self.Sound.music_queue.append(Music.MRR_051)
-        self.switch_menus(self.about_menu)
-    
-    def play_YKW_055(self):
-        self.Sound.music_queue.append(Music.YKW_055)
-        self.switch_menus(self.about_menu)
-    
-    def play_KMK_040(self):
-        self.Sound.music_queue.append(Music.KMK_040)
-        self.switch_menus(self.about_menu)
-    
-    def play_KMK_041(self):
-        self.Sound.music_queue.append(Music.KMK_041)
-        self.switch_menus(self.about_menu)
-        
-    def play_LSD_040(self):
-        self.Sound.music_queue.append(Music.LSD_040)
-        self.switch_menus(self.about_menu)
-    
-    def play_FNK_040(self):
-        self.Sound.music_queue.append(Music.FNK_040)
-        self.switch_menus(self.about_menu)
-    
-    def play_OMG_040(self):
-        self.Sound.music_queue.append(Music.OMG_040)
-        self.switch_menus(self.about_menu)
-        
-    def play_random_song(self):
-        self.Sound.music_queue.append(Music.RANDOM)
-        self.switch_menus(self.about_menu)
-        
-    def play_random_calm_song(self):
-        self.Sound.music_queue.append(Music.RANDOM_CALM)
-        self.switch_menus(self.about_menu)
-        
-    def play_random_battle_song(self):
-        self.Sound.music_queue.append(Music.RANDOM_BATTLE)
-        self.switch_menus(self.about_menu)
-    
+    def play_song(self, song):
+        self.Sound.music_queue.append(song)
+        self.switch_menus(self.about_menu) 
+
     # error dialog 
     
     def handle_exceptions(self):

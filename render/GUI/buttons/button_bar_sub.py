@@ -3,6 +3,7 @@ from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha
 from render.GUI.font import Font
 from render.GUI.buttons.button import Button
 from app.core.sound.sfx import SFX
+from app.core.sound.music import Music
 
 class ButtonBarSub(Button):
     def __init__(self, function:callable, Mouse, Timing, Sound, surface, container, definition, y_position, height, parent, RENDER_SCALE = 1, ToolTips = None):
@@ -54,6 +55,13 @@ class ButtonBarSub(Button):
         elif self.definition["click_sfx"] == "hit3":
             self.click_sound = SFX.MenuHit3
             
+        self.song = None
+        self.get_song()
+    
+    def get_song(self):
+        if "song" in self.definition:
+            self.song = getattr(Music, self.definition["song"])
+        
     def __get_rect_and_surface(self):
         """
         Get the rects and surfaces for the button
@@ -90,3 +98,17 @@ class ButtonBarSub(Button):
         pygame.draw.rect(self.shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.width, self.height)) # remove the area the button takes up from the shadow
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         
+    def click(self):
+        """
+        Execute the button's function.
+        """
+        if self.ToolTips:
+            self.ToolTips.tooltip_timer = 0
+            
+        if self.function is None:
+            return
+        
+        if self.song is not None:
+            self.function(self.song)
+        else:
+            self.function()

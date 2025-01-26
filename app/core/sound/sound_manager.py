@@ -12,58 +12,58 @@ class SoundManager():
         self.Sound = Sound
         
         self.music_tracks = {
-            Music.CHK_019   : {"path": "resources/sound/music/CHK-019 - Aerial City (Chika) - Interface.mp3",                        "loop": (11796,    92554)},  
-            Music.KMY_090   : {"path": "resources/sound/music/KMY-090 - To The Limit (Kamiya) - Interface.mp3",                      "loop": (1229,     90522)},  
-            Music.TKY_051   : {"path": "resources/sound/music/TKY-051 - The Great Eastern Expedition (Takayuki) - Interface.mp3",    "loop": (4620,     210601)}, 
-            Music.KMK_048   : {"path": "resources/sound/music/KMK-048 - Morning Sun (Kamoking) - Interface.mp3",                     "loop": (1970,     65817)},  
-            Music.MRR_051   : {"path": "resources/sound/music/MRR-051 - In Sorrow And Pains (Mirera) - Interface.mp3",               "loop": (3499,     98534)},  
-            Music.KVX_016   : {"path": "resources/sound/music/KVX-016 - Peircing Wind (KVK) - Calm.mp3",                             "loop": (1263,     136789)}, 
-            Music.CHK_016   : {"path": "resources/sound/music/CHK-016 - Inorimichite (Chika) - Calm .mp3",                           "loop": (15646,    197331)}, 
-            Music.CHK_038   : {"path": "resources/sound/music/CHK-038 - Wind Trail (Chika) - Calm.mp3",                              "loop": (10551,    224841)}, 
-            Music.THT_037   : {"path": "resources/sound/music/THT-037 - Muscat And White Dishes (Takahashi Takashi) - Calm.mp3",     "loop": (32106,    160106)}, 
-            Music.THT_042   : {"path": "resources/sound/music/THT-042 - Summer Sky And Homework (Takahashi Takashi) - Calm.mp3",     "loop": (18701,    130708)}, 
-            Music.YKW_055   : {"path": "resources/sound/music/YKW-055 - Success Story Akiko (Shioyama) - Interface.mp3",             "loop": (24543,    102941)}, 
-            Music.KMK_040   : {"path": "resources/sound/music/KMK-040 - Classy Cat (Kamoking) - Interface.mp3",                      "loop": (31985,    95979)},  
-            Music.CHK_055   : {"path": "resources/sound/music/CHK-055 - Akindo (Chika) - Calm.mp3",                                  "loop": (1175,     113354)}, 
-            Music.LSD_040   : {"path": "resources/sound/music/LSD-040 - Philosophy (L-Side) - Interface.mp3",                        "loop": (2868,     116315)},  
-            Music.ABM_047   : {"path": "resources/sound/music/ABM-047 - Rainbow Of The Night (Makoto) - Calm.mp3",                   "loop": (46278,    116480)}, 
-            Music.CHK_026   : {"path": "resources/sound/music/CHK-026 - White Calabash (Chika) - Special.mp3",                       "loop": (14462,    136727)}, 
-            Music.FNK_040   : {"path": "resources/sound/music/FNK-040 - Smoke (Fujinawa Kazuhiko) - Interface.mp3",                  "loop": (28735,    139135)}, 
-            Music.OMG_040   : {"path": "resources/sound/music/OMG-040 - Lover's Song (Omegane) - Interface.mp3",                     "loop": (14316,    47748)},  
-            Music.KMK_053   : {"path": "resources/sound/music/KMK-053 - Step On The Scarlet Soil (Kamoking) - Calm.mp3",             "loop": (43700,    125991)}, 
-            Music.JGM_044   : {"path": "resources/sound/music/JGM-044 - Hanging Out In Tokyo (Meesan) - Calm.mp3",                   "loop": (38452,    144039)}, 
-            Music.KMK_033   : {"path": "resources/sound/music/KMK-033 - Backwater (Kamoking) - Battle.mp3",                          "loop": (1784,     113993)}, 
-            Music.KMK_024   : {"path": "resources/sound/music/KMK-024 - Burning Heart (Kamoking) - Battle.mp3",                      "loop": (0,        76803)},  
-            Music.KMK_038   : {"path": "resources/sound/music/KMK-038 - Storm Spirit (Kamoking) - Battle.mp3",                       "loop": (35611,    119605)}, 
-            Music.KMK_047   : {"path": "resources/sound/music/KMK-047 - Ice Eyes (Kamoking) - Battle.mp3",                           "loop": (8324,     94053)},  
-            Music.TMK_060   : {"path": "resources/sound/music/TMK-060 - The Time Is Now (Tomoki) - Battle.mp3",                      "loop": (5460,     112125)}, 
-            Music.ABM_048   : {"path": "resources/sound/music/ABM-048 - Prism (Aiba Makoto) - Calm.mp3",                             "loop": (0,        92120)},  
-            Music.MKK_033   : {"path": "resources/sound/music/MKK-033 - Risky Area (Mikiya Komaba) - Battle.mp3",                    "loop": (36479,    321723)}, 
-            Music.SDM_016   : {"path": "resources/sound/music/SDM-016 - Winter Satellite (Sudo Mikaduki) - Calm.mp3",                "loop": (23754,    172932)}, 
-            Music.YOS_016   : {"path": "resources/sound/music/YOS-016 - First Snow (Yoshi) - Calm.mp3",                              "loop": (21941,    144787)}, 
-            Music.CHK_047   : {"path": "resources/sound/music/CHK-047 - Main Street (Chika) - Calm.mp3",                             "loop": (17737,    200955)}, 
-            Music.KMK_036   : {"path": "resources/sound/music/KMK-036 - Over The Horizon (Kamoking) - Battle.mp3",                   "loop": (10369,    66351)},  
-            Music.KMK_017   : {"path": "resources/sound/music/KMK-017 - Burning Spirit, Awakening Soul (Kamoking) - Battle.mp3",     "loop": (14826,    69678)},  
-            Music.KMK_032   : {"path": "resources/sound/music/KMK-032 - Maze Of The Abyss (Kamoking) - Battle.mp3",                  "loop": (687,      118641)}, 
-            Music.KMK_004   : {"path": "resources/sound/music/KMK-004 - Samurai Sword (Kamoking) - Battle.mp3",                      "loop": (6572,     112160)}, 
-            Music.KMK_041   : {"path": "resources/sound/music/KMK-041 - Super Machine Soul (Kamoking) - Battle.mp3",                 "loop": (9000,     104999)}, 
-            Music.KMK_039   : {"path": "resources/sound/music/KMK-039 - Universe 5239 (Kamoking) - Battle.mp3",                      "loop": (15533,    98651)},  
-            Music.KMK_051   : {"path": "resources/sound/music/KMK-051 - Ultra Super Heroes (Kamoking) - Battle.mp3",                 "loop": (161,      105112)}, 
-            Music.KMK_018   : {"path": "resources/sound/music/KMK-018 - Hyper Velocity (Kamoking) - Special.mp3",                    "loop": (21293,    117284)}, 
-            Music.OMG_019   : {"path": "resources/sound/music/OMG-019 - Twenty-First Century People (Omegane) - Calm.mp3",           "loop": (0,        131816)}, 
-            Music.OMG_016   : {"path": "resources/sound/music/OMG-016 - Waiting For Spring To Come (Omegane) - Calm.mp3",            "loop": (5805,     165802)}, 
-            Music.NBH_022   : {"path": "resources/sound/music/NBH-022 - Go Go Go Summer (Nobuhamu) - Calm.mp3",                      "loop": (11112,    75455)},  
-            Music.NHR_040   : {"path": "resources/sound/music/NHR-040 - Lonely Journey (Naoki Hirai) - Calm.mp3",                    "loop": (105,      145259)}, 
-            Music.CHK_004   : {"path": "resources/sound/music/CHK-004 - Young Leaves (Chika) - Calm.mp3",                            "loop": (10346,    189230)}, 
-            Music.OMG_051   : {"path": "resources/sound/music/OMG-051 - Confession (Omegane) - Calm.mp3",                            "loop": (0,        80533)},  
-            Music.TTM_055   : {"path": "resources/sound/music/TTM-055 - Amazing Everyday (Tsutomu) - Calm.mp3",                      "loop": (43645,    136733)}, 
-            Music.CHK_009   : {"path": "resources/sound/music/CHK-009 - Asphalt (Chika) - Calm.mp3",                                 "loop": (5606,     75310)},  
-            Music.CHK_048   : {"path": "resources/sound/music/CHK-048 - By the Sunlit Window (Chika) - Calm.mp3",                    "loop": (26179,    91752)},  
-            Music.CHK_053   : {"path": "resources/sound/music/CHK-053 - Origin (Chika) - Calm.mp3",                                  "loop": (135001,   322927)}, 
-            Music.CHK_041   : {"path": "resources/sound/music/CHK-041 - Cherry Blossom Season (Chika) - Calm.mp3",                   "loop": (0,        338556)}, 
-            Music.CHK_021   : {"path": "resources/sound/music/CHK-021 - Raindrops (Chika) - Calm.mp3",                               "loop": (15034,    121613)}, 
-            Music.CHK_014   : {"path": "resources/sound/music/CHK-014 - Entrance Wreath (Chika) - Calm.mp3",                         "loop": (3158,     87492)},  
-            Music.CHK_057   : {"path": "resources/sound/music/CHK-057 - Peace Message (Chika) - Special.mp3",                        "loop": (22056,    242474)}, 
+            Music.CHK_019   : {"path": "resources/sound/music/CHK-019 - Aerial City (Chika) - Interface.mp3",                        "loop": (11796,    92554) , "type": "Interface"},    
+            Music.KMY_090   : {"path": "resources/sound/music/KMY-090 - To The Limit (Kamiya) - Interface.mp3",                      "loop": (1229,     90522) , "type": "Interface"},  
+            Music.TKY_051   : {"path": "resources/sound/music/TKY-051 - The Great Eastern Expedition (Takayuki) - Interface.mp3",    "loop": (4620,     210601), "type": "Interface"}, 
+            Music.KMK_048   : {"path": "resources/sound/music/KMK-048 - Morning Sun (Kamoking) - Interface.mp3",                     "loop": (1970,     65817) , "type": "Interface"},  
+            Music.MRR_051   : {"path": "resources/sound/music/MRR-051 - In Sorrow And Pains (Mirera) - Interface.mp3",               "loop": (3499,     98534) , "type": "Interface"},  
+            Music.KVX_016   : {"path": "resources/sound/music/KVX-016 - Peircing Wind (KVK) - Calm.mp3",                             "loop": (1263,     136789), "type": "Calm"}, 
+            Music.CHK_016   : {"path": "resources/sound/music/CHK-016 - Inorimichite (Chika) - Calm .mp3",                           "loop": (15646,    197331), "type": "Calm"}, 
+            Music.CHK_038   : {"path": "resources/sound/music/CHK-038 - Wind Trail (Chika) - Calm.mp3",                              "loop": (10551,    224841), "type": "Calm"}, 
+            Music.THT_037   : {"path": "resources/sound/music/THT-037 - Muscat And White Dishes (Takahashi Takashi) - Calm.mp3",     "loop": (32106,    160106), "type": "Calm"}, 
+            Music.THT_042   : {"path": "resources/sound/music/THT-042 - Summer Sky And Homework (Takahashi Takashi) - Calm.mp3",     "loop": (18701,    130708), "type": "Calm"}, 
+            Music.YKW_055   : {"path": "resources/sound/music/YKW-055 - Success Story Akiko (Shioyama) - Interface.mp3",             "loop": (24543,    102941), "type": "Interface"}, 
+            Music.KMK_040   : {"path": "resources/sound/music/KMK-040 - Classy Cat (Kamoking) - Interface.mp3",                      "loop": (31985,    95979) , "type": "Interface"},  
+            Music.CHK_055   : {"path": "resources/sound/music/CHK-055 - Akindo (Chika) - Calm.mp3",                                  "loop": (1175,     113354), "type": "Calm"}, 
+            Music.LSD_040   : {"path": "resources/sound/music/LSD-040 - Philosophy (L-Side) - Interface.mp3",                        "loop": (2868,     116315), "type": "Interface"},  
+            Music.ABM_047   : {"path": "resources/sound/music/ABM-047 - Rainbow Of The Night (Makoto) - Calm.mp3",                   "loop": (46278,    116480), "type": "Calm"}, 
+            Music.CHK_026   : {"path": "resources/sound/music/CHK-026 - White Calabash (Chika) - Special.mp3",                       "loop": (14462,    136727), "type": "Special"}, 
+            Music.FNK_040   : {"path": "resources/sound/music/FNK-040 - Smoke (Fujinawa Kazuhiko) - Interface.mp3",                  "loop": (28735,    139135), "type": "Interface"}, 
+            Music.OMG_040   : {"path": "resources/sound/music/OMG-040 - Lover's Song (Omegane) - Interface.mp3",                     "loop": (14316,    47748) , "type": "Interface"},  
+            Music.KMK_053   : {"path": "resources/sound/music/KMK-053 - Step On The Scarlet Soil (Kamoking) - Calm.mp3",             "loop": (43700,    125991), "type": "Calm"}, 
+            Music.JGM_044   : {"path": "resources/sound/music/JGM-044 - Hanging Out In Tokyo (Meesan) - Calm.mp3",                   "loop": (38452,    144039), "type": "Calm"}, 
+            Music.KMK_033   : {"path": "resources/sound/music/KMK-033 - Backwater (Kamoking) - Battle.mp3",                          "loop": (1784,     113993), "type": "Battle"}, 
+            Music.KMK_024   : {"path": "resources/sound/music/KMK-024 - Burning Heart (Kamoking) - Battle.mp3",                      "loop": (0,        76803) , "type": "Battle"},  
+            Music.KMK_038   : {"path": "resources/sound/music/KMK-038 - Storm Spirit (Kamoking) - Battle.mp3",                       "loop": (35611,    119605), "type": "Battle"}, 
+            Music.KMK_047   : {"path": "resources/sound/music/KMK-047 - Ice Eyes (Kamoking) - Battle.mp3",                           "loop": (8324,     94053) , "type": "Battle"},  
+            Music.TMK_060   : {"path": "resources/sound/music/TMK-060 - The Time Is Now (Tomoki) - Battle.mp3",                      "loop": (5460,     112125), "type": "Battle"}, 
+            Music.ABM_048   : {"path": "resources/sound/music/ABM-048 - Prism (Aiba Makoto) - Calm.mp3",                             "loop": (0,        92120) , "type": "Calm"},  
+            Music.MKK_033   : {"path": "resources/sound/music/MKK-033 - Risky Area (Mikiya Komaba) - Battle.mp3",                    "loop": (36479,    321723), "type": "Battle"}, 
+            Music.SDM_016   : {"path": "resources/sound/music/SDM-016 - Winter Satellite (Sudo Mikaduki) - Calm.mp3",                "loop": (23754,    172932), "type": "Calm"}, 
+            Music.YOS_016   : {"path": "resources/sound/music/YOS-016 - First Snow (Yoshi) - Calm.mp3",                              "loop": (21941,    144787), "type": "Calm"}, 
+            Music.CHK_047   : {"path": "resources/sound/music/CHK-047 - Main Street (Chika) - Calm.mp3",                             "loop": (17737,    200955), "type": "Calm"}, 
+            Music.KMK_036   : {"path": "resources/sound/music/KMK-036 - Over The Horizon (Kamoking) - Battle.mp3",                   "loop": (10369,    66351) , "type": "Battle"},  
+            Music.KMK_017   : {"path": "resources/sound/music/KMK-017 - Burning Spirit, Awakening Soul (Kamoking) - Battle.mp3",     "loop": (14826,    69678) , "type": "Battle"},  
+            Music.KMK_032   : {"path": "resources/sound/music/KMK-032 - Maze Of The Abyss (Kamoking) - Battle.mp3",                  "loop": (687,      118641), "type": "Battle"}, 
+            Music.KMK_004   : {"path": "resources/sound/music/KMK-004 - Samurai Sword (Kamoking) - Battle.mp3",                      "loop": (6572,     112160), "type": "Battle"}, 
+            Music.KMK_041   : {"path": "resources/sound/music/KMK-041 - Super Machine Soul (Kamoking) - Battle.mp3",                 "loop": (9000,     104999), "type": "Battle"}, 
+            Music.KMK_039   : {"path": "resources/sound/music/KMK-039 - Universe 5239 (Kamoking) - Battle.mp3",                      "loop": (15533,    98651) , "type": "Battle"},  
+            Music.KMK_051   : {"path": "resources/sound/music/KMK-051 - Ultra Super Heroes (Kamoking) - Battle.mp3",                 "loop": (161,      105112), "type": "Battle"}, 
+            Music.KMK_018   : {"path": "resources/sound/music/KMK-018 - Hyper Velocity (Kamoking) - Special.mp3",                    "loop": (21293,    117284), "type": "Special"}, 
+            Music.OMG_019   : {"path": "resources/sound/music/OMG-019 - Twenty-First Century People (Omegane) - Calm.mp3",           "loop": (0,        131816), "type": "Calm"}, 
+            Music.OMG_016   : {"path": "resources/sound/music/OMG-016 - Waiting For Spring To Come (Omegane) - Calm.mp3",            "loop": (5805,     165802), "type": "Calm"}, 
+            Music.NBH_022   : {"path": "resources/sound/music/NBH-022 - Go Go Go Summer (Nobuhamu) - Calm.mp3",                      "loop": (11112,    75455) , "type": "Calm"},  
+            Music.NHR_040   : {"path": "resources/sound/music/NHR-040 - Lonely Journey (Naoki Hirai) - Calm.mp3",                    "loop": (105,      145259), "type": "Calm"}, 
+            Music.CHK_004   : {"path": "resources/sound/music/CHK-004 - Young Leaves (Chika) - Calm.mp3",                            "loop": (10346,    189230), "type": "Calm"}, 
+            Music.OMG_051   : {"path": "resources/sound/music/OMG-051 - Confession (Omegane) - Calm.mp3",                            "loop": (0,        80533) , "type": "Calm"},  
+            Music.TTM_055   : {"path": "resources/sound/music/TTM-055 - Amazing Everyday (Tsutomu) - Calm.mp3",                      "loop": (43645,    136733), "type": "Calm"}, 
+            Music.CHK_009   : {"path": "resources/sound/music/CHK-009 - Asphalt (Chika) - Calm.mp3",                                 "loop": (5606,     75310) , "type": "Calm"},  
+            Music.CHK_048   : {"path": "resources/sound/music/CHK-048 - By the Sunlit Window (Chika) - Calm.mp3",                    "loop": (26179,    91752) , "type": "Calm"},  
+            Music.CHK_053   : {"path": "resources/sound/music/CHK-053 - Origin (Chika) - Calm.mp3",                                  "loop": (135001,   322927), "type": "Calm"}, 
+            Music.CHK_041   : {"path": "resources/sound/music/CHK-041 - Cherry Blossom Season (Chika) - Calm.mp3",                   "loop": (0,        338556), "type": "Calm"}, 
+            Music.CHK_021   : {"path": "resources/sound/music/CHK-021 - Raindrops (Chika) - Calm.mp3",                               "loop": (15034,    121613), "type": "Calm"}, 
+            Music.CHK_014   : {"path": "resources/sound/music/CHK-014 - Entrance Wreath (Chika) - Calm.mp3",                         "loop": (3158,     87492) , "type": "Calm"},  
+            Music.CHK_057   : {"path": "resources/sound/music/CHK-057 - Peace Message (Chika) - Special.mp3",                        "loop": (22056,    242474), "type": "Special"}, 
         }
         
         self.sound_effects = {
@@ -78,6 +78,11 @@ class SoundManager():
             SFX.Move         : "resources/sound/SFX/move.ogg",
         }
         
+        self.calm_songs      = [song for song in self.music_tracks if self.music_tracks[song]["type"] == "Calm"]
+        self.battle_songs    = [song for song in self.music_tracks if self.music_tracks[song]["type"] == "Battle"]
+        self.interface_songs = [song for song in self.music_tracks if self.music_tracks[song]["type"] == "Interface"]
+        self.special_songs   = [song for song in self.music_tracks if self.music_tracks[song]["type"] == "Special"]
+         
         self.num_channels = 16
         self.frequency = 44100
         self.bitsize = -16
@@ -294,8 +299,11 @@ class SoundManager():
         Returns:
             Music: A random calm music track.
         """
-        calm_songs = []
-        calm_songs.remove(self.Sound.current_music)
+        calm_songs = self.calm_songs
+
+        if self.Sound.current_music in calm_songs:
+            calm_songs.remove(self.Sound.current_music)
+            
         return self.randomiser.shuffle_array(calm_songs)[0]
     
     def __get_random_battle_song(self):
@@ -305,5 +313,9 @@ class SoundManager():
         Returns:
             Music: A random battle music track.
         """
-        battle_songs = []
+        battle_songs = self.battle_songs
+        
+        if self.Sound.current_music in battle_songs:
+            battle_songs.remove(self.Sound.current_music)
+            
         return self.randomiser.shuffle_array(battle_songs)[0]
