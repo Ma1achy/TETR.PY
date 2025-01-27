@@ -69,14 +69,14 @@ class MenuKeyboardInputHandler():
         """
         Get the key states from the keyboard
         """
-        if not self.Keyboard.key_states_queue.empty():
-            key_states = self.Keyboard.key_states_queue.queue[0]
-        else:
-            return
-
+        with self.Keyboard.key_states_queue.mutex: 
+            if not self.Keyboard.key_states_queue.queue:
+                return
+            key_states = list(self.Keyboard.key_states_queue.queue)[0] # apply list() to queue.queue to create a shallow copy of the queue to minimise the time the mutex is locked
+    
         for key in key_states:
             try:
-                self.key_states[key]['current'] = key_states[key]['current']
+                self.key_states[key]['current'] = key_states[key]['current'] 
             
             except KeyError:
                 pass
