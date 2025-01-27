@@ -808,6 +808,7 @@ class MenuManager():
     # music room menu
     def play_song(self, song):
         self.Sound.music_queue.append((song, True))
+        self.Sound.music_room_listening = True
         self.switch_menus(self.about_menu) 
 
     # error dialog 
@@ -863,6 +864,9 @@ class MenuManager():
         self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FFD800', 'center', 0, 0)
     
     def handle_menu_music_transitions(self):
+        if self.Sound.music_room_listening:
+            return
+        
         if self.current_menu is self.home_menu and self.Sound.current_music is not Music.CHK_019:
             self.Sound.music_queue.append((Music.CHK_019, True))
         elif self.current_menu is self.records_menu and self.Sound.current_music is not Music.KMY_090:

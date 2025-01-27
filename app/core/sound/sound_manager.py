@@ -166,6 +166,7 @@ class SoundManager():
         if music is Music.NONE:
             pygame.mixer.music.fadeout(500)
             self.Sound.current_music = None
+            self.Sound.music_room_listening = False
             return
         
         elif music is Music.RANDOM:
