@@ -226,9 +226,8 @@ class Menu():
         if "footer_widgets" not in self.definition:
             return 
         
-        for widget in self.footer_widgets:
-            widget.container = self.surface.get_rect()
-            widget.handle_window_resize()
+        self.footer_widgets = []
+        self.__init_footer_widgets()
     
     def update_footer_widgets(self):
         """
@@ -283,6 +282,7 @@ class Menu():
         """
         if 'menu_body' in self.definition:
             self.main_body.do_menu_enter_transition_animation(animate_back_button)
+            self.main_body.doing_transition_animation = True
         
         if 'footer_widgets' in self.definition and animate_footer_widgets:
             for widget in self.footer_widgets:
@@ -302,6 +302,7 @@ class Menu():
         """
         if 'menu_body' in self.definition:
             self.main_body.do_menu_leave_transition_animation(animate_back_button)
+            self.main_body.doing_transition_animation = True
         
         if 'footer_widgets' in self.definition and animate_footer_widgets:
             for widget in self.footer_widgets:
@@ -324,6 +325,9 @@ class Menu():
                 
             self.doing_transition_animation = False
             self.transition_animation_timer = 0
+            
+            if 'menu_body' in self.definition:
+                self.main_body.doing_transition_animation = False
 
     def menu_enter_reset_scroll(self):
         """

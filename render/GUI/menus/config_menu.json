@@ -3241,7 +3241,8 @@
                             "#0e0f13"
                         ]
                     },
-                    "click_sfx": "MenuHit2"
+                    "click_sfx": "MenuHit2",
+                    "reset_on_click": true
                 }
             ]
         }

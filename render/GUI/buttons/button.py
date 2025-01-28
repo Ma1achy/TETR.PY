@@ -107,7 +107,7 @@ class Button(NestedElement):
         self.on_screen_rect = self.surface.get_rect()
         
         self.dropdown = False 
-        self.reset_on_click = True
+        self.reset_on_click = False
         
     def get_local_position(self):
         """

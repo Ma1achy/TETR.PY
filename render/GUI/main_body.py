@@ -52,6 +52,7 @@ class MainBody(NestedElement):
         self.scroll_timer = 0
         self.scroll_timer_duration = 0.1
         
+        self.doing_transition_animation = False
         self.do_reset_scroll_animation = False
         self.animation_timer = 0
         self.reset_scroll_timer = 0
@@ -280,6 +281,9 @@ class MainBody(NestedElement):
             return
         
         if self.Mouse.in_dropdown and not self.dropdown:
+            return
+        
+        if self.doing_transition_animation or self.do_reset_scroll_animation:
             return
         
         self.scroll_timer += self.Timing.frame_delta_time

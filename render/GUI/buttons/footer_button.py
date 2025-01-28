@@ -83,19 +83,6 @@ class FooterButton(Button):
         
         self.button_surface.blit(image, image_rect.topleft)
     
-    def handle_window_resize(self):
-        """
-        Handle the window being resized
-        """
-        self.x_position = self.container.right + self.x_offset
-        self.default_y_position =  self.container.bottom - int(62 * self.RENDER_SCALE)
-        self.hovered_y_position = self.default_y_position - int(14 * self.RENDER_SCALE)
-        self.pressed_y_position = self.default_y_position - int(24 * self.RENDER_SCALE)
-        self.y_position = self.default_y_position
-        self.__get_rect_and_surface()
-        self.render()
-        self.get_overlays()
-    
     def render_shadow(self):
         """
         Render the shadow of the button

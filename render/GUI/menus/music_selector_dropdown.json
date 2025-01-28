@@ -32,7 +32,7 @@
             "elements": [
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "RANDOM",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -66,7 +66,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "RANDOM_CALM",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -100,7 +100,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "RANDOM_BATTLE",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -134,7 +134,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "RANDOM_INTERFACE",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -168,7 +168,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "RANDOM_SPECIAL",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -202,7 +202,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_019",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -236,7 +236,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMY_090",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -270,7 +270,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "TKY_051",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -304,7 +304,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_048",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -338,7 +338,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "MRR_051",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -372,7 +372,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KVX_016",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -406,7 +406,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_016",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -440,7 +440,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_038",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -474,7 +474,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "THT_037",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -508,7 +508,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "THT_042",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -542,7 +542,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "YKW_055",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -576,7 +576,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_040",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -610,7 +610,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_055",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -644,7 +644,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "LSD_040",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -678,7 +678,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "ABM_047",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -712,7 +712,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_026",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -746,7 +746,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "FNK_040",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -780,7 +780,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "OMG_040",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -814,7 +814,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_053",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -848,7 +848,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "JGM_044",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -882,7 +882,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_033",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -916,7 +916,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_024",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -950,7 +950,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_038",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -984,7 +984,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_047",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1018,7 +1018,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "TMK_060",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1052,7 +1052,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "ABM_048",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1086,7 +1086,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "MKK_033",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1120,7 +1120,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "SDM_016",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1154,7 +1154,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "YOS_016",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1188,7 +1188,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_047",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1222,7 +1222,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_036",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1256,7 +1256,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_017",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1290,7 +1290,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_032",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1324,7 +1324,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_004",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1358,7 +1358,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_041",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1392,7 +1392,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_039",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1426,7 +1426,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_051",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1460,7 +1460,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "KMK_018",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1494,7 +1494,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "OMG_019",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1528,7 +1528,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "OMG_016",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1562,7 +1562,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "NBH_022",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1596,7 +1596,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "NHR_040",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1630,7 +1630,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_004",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1664,7 +1664,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "OMG_051",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1698,7 +1698,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "TTM_055",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1732,7 +1732,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_009",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1766,7 +1766,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_048",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1800,7 +1800,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_053",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1834,7 +1834,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_041",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1868,7 +1868,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_021",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1902,7 +1902,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_014",
                     "main_text": {
                         "colour": "#dac8e7",
@@ -1936,7 +1936,7 @@
                 },
                 {
                     "type": "bar_button_sub",
-                    "function": "play_song",
+                    "function": "select_song",
                     "song": "CHK_057",
                     "main_text": {
                         "colour": "#dac8e7",

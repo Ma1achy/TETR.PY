@@ -85,7 +85,8 @@
                             "#0e0f13"
                         ]
                     },
-                    "click_sfx": "MenuHit3"
+                    "click_sfx": "MenuHit3",
+                    "reset_on_click": true
                 }
             ]
         }

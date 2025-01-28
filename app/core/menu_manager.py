@@ -80,7 +80,10 @@ class MenuManager():
             # about menu
             "open_music_room": self.open_music_room,
             
-            # music room menu
+            # music selector
+            "select_song": self.select_song,
+            
+            # music room
             "play_song": self.play_song,	
             
             # dropdown menu
@@ -196,7 +199,7 @@ class MenuManager():
 
         self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/game_menu.json')
         
-        self.music_room_dropdown       = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render\GUI\menus\music_room_dropdown.json')
+        self.music_selector_dropdown = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render\GUI\menus\music_selector_dropdown.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None
@@ -206,6 +209,7 @@ class MenuManager():
         self.dialog_stack = []  
         
         self.current_dropdown = None
+        self.in_music_room = False
         
     def tick(self):
         """
@@ -399,7 +403,7 @@ class MenuManager():
         
         self.game_menu.handle_window_resize()
         
-        self.music_room_dropdown.handle_window_resize()
+        self.music_selector_dropdown.handle_window_resize()
         
         if self.ErrorDialog:
             self.ErrorDialog.handle_window_resize()
@@ -764,7 +768,8 @@ class MenuManager():
         animate_back_button, animate_footer_widget = self.animate_diff(self.current_menu, self.current_dropdown)
         self.current_dropdown.do_menu_leave_transition_animation(animate_back_button, animate_footer_widget)        
         self.current_dropdown.open = False
-              
+        self.in_music_room = False
+        
     def go_to_home(self):
         """
         Go to the home menu
@@ -853,9 +858,15 @@ class MenuManager():
     # about menu
     
     def open_music_room(self):
-        self.open_dropdown(self.music_room_dropdown)
+        self.in_music_room = True
+        self.open_dropdown(self.music_selector_dropdown)
     
     # music room menu
+    
+    def select_song(self, song):
+        if self.in_music_room:
+            self.play_song(song)
+        
     def play_song(self, song):
         self.Sound.music_queue.append((song, True))
         self.Sound.music_room_listening = True
