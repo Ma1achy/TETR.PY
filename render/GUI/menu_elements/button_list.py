@@ -154,35 +154,35 @@ class ButtonList(NestedElement):
         self.surface.blit(self.button_list_surface, (self.x_position, self.y_position))
         self.surface.blit(self.buttons_surface, (self.x_position, self.y_position))
 
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the button list
         """
         self.draw()
         
-        if in_dialog:
+        if self.Mouse.in_dialog:
             return
         
-        self.update_buttons(in_dialog)
+        self.update_buttons()
     
-    def update_buttons(self, in_dialog):
+    def update_buttons(self):
         """
         Update the buttons in the button list
         """
         self.buttons_surface.fill((0, 0, 0, 0))
         for button in self.buttons:
-            button.update(in_dialog)
+            button.update()
         
-        self.update_title_hover_button(in_dialog)
+        self.update_title_hover_button()
     
-    def update_title_hover_button(self, in_dialog):
+    def update_title_hover_button(self):
         """
         Update the hover button for the title
         """
         if self.title_hover_button is None:
             return
         
-        self.title_hover_button.update(in_dialog)
+        self.title_hover_button.update()
     
     def on_click(self):
         """

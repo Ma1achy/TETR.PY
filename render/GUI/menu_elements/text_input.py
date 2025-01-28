@@ -91,7 +91,6 @@ class TextInput():
         for event in self.events:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 self.call_function()
-                self.Sound.sfx_queue.append(SFX.MenuHit1)
                 
         self.events = []
     
@@ -139,3 +138,4 @@ class TextInput():
                 return
         
         self.function(value)
+        self.Sound.sfx_queue.append(SFX.MenuHit1)

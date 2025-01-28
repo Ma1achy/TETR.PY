@@ -93,7 +93,7 @@
                             "#13100e"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2"
                 },
                 {
                     "type": "bar_button",
@@ -131,7 +131,7 @@
                             "#2e1616"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2"
                 },
                 {
                     "type": "bar_button",
@@ -169,7 +169,7 @@
                             "#2e162e"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2"
                 },
                 {
                     "type": "bar_button",
@@ -207,7 +207,7 @@
                             "#12111b"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2"
                 }
                 
             ]

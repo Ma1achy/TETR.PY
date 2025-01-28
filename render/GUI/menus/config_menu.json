@@ -86,7 +86,7 @@
                             "#0e0f13"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2"
                 },
                 {
                     "type": "floating_text",
@@ -3241,7 +3241,7 @@
                             "#0e0f13"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2"
                 }
             ]
         }

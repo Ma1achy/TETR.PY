@@ -171,7 +171,7 @@ class CollapsiblePanel(NestedElement):
         self.panel_surface.blit(self.element_surface, (0, 0))
         self.surface.blit(self.panel_surface, self.rect.topleft)
         
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the panel
         """
@@ -194,22 +194,22 @@ class CollapsiblePanel(NestedElement):
             return
         
         if not self.Mouse.slider_interaction_event:
-            self.update_hover(in_dialog)
+            self.update_hover()
         
         if self.currently_hovered and not self.use_cached_image:
-            self.update_elements(in_dialog)  
+            self.update_elements()  
              
         self.animate_menu_enter_transition()
         self.animate_menu_leave_transition()
     
-    def update_elements(self, in_dialog):
+    def update_elements(self):
         """
         Update the elements in the panel
         """
         self.element_surface.fill((0, 0, 0, 0))
         
         for element in self.elements:
-            element.update(in_dialog)
+            element.update()
     
     def handle_scroll(self):
         """
@@ -346,13 +346,13 @@ class CollapsiblePanel(NestedElement):
             return
         self.on_screen = False
         
-    def check_hover(self, in_dialog):
+    def check_hover(self):
         """
         Check if the mouse is hovering over the panel.
         """
         self.previous_hovered = self.currently_hovered
         
-        if in_dialog:
+        if self.Mouse.in_dialog:
             self.currently_hovered = False
             return
         
@@ -369,13 +369,13 @@ class CollapsiblePanel(NestedElement):
             return
         self.currently_hovered = False
     
-    def update_hover(self, in_dialog):
+    def update_hover(self):
         """
         Update the hover state of the panel
         """
-        self.check_hover(in_dialog)
+        self.check_hover()
         
-        if in_dialog:
+        if self.Mouse.in_dialog:
             self.create_cached_image()
             self.use_cached_image = True
             return
@@ -399,7 +399,7 @@ class CollapsiblePanel(NestedElement):
         
         for element in self.elements:
             element.reset_state()
-            element.update(in_dialog = True)
+            element.update()
         
         self.panel_surface.set_alpha(255)
         self.element_surface.set_alpha(255)
@@ -407,5 +407,5 @@ class CollapsiblePanel(NestedElement):
         self.cached_surface.blit(self.element_surface, (0, 0))
         
     def create_inital_cached_image(self):
-        self.update_elements(in_dialog = False)
+        self.update_elements()
         self.create_cached_image()

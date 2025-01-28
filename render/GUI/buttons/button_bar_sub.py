@@ -48,16 +48,25 @@ class ButtonBarSub(Button):
         
         if "click_sfx" not in self.definition:
             self.click_sound = SFX.MenuHit1
-        elif self.definition["click_sfx"] == "hit1":
-            self.click_sound = SFX.MenuHit1
-        elif self.definition["click_sfx"] == "hit2":
-            self.click_sound = SFX.MenuHit2
-        elif self.definition["click_sfx"] == "hit3":
-            self.click_sound = SFX.MenuHit3
+        else:
+            self.click_sound = getattr(SFX, self.definition["click_sfx"])
+            
+        if "hover_sfx" not in self.definition:
+            self.hover_sound = SFX.MenuHover
+        else:
+            self.hover_sound = getattr(SFX, self.definition["hover_sfx"])
             
         self.song = None
         self.get_song()
-    
+
+        if "dropdown" in self.definition:
+            self.dropdown = self.definition["dropdown"]
+        else:
+            self.dropdown = False
+            
+        if "reset_on_click" in self.definition:
+            self.reset_on_click = self.definition["reset_on_click"]
+            
     def get_song(self):
         if "song" in self.definition:
             self.song = getattr(Music, self.definition["song"])
@@ -112,3 +121,8 @@ class ButtonBarSub(Button):
             self.function(self.song)
         else:
             self.function()
+        
+        if self.reset_on_click:
+            self.state = None
+        
+        

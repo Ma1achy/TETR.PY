@@ -167,9 +167,9 @@ class CheckboxButton(Button):
         self.active = not self.active
         super().click()
     
-    def update(self, in_dialog = False):
+    def update(self):
         self.get_state_overlays()
-        super().update(in_dialog)
+        super().update()
     
     def draw(self):
         super().draw()

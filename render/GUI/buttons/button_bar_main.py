@@ -47,12 +47,8 @@ class ButtonBarMain(Button):
         
         if "click_sfx" not in self.definition:
             self.click_sound = SFX.MenuHit1
-        elif self.definition["click_sfx"] == "hit1":
-            self.click_sound = SFX.MenuHit1
-        elif self.definition["click_sfx"] == "hit2":
-            self.click_sound = SFX.MenuHit2
-        elif self.definition["click_sfx"] == "hit3":
-            self.click_sound = SFX.MenuHit3
+        else:
+            self.click_sound = getattr(SFX, self.definition["click_sfx"])
         
     def __get_rect_and_surface(self):
         """

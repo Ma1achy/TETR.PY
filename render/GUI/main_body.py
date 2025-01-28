@@ -48,6 +48,7 @@ class MainBody(NestedElement):
         
         self.scrollable = False
         self.scroll_bar = None
+        self.scroll_started = False
         self.scroll_timer = 0
         self.scroll_timer_duration = 0.1
         
@@ -57,6 +58,11 @@ class MainBody(NestedElement):
         self.reset_scroll_length = 0.35
         
         self.back_button = None
+        
+        if 'dropdown' in definition:
+            self.dropdown = self.definition['dropdown']
+        else:
+            self.dropdown = False
          
         self.__get_rect_and_surface()
         self.__init_elements()
@@ -97,6 +103,9 @@ class MainBody(NestedElement):
             return
         
         y = int(35 * self.RENDER_SCALE)
+        
+        if self.dropdown:
+            y += int(70 * self.RENDER_SCALE)
         
         for idx, element in enumerate(self.definition['menu']['elements']):
             if element['type'] == 'bar_button':
@@ -144,7 +153,7 @@ class MainBody(NestedElement):
         self.scrollable = self.y_diff > 0
 
         if self.scrollable:
-            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
+            self.scroll_bar = ScrollBar(self.Mouse, self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
                         
     def __init_back_button(self):
         """
@@ -232,17 +241,17 @@ class MainBody(NestedElement):
         self.__init_elements()
         self.render()
 
-    def __handle_mouse_scroll(self, in_dialog):
+    def __handle_mouse_scroll(self):
         """
         Handle the mouse scroll event
-        
-        args:
-            in_dialog (bool): Whether the panel is in a dialog
         """
         if not self.scrollable:
             return
         
-        if in_dialog:
+        if self.Mouse.in_dialog:
+            return
+        
+        if self.Mouse.in_dropdown and not self.dropdown:
             return
         
         events_to_remove = []
@@ -251,24 +260,28 @@ class MainBody(NestedElement):
             for button, info in event.items():
                 if button is MouseEvents.SCROLLWHEEL:
                     events_to_remove.append(event)
-                    self.do_scroll(info, in_dialog)
+                    self.scroll_started = True
+                    self.Mouse.ignore_events = True
+                    self.do_scroll(info)
                     
         self.end_scroll(events_to_remove)
 
         for event in events_to_remove:
             self.Mouse.events.queue.remove(event)
     
-    def do_scroll(self, info, in_dialog):
+    def do_scroll(self, info):
         """
         Do the mouse scroll event
         
         args:
             info (dict): The information about the scroll event
-            in_dialog (bool): Whether the panel is in a dialog
         """
-        if in_dialog:
+        if self.Mouse.in_dialog:
             return
-            
+        
+        if self.Mouse.in_dropdown and not self.dropdown:
+            return
+        
         self.scroll_timer += self.Timing.frame_delta_time
         self.scroll_speed += 50
 
@@ -286,7 +299,7 @@ class MainBody(NestedElement):
         """
         End the mouse scroll event
         """
-        if len(events_to_remove) != 0:
+        if not self.scroll_started:
             return
         
         self.scroll_timer -= self.Timing.frame_delta_time
@@ -294,9 +307,11 @@ class MainBody(NestedElement):
         
         if self.scroll_timer < 0:
             self.scroll_timer = 0
+            self.scroll_started = False
+            self.Mouse.ignore_events = False
             
-        self.scroll_speed = smoothstep_interpolate(self.scroll_speed, 10, (1 - progress))
-    
+        self.scroll_speed = smoothstep_interpolate(self.scroll_speed, 10, (1 - progress))    
+        
     def __update_scroll_position(self):
         """
         Update the scroll position
@@ -311,20 +326,17 @@ class MainBody(NestedElement):
         elif self.scroll_y < -self.y_diff - 35:
             self.scroll_y = -self.y_diff - 35  # Clamp scroll position to valid range
         
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the panel
-        
-        args:
-            in_dialog (bool): Whether the panel is in a dialog
         """
         self.__update_scroll_position()
         self.__update_y_positions()
-        self.__handle_mouse_scroll(in_dialog)
+        self.__handle_mouse_scroll()
         self.__update_logo()
-        self.__update_menu(in_dialog)
-        self.__update_back_button(in_dialog)
-        self.__update_scroll_bar(in_dialog)
+        self.__update_menu()
+        self.__update_back_button()
+        self.__update_scroll_bar()
         self.__do_reset_scroll_animation()
     
     def __update_y_positions(self):
@@ -332,7 +344,11 @@ class MainBody(NestedElement):
         Update the y positions of the elements
         """
         self.old_content_height = self.content_height
-        y = int(35 * self.RENDER_SCALE)  
+        y = int(35 * self.RENDER_SCALE) 
+        
+        if self.dropdown:
+            y += int(70 * self.RENDER_SCALE)
+            
         for element in self.menu_elements:
             element.scroll_y = self.scroll_y
             
@@ -372,35 +388,29 @@ class MainBody(NestedElement):
         self.scrollable = self.y_diff > 0 
 
         if self.old_content_height != self.content_height and self.scrollable:
-            self.scroll_bar = ScrollBar(self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
+            self.scroll_bar = ScrollBar(self.Mouse, self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
         
         elif not self.scrollable:
             self.scroll_bar = None
             
-    def __update_menu(self, in_dialog):
+    def __update_menu(self):
         """
-        Update the menu elements
-        
-        args:
-            in_dialog (bool): Whether the panel is in a dialog
+        Update the menu elementsg
         """
         if 'menu' not in self.definition:
             return
         
         for element in self.menu_elements: 
-            element.update(in_dialog)
+            element.update()
             
-    def __update_back_button(self, in_dialog):
+    def __update_back_button(self):
         """
         Update the back button
-        
-        args:
-            in_dialog (bool): Whether the panel is in a dialog
         """
         if 'back_button' not in self.definition:
             return
         
-        self.back_button.update(in_dialog)
+        self.back_button.update()
 
     def __update_logo(self):
         """
@@ -411,17 +421,14 @@ class MainBody(NestedElement):
 
         self.logo.draw(self.body_surface)
     
-    def __update_scroll_bar(self, in_dialog):
+    def __update_scroll_bar(self):
         """
         Update the scroll bar
-        
-        args:
-            in_dialog (bool): Whether the panel is in a dialog
         """
         if self.scroll_bar is None:
             return
         
-        self.scroll_bar.update(self.scroll_y, in_dialog)
+        self.scroll_bar.update(self.scroll_y)
 
     def reset_buttons(self):
         """

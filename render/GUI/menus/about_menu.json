@@ -85,7 +85,7 @@
                             "#131313"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2"
                 },
                 {
                     "type": "bar_button_sub",
@@ -116,7 +116,8 @@
                             "#131313"
                         ]
                     },
-                    "click_sfx": "hit2"
+                    "click_sfx": "MenuHit2",
+                    "reset_on_click": true
                 }
             ]
         }

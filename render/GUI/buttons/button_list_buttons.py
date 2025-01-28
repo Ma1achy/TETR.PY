@@ -141,12 +141,12 @@ class ButtonListButtons(Button):
         self.active = not self.active
         super().click()
         
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the button
         """
         self.update_apperance()
-        super().update(in_dialog)
+        super().update()
     
     def draw(self):
         """

@@ -92,7 +92,7 @@
                             "#271b22"
                         ]
                     },
-                    "click_sfx": "hit1"
+                    "click_sfx": "MenuHit1"
                 },
                 {
                     "type": "bar_button",
@@ -130,7 +130,7 @@
                             "#12111b"
                         ]
                     },
-                    "click_sfx": "hit1"
+                    "click_sfx": "MenuHit1"
                 },
                 {
                     "type": "bar_button",
@@ -168,7 +168,7 @@
                             "#0e130f"
                         ]
                     },
-                    "click_sfx": "hit1"
+                    "click_sfx": "MenuHit1"
                 },
                 {
                     "type": "bar_button",
@@ -206,7 +206,7 @@
                             "#0e0f13"
                         ]
                     },
-                    "click_sfx": "hit1"
+                    "click_sfx": "MenuHit1"
                 },
                 {
                     "type": "bar_button",
@@ -244,7 +244,7 @@
                             "#131313"
                         ]
                     },
-                    "click_sfx": "hit1"
+                    "click_sfx": "MenuHit1"
                 }
             ]
         }

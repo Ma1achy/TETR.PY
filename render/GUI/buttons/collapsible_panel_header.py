@@ -284,7 +284,7 @@ class CollapsiblePanelHeader(Button):
         
         self.ignore_events = False
         
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the button
         """
@@ -293,7 +293,7 @@ class CollapsiblePanelHeader(Button):
         self.check_if_on_screen()
         
         if not self.ignore_events:
-            self.update_state(in_dialog)
+            self.update_state()
             
         if self.state is None and self.previous_state is None:
             self.slider_hover_start_timer = 0
@@ -319,9 +319,9 @@ class CollapsiblePanelHeader(Button):
         self.animate_menu_enter_transition()
         self.animate_menu_leave_transition()
 
-        self.update_elements(in_dialog)
+        self.update_elements()
         
-    def update_elements(self, in_dialog):
+    def update_elements(self):
         """
         Update the elements of the button
         """
@@ -337,7 +337,7 @@ class CollapsiblePanelHeader(Button):
             return
         
         for element in self.elements:
-            element.update(in_dialog)
+            element.update()
     
     def animate_menu_transition_alpha(self, progress, is_enter):
         """

@@ -111,6 +111,6 @@ class SliderField(Button):
         super().animate_pressed_surface_transition()
         self.surface.blit(self.value_surface, (self.x_position, self.y_position))
     
-    def update(self, in_dialog = False):
+    def update(self):
         self.update_value()
-        super().update(in_dialog)
+        super().update()

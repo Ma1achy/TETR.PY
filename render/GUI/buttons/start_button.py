@@ -89,19 +89,19 @@ class StartButton(Button):
         """
         self.font.draw(self.button_surface, self.definition['text']['display_text'], self.definition['text']['colour'], 'center', 0, 0)
     
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the button
         """
         self.disable_layer_below()
         self.animate_glow()
-        super().update(in_dialog)
+        super().update()
         
     def disable_layer_below(self):
         """
         Disable the parent in the layer below the button when it is being hovered or pressed
         """
-        if self.state is 'hovered':
+        if self.state == 'hovered':
             self.parent.ignore_events = True
         else:
             self.parent.ignore_events = False

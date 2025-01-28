@@ -106,6 +106,9 @@ class Button(NestedElement):
         self.on_screen = False
         self.on_screen_rect = self.surface.get_rect()
         
+        self.dropdown = False 
+        self.reset_on_click = True
+        
     def get_local_position(self):
         """
         Get the local position of the button for collision detection.
@@ -271,17 +274,26 @@ class Button(NestedElement):
             return
          
         self.function()
+        
+        if self.reset_on_click:
+            self.state = None
     
     # -------------------------------------------------------------------------- UPDATE LOGIC --------------------------------------------------------------------------
     
-    def update_state(self, in_dialog = False):
+    def update_state(self):
         """
         Update the state of the button and check for input events.
         """
         if not self.on_screen:
             return
         
-        if in_dialog or self.ignore_events:
+        if self.Mouse.ignore_events:
+            return
+        
+        if self.Mouse.in_dialog or self.ignore_events:
+            return
+        
+        if self.Mouse.in_dropdown and not self.dropdown:
             return
         
         if self.do_menu_enter_transition or self.do_menu_leave_transition:
@@ -294,13 +306,13 @@ class Button(NestedElement):
         self.update_click()
         self.check_events()
         
-    def update(self, in_dialog = False):
+    def update(self):
         """
         Update the button.
         """
         self.handle_scroll()
         self.check_if_on_screen()
-        self.update_state(in_dialog)
+        self.update_state()
             
         if self.state is None and self.previous_state is None:
             self.slider_hover_start_timer = 0

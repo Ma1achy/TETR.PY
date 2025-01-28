@@ -39,7 +39,7 @@ class MenuManager():
         
         self.debug_overlay = False
         self.is_focused = False
-        self.in_dialog = False
+        self.Mouse.in_dialog = False
         self.wait_for_dialog_close = False
         
         self.ErrorDialog = None
@@ -82,6 +82,10 @@ class MenuManager():
             
             # music room menu
             "play_song": self.play_song,	
+            
+            # dropdown menu
+            "open_dropdown": self.open_dropdown,
+            "close_dropdown": self.close_dropdown,
         }
         
         self.render_copied_text()
@@ -180,7 +184,6 @@ class MenuManager():
         self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/records_menu.json')
         
         self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/about_menu.json')
-        self.music_room_menu     = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/music_room_menu.json')
         
         self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/config_menu.json')
 
@@ -193,12 +196,16 @@ class MenuManager():
 
         self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/game_menu.json')
         
+        self.music_room_dropdown       = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render\GUI\menus\music_room_dropdown.json')
+        
         self.current_menu = self.home_menu
         self.next_menu = None
         self.previous_menu = None
 
         self.current_dialog = None
         self.dialog_stack = []  
+        
+        self.current_dropdown = None
         
     def tick(self):
         """
@@ -207,12 +214,17 @@ class MenuManager():
         self.window.blit(self.gradient_overlay, (0, 0))
          
         if self.current_menu is not None:
-            self.current_menu.update(self.in_dialog)
+            self.current_menu.update()
+        
+        if self.current_dropdown:
+            self.darken_overlay.fill((0, 0, 0, self.current_dropdown.darken_alpha))
+            self.window.blit(self.darken_overlay, (0, 0))
+            self.current_dropdown.update()
              
         if self.current_dialog and self.current_dialog is not self.LoginDialog: # to prevent weird bug on macos where the login dialog makes the banner images render as black squares ???
             self.darken_overlay.fill((0, 0, 0, self.darken_overlay_layer_alpha))
             self.window.blit(self.darken_overlay, (0, 0))
-            
+                    
         if self.current_dialog:
             self.current_dialog.update()
             
@@ -230,8 +242,9 @@ class MenuManager():
         self.get_actions()
         self.handle_exceptions()
         self.handle_menu_transitions()
+        self.handle_dropdown_close()
         self.handle_menu_music_transitions()
-    
+        
     def render_darken_gradient(self):
         """
         Draw a transparent gradient from transparent to black on the gradient overlay surface.
@@ -265,6 +278,15 @@ class MenuManager():
                 self.Mouse.ignore_events = True
                 return True
         
+        if self.current_dropdown is not None:
+            if self.current_dropdown.main_body.do_reset_scroll_animation:
+                self.Mouse.ignore_events = True
+                return True
+            
+            else:
+                self.Mouse.ignore_events = False
+                return False
+    
         if self.current_dialog is not None:
             if self.current_dialog.do_animate_appear or self.current_dialog.do_animate_disappear:
                 return True
@@ -330,12 +352,13 @@ class MenuManager():
         if self.if_doing_animation():
             return
         
-        if self.in_dialog:
+        if self.Mouse.in_dialog and self.current_dialog is not None:
             self.close_dialog()
             self.Sound.sfx_queue.append(SFX.MenuClick)
+        elif self.Mouse.in_dropdown and self.current_dropdown is not None:
+            self.current_dropdown.main_body.back_button.start_click()
         elif self.current_menu.main_body is not None and self.current_menu.main_body.back_button is not None:
             self.current_menu.main_body.back_button.start_click()
-            #self.Sound.sfx_queue.append(SFX.MenuBack)
     
     def __menu_debug(self):
         """
@@ -358,8 +381,7 @@ class MenuManager():
         self.records_menu.handle_window_resize()
         
         self.about_menu.handle_window_resize()
-        self.music_room_menu.handle_window_resize()
-        
+  
         self.config_menu.handle_window_resize()
         
         self.account_menu.handle_window_resize()
@@ -376,6 +398,8 @@ class MenuManager():
         self.LoginDialog.handle_window_resize()
         
         self.game_menu.handle_window_resize()
+        
+        self.music_room_dropdown.handle_window_resize()
         
         if self.ErrorDialog:
             self.ErrorDialog.handle_window_resize()
@@ -423,7 +447,7 @@ class MenuManager():
         """
         self.dialog_stack.clear()
         self.current_dialog = None
-        self.in_dialog = False
+        self.Mouse.in_dialog = False
 
         self.current_menu.reset_state()
         self.current_menu = self.login_menu
@@ -464,7 +488,7 @@ class MenuManager():
         # Reset dialog states
         self.dialog_stack.clear()
         self.current_dialog = None
-        self.in_dialog = False
+        self.Mouse.in_dialog = False
 
         self.AccountManager.logout()
         self.go_to_login()
@@ -580,11 +604,8 @@ class MenuManager():
             self.current_dialog.timer = 0
 
         self.current_dialog = dialog
-        self.in_dialog = True
+        self.Mouse.in_dialog = True
         
-        # if self.current_menu:
-        #     self.current_menu.reset_state()
-
         dialog.do_animate_appear = True
         dialog.do_animate_disappear = False
         dialog.timer = 0
@@ -636,45 +657,33 @@ class MenuManager():
                 self.current_dialog.do_animate_appear = True
                 self.current_dialog.do_animate_disappear = False
                 self.current_dialog.timer = 0
-                self.in_dialog = True
+                self.Mouse.in_dialog = True
             else:
-                self.in_dialog = False
+                self.Mouse.in_dialog = False
                 self.wait_for_dialog_close = False
+    
+    # menu transitions
     
     def animate_diff(self, current_menu, next_menu):
         """
         Animate the differences in anchored elements between the current and next menu
-        """
-        animate_back_button = False
-        
-        if 'main_body' not in next_menu.definition:
+        """     
+        if 'menu_body' not in next_menu.definition:
             return True, False
             
-        if 'back_button' in current_menu.main_body.definition and 'back_button' not in next_menu.main_body.definition:
-            animate_back_button = True
-        
-        elif 'back_button' not in current_menu.main_body.definition and 'back_button' in next_menu.main_body.definition:
-            animate_back_button = True
-            
-        elif 'back_button' not in current_menu.main_body.definition and 'back_button' not in next_menu.main_body.definition:
-            animate_back_button = False
-            
-        elif current_menu.main_body.definition['back_button']['main_text']['display_text'] != next_menu.main_body.definition['back_button']['main_text']['display_text']:
-            animate_back_button = True
-            
-        animate_footer_widget = False
-        
-        if 'footer_widgets' in current_menu.definition and 'footer_widgets' not in next_menu.definition:
-            animate_footer_widget = True
-        
-        elif 'footer_widgets' not in current_menu.definition and 'footer_widgets' in next_menu.definition:
-            animate_footer_widget = True
-        
-        elif 'footer_widgets' not in current_menu.definition and 'footer_widgets' not in next_menu.definition:
-            animate_footer_widget = False
-            
-        elif len(current_menu.footer_widgets) != len(next_menu.footer_widgets):
-            animate_footer_widget = True
+        animate_back_button = (
+            ('back_button' in current_menu.main_body.definition and 'back_button' not in next_menu.main_body.definition) or
+            ('back_button' not in current_menu.main_body.definition and 'back_button' in next_menu.main_body.definition) or
+            ('back_button' in current_menu.main_body.definition and 'back_button' in next_menu.main_body.definition and
+            current_menu.main_body.definition['back_button']['main_text']['display_text'] != next_menu.main_body.definition['back_button']['main_text']['display_text'])
+        )
+
+        animate_footer_widget = (
+            ('footer_widgets' in current_menu.definition and 'footer_widgets' not in next_menu.definition) or
+            ('footer_widgets' not in current_menu.definition and 'footer_widgets' in next_menu.definition) or
+            ('footer_widgets' in current_menu.definition and 'footer_widgets' in next_menu.definition and
+            len(current_menu.footer_widgets) != len(next_menu.footer_widgets))
+        )
         
         return animate_back_button, animate_footer_widget
 
@@ -714,7 +723,48 @@ class MenuManager():
         if self.previous_menu is not None:
             self.previous_menu.reset_state()
             self.previous_menu = None
-            
+    
+    # dropdown menu
+
+    def handle_dropdown_close(self):
+        """
+        Handle the dropdown menu close
+        """
+        if self.current_dropdown is None:
+            return
+        
+        if self.current_dropdown.doing_transition_animation:
+            return
+        
+        if self.current_dropdown.open:
+            return
+        
+        self.current_dropdown.reset_state()
+        self.current_dropdown = None
+        self.Mouse.in_dropdown = False
+        
+    def open_dropdown(self, dropdown):
+        """
+        Open the dropdown menu
+        
+        args:
+            dropdown (Dropdown): The dropdown menu to open
+        """
+        self.current_dropdown = dropdown
+        self.current_dropdown.open = True
+        self.Mouse.in_dropdown = True
+        animate_back_button, animate_footer_widget = self.animate_diff(self.current_menu, self.current_dropdown)
+        self.current_dropdown.do_menu_enter_transition_animation(animate_back_button, animate_footer_widget)
+        self.current_dropdown.menu_enter_reset_scroll()
+        
+    def close_dropdown(self):
+        """
+        Close the dropdown menu
+        """
+        animate_back_button, animate_footer_widget = self.animate_diff(self.current_menu, self.current_dropdown)
+        self.current_dropdown.do_menu_leave_transition_animation(animate_back_button, animate_footer_widget)        
+        self.current_dropdown.open = False
+              
     def go_to_home(self):
         """
         Go to the home menu
@@ -803,13 +853,13 @@ class MenuManager():
     # about menu
     
     def open_music_room(self):
-        self.switch_menus(self.music_room_menu)
+        self.open_dropdown(self.music_room_dropdown)
     
     # music room menu
     def play_song(self, song):
         self.Sound.music_queue.append((song, True))
         self.Sound.music_room_listening = True
-        self.switch_menus(self.about_menu) 
+        self.close_dropdown()
 
     # error dialog 
     
@@ -846,11 +896,11 @@ class MenuManager():
         """
         Update the darken overlay alpha
         """
-        if self.in_dialog and self.current_dialog is not self.LoginDialog:
+        if self.Mouse.in_dialog and self.current_dialog is not self.LoginDialog:
             self.darken_overlay_layer_alpha =  min(self.current_dialog.alpha, 200)
         else:
             self.darken_overlay_layer_alpha = 0
-    
+            
     def render_copied_text(self):
         """
         Render the text to be used in the copy to clipboard animation

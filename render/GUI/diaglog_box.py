@@ -515,6 +515,26 @@ class DialogTextEntryBox(Button):
         self.__update_text_entry()
         super().update()
     
+    def update_state(self):
+        """
+        Update the state of the button and check for input events.
+        """
+        if not self.on_screen:
+            return
+        
+        if self.ignore_events:
+            return
+        
+        if self.do_menu_enter_transition or self.do_menu_leave_transition:
+            return
+           
+        if self.Mouse.slider_interaction_event and not self.being_dragged:
+            return
+            
+        self.check_hover()
+        self.update_click()
+        self.check_events()
+        
     def __update_text_entry(self):
         """
         Update the text entry

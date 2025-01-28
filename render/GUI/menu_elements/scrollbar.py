@@ -3,7 +3,7 @@ from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha
 from render.GUI.menu_elements.nested_element import NestedElement
 
 class ScrollBar(NestedElement):
-    def __init__(self, container, y_scroll, y_diff, scrollable, RENDER_SCALE):
+    def __init__(self, Mouse, container, y_scroll, y_diff, scrollable, RENDER_SCALE):
         """
         A scrollbar for a scrollable area
         
@@ -15,6 +15,7 @@ class ScrollBar(NestedElement):
         """
         super().__init__(parent = None)
         self.RENDER_SCALE = RENDER_SCALE
+        self.Mouse = Mouse
         
         self.container = container
         self.y_scroll = y_scroll 
@@ -72,11 +73,11 @@ class ScrollBar(NestedElement):
         self.container.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.container.blit(self.surface, self.rect.topleft)
 
-    def update(self, y_scroll, in_dialog):
+    def update(self, y_scroll):
         """
         Update the scrollbar
         """
-        if in_dialog:
+        if self.Mouse.in_dialog:
             self.draw()
             self.bar.draw(self.container)
             return

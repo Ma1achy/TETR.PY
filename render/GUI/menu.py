@@ -6,7 +6,7 @@ from render.GUI.main_body import MainBody
 from render.GUI.buttons.footer_button import FooterButton
 from render.GUI.font import Font
 import re
-from utils import apply_gaussian_blur_with_alpha
+from utils import apply_gaussian_blur_with_alpha, smoothstep
 
 class Menu():
     def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, dialog_resources, Sound, menu_definition):
@@ -44,8 +44,22 @@ class Menu():
         
         self.__init_elements()
         
+        self.is_enter = False
+        
         self.transition_animation_timer = 0
         self.doing_transition_animation = False
+        
+        self.menu_transition_timer = 0
+        self.menu_transition_time = 0.20
+        
+        self.darken_alpha = 0
+        
+        if "dropdown" in self.definition:
+            self.dropdown = self.definition["dropdown"]
+        else:
+            self.dropdown = False
+            
+        self.open = True
         
     def __open_definition(self, path):
         """
@@ -139,27 +153,25 @@ class Menu():
                 func = self.button_functions[element['function']]
                 self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.Sound, self.surface, self.surface.get_rect(), element, parent = None, RENDER_SCALE = self.RENDER_SCALE))
     
-    def update_tooltips(self, in_dialog):
+    def update_tooltips(self):
         if self.ToolTips is None:
             return
         
-        self.ToolTips.update(in_dialog)
+        self.ToolTips.update()
            
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the menu
-        
-        args:
-            in_dialog (bool): Whether the menu is in a dialog
         """
+        self.get_dropdown_darken_alpha()
         self.count_transition_animation()
         
         if self.main_body is not None:
-            self.main_body.update(in_dialog)
+            self.main_body.update()
             
         self.draw(self.surface)
-        self.update_footer_widgets(in_dialog)
-        self.update_tooltips(in_dialog)
+        self.update_footer_widgets()
+        self.update_tooltips()
             
     def handle_window_resize(self):
         """
@@ -218,18 +230,15 @@ class Menu():
             widget.container = self.surface.get_rect()
             widget.handle_window_resize()
     
-    def update_footer_widgets(self, in_dialog):
+    def update_footer_widgets(self):
         """
         Update the footer widgets
-        
-        args:
-            in_dialog (bool): Whether the menu is in a dialog
         """
         if "footer_widgets" not in self.definition:
             return
         
         for widget in self.footer_widgets:
-            widget.update(in_dialog)
+            widget.update()
     
     def reset_state(self):
         """
@@ -278,8 +287,10 @@ class Menu():
         if 'footer_widgets' in self.definition and animate_footer_widgets:
             for widget in self.footer_widgets:
                 widget.do_menu_enter_transition_animation()
-                
+             
+        self.menu_transition_timer = 0   
         self.doing_transition_animation = True
+        self.is_enter = True
     
     def do_menu_leave_transition_animation(self, animate_back_button, animate_footer_widgets):
         """
@@ -295,9 +306,11 @@ class Menu():
         if 'footer_widgets' in self.definition and animate_footer_widgets:
             for widget in self.footer_widgets:
                 widget.do_menu_leave_transition_animation()
-                
+        
+        self.menu_transition_timer = 0   
         self.doing_transition_animation = True
- 
+        self.is_enter = False
+
     def count_transition_animation(self):
         """
         Count the transition animation
@@ -320,6 +333,29 @@ class Menu():
             return
         
         self.main_body.menu_enter_reset_scroll()
+    
+    def get_dropdown_darken_alpha(self):
+        if self.doing_transition_animation:
+            self.animate_dropdown_darken_alpha()
+            
+    def animate_dropdown_darken_alpha(self):
+        
+        if not self.dropdown:
+            return
+        
+        self.menu_transition_timer += self.Timing.frame_delta_time
+        self.menu_transition_timer = min(self.menu_transition_timer, self.menu_transition_time)
+
+        progress = self.menu_transition_timer / self.menu_transition_time
+        progress = max(0, min(1, progress))
+            
+        self.darken_alpha = self.calculate_darken_alpha(progress)
+
+    def calculate_darken_alpha(self, progress):
+        progress = max(0, min(1, progress)) 
+        p = smoothstep(progress)
+        alpha = ((p) * 255) if self.is_enter else (((1 - p)) * 255)
+        return max(0, min(200, alpha))
         
 class ToolTips():
     def __init__(self, Mouse, Timing, surface, RenderStruct):
@@ -461,11 +497,11 @@ class ToolTips():
         self.tooltip_to_draw = self.tooltips[tooltip]
         self.shadow_to_draw = self.shadows[tooltip]
     
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the tooltips
         """
-        if in_dialog:
+        if self.Mouse.in_dialog:
             self.tooltip_to_draw = None
             self.shadow_to_draw = None
             self.tooltip_timer = 0

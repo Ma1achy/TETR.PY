@@ -58,13 +58,13 @@ class SliderKnob(Button):
         self.shadow_surface = apply_gaussian_blur_with_alpha(self.shadow_surface, self.shadow_radius)
         pygame.draw.rect(self.shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, self.width, self.height)) # remove the area the button takes up from the shadow
         
-    def update(self, in_dialog):
+    def update(self):
         if self.state is None:
             self.slider.ignore_events = False
         else:
             self.slider.ignore_events = True
             
-        super().update(in_dialog)
+        super().update()
         
     def update_position(self, x_position):
         self.x_position = x_position

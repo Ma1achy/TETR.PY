@@ -107,11 +107,11 @@ class GenericButton(Button):
         self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.surface.blit(self.button_surface, self.rect.topleft)
         
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the button
         """
-        super().update(in_dialog)
+        super().update()
     
         
     

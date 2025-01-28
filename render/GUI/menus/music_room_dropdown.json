@@ -1,36 +1,9 @@
 {
-    "menu_header": {
-        "background": {
-            "style": "linear_gradient",
-            "colours": [
-                "#242424",
-                "#161616"
-            ]
-        },
-        "border": {
-            "bottom": [
-                2,
-                "#2c2c2c"
-            ]
-        },
-        "text": {
-            "colour": "#606060",
-            "display_text": "ABOUT / MUSIC ROOM"
-        }
-    },
+    "dropdown": true,
     "menu_body": {
-        "logo": {
-            "image": "resources/logos/LogoLightGlow.png",
-            "alignment": "bottom_left",
-            "padding": [
-                20,
-                20
-            ],
-            "scale": 0.23,
-            "opacity": 32
-        },
+        "dropdown": true,
         "back_button": {
-            "function": "go_to_about",
+            "function": "close_dropdown",
             "main_text": {
                 "colour": "#c9c9c9",
                 "display_text": "BACK"
@@ -52,7 +25,8 @@
                     3,
                     "#181818"
                 ]
-            }
+            },
+            "dropdown": true
         },
         "menu": {
             "elements": [
@@ -61,1845 +35,1940 @@
                     "function": "play_song",
                     "song": "RANDOM",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RANDOM"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "pick a completly random song for me"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "RANDOM_CALM",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RANDOM: CALM"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "pick a random calmer song for me"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "RANDOM_BATTLE",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RANDOM: BATTLE"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "pick an intenser battle song for me"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "RANDOM_INTERFACE",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RANDOM: INTERFACE"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "pick a random menu song for me"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "RANDOM_SPECIAL",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RANDOM: SPECIAL"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "pick a special song for me"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_019",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "AERIAL CITY"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMY_090",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "TO THE LIMIT"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamiya - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "TKY_051",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "THE GREAT EASTERN EXPEDITION"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "takayuki - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_048",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "MORNING SUN"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "MRR_051",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "IN SORROW AND PAINS"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "mirera - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KVX_016",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "PIERCING WIND"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kvk - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_016",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "INORIMICHITE"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_038",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "WIND TRAIL"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "THT_037",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "MUSCAT AND WHITE DISHES"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "takahashi takashi - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "THT_042",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "SUMMER SKY AND HOMEWORK"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "takahashi takashi - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "YKW_055",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "SUCESS STORY"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "akiko shioyama - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_040",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "CLASSY CAT"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_055",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "AKINDO"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "LSD_040",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "PHILOSOPHY"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "l-side - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "ABM_047",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RAINBOW OF THE NIGHT"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "aiba makoto - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_026",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "WHITE CALABASH"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - special"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "FNK_040",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "SMOKE"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "fujinawa kazuhiko - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "OMG_040",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "LOVER'S SONG"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "omegane - interface"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_053",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "STEP ON THE SCARLET SOIL"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "JGM_044",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "HANGING OUT IN TOKYO"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "meesan - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_033",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "BACKWATER"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_024",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "BURNING HEART"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_038",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "STORM SPIRIT"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_047",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "ICE EYES"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "TMK_060",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "THE TIME IS NOW"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "tomoki - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "ABM_048",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "PRISM"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "aiba makoto - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "MKK_033",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RISKY AREA"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "mikiya komaba - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "SDM_016",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "WINTER SATELLITE"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "sudo mikaduki - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "YOS_016",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "FIRST SNOW"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "yoshi - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_047",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "MAIN STREET"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_036",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "OVER THE HORIZON"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_017",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "BURNING SPIRIT, AWAKENING SOUL"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_032",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "MAZE OF THE ABYSS"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_004",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "SAMURAI SWORD"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_041",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "SUPER MACHINE SOUL"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_039",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "UNIVERSE 5239"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_051",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "ULTRA SUPER HEROES"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - battle"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "KMK_018",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "HYPER VELOCITY"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "kamoking - special"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "OMG_019",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "TWENTY-FIRST CENTURY PEOPLE"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "omegane - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "OMG_016",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "WAITING FOR SPRING TO COME"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "omegane - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "NBH_022",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "GO GO GO SUMMER"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "nobuhamu - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "NHR_040",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "LONELY JOURNEY"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "naoki hirai - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_004",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "YOUNG LEAVES"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "OMG_051",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "CONFESSION"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "omegane - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "TTM_055",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "AMAZING EVERYDAY"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "tsutomu - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_009",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "ASPHALT"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_048",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "BY THE SUNLIT WINDOW"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_053",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "ORIGIN"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_041",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "CHERRY BLOSSOM SEASON"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_021",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "RAINDROPS"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_014",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "ENTRANCE WREATH"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - calm"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 },
                 {
                     "type": "bar_button_sub",
                     "function": "play_song",
                     "song": "CHK_057",
                     "main_text": {
-                        "colour": "#c0c0c0",
+                        "colour": "#dac8e7",
                         "display_text": "PEACE MESSAGE"
                     },
                     "sub_text": {
-                        "colour": "#a0a0a0",
+                        "colour": "#7c6b88",
                         "display_text": "chika - special"
                     },
                     "background": {
                         "style": "solid",
-                        "colour": "#222222"
+                        "colour": "#1a161d"
                     },
                     "border": {
                         "left": [
                             3,
-                            "#262626"
+                            "#392e40"
                         ],
                         "top": [
                             3,
-                            "#2a2a2a"
+                            "#453351"
                         ],
                         "bottom": [
                             3,
-                            "#131313"
+                            "#0a080b"
                         ]
                     },
-                    "click_sfx": "hit3"
+                    "click_sfx": "MenuClick",
+                    "hover_sfx": "MenuTap",
+                    "dropdown": true
                 }
             ]
-        }
-    },
-    "menu_footer": {
-        "background": {
-            "style": "linear_gradient",
-            "colours": [
-                "#1f1f1f",
-                "#292929"
-            ]
-        },
-        "border": {
-            "top": [
-                2,
-                "#2f2f2f"
-            ]
-        },
-        "text": {
-            "colour": "#5c5c5c",
-            "display_text": "choose a song to listen to"
         }
     }
 }

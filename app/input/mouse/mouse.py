@@ -11,6 +11,8 @@ class Mouse():
     
     slider_interaction_event: bool = False
     ignore_events: bool = False
+    in_dialog: bool = False
+    in_dropdown: bool = False
 
 class MouseEvents(Enum):
     MOUSEBUTTON1 = auto()

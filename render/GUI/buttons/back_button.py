@@ -42,6 +42,14 @@ class BackButton(Button):
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
         
         self.click_sound = SFX.MenuBack
+        
+        if "dropdown" in self.definition:
+            self.dropdown = self.definition["dropdown"]
+            self.y_position += int(70 * self.RENDER_SCALE)
+        else:
+            self.dropdown = False
+            
+        self.reset_on_click = True
           
     def __get_rect_and_surface(self):
         """

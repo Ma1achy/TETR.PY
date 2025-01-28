@@ -75,7 +75,7 @@ class FloatingText():
         self.main_font.draw(self.font_surface, self.display_text, self.font_colour, self.alignment, self.x_padding, self.y_padding, None)
         self.font_surface.set_alpha(self.font_alpha)
         
-    def update(self, in_dialog):
+    def update(self):
         """
         Update the text
         """

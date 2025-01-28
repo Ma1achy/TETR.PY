@@ -224,13 +224,13 @@ class ConfigSlider(NestedElement):
     def draw(self):   
         self.surface.blit(self.slider_surface, (self.x_position, self.y_position))
         
-    def update(self, in_dialog):
+    def update(self):
         
-        self.update_field(in_dialog)
-        self.update_slider_bar(in_dialog)
+        self.update_field()
+        self.update_slider_bar()
         self.draw()
-        self.update_knob(in_dialog)
-        self.update_invisible_buttons(in_dialog)
+        self.update_knob()
+        self.update_invisible_buttons()
         self.perform_drag()
         
     def value_to_position(self, value):
@@ -298,30 +298,30 @@ class ConfigSlider(NestedElement):
         
         self.Knob.update_position(position)
         
-    def update_knob(self, in_dialog):
+    def update_knob(self):
         """
         Update the knob
         """
         self.position_to_value()
-        self.Knob.update(in_dialog)
+        self.Knob.update()
             
-    def update_slider_bar(self, in_dialog):
+    def update_slider_bar(self):
         if self.ignore_events:
             return
         
-        self.slider_bar_button.update(in_dialog)
+        self.slider_bar_button.update()
     
-    def update_invisible_buttons(self, in_dialog):
-        self.title_invisible_button.update(in_dialog)
+    def update_invisible_buttons(self):
+        self.title_invisible_button.update()
     
-    def update_field(self, in_dialog):
+    def update_field(self):
         if self.ValueField.value < self.min_value:
             self.ValueField.value = self.min_value
             
         elif self.ValueField.value > self.max_value:
             self.ValueField.value = self.max_value
                 
-        self.ValueField.update(in_dialog)
+        self.ValueField.update()
     
     def reset_state(self):
         """
@@ -368,4 +368,4 @@ class ConfigSlider(NestedElement):
         self.ValueField.value = value
         self.ValueField.update_value()
         self.button_functions['close_dialog']()
-        self.reset_state()
+        self.reset_state() 
