@@ -159,6 +159,29 @@
                     },
                     "elements": [
                         {   
+                            "type": "music_selector_button",
+                            "function": "open_music_selector",
+                            "tooltip": "Customise the music that will play in this mode.",
+                            "text": {
+                                "display_text": "RANDOM: CALM",
+                                "colour": "#c2b3f4"
+                            },
+                            "background": {
+                                "style": "solid",
+                                "colour": "#201e36"
+                            },
+                            "size": {
+                                "width": 680,
+                                "height": 50
+                            },
+                            "position": {
+                                "x": 25,
+                                "y": 18
+                            },
+                            "alignment": "center_left",
+                            "image": "resources/buttons/note-2.png"
+                        },
+                        {   
                             "type": "start_button",
                             "function": "start_custom_solo",
                             "text": {

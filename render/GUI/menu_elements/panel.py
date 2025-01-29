@@ -8,6 +8,7 @@ from render.GUI.buttons.checkbox_button import CheckboxButton
 from render.GUI.buttons.start_button import StartButton
 from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
+from render.GUI.buttons.music_selector_button import MusicSelectorButton
 
 class Panel(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
@@ -179,7 +180,13 @@ class Panel(NestedElement):
                 button.shadow_surface = temp
                 
                 self.elements.append(button)
-                y -= int(10 * self.RENDER_SCALE)    
+                y -= int(10 * self.RENDER_SCALE)   
+            
+            elif element['type'] == "music_selector_button":
+                function = self.button_functions[element['function']]
+                music_selector_button = MusicSelectorButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
+                self.elements.append(music_selector_button)
+                y -= int(10 * self.RENDER_SCALE)
                 
             y += int(10 * self.RENDER_SCALE)
     

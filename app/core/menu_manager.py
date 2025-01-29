@@ -89,6 +89,8 @@ class MenuManager():
             # dropdown menu
             "open_dropdown": self.open_dropdown,
             "close_dropdown": self.close_dropdown,
+            
+            "open_music_selector": self.open_music_selector,
         }
         
         self.render_copied_text()
@@ -199,7 +201,7 @@ class MenuManager():
 
         self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/game_menu.json')
         
-        self.music_selector_dropdown = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render\GUI\menus\music_selector_dropdown.json')
+        self.music_selector_dropdown       = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render\GUI\menus\music_selector_dropdown.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None
@@ -863,6 +865,9 @@ class MenuManager():
     
     # music room menu
     
+    def open_music_selector(self):
+        self.open_dropdown(self.music_selector_dropdown)
+        
     def select_song(self, song):
         if self.in_music_room:
             self.play_song(song)
