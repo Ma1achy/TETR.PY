@@ -60,6 +60,7 @@ class CollapsiblePanelHeader(Button):
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
         
         self.hover_sound = SFX.MenuTap
+        self.reset_on_click = True
         
     def __init_elements(self):
         """
@@ -176,7 +177,7 @@ class CollapsiblePanelHeader(Button):
 
         self.closed_pressed_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.draw_closed_state(self.closed_pressed_surface)
-        brightness_maintain_alpha(self.closed_pressed_surface, 2.0)
+        brightness_maintain_alpha(self.closed_pressed_surface, 1.5)
         
         self.temp_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.render_button(self.temp_surface, self.definition["button"]["closed_colour"])
@@ -186,7 +187,7 @@ class CollapsiblePanelHeader(Button):
         
         self.open_pressed_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.draw_open_state(self.open_pressed_surface)
-        brightness_maintain_alpha(self.open_pressed_surface, 2.0)
+        brightness_maintain_alpha(self.open_pressed_surface, 1.5)
         
         self.temp_surface = pygame.Surface((self.width, self.height), pygame.HWSURFACE|pygame.SRCALPHA)
         self.render_button(self.temp_surface, self.definition["button"]["open_colour"])
@@ -224,9 +225,15 @@ class CollapsiblePanelHeader(Button):
         Handle the click event for the button
         """
         self.open = not self.open
+        
+        self.state = None
+        self.previous_state = None
+        
         self.get_state_overlays()
+        
         if self.function is None:
             return
+        
         self.function()
           
     def draw_open_state(self, surface):

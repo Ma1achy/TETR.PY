@@ -84,14 +84,14 @@ class MusicSelectorButton(Button):
         """
         Render the text on the button
         """
-        self.font.draw(self.button_surface, self.definition['text']['display_text'], self.definition['text']['colour'], 'left', int(30 * self.RENDER_SCALE), 0)
+        self.font.draw(self.button_surface, self.definition['text']['display_text'], self.definition['text']['colour'], 'left', int(28 * self.RENDER_SCALE), 0)
     
     def render_image(self):
         """
         Render the image on the button
         """
     
-        image_width = int(25 * self.RENDER_SCALE)
+        image_width = int(22 * self.RENDER_SCALE)
 
         image = load_image(self.definition['image'])
         
@@ -99,7 +99,7 @@ class MusicSelectorButton(Button):
         new_height = int(image_width * aspect_ratio)
 
         image = pygame.transform.smoothscale(image, (image_width, new_height))
-        image_rect = align_element(self.button_surface.get_rect(), image.get_width(), image.get_height(), - self.width // 2 + image.get_width() // 2 , int(2 * self.RENDER_SCALE), 'centre_left')
+        image_rect = align_element(self.button_surface.get_rect(), image.get_width(), image.get_height(), - self.width // 2 + image.get_width() // 2 , 0, 'centre_left')
         self.button_surface.blit(image, image_rect.topleft)
         
     def get_overlays(self):
