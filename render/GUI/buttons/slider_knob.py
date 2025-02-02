@@ -116,6 +116,13 @@ class SliderKnob(Button):
                     self.Mouse.slider_interaction_event = False
                     self.being_dragged = False
                     self.state = None
+                    self.update_value()
                     
         for event in events_to_remove:
             self.Mouse.events.queue.remove(event)
+    
+    def update_value(self):
+        if self.function is None:
+            return
+        
+        self.function()

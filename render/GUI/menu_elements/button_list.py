@@ -33,6 +33,12 @@ class ButtonList(NestedElement):
         self.definition = definition
         self.themeing = self.definition['themeing']
         
+        self.function = self.button_functions.get(self.definition.get('function'))
+        self.value_getter = self.button_functions.get(self.definition.get('value_getter'))
+        
+        self.section = self.definition.get('section')
+        self.key = self.definition.get('key')
+        
         self.title_font_size = int(23 * self.RENDER_SCALE)
         self.title_padding = self.title_font_size + int(5 * self.RENDER_SCALE)
         self.x_padding = int(25 * self.RENDER_SCALE)
@@ -55,6 +61,8 @@ class ButtonList(NestedElement):
         self.__init_buttons()
         self.render()
         self.get_title_hover_button()
+        
+        self.get_value()
     
     def get_title(self):
         """
@@ -104,8 +112,7 @@ class ButtonList(NestedElement):
         Generate a button in the button list.
         """
         button_rect = self.get_button_rect(idx) 
-        function = None
-        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.Sound, self.buttons_surface, button_rect, button, self.themeing, function, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips))     
+        self.buttons.append(ButtonListButtons(self.Timing, self.Mouse, self.Sound, self.buttons_surface, button_rect, button, self.themeing, self.set_value, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips))     
     
     def get_button_rect(self, idx):
         """
@@ -197,6 +204,21 @@ class ButtonList(NestedElement):
         """
         for button in self.buttons:
             button.reset_state()
+            button.update()
+    
+    def get_value(self):
+        """
+        Get the value of the button list
+        """
+        value = self.value_getter(self.section, self.key)
+        
+        for button in self.buttons:
+            if button.value == value:
+                button.active = True
+    
+    def set_value(self, value):
+        self.function(self.section, self.key, value)
+        
         
     
         

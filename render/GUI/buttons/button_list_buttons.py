@@ -23,6 +23,9 @@ class ButtonListButtons(Button):
         self.function = function
 
         self.definition = definition
+        
+        self.value = definition.get('value')
+        
         self.themeing = themeing
         
         self.active = False
@@ -139,7 +142,17 @@ class ButtonListButtons(Button):
         """
         self.parent.on_click()
         self.active = not self.active
-        super().click()
+        
+        if self.ToolTips:
+            self.ToolTips.tooltip_timer = 0
+            
+        if self.function is None:
+            return
+         
+        self.function(self.value)
+        
+        if self.reset_on_click:
+            self.state = None
         
     def update(self):
         """

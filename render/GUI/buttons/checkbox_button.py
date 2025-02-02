@@ -4,9 +4,10 @@ from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 from app.core.sound.sfx import SFX
 class CheckboxButton(Button):
-    def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, background_colour, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, button_functions, Timing, Mouse, Sound, surface, container, definition, y_position, parent, background_colour, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(Timing, surface, Mouse, None, container, width = container.width, height = container.height, style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         
+        self.button_functions = button_functions
         self.RENDER_SCALE = RENDER_SCALE
         
         self.Timing = Timing
@@ -62,6 +63,20 @@ class CheckboxButton(Button):
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height)) 
         
         self.hover_sound = SFX.MenuTap
+        
+        self.function = self.button_functions.get(self.definition.get('function'))
+        self.value_getter = self.button_functions.get(self.definition.get('value_getter'))
+        
+        self.section = self.definition.get('section')
+        self.key = self.definition.get('key')
+        
+        self.active = self.get_value()
+        
+    def get_value(self):
+        if self.value_getter is None:
+            return False
+        
+        return self.value_getter(self.section, self.key)
     
     def get_local_position(self):
         return self.rect.topleft
@@ -165,7 +180,17 @@ class CheckboxButton(Button):
     
     def click(self):
         self.active = not self.active
-        super().click()
+
+        if self.ToolTips:
+            self.ToolTips.tooltip_timer = 0
+            
+        if self.function is None:
+            return
+         
+        self.function(self.section, self.key, self.active)
+        
+        if self.reset_on_click:
+            self.state = None
     
     def update(self):
         self.get_state_overlays()

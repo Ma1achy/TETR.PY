@@ -42,6 +42,12 @@ class ConfigSlider(NestedElement):
         
         self.definition = definition
         
+        self.function = self.button_functions.get(self.definition.get('function'))
+        self.value_getter = self.button_functions.get(self.definition.get('value_getter'))
+        
+        self.section = self.definition.get('section')
+        self.key = self.definition.get('key')
+        
         if 'flipped' in self.definition:
             self.flipped = self.definition['flipped']
         else:
@@ -134,7 +140,7 @@ class ConfigSlider(NestedElement):
         self.ValueField.max_value_to_inf = self.max_value_to_inf
         
         self.ValueField.value = self.max_value if not self.flipped else self.min_value
-        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, None, self.Mouse, self.Timing, self.Sound, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips, slider = self)
+        self.Knob = SliderKnob(self.knob_rect.width, self.knob_rect.height, self.knob_rect, self.set_value, self.Mouse, self.Timing, self.Sound, self.surface, self.knob_rect, self.knob_definition, self.parent, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips, slider = self)
         
         self.render()
         
@@ -150,6 +156,8 @@ class ConfigSlider(NestedElement):
         self.old_x = 0
         self.drag_sound_timer = 0
         self.drag_sound_time = 0.066
+        
+        self.get_value()
         
     def get_title(self):
         """
@@ -280,6 +288,8 @@ class ConfigSlider(NestedElement):
         relative_position = click_x - tl[0]
         
         self.update_knob_position(relative_position)
+        self.position_to_value()
+        self.set_value()
             
     def update_knob_position(self, position):
         """
@@ -369,3 +379,23 @@ class ConfigSlider(NestedElement):
         self.ValueField.update_value()
         self.button_functions['close_dialog']()
         self.reset_state() 
+        self.set_value()
+        
+    def get_value(self):
+        if self.value_getter is None:
+            return
+        
+        value = self.value_getter(self.section, self.key)
+      
+        if value == 'INF':
+            value = self.max_value
+   
+        self.ValueField.value = value
+        self.value_to_position(value)
+    
+    def set_value(self):
+        if self.max_value_to_inf and self.ValueField.value == self.max_value:
+            self.function(self.section, self.key, 'INF')
+        else:
+            self.function(self.section, self.key, self.ValueField.value)
+            

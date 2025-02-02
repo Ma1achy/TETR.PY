@@ -6,7 +6,7 @@ from render.GUI.buttons.generic_button import GenericButton
 from app.core.sound.sfx import SFX
 
 class CollapsiblePanelHeader(Button):
-    def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None, button_functions = None):
         super().__init__(Timing, surface, Mouse, None, container, container.width, height = 75, style = 'lighten', maintain_alpha = True, slider = 'left', parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         """
         A button that can be clicked to open or close a collapsible panel
@@ -22,6 +22,7 @@ class CollapsiblePanelHeader(Button):
         """
         self.RENDER_SCALE = RENDER_SCALE
         self.ToolTips = ToolTips
+        self.button_functions = button_functions
         
         self.Timing = Timing
         self.Mouse = Mouse
@@ -73,7 +74,7 @@ class CollapsiblePanelHeader(Button):
         
         for element in self.definition['elements']:
             if element['type'] == 'generic_button':
-                function = None
+                function = self.button_functions.get(element.get('function'))
                 self.elements.append(GenericButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.button_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips))
     
     def render(self):

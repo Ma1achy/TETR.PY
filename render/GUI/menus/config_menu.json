@@ -161,21 +161,25 @@
                     "elements": [
                         {
                             "type": "button_list",
+                            "function": "edit_setting",
+                            "section": "CONTROLS_SETTINGS",
+                            "key": "SELECTED",
+                            "value_getter": "get_setting_value",
                             "buttons": [
                                 {
-                                    "display_text": "GUIDLINE",
-                                    "function": "toggle_guideline_keybinds",
-                                    "tooltip": "The standard controls, as seen in many stacker games."
+                                    "display_text": "GUIDELINE",
+                                    "tooltip": "The standard controls, as seen in many stacker games.",
+                                    "value": "GUIDELINE_KEYBINDINGS"
                                 },
                                 {
                                     "display_text": "WASD",
-                                    "function": "toggle_wasd_keybinds",
-                                    "tooltip": "A WASD based layout, that sets piece movement to the left hand and rotation to the right."
+                                    "tooltip": "A WASD based layout, that sets piece movement to the left hand and rotation to the right.",
+                                    "value": "WASD_KEYBINDINGS"
                                 },
                                 {
                                     "display_text": "CUSTOM",
-                                    "function": "toggle_custom_keybinds",
-                                    "tooltip": "Custom controls - set them as you wish."
+                                    "tooltip": "Custom controls - set them as you wish.",
+                                    "value": "CUSTOM_KEYBINDINGS"
                                 }
                             ],
                             "themeing": {
@@ -312,7 +316,7 @@
                         },
                         {   
                             "type": "generic_button",
-                            "function": "reset_handling",
+                            "function": "reset_handling_settings",
                             "tooltip": "Reset these settings to their default values.",
                             "text": {
                                 "display_text": "RESET",
@@ -355,6 +359,7 @@
                 },
                 {
                     "type": "collapsible_panel",
+                    "tag": "HANDLING_PANEL",
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -393,6 +398,10 @@
                                 "max_chars": 2,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "ARR",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -446,6 +455,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "DAS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -499,6 +512,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "DCD",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -552,6 +569,10 @@
                                 "max_chars": 2,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "SDF",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -589,6 +610,10 @@
                         {
                             "type": "checkbox",
                             "text": "prevent accidental hard drops",
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "PREVENT_ACCIDENTAL_HARDDROPS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -646,6 +671,10 @@
                         {
                             "type": "checkbox",
                             "text": "cancel DAS when changing directions",
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "DAS_CANCEL",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -703,6 +732,10 @@
                         {
                             "type": "checkbox",
                             "text": "prefer softdrop over movement",
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "PREFER_SOFTDROP_OVER_MOVEMENT",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -760,6 +793,10 @@
                         {
                             "type": "checkbox",
                             "text": "prioritise the most recent direction",
+                            "function": "edit_setting",
+                            "section": "HANDLING_SETTINGS",
+                            "key": "PRIORITISE_MOST_RECENT_DIRECTION",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -932,6 +969,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "MUSIC_VOLUME",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -984,6 +1025,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "SFX_VOLUME",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1036,6 +1081,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "STERO_BALANCE",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1073,6 +1122,10 @@
                         {
                             "type": "checkbox",
                             "text": "scroll to change volume",
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "SCROLL_TO_CHANGE_VOLUME",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1130,6 +1183,10 @@
                         {
                             "type": "checkbox",
                             "text": "mute music when hidden",
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "MUTE_WHEN_HIDDEN",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1187,6 +1244,10 @@
                         {
                             "type": "checkbox",
                             "text": "hear next pieces",
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "HEAR_NEXT_PIECE",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1244,6 +1305,10 @@
                         {
                             "type": "checkbox",
                             "text": "hear other players",
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "HEAR_OTHER_PLAYERS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1301,6 +1366,10 @@
                         {
                             "type": "checkbox",
                             "text": "hear attacks",
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "HEAR_ATTACKS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1358,6 +1427,10 @@
                         {
                             "type": "checkbox",
                             "text": "do not reset music when retrying",
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "DO_NOT_RESET_MUSIC_ON_RETRY",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1415,6 +1488,10 @@
                         {
                             "type": "checkbox",
                             "text": "disable sound entirely",
+                            "function": "edit_setting",
+                            "section": "AUDIO_SETTINGS",
+                            "key": "DISABLE_ALL_SOUND",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1531,21 +1608,28 @@
                         {
                             "type": "button_list",
                             "title": "ACTION TEXT",
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "ACTION_TEXT_SELECTION",
+                            "value_getter": "get_setting_value",
                             "buttons": [
                                 {
                                     "display_text": "OFF",
                                     "function": "toggle_action_text_off",
-                                    "tooltip": "Don't display any action text when doing special attacks."
+                                    "tooltip": "Don't display any action text when doing special attacks.",
+                                    "value": "OFF"
                                 },
                                 {
                                     "display_text": "SOME",
                                     "function": "toggle_action_text_some",
-                                    "tooltip": "Display only non-distracting action text when doing special attacks."
+                                    "tooltip": "Display only non-distracting action text when doing special attacks.",
+                                    "value": "SOME"
                                 },
                                 {
                                     "display_text": "ALL",
                                     "function": "toggle_action_text_all",
-                                    "tooltip": "Display all action text when doing special attacks."
+                                    "tooltip": "Display all action text when doing special attacks.",
+                                    "value": "ALL"
                                 }
                             ],
                             "themeing": {
@@ -1622,6 +1706,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "BOARD_BOUNCINESS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1674,6 +1762,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "DAMAGE_SHAKINESS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1726,6 +1818,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "GRID_VISIBILITY",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1778,6 +1874,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "BOARD_VISIBILITY",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1830,6 +1930,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "SHADOW_VISIBILITY",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1882,6 +1986,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "BOARD_ZOOM",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -1919,6 +2027,10 @@
                         {
                             "type": "checkbox",
                             "text": "show duels side-by-side",
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "SHOW_DUELS_SIDE_BY_SIDE",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -1976,6 +2088,10 @@
                         {
                             "type": "checkbox",
                             "text": "spin the board when you spin a piece",
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "SPIN_BOARD_WHEN_SPIN",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2033,6 +2149,10 @@
                         {
                             "type": "checkbox",
                             "text": "alert me when i KO someone",
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "ALERT_WHEN_KO",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2090,6 +2210,10 @@
                         {
                             "type": "checkbox",
                             "text": "warn me when i'm in danger",
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "WARN_WHEN_IN_DANGER",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2147,6 +2271,10 @@
                         {
                             "type": "checkbox",
                             "text": "coloured shadow piece",
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "COLOURED_SHADOW",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2204,6 +2332,10 @@
                         {
                             "type": "checkbox",
                             "text": "grey out locked held piece",
+                            "function": "edit_setting",
+                            "section": "GAMEPLAY_SETTINGS",
+                            "key": "GRAY_OUT_LOCKED_HOLD",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2319,26 +2451,34 @@
                         {
                             "type": "button_list",
                             "title": "GRAPHICS",
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "GRAPHICS_MODE",
+                            "value_getter": "get_setting_value",
                             "buttons": [
                                 {
                                     "display_text": "MINIMAL",
                                     "function": "toggle_minimal_graphics",
-                                    "tooltip": "Disable everything (including textures) for the highest performance but worst visuals."
+                                    "tooltip": "Disable everything (including textures) for the highest performance but worst visuals.",
+                                    "value": "MINIMAL"
                                 },
                                 {
                                     "display_text": "LOW",
                                     "function": "toggle_low_graphics",
-                                    "tooltip": "No particles, effects, or animations. Use this for better performance, or if you simply dislike the flare."
+                                    "tooltip": "No particles, effects, or animations. Use this for better performance, or if you simply dislike the flare.",
+                                    "value": "LOW"
                                 },
                                 {
                                     "display_text": "MEDIUM",
                                     "function": "toggle_medium_graphics",
-                                    "tooltip": "Less particles and effects. Remove any non-gameplay related particles and effects"
+                                    "tooltip": "Less particles and effects. Remove any non-gameplay related particles and effects",
+                                    "value": "MEDIUM"
                                 },
                                 {
                                     "display_text": "HIGH",
                                     "function": "toggle_high_graphics",
-                                    "tooltip": "All the particles and effects."
+                                    "tooltip": "All the particles and effects.",
+                                    "value": "HIGH"
                                 }
                             ],
                             "themeing": {
@@ -2416,6 +2556,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "TARGET_FPS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2468,6 +2612,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "PARTICLE_COUNT",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2520,6 +2668,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "BACKGROUND_VISIBILITY",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2572,6 +2724,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "GUI_SCALE",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2609,21 +2765,28 @@
                         {
                             "type": "button_list",
                             "title": "RENDER SCALING",
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "RENDER_SCALE_MODE",
+                            "value_getter": "get_setting_value",
                             "buttons": [
                                 {
                                     "display_text": "OFF",
                                     "function": "turn_off_render_scale",
-                                    "tooltip": "Turn off render scaling, and render the game at the current resolution of the window."
+                                    "tooltip": "Turn off render scaling, and render the game at the current resolution of the window.",
+                                    "value": "OFF"
                                 },
                                 {
                                     "display_text": "DYNAMIC",
                                     "function": "toggle_dynamic_render_scale",
-                                    "tooltip": "Apply render scaling, but adjust the internal resolution of the game when fullscreen is toggled."
+                                    "tooltip": "Apply render scaling, but adjust the internal resolution of the game when fullscreen is toggled.",
+                                    "value": "DYNAMIC"
                                 },
                                 {
                                     "display_text": "LOCKED",
                                     "function": "toggle_locked_render_scale",
-                                    "tooltip": "Apply render scaling, but lock the internal resolution of the game to a set value."
+                                    "tooltip": "Apply render scaling, but lock the internal resolution of the game to a set value.",
+                                    "value": "LOCKED"
                                 }
                             ],
                             "themeing": {
@@ -2700,6 +2863,10 @@
                                 "max_chars": 3,
                                 "force_caps": true
                             },
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "RENDER_SCALE",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",
                                 "end_text_colour": "#3d4457",
@@ -2737,6 +2904,10 @@
                         {
                             "type": "checkbox",
                             "text": "fullscreen",
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "FULLSCREEN",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2794,6 +2965,10 @@
                         {
                             "type": "checkbox",
                             "text": "always simplify other players boards",
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "ALWAYS_SIMPLIFY_OTHER_BOARDS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2851,6 +3026,10 @@
                         {
                             "type": "checkbox",
                             "text": "no background in menus",
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "NO_BACKGROUND_IN_MENUS",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2908,6 +3087,10 @@
                         {
                             "type": "checkbox",
                             "text": "keep replay tools open",
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "KEEP_REPLAY_TOOLS_OPEN",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -2965,6 +3148,10 @@
                         {
                             "type": "checkbox",
                             "text": "warn me when the game is not focused",
+                            "function": "edit_setting",
+                            "section": "VIDEO_SETTINGS",
+                            "key": "WARN_WHEN_NOT_FOCUSED",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -3080,6 +3267,10 @@
                         {
                             "type": "checkbox",
                             "text": "use custom background image",
+                            "function": "edit_setting",
+                            "section": "CUSTOMISATION_SETTINGS",
+                            "key": "USE_CUSTOM_BACKGROUND",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#94a8dc",
@@ -3137,21 +3328,28 @@
                         {
                             "type": "button_list",
                             "title": "BLOCK SKIN",
+                            "function": "edit_setting",
+                            "section": "CUSTOMISATION_SETTINGS",
+                            "key": "BLOCK_SKIN",
+                            "value_getter": "get_setting_value",
                             "buttons": [
                                 {
                                     "display_text": "DEFAULT",
                                     "function": "turn_off_render_scale",
-                                    "tooltip": "Use the default textures for the tetromino blocks."
+                                    "tooltip": "Use the default textures for the tetromino blocks.",
+                                    "value": "DEFAULT"
                                 },
                                 {
                                     "display_text": "PROGRAMMER",
                                     "function": "toggle_dynamic_render_scale",
-                                    "tooltip": "Draw the tetromino blocks as a singular solid colour, this is more performant as no textures are used."
+                                    "tooltip": "Draw the tetromino blocks as a singular solid colour, this is more performant as no textures are used.",
+                                    "value": "PROGRAMMER"
                                 },
                                 {
                                     "display_text": "CUSTOM",
                                     "function": "toggle_restricted_render_scale",
-                                    "tooltip": "Use a provided custom texture for the tetromino blocks."
+                                    "tooltip": "Use a provided custom texture for the tetromino blocks.",
+                                    "value": "CUSTOM"
                                 }
                             ],
                             "themeing": {

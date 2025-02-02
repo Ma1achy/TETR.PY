@@ -34,6 +34,8 @@ class CollapsiblePanel(NestedElement):
         self.dialog_resources = dialog_resources
         self.linked_header = linked_header
         
+        self.tag = definition.get('tag')
+        
         self.scroll_y = 0
         self.y_position = y_position
         self.x_position = self.container.width // 6
@@ -121,7 +123,7 @@ class CollapsiblePanel(NestedElement):
                 y += config_slider.height
             
             elif element['type'] ==  "checkbox":
-                checkbox = CheckboxButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                checkbox = CheckboxButton(self.button_functions, self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(checkbox)
                 y += checkbox.height - int(12 * self.RENDER_SCALE)
                 

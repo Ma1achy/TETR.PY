@@ -7,6 +7,11 @@ from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5.QtGui import QIcon
 from tkinter import filedialog
 import threading
+from enum import Enum
+from enum import auto
+
+from app.input.keyboard.menu_kb_input_handler import UIAction
+from instance.handling.handling import Action
 
 if sys.platform == "darwin":
     import os
@@ -22,9 +27,11 @@ class ConfigManager():
         """
         self.WorkerManager = WorkerManager
         self.parser = configparser.ConfigParser()
+        self.parser.optionxform = str
         
         self.user = None
         self.in_export_window = False
+        self.lock = threading.Lock()
         
         self.load_defualt_handling()
         self.load_default_keybindings()
@@ -41,7 +48,7 @@ class ConfigManager():
         Load the default keybindings
         """
         self.parser.read('app/core/config/default_keybindings.cfg')
-        self.guidline_keybindings = {key: self.convert_value(value) for key, value in self.parser['GUIDLINE_KEYBINDINGS'].items()}
+        self.guideline_keybindings = {key: self.convert_value(value) for key, value in self.parser['GUIDELINE_KEYBINDINGS'].items()}
         self.wasd_keybindings = {key: self.convert_value(value) for key, value in self.parser['WASD_KEYBINDINGS'].items()}
             
     def load_default_settings(self):
@@ -55,6 +62,7 @@ class ConfigManager():
         """
         Load the user settings
         """
+        self.user = user
         cfg = f'@{user}.cfg'
         path = os.path.join('app/core/config', cfg)
         
@@ -81,6 +89,15 @@ class ConfigManager():
             with open(path, 'w') as new:
                 new.write(f.read())
     
+    def reset_handling_settings(self):
+        """
+        Reset the handling settings
+        """
+        self.handling_settings = self.default_handling_settings.copy()
+        
+        for key, value in self.handling_settings.items():
+            self.save_setting_change('HANDLING_SETTINGS', key, value)
+        
     def load_settings(self):
         """
         Load the settings
@@ -91,14 +108,125 @@ class ConfigManager():
         self.audio_settings         =   {key: self.convert_value(value) for key, value in self.parser['AUDIO_SETTINGS'].items()}
         self.gameplay_settings      =   {key: self.convert_value(value) for key, value in self.parser['GAMEPLAY_SETTINGS'].items()}
         self.video_settings         =   {key: self.convert_value(value) for key, value in self.parser['VIDEO_SETTINGS'].items()}
+        self.customisation_settings =   {key: self.convert_value(value) for key, value in self.parser['CUSTOMISATION_SETTINGS'].items()}
         
-        print(self.controls_settings)
-        print(self.custom_keybindings)
-        print(self.handling_settings)
-        print(self.audio_settings)
-        print(self.gameplay_settings)
-        print(self.video_settings)
+        self.set_keybindings()
+            
+    def set_keybindings(self):
+        if self.controls_settings['SELECTED'] == 'GUIDELINE_KEYBINDINGS':
+            keybindings = self.guideline_keybindings
+        elif self.controls_settings['SELECTED'] == 'WASD_KEYBINDINGS':
+            keybindings = self.wasd_keybindings
+        else:
+            keybindings = self.custom_keybindings
+            
+        self.menu_keybindings = {action: keybindings[action.name] for action in UIAction if action.name in keybindings}
+        self.menu_keybindings[UIAction.MENU_DEBUG] = ['f3']
+        self.menu_keybindings[UIAction.WINDOW_FULLSCREEN] = ['f11']
+        
+        self.game_keybindings = {action: keybindings[action.name] for action in Action if action.name in keybindings}
     
+    def update_handling_settings(self):
+        pass
+    
+    def update_audio_settings(self):
+        pass
+    
+    def update_gameplay_settings(self):
+        pass
+    
+    def update_video_settings(self):
+        pass
+    
+    def update_customisation_settings(self):
+        pass
+           
+    def get_setting_value(self, section, key):
+        """
+        Get the value of a setting
+        
+        args:
+            section (str): the section to get the setting from
+            key (str): the key to get the setting from
+        """
+        match section:
+            case 'CONTROLS_SETTINGS':
+                return self.controls_settings[key]
+            case 'CUSTOM_KEYBINDINGS':
+                return self.custom_keybindings[key]
+            case 'HANDLING_SETTINGS':
+                return self.handling_settings[key]
+            case 'AUDIO_SETTINGS':
+                return self.audio_settings[key]
+            case 'GAMEPLAY_SETTINGS':
+                return self.gameplay_settings[key]
+            case 'VIDEO_SETTINGS':
+                return self.video_settings[key]
+            case 'CUSTOMISATION_SETTINGS':
+                return self.customisation_settings[key]
+            case _:
+                return
+        
+    def edit_setting(self, section, key, value):
+        """
+        Edit the setting
+        
+        args:
+            section (str): the section to edit the setting in
+            key (str): the key to edit the setting in
+            value (str): the value to edit
+        """
+        match section:
+            case 'CONTROLS_SETTINGS':
+                self.controls_settings[key] = value
+            case 'CUSTOM_KEYBINDINGS':
+                self.custom_keybindings[key] = value
+            case 'HANDLING_SETTINGS':
+                self.handling_settings[key] = value
+            case 'AUDIO_SETTINGS':
+                self.audio_settings[key] = value
+            case 'GAMEPLAY_SETTINGS':
+                self.gameplay_settings[key] = value
+            case 'VIDEO_SETTINGS':
+                self.video_settings[key] = value
+            case 'CUSTOMISATION_SETTINGS':
+                self.customisation_settings[key] = value
+            case _:
+                return
+        
+        self.save_setting_change(section, key, value)
+        
+    def save_setting_change(self, section, key, value):
+        """
+        Save the setting change
+        
+        args:
+            section (str): the section to save the setting to
+            key (str): the key to save the setting to
+            value (str): the value to save
+        """
+        if not self.parser.has_section(section):
+            self.parser.add_section(section)
+        self.parser[section][key] = str(value)
+        self.save_config()
+    
+    def save_config(self):
+        if sys.platform == 'win32':
+            self.WorkerManager.add_task(self.write_to_file)
+        else:
+            self.write_to_file()
+            
+    def write_to_file(self):
+        """
+        Save the configuration
+        """
+        with self.lock:
+            cfg = f'@{self.user}.cfg'
+            path = os.path.join('app/core/config', cfg)
+            
+            with open(path, 'w') as configfile:
+                self.parser.write(configfile)
+                
     def convert_value(self, value):
         """
         Convert the value to the correct type
@@ -131,14 +259,12 @@ class ConfigManager():
         else:
             self.export_file_unix()
         
-                
     def export_file_windows(self):
         """
         Open a file dialog to export the settings to a configuration file
         """
         cfg = f'@{self.user}.cfg'
 
-        print(f"Current thread: {threading.current_thread().name}")
         root = tk.Tk()
         root.withdraw()
             
@@ -165,7 +291,6 @@ class ConfigManager():
         """
         cfg = f'@{self.user}.cfg'
         
-        print(f"Current thread: {threading.current_thread().name}")
         app = QApplication([])
         app.setWindowIcon(QIcon('resources/icon.png'))
         
@@ -184,3 +309,13 @@ class ConfigManager():
             app.quit()
             
         self.in_export_window = False
+        
+class ConfigType(Enum):
+    CONTROLS_SETTINGS       = auto()
+    CUSTOM_KEYBINDINGS      = auto()
+    HANDLING_SETTINGS       = auto()
+    AUDIO_SETTINGS          = auto()
+    GAMEPLAY_SETTINGS       = auto()
+    VIDEO_SETTINGS          = auto()
+    CUSTOMISATION_SETTINGS  = auto()
+    

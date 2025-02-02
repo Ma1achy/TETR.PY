@@ -14,7 +14,6 @@ from collections import deque
 
 from instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
-from instance.state.flags import set_flag_attr
 from render.render import StructRender
 from app.state.clock import Clock
 
@@ -72,21 +71,10 @@ class TETRPY():
         self.SoundManager = SoundManager(self.Sound)
         
         self.__register_event_handlers()
-        
+    
         self.pygame_events_queue = deque()
         
-        self.menu_key_bindings = {
-            UIAction.MENU_LEFT:         ['left'],
-            UIAction.MENU_RIGHT:        ['right'],
-            UIAction.MENU_UP:           ['up'],
-            UIAction.MENU_DOWN:         ['down'],
-            UIAction.MENU_CONFIRM:      ['enter'],
-            UIAction.MENU_BACK:         ['esc'],
-            UIAction.MENU_DEBUG:        ['f3'],
-            UIAction.WINDOW_FULLSCREEN: ['f11'],
-        }
-        
-        self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.menu_key_bindings, self.Timing)
+        self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.ConfigManager.menu_keybindings, self.Timing)
         self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager, self.Sound)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
         self.Render = Render(self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
@@ -193,7 +181,7 @@ class TETRPY():
             pygame.MOUSEBUTTONDOWN,
             pygame.MOUSEMOTION,
             pygame.MOUSEWHEEL,
-            pygame.USEREVENT,
+            pygame.USEREVENT, # custom event -> used for looping current song 
             ]
         )
         

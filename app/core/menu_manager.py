@@ -10,6 +10,8 @@ import pygame
 from render.GUI.menu_elements.text_input import TextInput
 from app.core.sound.sfx import SFX
 from app.core.sound.music import Music
+from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
+from render.GUI.menu_elements.config_slider import ConfigSlider
 
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, Sound):
@@ -73,6 +75,10 @@ class MenuManager():
             "go_to_custom": self.go_to_custom,
             
             # config menu
+            "edit_setting": self.edit_setting,
+            "get_setting_value": self.get_setting_value,
+            "reset_handling_settings": self.reset_handling_settings,
+            
             "go_to_account_settings": self.go_to_account_settings,
             "export_settings": self.export_settings,
             "open_logout_dialog": self.open_logout_dialog,
@@ -201,7 +207,7 @@ class MenuManager():
 
         self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/game_menu.json')
         
-        self.music_selector_dropdown       = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render\GUI\menus\music_selector_dropdown.json')
+        self.music_selector_dropdown       = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/music_selector_dropdown.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None
@@ -845,6 +851,36 @@ class MenuManager():
     
     # config
     
+    def edit_setting(self, section, key, value):
+        """
+        Edit the value of a setting
+        """
+        self.ConfigManager.edit_setting(section, key, value)
+    
+    def get_setting_value(self, section, key):
+        """
+        Get the value of a setting
+        """
+        return self.ConfigManager.get_setting_value(section, key)
+    
+    def reset_handling_settings(self):
+        """
+        Reset the handling settings
+        """
+        self.ConfigManager.reset_handling_settings()
+        
+        for element in self.current_menu.main_body.menu_elements:
+            if isinstance(element, CollapsiblePanel):
+                if not element.open or not element.on_screen or element.tag != "HANDLING_PANEL":
+                    continue
+                
+                for e in element.elements:
+                    if isinstance(e, ConfigSlider):
+                        e.get_value()
+                element.use_cached_image = False
+                element.create_cached_image()
+                element.use_cached_image = True
+        
     def go_to_account_settings(self):
         """
         Go to the account settings menu
@@ -937,4 +973,4 @@ class MenuManager():
             self.Sound.music_queue.append((Music.CHK_019, True))
         elif self.current_menu is self.records_menu and self.Sound.current_music is not Music.KMY_090:
             self.Sound.music_queue.append((Music.KMY_090, True))
-        
+    

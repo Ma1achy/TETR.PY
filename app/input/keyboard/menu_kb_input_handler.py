@@ -90,37 +90,49 @@ class MenuKeyboardInputHandler():
         
         self.__do_DAS_tick()
         
-        self.__test_actions(UIAction.MENU_LEFT, self.__is_action_down)
+        self.__test_actions(UIAction.MENU_LEFT, self.__is_action_down_any_key)
         
-        self.__test_actions(UIAction.MENU_RIGHT, self.__is_action_down)
+        self.__test_actions(UIAction.MENU_RIGHT, self.__is_action_down_any_key)
         
-        self.__test_actions(UIAction.MENU_UP, self.__is_action_down)
+        self.__test_actions(UIAction.MENU_UP, self.__is_action_down_any_key)
         
-        self.__test_actions(UIAction.MENU_DOWN, self.__is_action_down)
+        self.__test_actions(UIAction.MENU_DOWN, self.__is_action_down_any_key)
         
-        self.__test_actions(UIAction.MENU_CONFIRM, self.__is_action_toggled)
+        self.__test_actions(UIAction.MENU_CONFIRM, self.__is_action_toggled_any_key)
         
-        self.__test_actions(UIAction.MENU_BACK, self.__is_action_toggled)
+        self.__test_actions(UIAction.MENU_BACK, self.__is_action_toggled_any_key)
         
-        self.__test_actions(UIAction.MENU_DEBUG, self.__is_action_toggled)
+        self.__test_actions(UIAction.MENU_DEBUG, self.__is_action_toggled_all_keys)
         
-        self.__test_actions(UIAction.WINDOW_FULLSCREEN, self.__is_action_toggled)
+        self.__test_actions(UIAction.WINDOW_FULLSCREEN, self.__is_action_toggled_all_keys)
         
         self.__get_actions()
         
         self.prev_time = self.current_time
     
-    def __is_action_down(self, action):
+    def __is_action_down_all_keys(self, action):
         """
         Check if the key corresponding to a action is held down
         """
         return all(self.key_states[key]['current'] for key in self.key_bindings[action])
         
-    def __is_action_toggled(self, action):
+    def __is_action_toggled_all_keys(self, action):
         """
         Check if the key corresponding to a action is toggled
         """
         return all(self.key_states[key]['current'] and not self.key_states[key]['previous'] for key in self.key_bindings[action])
+
+    def __is_action_down_any_key(self, action):
+        """
+        Check if any key corresponding to a action is held down
+        """
+        return any(self.key_states[key]['current'] for key in self.key_bindings[action])
+
+    def __is_action_toggled_any_key(self, action):
+        """
+        Check if any key corresponding to a action is toggled
+        """
+        return any(self.key_states[key]['current'] and not self.key_states[key]['previous'] for key in self.key_bindings[action])
     
     def __test_actions(self, action, check):
         """
@@ -190,7 +202,7 @@ class MenuKeyboardInputHandler():
         """
         Perform a tick for the Delayed Auto-Shift (DAS) of the keyboard
         """
-        if self.__is_action_down(UIAction.MENU_LEFT) or self.__is_action_down(UIAction.MENU_RIGHT) or self.__is_action_down(UIAction.MENU_DOWN) or self.__is_action_down(UIAction.MENU_UP):
+        if self.__is_action_down_any_key(UIAction.MENU_LEFT) or self.__is_action_down_any_key(UIAction.MENU_RIGHT) or self.__is_action_down_any_key(UIAction.MENU_DOWN) or self.__is_action_down_any_key(UIAction.MENU_UP):
             
             if self.Keyboard.DAS_counter % self.Keyboard.DAS_delay == 0 or self.Keyboard.DAS_counter >= self.Keyboard.DAS_delay:
                 self.__do_ARR_tick()

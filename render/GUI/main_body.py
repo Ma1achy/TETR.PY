@@ -134,7 +134,7 @@ class MainBody(NestedElement):
                 
             elif element['type'] == 'collapsible_panel_header':
                 y += int(7 * self.RENDER_SCALE)
-                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips, button_functions = self.button_functions)
                 self.menu_elements.append(panel)
                 y += panel.height + int(7 * self.RENDER_SCALE)
             

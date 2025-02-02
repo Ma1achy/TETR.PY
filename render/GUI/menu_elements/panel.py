@@ -158,7 +158,7 @@ class Panel(NestedElement):
                 y += config_slider.height
             
             elif element['type'] ==  "checkbox":
-                checkbox = CheckboxButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                checkbox = CheckboxButton(self.button_functions, self.Timing, self.Mouse, self.Sound, self.element_surface, self.rect, element, y_position = y, parent = self, background_colour = self.definition['background']['colour'], RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.elements.append(checkbox)
                 y += checkbox.height - int(12 * self.RENDER_SCALE)
             
