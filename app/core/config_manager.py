@@ -33,6 +33,10 @@ class ConfigManager():
         self.in_export_window = False
         self.lock = threading.Lock()
         
+        self.missing_sections = []
+        self.loaded_sections = []
+        
+        self.load_default_settings()
         self.load_defualt_handling()
         self.load_default_keybindings()
         
@@ -42,7 +46,10 @@ class ConfigManager():
         """
         self.parser.read('app/core/config/default_handling.cfg')
         self.default_handling_settings = {key: self.convert_value(value) for key, value in self.parser['HANDLING_SETTINGS'].items()}
-    
+
+        self.parser = configparser.ConfigParser()
+        self.parser.optionxform = str
+        
     def load_default_keybindings(self):
         """
         Load the default keybindings
@@ -50,14 +57,39 @@ class ConfigManager():
         self.parser.read('app/core/config/default_keybindings.cfg')
         self.guideline_keybindings = {key: self.convert_value(value) for key, value in self.parser['GUIDELINE_KEYBINDINGS'].items()}
         self.wasd_keybindings = {key: self.convert_value(value) for key, value in self.parser['WASD_KEYBINDINGS'].items()}
-            
+        
+        self.parser = configparser.ConfigParser()
+        self.parser.optionxform = str
+        
     def load_default_settings(self):
         """
         Load the default settings
         """
         self.parser.read('app/core/config/default.cfg')
-        self.load_settings()
+        
+        self.default_controls_settings      =   self.load_section('CONTROLS_SETTINGS')
+        self.default_custom_keybindings     =   self.load_section('CUSTOM_KEYBINDINGS')
+        self.default_handling_settings      =   self.load_section('HANDLING_SETTINGS')
+        self.default_audio_settings         =   self.load_section('AUDIO_SETTINGS')
+        self.default_gameplay_settings      =   self.load_section('GAMEPLAY_SETTINGS')
+        self.default_video_settings         =   self.load_section('VIDEO_SETTINGS')
+        self.default_customisation_settings =   self.load_section('CUSTOMISATION_SETTINGS')
+        
+        self.default_forty_lines_settings   =   self.load_section('40L_SETTINGS')
+        self.default_blitz_settings         =   self.load_section('BLITZ_SETTINGS')
+        
+        self.parser = configparser.ConfigParser()
+        self.parser.optionxform = str
     
+    def load_section(self, section, default = None):
+        if section not in self.parser.sections():
+            if default is not None:
+                self.missing_sections.append(section)
+                return default
+        
+        self.loaded_sections.append(section)
+        return {key: self.convert_value(value) for key, value in self.parser[section].items()}
+          
     def load_user_settings(self, user):
         """
         Load the user settings
@@ -101,17 +133,78 @@ class ConfigManager():
     def load_settings(self):
         """
         Load the settings
-        """
-        self.controls_settings      =   {key: self.convert_value(value) for key, value in self.parser['CONTROLS_SETTINGS'].items()}
-        self.custom_keybindings     =   {key: self.convert_value(value) for key, value in self.parser['CUSTOM_KEYBINDINGS'].items()}
-        self.handling_settings      =   {key: self.convert_value(value) for key, value in self.parser['HANDLING_SETTINGS'].items()}
-        self.audio_settings         =   {key: self.convert_value(value) for key, value in self.parser['AUDIO_SETTINGS'].items()}
-        self.gameplay_settings      =   {key: self.convert_value(value) for key, value in self.parser['GAMEPLAY_SETTINGS'].items()}
-        self.video_settings         =   {key: self.convert_value(value) for key, value in self.parser['VIDEO_SETTINGS'].items()}
-        self.customisation_settings =   {key: self.convert_value(value) for key, value in self.parser['CUSTOMISATION_SETTINGS'].items()}
+        """ 
+        self.controls_settings      =   self.load_section('CONTROLS_SETTINGS', self.default_controls_settings)
+        self.custom_keybindings     =   self.load_section('CUSTOM_KEYBINDINGS', self.default_custom_keybindings)
+        self.handling_settings      =   self.load_section('HANDLING_SETTINGS', self.default_handling_settings)
+        self.audio_settings         =   self.load_section('AUDIO_SETTINGS', self.default_audio_settings)
+        self.gameplay_settings      =   self.load_section('GAMEPLAY_SETTINGS', self.default_gameplay_settings)
+        self.video_settings         =   self.load_section('VIDEO_SETTINGS', self.default_video_settings)
+        self.customisation_settings =   self.load_section('CUSTOMISATION_SETTINGS', self.default_customisation_settings)
         
+        self.forty_lines_settings   =   self.load_section('40L_SETTINGS', self.default_forty_lines_settings)
+        self.blitz_settings         =   self.load_section('BLITZ_SETTINGS', self.default_blitz_settings)
+        
+        self.validate()
         self.set_keybindings()
-            
+    
+    def validate(self):
+        """
+        Validate the loaded settings and repair the configuration file if necessary
+        """
+        self.parser = configparser.ConfigParser()
+        self.parser.optionxform = str
+        
+        self.validate_section(self.controls_settings, self.default_controls_settings, 'CONTROLS_SETTINGS')
+        self.validate_section(self.custom_keybindings, self.default_custom_keybindings, 'CUSTOM_KEYBINDINGS')
+        self.validate_section(self.handling_settings, self.default_handling_settings, 'HANDLING_SETTINGS')
+        self.validate_section(self.audio_settings, self.default_audio_settings, 'AUDIO_SETTINGS')
+        self.validate_section(self.gameplay_settings, self.default_gameplay_settings, 'GAMEPLAY_SETTINGS')
+        self.validate_section(self.video_settings, self.default_video_settings, 'VIDEO_SETTINGS')
+        self.validate_section(self.customisation_settings, self.default_customisation_settings, 'CUSTOMISATION_SETTINGS')
+        
+        self.validate_section(self.forty_lines_settings, self.default_forty_lines_settings, '40L_SETTINGS')
+        self.validate_section(self.blitz_settings, self.default_blitz_settings, 'BLITZ_SETTINGS')
+        
+        self.save_config()
+        self.validate_settings()
+        
+    def validate_section(self, loaded, default, section): 
+        file = f'@{self.user}.cfg'
+        path = os.path.join('app/core/config', file)
+        
+        with open(path, 'w') as configfile:
+            self.parser.write(configfile)
+
+        if section not in self.parser.sections():
+            self.parser.add_section(section)
+
+        if section in self.loaded_sections:
+            for key, value in loaded.items():
+                self.parser[section][key] = str(value)
+        
+        if section in self.missing_sections:
+            for key, value in default.items():
+                self.parser[section][key] = str(value)
+           
+    def validate_settings(self):
+      
+        self.validate_setting(self.controls_settings, self.default_controls_settings, 'CONTROLS_SETTINGS')
+        self.validate_setting(self.custom_keybindings, self.default_custom_keybindings, 'CUSTOM_KEYBINDINGS')
+        self.validate_setting(self.handling_settings, self.default_handling_settings, 'HANDLING_SETTINGS')
+        self.validate_setting(self.audio_settings, self.default_audio_settings, 'AUDIO_SETTINGS')
+        self.validate_setting(self.gameplay_settings, self.default_gameplay_settings, 'GAMEPLAY_SETTINGS')
+        self.validate_setting(self.video_settings, self.default_video_settings, 'VIDEO_SETTINGS')
+        self.validate_setting(self.customisation_settings, self.default_customisation_settings, 'CUSTOMISATION_SETTINGS')
+        
+        self.validate_setting(self.forty_lines_settings, self.default_forty_lines_settings, '40L_SETTINGS')
+        self.validate_setting(self.blitz_settings, self.default_blitz_settings, 'BLITZ_SETTINGS')
+                
+    def validate_setting(self, loaded, default, section):
+        for key, value in default.items():
+            if key not in loaded:
+                self.edit_setting(section, key, value)
+                    
     def set_keybindings(self):
         if self.controls_settings['SELECTED'] == 'GUIDELINE_KEYBINDINGS':
             keybindings = self.guideline_keybindings
@@ -125,22 +218,7 @@ class ConfigManager():
         self.menu_keybindings[UIAction.WINDOW_FULLSCREEN] = ['f11']
         
         self.game_keybindings = {action: keybindings[action.name] for action in Action if action.name in keybindings}
-    
-    def update_handling_settings(self):
-        pass
-    
-    def update_audio_settings(self):
-        pass
-    
-    def update_gameplay_settings(self):
-        pass
-    
-    def update_video_settings(self):
-        pass
-    
-    def update_customisation_settings(self):
-        pass
-           
+               
     def get_setting_value(self, section, key):
         """
         Get the value of a setting
@@ -164,6 +242,10 @@ class ConfigManager():
                 return self.video_settings[key]
             case 'CUSTOMISATION_SETTINGS':
                 return self.customisation_settings[key]
+            case '40L_SETTINGS':
+                return self.forty_lines_settings[key]
+            case 'BLITZ_SETTINGS':
+                return self.blitz_settings[key]
             case _:
                 return
         
@@ -191,6 +273,10 @@ class ConfigManager():
                 self.video_settings[key] = value
             case 'CUSTOMISATION_SETTINGS':
                 self.customisation_settings[key] = value
+            case '40L_SETTINGS':
+                self.forty_lines_settings[key] = value
+            case 'BLITZ_SETTINGS':
+                self.blitz_settings[key] = value
             case _:
                 return
         

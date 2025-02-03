@@ -215,6 +215,10 @@
                         {
                             "type": "checkbox",
                             "text": "pro mode",
+                            "function": "edit_setting",
+                            "section": "40L_SETTINGS",
+                            "key": "PRO_MODE",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#dbb293",
@@ -272,6 +276,10 @@
                         {
                             "type": "checkbox",
                             "text": "alert on finesse fault",
+                            "function": "edit_setting",
+                            "section": "40L_SETTINGS",
+                            "key": "ALERT_ON_FINESSE_FAULT",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#dbb293",
@@ -329,6 +337,10 @@
                         {
                             "type": "checkbox",
                             "text": "retry on finesse fault",
+                            "function": "edit_setting",
+                            "section": "40L_SETTINGS",
+                            "key": "RETRY_ON_FINESSE_FAULT",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#dbb293",
@@ -386,6 +398,10 @@
                         {
                             "type": "checkbox",
                             "text": "stride mode",
+                            "function": "edit_setting",
+                            "section": "40L_SETTINGS",
+                            "key": "STRIDE_MODE",
+                            "value_getter": "get_setting_value",
                             "themeing": {
                                 "active_state": {
                                     "text_colour": "#dbb293",
