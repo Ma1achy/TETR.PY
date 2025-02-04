@@ -14,6 +14,8 @@ from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.config_slider import ConfigSlider
 from render.GUI.buttons.checkbox_button import CheckboxButton
 from render.GUI.notification import Notification
+
+# FIXME: dialog stack appears to be broken
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, Sound):
         """
@@ -378,11 +380,17 @@ class MenuManager():
         if self.if_doing_animation():
             return
         
-        if self.Mouse.in_dialog and self.current_dialog is not None:
+        if self.Mouse.in_dialog and self.current_dialog is not None and self.current_dialog is not self.LoginDialog:
             self.close_dialog()
             self.Sound.sfx_queue.append(SFX.MenuClick)
+            
+        elif self.Mouse.in_dialog and self.current_dialog is self.LoginDialog:
+            self.open_dialog(self.ExitDialog)
+            self.Sound.sfx_queue.append(SFX.MenuClick) 
+            
         elif self.Mouse.in_dropdown and self.current_dropdown is not None:
             self.current_dropdown.main_body.back_button.start_click()
+            
         elif self.current_menu.main_body is not None and self.current_menu.main_body.back_button is not None:
             self.current_menu.main_body.back_button.start_click()
     
@@ -642,7 +650,7 @@ class MenuManager():
         """
         if not self.current_dialog:
             return
-
+        
         self.current_dialog.reset_state()
         self.current_dialog.do_animate_disappear = True
         self.current_dialog.do_animate_appear = False
@@ -871,10 +879,10 @@ class MenuManager():
         """
         self.ConfigManager.edit_setting(section, key, value)
         
-        if section == "VIDEO_SETTINGS" and key == "RENDER_SCALE":
+        if section == "VIDEO_SETTINGS" and key == "RENDER_SCALE" and value / 100 != self.RenderStruct.RENDER_SCALE:
             self.notify("changing render scale factor requires a restart to go into effect. hit f5 on your keyboard to restart.", "warning")
         
-        elif section == "VIDEO_SETTINGS" and key == "RENDER_SCALE_MODE":
+        elif section == "VIDEO_SETTINGS" and key == "RENDER_SCALE_MODE" and value != self.RenderStruct.RENDER_SCALE_MODE:
             self.notify("changing render scale mode requires a restart to go into effect. hit f5 on your keyboard to restart.", "warning")
     
     def get_setting_value(self, section, key):

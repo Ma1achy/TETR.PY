@@ -378,6 +378,8 @@ class DialogBox(NestedElement):
         if not self.do_animate_appear:
             return
         
+        self.closed = False
+        
         if self.timer >= self.animation_length:
             self.timer = self.animation_length
             self.do_animate_appear = False
