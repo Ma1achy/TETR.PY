@@ -26,10 +26,15 @@ class Notification():
         
         self.type = type
         
-        if self.type == "warning":
-            self.image_path = "resources/GUI/warning.png"
-            self.border_colour = "#FFC600"
-            self.notify_sound = SFX.Notify1
+        match self.type:
+            case"warning":
+                self.image_path = "resources/GUI/warning.png"
+                self.border_colour = "#FFC600"
+                self.notify_sound = SFX.Notify5
+            case "error":
+                self.image_path = "resources/GUI/alert.png"
+                self.border_colour = "#FF2D00"
+                self.notify_sound = SFX.Notify2
             
         self.render()
         
@@ -76,12 +81,12 @@ class Notification():
         for line in text:
             height += self.font.font.size(line)[1]
         
-        self.notification_surface = pygame.Surface((self.max_width + self.image_width + int(10 * self.RENDER_SCALE), height + int(10 * self.RENDER_SCALE) + self.image_padding * 2), pygame.HWSURFACE|pygame.SRCALPHA)
+        self.notification_surface = pygame.Surface((self.max_width + self.image_width + self.image_padding * 3, height + self.image_padding * 3), pygame.HWSURFACE|pygame.SRCALPHA)
         self.notification_surface.fill((8, 8, 8, 200))
         pygame.draw.rect(self.notification_surface, self.border_colour, self.notification_surface.get_rect(), math.ceil(2 * self.RENDER_SCALE))
         
         for i, line in enumerate(text):
-            self.font.draw(self.notification_surface, line, "#ffffff", 'left_top', self.image_padding * 2 + self.image_width + int(5 * self.RENDER_SCALE), i * self.font.font.size(line)[1] + self.image_padding)
+            self.font.draw(self.notification_surface, line, "#ffffff", 'left_top', self.image_padding * 3 + self.image_width, i * self.font.font.size(line)[1] + self.image_padding)
         
         self.render_image()
         
@@ -95,7 +100,7 @@ class Notification():
         new_height = int(self.image_width * aspect_ratio)
 
         image = pygame.transform.smoothscale(image, (self.image_width, new_height))
-        image_rect = align_top_left(self.notification_surface.get_rect(), image.get_width(), image.get_height(), self.image_padding + int(5 * self.RENDER_SCALE), self.image_padding * 1.77)
+        image_rect = align_top_left(self.notification_surface.get_rect(), image.get_width(), image.get_height(), self.image_padding * 1.5, self.image_padding * 1.77)
         self.notification_surface.blit(image, image_rect.topleft)
         
     def __strip_tags(self, text):

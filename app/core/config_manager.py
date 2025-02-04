@@ -42,6 +42,8 @@ class ConfigManager():
         self.load_default_keybindings()
         
         self.RenderStruct = StructRender()
+        self.config_is_malformed = False
+        self.error_loading_config = False
         
     def load_defualt_handling(self):
         """
@@ -88,6 +90,7 @@ class ConfigManager():
         if section not in self.parser.sections():
             if default is not None:
                 self.missing_sections.append(section)
+                self.config_is_malformed = True
                 return default
         
         self.loaded_sections.append(section)
@@ -97,15 +100,22 @@ class ConfigManager():
         """
         Load the user settings
         """
-        self.user = user
-        cfg = f'@{user}.cfg'
-        path = os.path.join('app/core/config', cfg)
-        
-        if not os.path.exists(path):
-            self.create_user_settings(user)
+        try:
+            self.user = user
+            cfg = f'@{user}.cfg'
+            path = os.path.join('app/core/config', cfg)
+            
+            if not os.path.exists(path):
+                self.create_user_settings(user)
 
-        self.parser.read(path)
-        self.load_settings()
+            self.parser.read(path)
+            self.load_settings()
+        except Exception as e:
+            self.parser.read('app/core/config/default.cfg')
+            self.load_settings()
+            os.remove(path)
+            self.create_user_settings(user)
+            self.error_loading_config = True
         
     def create_user_settings(self, user):
         """
@@ -137,6 +147,8 @@ class ConfigManager():
         """
         Load the settings
         """ 
+        self.config_is_malformed = False
+        
         self.controls_settings      =   self.load_section('CONTROLS_SETTINGS', self.default_controls_settings)
         self.custom_keybindings     =   self.load_section('CUSTOM_KEYBINDINGS', self.default_custom_keybindings)
         self.handling_settings      =   self.load_section('HANDLING_SETTINGS', self.default_handling_settings)
@@ -210,6 +222,7 @@ class ConfigManager():
         for key, value in default.items():
             if key not in loaded:
                 self.edit_setting(section, key, value)
+                self.config_is_malformed = True
                     
     def set_keybindings(self):
         if self.controls_settings['SELECTED'] == 'GUIDELINE_KEYBINDINGS':

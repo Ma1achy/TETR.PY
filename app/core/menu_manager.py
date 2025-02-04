@@ -261,6 +261,14 @@ class MenuManager():
         self.handle_dropdown_close()
         self.handle_menu_music_transitions()
         
+        if self.ConfigManager.config_is_malformed:
+            self.notify("the provided config file is malformed. any missing values have been reset to their defaults.", "error")
+            self.ConfigManager.config_is_malformed = False
+            
+        if self.ConfigManager.error_loading_config:
+            self.notify("the provided config file could not be loaded and has been reset to the default settings.", "error")
+            self.ConfigManager.error_loading_config = False
+            
     def render_darken_gradient(self):
         """
         Draw a transparent gradient from transparent to black on the gradient overlay surface.
