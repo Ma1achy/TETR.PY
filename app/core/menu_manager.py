@@ -1020,6 +1020,7 @@ class MenuManager():
         
         if len(self.notifications) > 1:
             for notification in self.notifications:
+                notification.push_up_timer = 0
                 notification.start_push_up_animation()
 
     def restart_app(self):

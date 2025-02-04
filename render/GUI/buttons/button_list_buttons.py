@@ -143,6 +143,9 @@ class ButtonListButtons(Button):
         """
         Handle the button being clicked
         """
+        if self.active:
+            return
+        
         self.parent.on_click()
         self.active = not self.active
         
