@@ -4,6 +4,7 @@ from scipy.ndimage import gaussian_filter
 import json
 import subprocess
 import platform
+import math
 
 def lerpBlendRGBA(base:tuple, overlay:tuple, alpha:float):
     """
@@ -587,3 +588,21 @@ def copy2clipboard(text):
 def smoothstep_interpolate(start, end, progress):
     """Interpolate between start and end using smoothstep."""
     return smoothstep(progress) * (end - start) + start
+
+def ease_out_elastic_interpolate(start, end, progress, amplitude = 1, frequency = 1):
+    """Interpolate between start and end using easeOutElastic."""
+    c4 = (2 * math.pi) / 3 
+
+    if progress == 0:
+        return start
+    elif progress == 1:
+        return end
+    else:
+        return (math.pow(2, -10 * progress) * math.sin((progress * 10 * frequency - 0.75) * c4) * amplitude + 1) * (end - start) + start
+
+def ease_out_back_interpolate(start, end, progress, amplitude = 1):
+    """Interpolate between start and end using easeOutBack."""
+    c1 = 1.70158 * amplitude
+    c3 = c1 + 1
+
+    return (1 + c3 * math.pow(progress - 1, 3) + c1 * math.pow(progress - 1, 2)) * (end - start) + start

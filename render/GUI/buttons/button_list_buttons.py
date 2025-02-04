@@ -2,6 +2,7 @@ from render.GUI.buttons.button import Button
 from utils import draw_border, draw_solid_colour, brightness, apply_gaussian_blur_with_alpha
 from render.GUI.font import Font
 import pygame
+from app.core.sound.sfx import SFX
 
 class ButtonListButtons(Button):
     def __init__(self, Timing, Mouse, Sound, surface, container, definition, themeing, function, parent, RENDER_SCALE = 1, ToolTips = None):
@@ -49,6 +50,8 @@ class ButtonListButtons(Button):
         self.init_tooltip(self.definition)
         
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
+        
+        self.hover_sound = SFX.MenuTap
         
     def get_local_position(self):
         """

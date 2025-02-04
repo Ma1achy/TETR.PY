@@ -2429,6 +2429,7 @@
                 },
                 {
                     "type": "collapsible_panel",
+                    "tag": "VIDEO_PANEL",
                     "background": {
                         "style": "solid",
                         "colour": "#181c27"
@@ -2545,7 +2546,7 @@
                             "start_x": 275,
                             "unit": "fps",
                             "max_value": 256,
-                            "min_value": 20,
+                            "min_value": 30,
                             "max_value_to_inf": true,
                             "step": 1,
                             "dialog_title": "TARGET FPS",
@@ -2706,62 +2707,6 @@
                             },
                             "tooltip": "How visible the background images are, 0% makes the background entirely black."
                         },
-                        {
-                            "type": "config_slider",
-                            "title": "GUI scale",
-                            "left_end_text": "LOW",
-                            "right_end_text": "HIGH",
-                            "start_x": 275,
-                            "unit": "%",
-                            "max_value": 200,
-                            "min_value": 25,
-                            "step": 1,
-                            "dialog_title": "GUI SCALE",
-                            "dialog_message": "The size of the GUI elements, 100% is the default size.",
-                            "text_entry_params": {
-                                "allowed_input": "int",
-                                "no_empty_input": true,
-                                "max_chars": 3,
-                                "force_caps": true
-                            },
-                            "function": "edit_setting",
-                            "section": "VIDEO_SETTINGS",
-                            "key": "GUI_SCALE",
-                            "value_getter": "get_setting_value",
-                            "themeing": {
-                                "title_colour": "#6275a7",
-                                "end_text_colour": "#3d4457",
-                                "background_colour": "#12151D",
-                                "colour": "#0b0d11",
-                                "value_unit_colour": "#3d4457",
-                                "value_value_colour": "##aec0ee",
-                                "knob": {
-                                    "background": {
-                                        "style": "solid",
-                                        "colour": "#181c27"
-                                    },
-                                    "border": {
-                                        "left": [
-                                            3,
-                                            "#232936"
-                                        ],
-                                        "right": [
-                                            3,
-                                            "#151922"
-                                        ],
-                                        "bottom": [
-                                            3,
-                                            "#0f1117"
-                                        ],
-                                        "top": [
-                                            3,
-                                            "#283145"
-                                        ]
-                                    }
-                                }
-                            },
-                            "tooltip": "The size of the GUI elements, 100% is the default size."
-                        },  
                         {
                             "type": "button_list",
                             "title": "RENDER SCALING",

@@ -39,6 +39,8 @@ logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(
 class TETRPY():
     def __init__(self):
         
+        self.frame_delta_time = 0
+        
         self.WorkerManager = WorkerManager()
         
         self.ConfigManager = ConfigManager(self.WorkerManager)
@@ -57,7 +59,7 @@ class TETRPY():
         self.Timing = Timing()
         self.FrameClock = Clock()
         
-        self.RenderStruct = StructRender()
+        self.RenderStruct = self.ConfigManager.RenderStruct
         self.DebugStruct = DebugMetrics()
         self.HandlingConfig = HandlingConfig()
         
@@ -246,7 +248,7 @@ class TETRPY():
         self.DebugStruct.ERROR = error
         
         try:
-            self.run()
+            self.do_restart()
         except Exception as e:
             print(f"\033[93mError during restart attempt: {e}\033[0m")
             self.restart(e)
@@ -260,17 +262,42 @@ class TETRPY():
             print(f"\033[93mRestarting {threading.current_thread().name}...\033[0m")
         try:
             while not self.Timing.exited:
-                   
-                self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
-                self.Timing.elapsed_times['render_loop'] = self.Timing.current_frame_time
                 
-                self.Timing.frame_delta_time = (self.Timing.current_frame_time - self.Timing.last_frame_time)
-                self.Timing.last_frame_time = self.Timing.current_frame_time
-                  
-                self.do_render_tick()
-                self.get_fps()
-                time.sleep(0)
+                if self.RenderStruct.TARGET_FPS == "INF":
+                    self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
+                    self.Timing.elapsed_times['render_loop'] = self.Timing.current_frame_time
+                    
+                    self.Timing.frame_delta_time = (self.Timing.current_frame_time - self.Timing.last_frame_time)
+                    self.Timing.last_frame_time = self.Timing.current_frame_time
+                    
+                    self.do_render_tick()
+                    self.get_fps()
+                    time.sleep(0)
+
+                else:
+                    start_time = time.perf_counter()
+                    
+                    self.Timing.current_frame_time = time.perf_counter() - self.Timing.start_times['render_loop']
+                    self.Timing.elapsed_times['render_loop'] = self.Timing.current_frame_time
+                    
+                    target_fps = self.RenderStruct.TARGET_FPS if self.RenderStruct.TARGET_FPS != "INF" else 256
+                    frame_time = 1 / target_fps
+                    self.frame_delta_time += (self.Timing.current_frame_time - self.Timing.last_frame_time) / frame_time
+                    self.Timing.frame_delta_time = (self.Timing.current_frame_time - self.Timing.last_frame_time)
+                    self.Timing.last_frame_time = self.Timing.current_frame_time
+                    
+                    if self.Timing.do_first_frame:
+                        self.do_render_tick()
+                        self.Timing.do_first_frame = False
+                           
+                    if self.frame_delta_time >= 1:
+                        self.do_render_tick()
+                        self.frame_delta_time -= 1
                         
+                    self.get_fps()
+                    elapsed_time = time.perf_counter() - start_time
+                    time.sleep(max(0, frame_time - elapsed_time))
+                  
         except Exception as e:
             self.handle_exception(e)
         
@@ -308,9 +335,9 @@ class TETRPY():
             self.Mouse.events.get_nowait()
 
         self.empty_pygame_events_queue()
-        
+        self.check_restart()
         self.Timing.iteration_times['render_loop'] = time.perf_counter() - start
-    
+
     def empty_pygame_events_queue(self):
         """
         Empty the pygame events queue.
@@ -322,7 +349,7 @@ class TETRPY():
         Get the frames per second.
         """
         self.Timing.FPS = self.FrameClock.get_fps()
-    
+  
     def __is_focused(self, event):
         """
         Handle the window focus event and update the focus state.
@@ -431,6 +458,30 @@ class TETRPY():
             build_info = None
         return build_info
     
+    def check_restart(self):
+        if not self.Timing.restart:
+            return
+        
+        self.Timing.restart = False
+        self.do_restart()
+    
+    def do_restart(self):
+        """
+        Restart the program.
+        """
+        self.Timing.exited = True
+        self.KeyboardInputManager.exit()
+        pygame.font.quit()
+        pygame.quit()
+        
+        if self.input_thread.is_alive():
+            self.input_thread.join(timeout = self.Timing.poll_interval)
+
+        if self.logic_thread.is_alive():
+            self.logic_thread.join(timeout = self.Timing.tick_interval)
+            
+        os.execv(sys.executable, [sys.executable] + sys.argv)
+    
 class WorkerManager:
     def __init__(self, max_workers = 4):
         """
@@ -476,7 +527,7 @@ class WorkerManager:
         self.tasks.join()     
         self.worker_thread.join()
         self.executor.shutdown(wait = True)
-
+    
 def main():
     app = TETRPY()
     app.run()

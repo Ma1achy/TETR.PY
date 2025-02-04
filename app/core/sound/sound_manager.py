@@ -76,6 +76,14 @@ class SoundManager():
             SFX.MenuHit1     : "resources/sound/SFX/menu_hit_1.ogg",
             SFX.MenuHit2     : "resources/sound/SFX/menu_hit_2.ogg",
             SFX.MenuHit3     : "resources/sound/SFX/menu_hit_3.ogg",
+            SFX.Notify1      : "resources/sound/SFX/notify_1.ogg",
+            SFX.Notify2      : "resources/sound/SFX/notify_2.ogg",
+            SFX.Notify3      : "resources/sound/SFX/notify_3.ogg",
+            SFX.Notify4      : "resources/sound/SFX/notify_4.ogg",
+            SFX.Notify5      : "resources/sound/SFX/notify_5.ogg",
+            SFX.Notify6      : "resources/sound/SFX/notify_6.ogg",
+            SFX.OverlayOpen  : "resources/sound/SFX/overlay_open.ogg",
+            SFX.OverlayClose : "resources/sound/SFX/overlay_close.ogg",
             SFX.Move         : "resources/sound/SFX/move.ogg",
         }
         

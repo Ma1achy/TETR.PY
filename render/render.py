@@ -30,7 +30,7 @@ class Render():
         self.__get_darken_overlay()
         self.darken_overlay_layer_alpha = 200
         
-        self.fullscreen = self.RenderStruct.fullscreen
+        self.fullscreen = self.RenderStruct.FULLSCREEN
     
     # ---------------------------------------------- WINDOW CREATION ----------------------------------------------
     def __get_available_display_area(self):
@@ -56,12 +56,18 @@ class Render():
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION, icontitle = self.RenderStruct.CAPTION)
 
-        if not self.RenderStruct.USE_RENDER_SCALE:
+        if self.RenderStruct.RENDER_SCALE_MODE == "OFF":
             self.RenderStruct.RENDER_SCALE = 1
-            #width, height = self.__get_available_display_area()
-            width, height = 1500, 900
+            if self.RenderStruct.FULLSCREEN:
+                width, height = self.monitor_width, self.monitor_height
+            else:
+                #width, height = self.__get_available_display_area()
+                width, height = 1500, 900
         else:
-            width, height = 1500, 900
+            if self.RenderStruct.FULLSCREEN and self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC":
+                width, height = self.monitor_width, self.monitor_height
+            else:
+                width, height = 1500, 900
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
@@ -70,10 +76,10 @@ class Render():
 
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE
         
-        if self.RenderStruct.fullscreen:
+        if self.RenderStruct.FULLSCREEN:
             flags |= pygame.FULLSCREEN
 
-        if self.RenderStruct.USE_RENDER_SCALE:
+        if self.RenderStruct.RENDER_SCALE_MODE == "LOCKED" or self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC":
             flags |= pygame.SCALED
             width, height = self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT
             
@@ -104,7 +110,7 @@ class Render():
     def handle_window_resize(self):
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = self.window.get_size()
         
-        if not self.RenderStruct.USE_RENDER_SCALE:
+        if self.RenderStruct.RENDER_SCALE_MODE == "OFF":
             self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
             self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
     
@@ -116,19 +122,23 @@ class Render():
         """
         Toggles the fullscreen mode while adjusting window and render sizes appropriately.
         """
-        if self.fullscreen == self.RenderStruct.fullscreen:
+        if self.fullscreen == self.RenderStruct.FULLSCREEN:
             return 
 
-        self.fullscreen = self.RenderStruct.fullscreen
+        self.fullscreen = self.RenderStruct.FULLSCREEN
 
         self.__recreate_window()
         self.handle_window_resize()
         
     def __recreate_window(self):
-        if self.RenderStruct.fullscreen:
+        self.__set_taskbar_icon_windows()
+        pygame.display.set_icon(self.icon)
+        pygame.display.set_caption(self.RenderStruct.CAPTION, icontitle = self.RenderStruct.CAPTION)
+        
+        if self.RenderStruct.FULLSCREEN:
             width, height = self.monitor_width, self.monitor_height
         else:
-            if not self.RenderStruct.USE_RENDER_SCALE:
+            if self.RenderStruct.RENDER_SCALE_MODE == "OFF":
                 self.RenderStruct.RENDER_SCALE = 1
                 #width, height = self.__get_available_display_area()
                 width, height = 1500, 900
@@ -137,16 +147,16 @@ class Render():
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
-        if self.RenderStruct.APPLY_RENDER_SCALE_TO_FULLSCREEN or not self.RenderStruct.USE_RENDER_SCALE: # recalculate render size when fullscreen is toggled (makes ui appear the same size on screen but are rendered at a different resolution)
+        if self.RenderStruct.RENDER_SCALE_MODE == "OFF" or self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC": # recalculate render size when fullscreen is toggled (makes ui appear the same size on screen but are rendered at a different resolution)
             self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
             self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
 
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF
         
-        if self.RenderStruct.fullscreen:
+        if self.RenderStruct.FULLSCREEN:
             flags |= pygame.FULLSCREEN
             
-        if self.RenderStruct.USE_RENDER_SCALE:
+        if self.RenderStruct.RENDER_SCALE_MODE == "LOCKED" or self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC":
             flags |= pygame.SCALED
             width, height = self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT
         else:
@@ -174,16 +184,17 @@ class Render():
 @dataclass
 class StructRender():
     
+    TARGET_FPS = "INF"
+    
     CAPTION = 'TETR.PY'
     WINDOW_WIDTH = 1500 
     WINDOW_HEIGHT = 900
-    
-    USE_RENDER_SCALE = False
-    APPLY_RENDER_SCALE_TO_FULLSCREEN = True
+
+    RENDER_SCALE_MODE = True
     RENDER_SCALE = 1
+    FULLSCREEN = False
     
-    fullscreen = False
-    
+    MUST_RESTART_TO_APPLY_CHANGES = False
     # old stuff (might need to be changed)
     
     # debug rendering flags

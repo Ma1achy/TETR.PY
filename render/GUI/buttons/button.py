@@ -472,7 +472,7 @@ class Button(NestedElement):
             return
         
         if self.hover_surface_transition_time > 0:
-            self.hover_surface_alpha = min(255, smoothstep(self.hover_timer / self.hover_surface_transition_time) * 255) 
+            self.hover_surface_alpha = max(0, min(255, smoothstep(self.hover_timer / self.hover_surface_transition_time) * 255))
    
         if self.hover_timer == 0:
             return
@@ -494,7 +494,7 @@ class Button(NestedElement):
             return
         
         if self.pressed_surface_transition_time > 0:
-            self.pressed_surface_alpha = min(255, smoothstep(self.pressed_timer / self.pressed_surface_transition_time) * 255)
+            self.pressed_surface_alpha = max(0, min(255, smoothstep(self.pressed_timer / self.pressed_surface_transition_time) * 255))
         
         if self.pressed_timer == 0:
             return

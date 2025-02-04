@@ -12,7 +12,8 @@ from app.core.sound.sfx import SFX
 from app.core.sound.music import Music
 from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.config_slider import ConfigSlider
-
+from render.GUI.buttons.checkbox_button import CheckboxButton
+from render.GUI.notification import Notification
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, Sound):
         """
@@ -207,14 +208,15 @@ class MenuManager():
 
         self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/game_menu.json')
         
-        self.music_selector_dropdown       = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/music_selector_dropdown.json')
+        self.music_selector_dropdown = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/music_selector_dropdown.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None
         self.previous_menu = None
 
         self.current_dialog = None
-        self.dialog_stack = []  
+        self.dialog_stack = [] 
+        self.notifications = [] 
         
         self.current_dropdown = None
         self.in_music_room = False
@@ -247,7 +249,9 @@ class MenuManager():
         
         if not self.is_focused:
             self.GUI_focus.update()
-             
+        
+        self.update_notifications()
+         
         self.__wait_for_dialog_close()
         self.update_darken_overlay_alpha()
         self.reset_dialogs()
@@ -340,8 +344,10 @@ class MenuManager():
                 case UIAction.MENU_DEBUG:
                     self.__menu_debug()
                 case UIAction.WINDOW_FULLSCREEN:
-                    self.RenderStruct.fullscreen = not self.RenderStruct.fullscreen
-                 
+                    self.toggle_fullscreen()
+                case UIAction.RESTART_APP:
+                    self.restart_app()
+                          
     def __menu_left(self):
         pass
     
@@ -856,6 +862,12 @@ class MenuManager():
         Edit the value of a setting
         """
         self.ConfigManager.edit_setting(section, key, value)
+        
+        if section == "VIDEO_SETTINGS" and key == "RENDER_SCALE":
+            self.notify("changing render scale factor requires a restart to go into effect. hit f5 on your keyboard to restart.", "warning")
+        
+        elif section == "VIDEO_SETTINGS" and key == "RENDER_SCALE_MODE":
+            self.notify("changing render scale mode requires a restart to go into effect. hit f5 on your keyboard to restart.", "warning")
     
     def get_setting_value(self, section, key):
         """
@@ -871,12 +883,28 @@ class MenuManager():
         
         for element in self.current_menu.main_body.menu_elements:
             if isinstance(element, CollapsiblePanel):
-                if not element.open or not element.on_screen or element.tag != "HANDLING_PANEL":
+                if element.tag != "HANDLING_PANEL":
                     continue
                 
                 for e in element.elements:
                     if isinstance(e, ConfigSlider):
                         e.get_value()
+                element.use_cached_image = False
+                element.create_cached_image()
+                element.use_cached_image = True
+    
+    def toggle_fullscreen(self):
+        self.ConfigManager.toggle_fullscreen()
+        
+        for element in self.config_menu.main_body.menu_elements:
+            if isinstance(element, CollapsiblePanel):
+                if element.tag != "VIDEO_PANEL":
+                    continue
+                
+                for e in element.elements:
+                    if isinstance(e, CheckboxButton):
+                        e.get_value()
+                        
                 element.use_cached_image = False
                 element.create_cached_image()
                 element.use_cached_image = True
@@ -973,4 +1001,29 @@ class MenuManager():
             self.Sound.music_queue.append((Music.CHK_019, True))
         elif self.current_menu is self.records_menu and self.Sound.current_music is not Music.KMY_090:
             self.Sound.music_queue.append((Music.KMY_090, True))
+    
+    def notify(self, message, type):
+        notification = Notification(self.window, message, self.Timing, self.Sound, type, self.RenderStruct.RENDER_SCALE)
+        self.add_notification(notification)
+                                  
+    def update_notifications(self):
+        for notification in self.notifications:
+            notification.update()
+            notification.target_y = self.RenderStruct.RENDER_HEIGHT - int(10 * self.RenderStruct.RENDER_SCALE) - ((self.notifications.index(notification) + 1) * (notification.height + int(10 * self.RenderStruct.RENDER_SCALE)))
+            
+            if notification.remove:
+                self.notifications.remove(notification)
+            
+    def add_notification(self, notification):
+        notification.start_appear_animation()
+        self.notifications.insert(0, notification)
+        
+        if len(self.notifications) > 1:
+            for notification in self.notifications:
+                notification.start_push_up_animation()
+
+    def restart_app(self):
+        self.Timing.restart = True
+        self.quit_game()
+        
     

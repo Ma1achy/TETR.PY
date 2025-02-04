@@ -12,6 +12,7 @@ from enum import auto
 
 from app.input.keyboard.menu_kb_input_handler import UIAction
 from instance.handling.handling import Action
+from render.render import StructRender
 
 if sys.platform == "darwin":
     import os
@@ -39,6 +40,8 @@ class ConfigManager():
         self.load_default_settings()
         self.load_defualt_handling()
         self.load_default_keybindings()
+        
+        self.RenderStruct = StructRender()
         
     def load_defualt_handling(self):
         """
@@ -147,7 +150,10 @@ class ConfigManager():
         
         self.validate()
         self.set_keybindings()
-    
+
+        self.update_video_settings()
+        self.RenderStruct.MUST_RESTART_TO_APPLY_CHANGES = True
+        
     def validate(self):
         """
         Validate the loaded settings and repair the configuration file if necessary
@@ -216,6 +222,7 @@ class ConfigManager():
         self.menu_keybindings = {action: keybindings[action.name] for action in UIAction if action.name in keybindings}
         self.menu_keybindings[UIAction.MENU_DEBUG] = ['f3']
         self.menu_keybindings[UIAction.WINDOW_FULLSCREEN] = ['f11']
+        self.menu_keybindings[UIAction.RESTART_APP] = ['f5']
         
         self.game_keybindings = {action: keybindings[action.name] for action in Action if action.name in keybindings}
                
@@ -271,6 +278,7 @@ class ConfigManager():
                 self.gameplay_settings[key] = value
             case 'VIDEO_SETTINGS':
                 self.video_settings[key] = value
+                self.update_video_settings()
             case 'CUSTOMISATION_SETTINGS':
                 self.customisation_settings[key] = value
             case '40L_SETTINGS':
@@ -395,6 +403,53 @@ class ConfigManager():
             app.quit()
             
         self.in_export_window = False
+    
+    def toggle_fullscreen(self):
+        """
+        Toggle fullscreen
+        """
+        bool = not self.video_settings['FULLSCREEN']
+        self.edit_setting('VIDEO_SETTINGS', 'FULLSCREEN', bool)
+        
+    def update_video_settings(self):
+        self.render_scale_restart = False
+        self.update_target_fps()
+        self.update_fullscreen()
+        self.update_render_scale_mode()
+        self.update_render_scale_factor()
+       
+    def update_target_fps(self):
+        if self.RenderStruct.TARGET_FPS == self.video_settings['TARGET_FPS']:
+            return
+        
+        self.RenderStruct.TARGET_FPS = self.video_settings['TARGET_FPS']
+        
+    def update_fullscreen(self):
+        if self.RenderStruct.FULLSCREEN == self.video_settings['FULLSCREEN']:
+            return
+        
+        self.RenderStruct.FULLSCREEN = self.video_settings['FULLSCREEN']
+            
+    def update_render_scale_factor(self):
+        if self.RenderStruct.RENDER_SCALE == self.video_settings['RENDER_SCALE'] / 100:
+            return  
+        
+        if self.RenderStruct.MUST_RESTART_TO_APPLY_CHANGES:
+            return
+        
+        self.RenderStruct.RENDER_SCALE = self.video_settings['RENDER_SCALE'] / 100
+            
+    def update_render_scale_mode(self):
+        if self.RenderStruct.RENDER_SCALE_MODE == self.video_settings['RENDER_SCALE_MODE']:
+            return
+        
+        if self.RenderStruct.MUST_RESTART_TO_APPLY_CHANGES:
+            return
+            
+        if self.video_settings['RENDER_SCALE_MODE'] == "OFF":
+            self.video_settings['RENDER_SCALE'] = 100
+            
+        self.RenderStruct.RENDER_SCALE_MODE = self.video_settings['RENDER_SCALE_MODE']
         
 class ConfigType(Enum):
     CONTROLS_SETTINGS       = auto()
