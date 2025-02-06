@@ -45,7 +45,9 @@ class MusicSelectorButton(Button):
 
         self.collision_rect = pygame.Rect(self.get_screen_position(), (self.width, self.height))
         self.hover_sound = SFX.MenuTap
-    
+
+        self.reset_on_click = True
+        
     def get_local_position(self):
         """
         Get the position of the button relative to the container it is in for collision detection

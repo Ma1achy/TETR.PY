@@ -463,13 +463,97 @@ class ConfigManager():
             self.video_settings['RENDER_SCALE'] = 100
             
         self.RenderStruct.RENDER_SCALE_MODE = self.video_settings['RENDER_SCALE_MODE']
-        
-class ConfigType(Enum):
-    CONTROLS_SETTINGS       = auto()
-    CUSTOM_KEYBINDINGS      = auto()
-    HANDLING_SETTINGS       = auto()
-    AUDIO_SETTINGS          = auto()
-    GAMEPLAY_SETTINGS       = auto()
-    VIDEO_SETTINGS          = auto()
-    CUSTOMISATION_SETTINGS  = auto()
+
+class ControlsSettings():
+    SELECTED: str = "GUIDELINE_KEYBINDINGS"
+     
+class HandlingSettings():
+    ARR: int = 33
+    DAS: int = 167
+    DCD: int = 17
+    SDF: int = 6
     
+    PREVENT_ACCIDENTAL_HARDDROPS: bool = True
+    DAS_CANCEL: bool = False
+    PREFER_SOFTDROP_OVER_MOVEMENT: bool = True
+    PRIORITISE_MOST_RECENT_DIRECTION: bool = True
+    
+class AudioSettings():
+    MUSIC_VOLUME: float = 1.0
+    SFX_VOLUME: float = 1.0
+    STEREO_BALANCE: float = 0.5
+    
+    SCROLL_TO_CHANGE_VOLUME: bool  = True
+    MUTE_WHEN_HIDDEN: bool  = True
+    HEAR_NEXT_PIECE: bool = True
+    HEAR_OTHER_PLAYERS: bool = True
+    HEAR_ATTACKS: bool = True
+    DO_NOT_RESET_MUSIC_ON_RETRY: bool = True
+    DISABLE_ALL_SOUND: bool = False
+    
+class GameplaySettings():
+    ACTION_TEXT_SELECTION: str = "ALL"
+    
+    BOARD_BOUNCINESS: float = 1.0
+    DAMAGE_SHAKINESS: float = 1.0
+    GRID_VISIBILITY: float = 1.0
+    BOARD_VISIBILITY: float = 8.5
+    SHADOW_VISIBILITY: float = 1.0
+    BOARD_ZOOM: float  = 1.0
+    
+    SHOW_DUELS_SIDE_BY_SIDE: bool = True
+    SPIN_BOARD_WHEN_SPIN: bool = True
+    ALERT_WHEN_KO: bool = True
+    WARN_WHEN_IN_DANGER: bool = True
+    COLOURED_SHADOW: bool = True
+    GRAY_OUT_LOCKED_HOLD: bool = True
+    
+class VideoSettings():
+    GRAPHICS_MODE: str = "HIGH"
+
+    TARGET_FPS: int = "INF"
+    PARTICLE_COUNT: float = 1.0
+    BACKGROUND_VISIBILITY: float = 7.0
+
+    RENDER_SCALE_MODE: str = "OFF"
+    RENDER_SCALE: float = 1.0
+
+    FULLSCREEN: bool = False
+    ALWAYS_SIMPLIFY_OTHER_BOARDS: bool = False
+    NO_BACKGROUND_IN_MENUS: bool = False
+    KEEP_REPLAY_TOOLS_OPEN: bool = False
+    WARN_WHEN_NOT_FOCUSED: bool = True
+        
+class CustomisationSettings():
+    USE_CUSTOM_BACKGROUND: bool= False
+    CUSTOM_BACKGROUND_PATHS: list = []
+    BLOCK_SKIN: str = "DEFAULT"
+    CUSTOM_BLOCK_SKIN_PATH: str = None
+
+class FortyLinesSettings():
+    PRO_MODE: bool = False
+    ALERT_ON_FINESSE_FAULT: bool = False
+    RETRY_ON_FINESSE_FAULT: bool = False
+    STRIDE_MODE: bool = False
+
+    LEFT_COUNTER_SLOT_1: bool = None
+    LEFT_COUNTER_SLOT_2: bool = None
+    LEFT_COUNTER_SLOT_3: bool = None
+    LEFT_COUNTER_SLOT_4: bool = None
+    RIGHT_COUNTER_SLOT: bool = None
+    
+class BlitzSettings():
+    PRO_MODE: bool = False
+    ALERT_ON_FINESSE_FAULT: bool = False
+    RETRY_ON_FINESSE_FAULT: bool = False
+    STRIDE_MODE: bool = False
+
+    LEFT_COUNTER_SLOT_1: bool = None
+    LEFT_COUNTER_SLOT_2: bool = None
+    LEFT_COUNTER_SLOT_3: bool = None
+    LEFT_COUNTER_SLOT_4: bool = None
+    RIGHT_COUNTER_SLOT: bool = None
+
+# FIXME: need to change how config file is loaded, as currently if there is no user logged in it crashes
+# need to probably change the logic/simplify it and this seems bad? although the error handling/validation and malform fixing is good.
+# need to change it so the setting changes change the value of the setting class I've made so the change happens globally
