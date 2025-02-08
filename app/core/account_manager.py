@@ -51,7 +51,6 @@ class AccountManager():
         
         self.save_login(user)
         self.user = user
-        print(f"Logged in as {user}")
         self.ConfigManager.load_user_settings(user)
                
     def save_login(self, user):

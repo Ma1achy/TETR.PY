@@ -45,7 +45,6 @@ class MenuManager():
         self.debug_overlay = False
         self.is_focused = False
         self.Mouse.in_dialog = False
-        self.wait_for_dialog_close = False
         
         self.ErrorDialog = None
         self.close_attempts = 0
@@ -217,7 +216,10 @@ class MenuManager():
         self.previous_menu = None
 
         self.current_dialog = None
-        self.dialog_stack = [] 
+        self.next_dialog = None
+        self.previous_dialog = None
+        
+        self.dialog_stack = []
         self.notifications = [] 
         
         self.current_dropdown = None
@@ -254,9 +256,9 @@ class MenuManager():
         
         self.update_notifications()
          
-        self.__wait_for_dialog_close()
+        self.__handle_dialog_transitions()
         self.update_darken_overlay_alpha()
-        self.reset_dialogs()
+        #self.reset_dialogs()
         self.get_actions()
         self.handle_exceptions()
         self.handle_menu_transitions()
@@ -628,76 +630,42 @@ class MenuManager():
 
         if self.current_dialog == dialog:
             return
-    
-        if self.current_dialog and self.current_dialog != dialog:
-            if self.current_dialog not in self.dialog_stack:
-                self.dialog_stack.append(self.current_dialog) 
-                
-            self.current_dialog.do_animate_disappear = True
-            self.current_dialog.do_animate_appear = False  
-            self.current_dialog.timer = 0
 
-        self.current_dialog = dialog
-        self.Mouse.in_dialog = True
-        
-        dialog.do_animate_appear = True
-        dialog.do_animate_disappear = False
-        dialog.timer = 0
-
+        if self.current_dialog:
+            self.current_dialog.do_disappear_animation()
+            
+        dialog.do_appear_animation()
+        self.dialog_stack.insert(0, dialog)
+               
     def close_dialog(self):
         """
         Closes the current dialog and animates the previous dialog (if any).
         """
         if not self.current_dialog:
             return
+
+        self.current_dialog.do_disappear_animation()
+        self.dialog_stack.pop(0)
         
-        self.current_dialog.reset_state()
-        self.current_dialog.do_animate_disappear = True
-        self.current_dialog.do_animate_appear = False
-        self.current_dialog.timer = 0
-        self.wait_for_dialog_close = True
-        self.close_attempts = 0
-
-    def reset_dialogs(self):
-        """
-        Resets dialogs and ensures animation states are consistent.
-        """
-        if self.current_dialog and self.current_dialog.closed:
-            self.current_dialog.closed = False
-            self.current_dialog.do_animate_appear = True
-            self.current_dialog.do_animate_disappear = False
-            self.current_dialog.timer = 0
-
-        for dialog in self.dialog_stack:
-            if dialog.closed:
-                dialog.closed = False
-                dialog.do_animate_appear = True
-                dialog.do_animate_disappear = False
-                dialog.timer = 0
-    
-    def __wait_for_dialog_close(self):
-        """
-        Waits for the current dialog to close before proceeding to the previous one in the stack.
-        """
-        if self.current_dialog is None:
+    def __handle_dialog_transitions(self):
+        
+        if self.current_dialog and self.current_dialog.do_animate_appear:
             return
-
-        if self.current_dialog.do_animate_disappear and self.current_dialog.timer >= self.current_dialog.animation_length:
-            self.current_dialog.closed = True
-            self.current_dialog = None 
-
-            if self.dialog_stack:
-                self.current_dialog = self.dialog_stack.pop()
-                self.current_dialog.do_animate_appear = True
-                self.current_dialog.do_animate_disappear = False
-                self.current_dialog.timer = 0
-                self.Mouse.in_dialog = True
-            else:
-                self.Mouse.in_dialog = False
-                self.wait_for_dialog_close = False
-    
-    # menu transitions
-    
+        
+        if self.current_dialog and self.current_dialog.do_animate_disappear:
+            return
+            
+        if self.dialog_stack and self.current_dialog is not self.dialog_stack[0]:
+            self.current_dialog = self.dialog_stack[0]
+            
+            if self.current_dialog:
+                self.current_dialog.do_appear_animation()
+            
+        elif not self.dialog_stack:
+            self.current_dialog = None
+            
+        self.Mouse.in_dialog = True if self.current_dialog else False
+            
     def animate_diff(self, current_menu, next_menu):
         """
         Animate the differences in anchored elements between the current and next menu

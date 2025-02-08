@@ -371,6 +371,22 @@ class DialogBox(NestedElement):
         if self.text_entry_box is not None:
             self.text_entry_box.reset_state()
     
+    def do_disappear_animation(self):
+        """
+        Do the disappear animation
+        """
+        self.do_animate_disappear = True
+        self.do_animate_appear = False
+        self.timer = 0
+        
+    def do_appear_animation(self):
+        """
+        Do the appear animation
+        """
+        self.do_animate_appear = True
+        self.do_animate_disappear = False
+        self.timer = 0
+        
     def animate_appear(self):
         """
         Animate the dialog box appearing
