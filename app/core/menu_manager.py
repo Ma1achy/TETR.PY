@@ -620,7 +620,7 @@ class MenuManager():
            
     def open_dialog(self, dialog):
         """
-        Opens a new dialog box and animates it.
+        Opens a new dialog box and closes the current one if one is open
         
         args:
             dialog (DialogBox): The dialog box to open
@@ -639,7 +639,7 @@ class MenuManager():
                
     def close_dialog(self):
         """
-        Closes the current dialog and animates the previous dialog (if any).
+        Closes the current dialog
         """
         if not self.current_dialog:
             return
@@ -648,7 +648,9 @@ class MenuManager():
         self.dialog_stack.pop(0)
         
     def __handle_dialog_transitions(self):
-        
+        """
+        Handles transitions between dialogs
+        """
         if self.current_dialog and self.current_dialog.do_animate_appear:
             return
         
