@@ -50,6 +50,8 @@ class ButtonBarMain(Button):
         else:
             self.click_sound = getattr(SFX, self.definition["click_sfx"])
         
+        self.disable_shadow = True
+        
     def __get_rect_and_surface(self):
         """
         Get the rects and surfaces for the button

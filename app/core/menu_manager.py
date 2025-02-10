@@ -14,6 +14,7 @@ from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.config_slider import ConfigSlider
 from render.GUI.buttons.checkbox_button import CheckboxButton
 from render.GUI.notification import Notification
+from app.core.config_manager import VideoSettings
 
 # FIXME: dialog stack appears to be broken
 class MenuManager():
@@ -151,7 +152,7 @@ class MenuManager():
                 font_size = 25,
                 pygame_events_queue = self.pygame_events_queue,
                 function = self.login,
-                RENDER_SCALE = self.RenderStruct.RENDER_SCALE,
+                RENDER_SCALE = VideoSettings.RENDER_SCALE,
                 Sound = self.Sound
             )
         )
@@ -229,7 +230,8 @@ class MenuManager():
         """
         Update the menus and GUI elements
         """
-        self.window.blit(self.gradient_overlay, (0, 0))
+        if VideoSettings.BACKGROUND_VISIBILITY > 0:
+            self.window.blit(self.gradient_overlay, (0, 0))
          
         if self.current_menu is not None:
             self.current_menu.update()
@@ -645,7 +647,9 @@ class MenuManager():
             return
 
         self.current_dialog.do_disappear_animation()
-        self.dialog_stack.pop(0)
+        
+        if self.dialog_stack:
+            self.dialog_stack.pop(0)
         
     def __handle_dialog_transitions(self):
         """
@@ -849,10 +853,10 @@ class MenuManager():
         """
         self.ConfigManager.edit_setting(section, key, value)
         
-        if section == "VIDEO_SETTINGS" and key == "RENDER_SCALE" and value / 100 != self.RenderStruct.RENDER_SCALE:
+        if section == "VIDEO_SETTINGS" and key == "RENDER_SCALE" and value / 100 != VideoSettings.RENDER_SCALE:
             self.notify("changing render scale factor requires a restart to go into effect. hit f5 on your keyboard to restart.", "warning")
         
-        elif section == "VIDEO_SETTINGS" and key == "RENDER_SCALE_MODE" and value != self.RenderStruct.RENDER_SCALE_MODE:
+        elif section == "VIDEO_SETTINGS" and key == "RENDER_SCALE_MODE" and value != VideoSettings.RENDER_SCALE_MODE:
             self.notify("changing render scale mode requires a restart to go into effect. hit f5 on your keyboard to restart.", "warning")
     
     def get_setting_value(self, section, key):
@@ -989,13 +993,13 @@ class MenuManager():
             self.Sound.music_queue.append((Music.KMY_090, True))
     
     def notify(self, message, type):
-        notification = Notification(self.window, message, self.Timing, self.Sound, type, self.RenderStruct.RENDER_SCALE)
+        notification = Notification(self.window, message, self.Timing, self.Sound, type, VideoSettings.RENDER_SCALE)
         self.add_notification(notification)
                                   
     def update_notifications(self):
         for notification in self.notifications:
             notification.update()
-            notification.target_y = self.RenderStruct.RENDER_HEIGHT - int(10 * self.RenderStruct.RENDER_SCALE) - ((self.notifications.index(notification) + 1) * (notification.height + int(10 * self.RenderStruct.RENDER_SCALE)))
+            notification.target_y = self.RenderStruct.RENDER_HEIGHT - int(10 * VideoSettings.RENDER_SCALE) - ((self.notifications.index(notification) + 1) * (notification.height + int(10 * VideoSettings.RENDER_SCALE)))
             
             if notification.remove:
                 self.notifications.remove(notification)

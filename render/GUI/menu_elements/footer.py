@@ -2,9 +2,10 @@ import pygame
 from utils import load_image, draw_linear_gradient, draw_solid_colour, draw_border, align_bottom_edge, align_centre, apply_gaussian_blur_with_alpha
 from render.GUI.font import Font
 import math
+from app.core.config_manager import VideoSettings
 
 class Footer:
-    def __init__(self, container, height, definition, image = None, RENDER_SCALE = 1):
+    def __init__(self, container, height, definition, image = None):
         """
         A footer that can be used at the bottom of a menu
         
@@ -17,8 +18,7 @@ class Footer:
         self.container = container
         self.height = height
         self.definition = definition
-        self.RENDER_SCALE = RENDER_SCALE
-        
+     
         self.border_image = None  
         self.get_footer_style()
         self.border_image_repeats = self.calculate_repeat()
@@ -27,10 +27,10 @@ class Footer:
         self.background = self.get_background()
         self.border = self.get_border()
 
-        self.font = Font('hun2', int(30 * self.RENDER_SCALE))
+        self.font = Font('hun2', int(30 * VideoSettings.RENDER_SCALE))
         self.image = image
 
-        self.shadow_radius = int(5 * self.RENDER_SCALE)
+        self.shadow_radius = int(5 * VideoSettings.RENDER_SCALE)
 
         self.__get_rect_and_surface()
         self.__load_image()
@@ -127,7 +127,7 @@ class Footer:
         if 'border' not in self.definition:
             return
         
-        draw_border(self.footer_surface, self.border, self.footer_surface.get_rect(), self.RENDER_SCALE)
+        draw_border(self.footer_surface, self.border, self.footer_surface.get_rect(), VideoSettings.RENDER_SCALE)
     
     def __render_text(self):
         """
@@ -136,7 +136,7 @@ class Footer:
         if 'text' not in self.definition:
             return
         
-        self.font.draw(self.footer_surface, self.text['display_text'], self.text['colour'], 'left', int(20 * self.RENDER_SCALE), 0)
+        self.font.draw(self.footer_surface, self.text['display_text'], self.text['colour'], 'left', int(20 * VideoSettings.RENDER_SCALE), 0)
          
     def __render_image(self):
         """
@@ -146,13 +146,13 @@ class Footer:
             return
         
         aspect_ratio = self.image.get_width() / self.image.get_height()
-        new_height = self.height - int(25 * self.RENDER_SCALE)
+        new_height = self.height - int(25 * VideoSettings.RENDER_SCALE)
         new_width = int(new_height * aspect_ratio)
         
         image = pygame.transform.smoothscale(self.image, (new_width, new_height))
         image_rect = align_centre(self.footer_surface.get_rect(), image.get_width(), image.get_height(), 0, 0)
 
-        self.footer_surface.blit(image, (image_rect.left + self.footer_surface.get_rect().width // 2 - new_width - int(45 * self.RENDER_SCALE), image_rect.top))
+        self.footer_surface.blit(image, (image_rect.left + self.footer_surface.get_rect().width // 2 - new_width - int(45 * VideoSettings.RENDER_SCALE), image_rect.top))
     
     def __render_shadow(self):
         """
@@ -180,6 +180,7 @@ class Footer:
         """
         if 'no_shadow' not in self.definition: 
             surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+            
         surface.blit(self.footer_surface, self.rect.topleft)
         
     def handle_window_resize(self):

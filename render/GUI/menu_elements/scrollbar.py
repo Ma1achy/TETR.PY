@@ -1,9 +1,10 @@
 import pygame
 from utils import draw_solid_colour, draw_border, apply_gaussian_blur_with_alpha
 from render.GUI.menu_elements.nested_element import NestedElement
+from app.core.config_manager import VideoSettings
 
 class ScrollBar(NestedElement):
-    def __init__(self, Mouse, container, y_scroll, y_diff, scrollable, RENDER_SCALE):
+    def __init__(self, Mouse, container, y_scroll, y_diff, scrollable):
         """
         A scrollbar for a scrollable area
         
@@ -14,7 +15,7 @@ class ScrollBar(NestedElement):
             scrollable (bool): whether the current menu is scrollable
         """
         super().__init__(parent = None)
-        self.RENDER_SCALE = RENDER_SCALE
+        
         self.Mouse = Mouse
         
         self.container = container
@@ -22,12 +23,12 @@ class ScrollBar(NestedElement):
         self.y_diff = y_diff  
         self.scrollable = scrollable  
 
-        self.width = int(30 * self.RENDER_SCALE)
-        self.shadow_radius = int(5 * self.RENDER_SCALE)
+        self.width = int(30 * VideoSettings.RENDER_SCALE)
+        self.shadow_radius = int(5 * VideoSettings.RENDER_SCALE)
         self.height = container.get_rect().height
 
         self.get_rect_and_surface()
-        self.bar = Bar(self.rect, self.y_scroll, self.y_diff, self.scrollable, self.RENDER_SCALE)
+        self.bar = Bar(self.rect, self.y_scroll, self.y_diff, self.scrollable, VideoSettings.RENDER_SCALE)
         self.render()
 
     def get_local_position(self):
@@ -56,7 +57,7 @@ class ScrollBar(NestedElement):
         Render the scrollbar container and its shadow
         """
         draw_solid_colour(self.surface, '#111111', self.surface.get_rect())
-        draw_border(self.surface, {'left': [2, '#1a1a1a']}, self.surface.get_rect(), self.RENDER_SCALE)
+        draw_border(self.surface, {'left': [2, '#1a1a1a']}, self.surface.get_rect(), VideoSettings.RENDER_SCALE)
         self.render_shadow()
         
     def render_shadow(self):
@@ -89,21 +90,21 @@ class ScrollBar(NestedElement):
 class Bar():
     def __init__(self, scrollbar_rect, y_scroll, y_diff, scrollable, RENDER_SCALE = 1):
         
-        self.RENDER_SCALE = RENDER_SCALE
+        VideoSettings.RENDER_SCALE = RENDER_SCALE
         
         self.scrollbar_rect = scrollbar_rect
         self.y_scroll = y_scroll
         self.y_diff = y_diff
         self.scrollable = scrollable
 
-        self.width = scrollbar_rect.width - int(12 * self.RENDER_SCALE)
-        self.min_height = int(10 * self.RENDER_SCALE)
+        self.width = scrollbar_rect.width - int(12 * VideoSettings.RENDER_SCALE)
+        self.min_height = int(10 * VideoSettings.RENDER_SCALE)
         
         self.height = self.calculate_height()
-        self.x = scrollbar_rect.x + int(7 * self.RENDER_SCALE)
+        self.x = scrollbar_rect.x + int(7 * VideoSettings.RENDER_SCALE)
         self.y = self.calculate_position()
 
-        self.shadow_radius = int(5 * self.RENDER_SCALE)
+        self.shadow_radius = int(5 * VideoSettings.RENDER_SCALE)
         
         self.get_rect_and_surface()
         self.render()
@@ -131,10 +132,10 @@ class Bar():
         """
         self.render_shadow()
         draw_solid_colour(self.surface, '#242424', self.surface.get_rect())
-        draw_border(self.surface, {'left': [2, '#3d3d3d']}, self.surface.get_rect(), self.RENDER_SCALE)
-        draw_border(self.surface, {'right': [2, '#181818']}, self.surface.get_rect(), self.RENDER_SCALE)
-        draw_border(self.surface, {'top': [2, '#3d3d3d']}, self.surface.get_rect(), self.RENDER_SCALE)
-        draw_border(self.surface, {'bottom': [2, '#0e0e0e']}, self.surface.get_rect(), self.RENDER_SCALE)
+        draw_border(self.surface, {'left': [2, '#3d3d3d']}, self.surface.get_rect(), VideoSettings.RENDER_SCALE)
+        draw_border(self.surface, {'right': [2, '#181818']}, self.surface.get_rect(), VideoSettings.RENDER_SCALE)
+        draw_border(self.surface, {'top': [2, '#3d3d3d']}, self.surface.get_rect(), VideoSettings.RENDER_SCALE)
+        draw_border(self.surface, {'bottom': [2, '#0e0e0e']}, self.surface.get_rect(), VideoSettings.RENDER_SCALE)
         
     def render_shadow(self):
         """

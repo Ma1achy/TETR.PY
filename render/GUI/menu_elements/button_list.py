@@ -202,9 +202,14 @@ class ButtonList(NestedElement):
         """
         Reset the state of the button list
         """
+        self.button_list_surface.fill((0, 0, 0, 0))
+        self.buttons_surface.fill((0, 0, 0, 0))
+        self.render()
+        
         for button in self.buttons:
             button.reset_state()
-            button.update()
+        
+        self.update()
     
     def get_value(self):
         """

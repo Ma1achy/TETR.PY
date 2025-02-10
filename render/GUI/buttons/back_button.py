@@ -50,7 +50,8 @@ class BackButton(Button):
             self.dropdown = False
             
         self.reset_on_click = True
-          
+        self.disable_shadow = True
+        
     def __get_rect_and_surface(self):
         """
         Get the rects and surfaces for the button

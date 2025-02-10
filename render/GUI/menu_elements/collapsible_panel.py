@@ -4,7 +4,7 @@ from render.GUI.menu_elements.button_list import ButtonList
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.menu_elements.config_slider import ConfigSlider
 from render.GUI.buttons.checkbox_button import CheckboxButton
-
+from app.core.config_manager import VideoSettings
 class CollapsiblePanel(NestedElement):
     def __init__(self, button_functions, dialog_resources, Timing, Mouse, Sound, surface, container, definition, y_position, linked_header, parent, RENDER_SCALE = 1, ToolTips = None):
         super().__init__(parent = parent)
@@ -169,7 +169,9 @@ class CollapsiblePanel(NestedElement):
             self.surface.blit(self.cached_surface, self.rect.topleft)
             return
         
-        self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+        if VideoSettings.BACKGROUND_VISIBILITY > 0:
+            self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+            
         self.panel_surface.blit(self.element_surface, (0, 0))
         self.surface.blit(self.panel_surface, self.rect.topleft)
         
@@ -397,7 +399,7 @@ class CollapsiblePanel(NestedElement):
         if self.use_cached_image:
             return
         
-        self.cached_surface.fill((0, 0, 0, 0))
+        #self.cached_surface.fill((0, 0, 0, 0))
         
         for element in self.elements:
             element.reset_state()
@@ -405,6 +407,7 @@ class CollapsiblePanel(NestedElement):
         
         self.panel_surface.set_alpha(255)
         self.element_surface.set_alpha(255)
+        
         self.cached_surface.blit(self.panel_surface, (0, 0))
         self.cached_surface.blit(self.element_surface, (0, 0))
         

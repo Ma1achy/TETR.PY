@@ -66,7 +66,9 @@ class ButtonBarSub(Button):
             
         if "reset_on_click" in self.definition:
             self.reset_on_click = self.definition["reset_on_click"]
-            
+        
+        self.disable_shadow = True
+         
     def get_song(self):
         if "song" in self.definition:
             self.song = getattr(Music, self.definition["song"])

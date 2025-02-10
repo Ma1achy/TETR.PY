@@ -1,8 +1,9 @@
-from render.render import StructRender
+from render.renderstruct import StructRender
 import pygame
 from utils import hex_to_rgb
 from render.GUI.font import Font
 import math
+from app.core.config_manager import VideoSettings
 
 class GUIFocus():
     def __init__(self, window, RenderStruct:StructRender):
@@ -16,10 +17,8 @@ class GUIFocus():
         self.window = window
         self.RenderStruct = RenderStruct
         
-        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
-        
-        self.width = int(500 * self.RENDER_SCALE)
-        self.height = int(180 * self.RENDER_SCALE)
+        self.width = int(500 * VideoSettings.RENDER_SCALE)
+        self.height = int(180 * VideoSettings.RENDER_SCALE)
         
         self.window_width = self.RenderStruct.RENDER_WIDTH
         self.window_height = self.RenderStruct.RENDER_HEIGHT
@@ -27,8 +26,8 @@ class GUIFocus():
         self.focus_rect = pygame.Rect(self.RenderStruct.RENDER_WIDTH // 2 - self.width // 2, self.RenderStruct.RENDER_HEIGHT // 2 - self.height // 2, self.width, self.height)
         self.focus_surface = pygame.Surface((self.focus_rect.width, self.focus_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
         
-        self.main_font = Font('hun2', int(85 * self.RENDER_SCALE))
-        self.sub_font = Font('hun2', int(36 * self.RENDER_SCALE))
+        self.main_font = Font('hun2', int(85 * VideoSettings.RENDER_SCALE))
+        self.sub_font = Font('hun2', int(36 * VideoSettings.RENDER_SCALE))
 
         self.render()
         
@@ -37,16 +36,16 @@ class GUIFocus():
         Render the focus overlay
         """
         self.focus_surface.fill((0, 0, 0, 200))
-        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (0, 0, self.focus_rect.width, self.focus_rect.height), math.ceil(5 * self.RENDER_SCALE))
-        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (int(10 * self.RENDER_SCALE), int(10 * self.RENDER_SCALE), self.focus_rect.width - int(20 * self.RENDER_SCALE), self.focus_rect.height - int(20 * self.RENDER_SCALE)), math.ceil(2 * self.RENDER_SCALE))
+        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (0, 0, self.focus_rect.width, self.focus_rect.height), math.ceil(5 * VideoSettings.RENDER_SCALE))
+        pygame.draw.rect(self.focus_surface, hex_to_rgb('#FF0000'), (int(10 * VideoSettings.RENDER_SCALE), int(10 * VideoSettings.RENDER_SCALE), self.focus_rect.width - int(20 * VideoSettings.RENDER_SCALE), self.focus_rect.height - int(20 * VideoSettings.RENDER_SCALE)), math.ceil(2 * VideoSettings.RENDER_SCALE))
         
         self.main_font.draw(
             self.focus_surface,
             'out of focus',
             '#FF0000',
             'top',
-            int(0 * self.RENDER_SCALE),
-            int(30 * self.RENDER_SCALE),
+            int(0 * VideoSettings.RENDER_SCALE),
+            int(30 * VideoSettings.RENDER_SCALE),
         )
         
         self.sub_font.draw(
@@ -54,8 +53,8 @@ class GUIFocus():
             'click to return to TETR.PY',
             '#FFFFFF',
             'bottom',
-            int(0 * self.RENDER_SCALE),
-            int(30 * self.RENDER_SCALE),
+            int(0 * VideoSettings.RENDER_SCALE),
+            int(30 * VideoSettings.RENDER_SCALE),
         )
         
     def draw(self):
@@ -74,5 +73,8 @@ class GUIFocus():
         """
         Update the focus overlay
         """
+        if not VideoSettings.WARN_WHEN_NOT_FOCUSED:
+            return
+        
         self.draw()
        

@@ -28,6 +28,7 @@ class Timing():
     current_frame_time: float = 0
     last_frame_time: float = 0
     frame_delta_time: float = 0
+    render_tick_delta_time: float = 0
     do_first_frame: bool = True
     
     current_input_tick_time: int = 0

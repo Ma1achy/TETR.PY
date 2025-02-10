@@ -1,4 +1,4 @@
-from render.render import StructRender
+from render.renderstruct import StructRender
 import pygame
 from utils import hex_to_rgb, smoothstep, TransformSurface, align_left_edge, align_right_edge, align_centre
 from render.GUI.font import Font

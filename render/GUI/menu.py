@@ -7,6 +7,7 @@ from render.GUI.buttons.footer_button import FooterButton
 from render.GUI.font import Font
 import re
 from utils import apply_gaussian_blur_with_alpha, smoothstep
+from app.core.config_manager import VideoSettings
 
 class Menu():
     def __init__(self, surface, Timing, Mouse, RenderStruct, button_functions, dialog_resources, Sound, menu_definition):
@@ -26,7 +27,6 @@ class Menu():
         self.Sound = Sound
         
         self.RenderStruct = RenderStruct
-        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         self.button_functions = button_functions
         self.dialog_resources = dialog_resources
         
@@ -88,8 +88,8 @@ class Menu():
         if 'menu_header' not in self.definition:
             return
         
-        self.header_height = int(70 * self.RENDER_SCALE) if 'height' not in self.definition['menu_header'] else int(self.definition['menu_header']['height'] * self.RENDER_SCALE)
-        self.menu_header = Header(self.surface.get_rect(), self.header_height, self.definition['menu_header'], image = self.__init_header_image(), RENDER_SCALE = self.RENDER_SCALE)
+        self.header_height = int(70 * VideoSettings.RENDER_SCALE) if 'height' not in self.definition['menu_header'] else int(self.definition['menu_header']['height'] * VideoSettings.RENDER_SCALE)
+        self.menu_header = Header(self.surface.get_rect(), self.header_height, self.definition['menu_header'], image = self.__init_header_image())
     
     def __init_footer(self):
         """
@@ -98,8 +98,8 @@ class Menu():
         if 'menu_footer' not in self.definition:
             return
         
-        self.footer_height = int(55 * self.RENDER_SCALE) if 'height' not in self.definition['menu_footer'] else int(self.definition['menu_footer']['height'] * self.RENDER_SCALE)
-        self.menu_footer = Footer(self.surface.get_rect(), self.footer_height, self.definition['menu_footer'], image = self.__init_footer_image(), RENDER_SCALE = self.RENDER_SCALE)
+        self.footer_height = int(55 * VideoSettings.RENDER_SCALE) if 'height' not in self.definition['menu_footer'] else int(self.definition['menu_footer']['height'] * VideoSettings.RENDER_SCALE)
+        self.menu_footer = Footer(self.surface.get_rect(), self.footer_height, self.definition['menu_footer'], image = self.__init_footer_image())
     
     def __init_footer_image(self):
         """
@@ -125,7 +125,7 @@ class Menu():
             return
             
         self.main_body_rect = pygame.Rect(0, self.header_height, self.surface.get_width(), self.surface.get_height() - self.footer_height - self.header_height)
-        self.main_body = MainBody(self.Mouse, self.Timing, self.ToolTips, self.Sound, self.main_body_rect, self.button_functions, self.dialog_resources, self.definition['menu_body'], parent = None, RENDER_SCALE = self.RENDER_SCALE)
+        self.main_body = MainBody(self.Mouse, self.Timing, self.ToolTips, self.Sound, self.main_body_rect, self.button_functions, self.dialog_resources, self.definition['menu_body'], parent = None)
     
     def __init__tooltips(self):
         if 'menu_body' not in self.definition:
@@ -139,7 +139,7 @@ class Menu():
             self.ToolTips = None
             return
         
-        self.ToolTips = ToolTips(self.Mouse, self.Timing, self.surface, self.RenderStruct)
+        self.ToolTips = ToolTips(self.Mouse, self.Timing, self.surface)
         
     def __init_footer_widgets(self):
         """
@@ -151,7 +151,7 @@ class Menu():
         for element in self.definition["footer_widgets"]['elements']:
             if element['type'] == 'footer_button':
                 func = self.button_functions[element['function']]
-                self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.Sound, self.surface, self.surface.get_rect(), element, parent = None, RENDER_SCALE = self.RENDER_SCALE))
+                self.footer_widgets.append(FooterButton(self.Timing, func, self.Mouse, self.Sound, self.surface, self.surface.get_rect(), element, parent = None, RENDER_SCALE = VideoSettings.RENDER_SCALE))
     
     def update_tooltips(self):
         if self.ToolTips is None:
@@ -362,7 +362,7 @@ class Menu():
         return max(0, min(200, alpha))
         
 class ToolTips():
-    def __init__(self, Mouse, Timing, surface, RenderStruct):
+    def __init__(self, Mouse, Timing, surface):
         """
         Tooltips for the menu
         
@@ -375,18 +375,16 @@ class ToolTips():
         self.Mouse = Mouse
         self.Timing = Timing
         self.surface = surface
-        self.RenderStruct = RenderStruct
-        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
         
         self.tooltips = {}
         self.shadows = {}
         
         self.tooltip_to_draw = None
         
-        self.max_width = int(300 * self.RENDER_SCALE)
-        self.shadow_radius = int(5 * self.RENDER_SCALE)
+        self.max_width = int(300 * VideoSettings.RENDER_SCALE)
+        self.shadow_radius = int(5 * VideoSettings.RENDER_SCALE)
         
-        self.font = Font('cr', int(15 * self.RENDER_SCALE))
+        self.font = Font('cr', int(15 * VideoSettings.RENDER_SCALE))
         
         self.tooltip_appear_time = 2
         self.tooltip_timer = 0
@@ -422,9 +420,9 @@ class ToolTips():
             width = max(width, self.font.font.size(line)[0])
             height += self.font.font.size(line)[1]
         
-        tooltip_surface = pygame.Surface((width + int(10 * self.RENDER_SCALE), height + int(10 * self.RENDER_SCALE)), pygame.HWSURFACE|pygame.SRCALPHA)
+        tooltip_surface = pygame.Surface((width + int(10 * VideoSettings.RENDER_SCALE), height + int(10 * VideoSettings.RENDER_SCALE)), pygame.HWSURFACE|pygame.SRCALPHA)
         tooltip_surface.fill((32, 32, 32, 200))
-        pygame.draw.rect(tooltip_surface, (255, 255, 255, 64), tooltip_surface.get_rect(), int(2 * self.RENDER_SCALE))
+        pygame.draw.rect(tooltip_surface, (255, 255, 255, 64), tooltip_surface.get_rect(), int(2 * VideoSettings.RENDER_SCALE))
         
         shadow_surface = pygame.Surface((tooltip_surface.get_width() + self.shadow_radius * 4, tooltip_surface.get_height() + self.shadow_radius * 4), pygame.HWSURFACE|pygame.SRCALPHA)
         pygame.draw.rect(shadow_surface, (0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, tooltip_surface.get_width(), tooltip_surface.get_height())) 
@@ -433,7 +431,7 @@ class ToolTips():
         pygame.draw.rect(shadow_surface, (0, 0, 0, 0), pygame.Rect(self.shadow_radius * 2, self.shadow_radius * 2, tooltip_surface.get_width(), tooltip_surface.get_height()))
         
         for i, line in enumerate(text):
-            self.font.draw(tooltip_surface, line, "#ffffff", 'left_top', int(5 * self.RENDER_SCALE), i * self.font.font.size(line)[1] - int(2.5 * self.RENDER_SCALE))
+            self.font.draw(tooltip_surface, line, "#ffffff", 'left_top', int(5 * VideoSettings.RENDER_SCALE), i * self.font.font.size(line)[1] - int(2.5 * VideoSettings.RENDER_SCALE))
         
         return tooltip_surface, shadow_surface
 
@@ -529,7 +527,7 @@ class ToolTips():
         
     def draw(self):
         pos = self.Mouse.position
-        offset = int(12 * self.RENDER_SCALE)
+        offset = int(12 * VideoSettings.RENDER_SCALE)
 
         pos = (pos[0] + offset, pos[1] + offset)
         

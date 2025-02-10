@@ -63,6 +63,8 @@ class CollapsiblePanelHeader(Button):
         self.hover_sound = SFX.MenuTap
         self.reset_on_click = True
         
+        self.disable_shadow = True
+        
     def __init_elements(self):
         """
         Initialise the elements of the button

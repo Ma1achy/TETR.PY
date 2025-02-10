@@ -14,13 +14,12 @@ from collections import deque
 
 from instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
-from render.render import StructRender
 from app.state.clock import Clock
 
 from render.render import Render
 from app.input.keyboard.keyboard_input_manager import KeyboardInputManager
 from app.core.game_instance_manager import GameInstanceManager
-from app.input.keyboard.menu_kb_input_handler import MenuKeyboardInputHandler, UIAction
+from app.input.keyboard.menu_kb_input_handler import MenuKeyboardInputHandler
 from app.debug.debug_manager import DebugManager
 from app.core.pygame_event_handler import PygameEventHandler
 from app.state.timing import Timing
@@ -38,8 +37,6 @@ logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(
 
 class TETRPY():
     def __init__(self):
-        
-        self.frame_delta_time = 0
         
         self.WorkerManager = WorkerManager()
         
@@ -282,7 +279,7 @@ class TETRPY():
                     
                     target_fps = self.RenderStruct.TARGET_FPS if self.RenderStruct.TARGET_FPS != "INF" else 256
                     frame_time = 1 / target_fps
-                    self.frame_delta_time += (self.Timing.current_frame_time - self.Timing.last_frame_time) / frame_time
+                    self.Timing.render_tick_delta_time += (self.Timing.current_frame_time - self.Timing.last_frame_time) / frame_time
                     self.Timing.frame_delta_time = (self.Timing.current_frame_time - self.Timing.last_frame_time)
                     self.Timing.last_frame_time = self.Timing.current_frame_time
                     
@@ -290,9 +287,9 @@ class TETRPY():
                         self.do_render_tick()
                         self.Timing.do_first_frame = False
                            
-                    if self.frame_delta_time >= 1:
+                    if self.Timing.render_tick_delta_time >= 1:
                         self.do_render_tick()
-                        self.frame_delta_time -= 1
+                        self.Timing.render_tick_delta_time -= 1
                         
                     self.get_fps()
                     elapsed_time = time.perf_counter() - start_time

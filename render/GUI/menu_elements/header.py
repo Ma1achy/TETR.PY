@@ -2,9 +2,9 @@ import pygame
 from utils import draw_linear_gradient, draw_solid_colour, draw_border, align_top_edge, apply_gaussian_blur_with_alpha, load_image, align_center_left
 from render.GUI.font import Font
 import math
-
+from app.core.config_manager import VideoSettings
 class Header:
-    def __init__(self, container, height, definition, image = None, RENDER_SCALE = 1):
+    def __init__(self, container, height, definition, image = None):
         """
         A header that can be used at the top of a menu
         
@@ -17,7 +17,6 @@ class Header:
         self.container = container
         self.height = height
         self.definition = definition
-        self.RENDER_SCALE = RENDER_SCALE
         
         self.image = image
         
@@ -29,9 +28,9 @@ class Header:
         self.background = self.get_background()
         self.border = self.get_border()
 
-        self.font = Font('hun2', int(40 * self.RENDER_SCALE))
+        self.font = Font('hun2', int(40 * VideoSettings.RENDER_SCALE))
         
-        self.shadow_radius = int(5 * self.RENDER_SCALE)
+        self.shadow_radius = int(5 * VideoSettings.RENDER_SCALE)
                 
         self.__load_image()
         self.__get_rect_and_surface()
@@ -128,7 +127,7 @@ class Header:
         if 'border' not in self.definition:
             return
         
-        draw_border(self.header_surface, self.border, self.rect, self.RENDER_SCALE)
+        draw_border(self.header_surface, self.border, self.rect, VideoSettings.RENDER_SCALE)
     
     def __render_text(self):
         """
@@ -137,7 +136,7 @@ class Header:
         if 'text' not in self.definition:
             return
         
-        self.font.draw(self.header_surface, self.text['display_text'], self.text['colour'], 'left', int(20 * self.RENDER_SCALE), 0)
+        self.font.draw(self.header_surface, self.text['display_text'], self.text['colour'], 'left', int(20 * VideoSettings.RENDER_SCALE), 0)
     
     def __render_shadow(self):
         """
@@ -167,11 +166,11 @@ class Header:
             return
         
         aspect_ratio = self.image.get_width() / self.image.get_height()
-        new_height = self.height - int(25 * self.RENDER_SCALE)
+        new_height = self.height - int(25 * VideoSettings.RENDER_SCALE)
         new_width = int(new_height * aspect_ratio)
         
         image = pygame.transform.smoothscale(self.image, (new_width, new_height))
-        image_rect = align_center_left(self.header_surface.get_rect(), image.get_width(), image.get_height(), int(20 * self.RENDER_SCALE), int(5 * self.RENDER_SCALE))
+        image_rect = align_center_left(self.header_surface.get_rect(), image.get_width(), image.get_height(), int(20 * VideoSettings.RENDER_SCALE), int(5 * VideoSettings.RENDER_SCALE))
 
         self.header_surface.blit(image, (image_rect.left, image_rect.top))
              

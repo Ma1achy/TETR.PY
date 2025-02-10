@@ -1083,7 +1083,7 @@
                             },
                             "function": "edit_setting",
                             "section": "AUDIO_SETTINGS",
-                            "key": "STERO_BALANCE",
+                            "key": "STEREO_BALANCE",
                             "value_getter": "get_setting_value",
                             "themeing": {
                                 "title_colour": "#6275a7",

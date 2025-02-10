@@ -4,6 +4,7 @@ from app.input.mouse.mouse import MouseEvents
 from render.GUI.menu_elements.nested_element import NestedElement
 from app.core.sound.sound import Sound
 from app.core.sound.sfx import SFX
+from app.core.config_manager import VideoSettings
 class Button(NestedElement):
     def __init__(self, Timing, surface, Mouse, function, container, width, height, style = 'lighten', maintain_alpha = False, slider = None, parent = None, RENDER_SCALE = 1, ToolTips = None, Sound:Sound = None):
         super().__init__(parent)
@@ -109,6 +110,8 @@ class Button(NestedElement):
         self.dropdown = False 
         self.reset_on_click = False
         
+        self.disable_shadow = False
+        
     def get_local_position(self):
         """
         Get the local position of the button for collision detection.
@@ -190,7 +193,9 @@ class Button(NestedElement):
         if not self.on_screen:
             return
         
-        self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+        if VideoSettings.BACKGROUND_VISIBILITY > 0 or not self.disable_shadow:
+            self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+    
         self.surface.blit(self.button_surface, self.rect.topleft)
     
     # -------------------------------------------------------------------------- MOUSE EVENTS --------------------------------------------------------------------------

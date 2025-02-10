@@ -3,7 +3,7 @@ from utils import get_prefix
 from render.GUI.font import Font
 import pygame
 import math
-
+from app.core.config_manager import VideoSettings
 class GUIDebug():
     def __init__(self, window, Timing, RenderStruct, DebugStruct: DebugMetrics):
         """
@@ -20,24 +20,22 @@ class GUIDebug():
         self.RenderStruct = RenderStruct
         self.DebugStruct = DebugStruct
         
-        self.RENDER_SCALE = self.RenderStruct.RENDER_SCALE
-
         # Initialize fonts
-        self.font_hun2_big = Font('hun2', int(40 * self.RENDER_SCALE))
-        self.font_hun2_small = Font('hun2', int(12 * self.RENDER_SCALE))
-        self.font_pfw_small = Font('pfw', int(12 * self.RENDER_SCALE))
-        self.font_cr_medium = Font('cr', int(20 * self.RENDER_SCALE))
-        self.font_cr_small = Font('cr', int(12 * self.RENDER_SCALE))
+        self.font_hun2_big = Font('hun2', int(40 * VideoSettings.RENDER_SCALE))
+        self.font_hun2_small = Font('hun2', int(12 * VideoSettings.RENDER_SCALE))
+        self.font_pfw_small = Font('pfw', int(12 * VideoSettings.RENDER_SCALE))
+        self.font_cr_medium = Font('cr', int(20 * VideoSettings.RENDER_SCALE))
+        self.font_cr_small = Font('cr', int(12 * VideoSettings.RENDER_SCALE))
         
-        self.padding_x = int(10 * self.RENDER_SCALE)
-        self.padding_y = int(10 * self.RENDER_SCALE)
+        self.padding_x = int(10 * VideoSettings.RENDER_SCALE)
+        self.padding_y = int(10 * VideoSettings.RENDER_SCALE)
         
-        self.debug_surface = pygame.Surface((int(1500 * self.RENDER_SCALE) - self.padding_x * 2, int(100 * self.RENDER_SCALE)), pygame.SRCALPHA|pygame.HWSURFACE)
+        self.debug_surface = pygame.Surface((int(1500 * VideoSettings.RENDER_SCALE) - self.padding_x * 2, int(100 * VideoSettings.RENDER_SCALE)), pygame.SRCALPHA|pygame.HWSURFACE)
         
-        self.fps_rect = pygame.Rect(self.padding_x, self.padding_y * 3, self.debug_surface.get_width() // 3 - self.padding_x, int(80 * self.RENDER_SCALE) - self.padding_y * 2)
-        self.tps_rect = pygame.Rect(self.debug_surface.get_width() // 3 + self.padding_x, self.padding_y * 3, self.debug_surface.get_width() // 3 - self.padding_x, int(80 * self.RENDER_SCALE) - self.padding_y * 2)
-        self.polling_rect = pygame.Rect(self.debug_surface.get_width() // 3 * 2 + self.padding_x, self.padding_y * 3, self.debug_surface.get_width() // 3 - self.padding_x * 2, int(80 * self.RENDER_SCALE) - self.padding_y * 2)
-        self.mem_rect = pygame.Rect(self.tps_rect.left + self.tps_rect.width // 2 - int(25 * self.RENDER_SCALE), int(5 * self.RENDER_SCALE), self.polling_rect.width + self.tps_rect.width // 2 + self.padding_x + int(25 * self.RENDER_SCALE), int(20 * self.RENDER_SCALE))
+        self.fps_rect = pygame.Rect(self.padding_x, self.padding_y * 3, self.debug_surface.get_width() // 3 - self.padding_x, int(80 * VideoSettings.RENDER_SCALE) - self.padding_y * 2)
+        self.tps_rect = pygame.Rect(self.debug_surface.get_width() // 3 + self.padding_x, self.padding_y * 3, self.debug_surface.get_width() // 3 - self.padding_x, int(80 * VideoSettings.RENDER_SCALE) - self.padding_y * 2)
+        self.polling_rect = pygame.Rect(self.debug_surface.get_width() // 3 * 2 + self.padding_x, self.padding_y * 3, self.debug_surface.get_width() // 3 - self.padding_x * 2, int(80 * VideoSettings.RENDER_SCALE) - self.padding_y * 2)
+        self.mem_rect = pygame.Rect(self.tps_rect.left + self.tps_rect.width // 2 - int(25 * VideoSettings.RENDER_SCALE), int(5 * VideoSettings.RENDER_SCALE), self.polling_rect.width + self.tps_rect.width // 2 + self.padding_x + int(25 * VideoSettings.RENDER_SCALE), int(20 * VideoSettings.RENDER_SCALE))
         
         self.fps_surface = pygame.Surface((self.fps_rect.width, self.fps_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
         self.tps_surface = pygame.Surface((self.tps_rect.width, self.tps_rect.height), pygame.SRCALPHA|pygame.HWSURFACE)
@@ -57,11 +55,11 @@ class GUIDebug():
         self.polling_surface.fill((0, 0, 0, 64))
         self.mem_surface.fill((0, 0, 0, 64))
         
-        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), self.fps_rect, math.ceil(1 * self.RENDER_SCALE))
-        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), self.tps_rect, math.ceil(1 * self.RENDER_SCALE))
-        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), self.polling_rect, math.ceil(1 * self.RENDER_SCALE))
-        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), (self.mem_rect), math.ceil(1 * self.RENDER_SCALE))
-        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), (0, 0, self.debug_surface.get_width(), self.debug_surface.get_height()), math.ceil(1 * self.RENDER_SCALE))
+        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), self.fps_rect, math.ceil(1 * VideoSettings.RENDER_SCALE))
+        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), self.tps_rect, math.ceil(1 * VideoSettings.RENDER_SCALE))
+        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), self.polling_rect, math.ceil(1 * VideoSettings.RENDER_SCALE))
+        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), (self.mem_rect), math.ceil(1 * VideoSettings.RENDER_SCALE))
+        pygame.draw.rect(self.debug_surface, (255, 255, 255, 64), (0, 0, self.debug_surface.get_width(), self.debug_surface.get_height()), math.ceil(1 * VideoSettings.RENDER_SCALE))
         
         self.__draw_debug_menu()
         self.debug_surface.blit(self.fps_surface, self.fps_rect.topleft)
@@ -88,7 +86,7 @@ class GUIDebug():
         """
         Draw the build information
         """
-        x = int(10 * self.RENDER_SCALE)
+        x = int(10 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_medium.draw(
             self.debug_surface, 
@@ -96,10 +94,10 @@ class GUIDebug():
             '#ffffff', 
             'left_top', 
             x,
-            int(-5 * self.RENDER_SCALE),
+            int(-5 * VideoSettings.RENDER_SCALE),
         )
         
-        x += self.font_cr_medium.get_width() + int(10 * self.RENDER_SCALE)
+        x += self.font_cr_medium.get_width() + int(10 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_small.draw(
             self.debug_surface, 
@@ -107,11 +105,11 @@ class GUIDebug():
             '#ffffff', 
             'left_top', 
             x,
-            int(-2.5 * self.RENDER_SCALE),
+            int(-2.5 * VideoSettings.RENDER_SCALE),
         )
         
         
-        x += self.font_cr_small.get_width() + int(2.5 * self.RENDER_SCALE)
+        x += self.font_cr_small.get_width() + int(2.5 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_small.draw(
             self.debug_surface, 
@@ -119,10 +117,10 @@ class GUIDebug():
             '#ffffff', 
             'left_top', 
             x,
-            int(-2.5 * self.RENDER_SCALE),
+            int(-2.5 * VideoSettings.RENDER_SCALE),
         )
         
-        x += self.font_cr_small.get_width() + int(2.5 * self.RENDER_SCALE)
+        x += self.font_cr_small.get_width() + int(2.5 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_small.draw(
             self.debug_surface,
@@ -130,10 +128,10 @@ class GUIDebug():
             '#ffffff',
             'left_top',
             x,
-            int(-2.5 * self.RENDER_SCALE),
+            int(-2.5 * VideoSettings.RENDER_SCALE),
         )
         
-        x += self.font_cr_small.get_width() + int(2.5 * self.RENDER_SCALE)
+        x += self.font_cr_small.get_width() + int(2.5 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_small.draw(
             self.debug_surface, 
@@ -141,10 +139,10 @@ class GUIDebug():
             '#ffffff', 
             'left_top', 
             x,
-            int(-2.5 * self.RENDER_SCALE),
+            int(-2.5 * VideoSettings.RENDER_SCALE),
         )
         
-        x = self.font_cr_medium.get_width() + int(20 * self.RENDER_SCALE)
+        x = self.font_cr_medium.get_width() + int(20 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_small.draw(
             self.debug_surface, 
@@ -152,10 +150,10 @@ class GUIDebug():
             '#ffffff', 
             'left_top', 
             x,
-            int(10 * self.RENDER_SCALE),
+            int(10 * VideoSettings.RENDER_SCALE),
         )
         
-        x += self.font_cr_small.get_width() + int(2.5 * self.RENDER_SCALE)
+        x += self.font_cr_small.get_width() + int(2.5 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_small.draw(
             self.debug_surface, 
@@ -163,10 +161,10 @@ class GUIDebug():
             '#ffffff', 
             'left_top', 
             x,
-            int(10 * self.RENDER_SCALE),
+            int(10 * VideoSettings.RENDER_SCALE),
         )
         
-        x += self.font_cr_small.get_width() + int(2.5 * self.RENDER_SCALE)
+        x += self.font_cr_small.get_width() + int(2.5 * VideoSettings.RENDER_SCALE)
         
         self.font_cr_small.draw(
             self.debug_surface, 
@@ -174,7 +172,7 @@ class GUIDebug():
             '#ffffff', 
             'left_top', 
             x,
-            int(10 * self.RENDER_SCALE),
+            int(10 * VideoSettings.RENDER_SCALE),
         )
         
     
@@ -182,8 +180,8 @@ class GUIDebug():
         """
         Draw the FPS debug information
         """
-        x = int(10 * self.RENDER_SCALE)
-        y = int(10 * self.RENDER_SCALE)
+        x = int(10 * VideoSettings.RENDER_SCALE)
+        y = int(10 * VideoSettings.RENDER_SCALE)
         
         fps_colour = '#ffff00' if self.DebugStruct.Average_FrameRate < self.Timing.target_FPS * 0.95 else '#ff0000' if self.DebugStruct.Average_FrameRate < self.Timing.target_FPS * 0.5 else '#00ff00'
             
@@ -195,7 +193,7 @@ class GUIDebug():
             fps_colour,
             'left_top',
             x,
-            int(0 * self.RENDER_SCALE),
+            int(0 * VideoSettings.RENDER_SCALE),
         )
      
         self.font_hun2_small.draw(
@@ -231,8 +229,8 @@ class GUIDebug():
         """
         Draw the TPS debug information
         """
-        x = int(10 * self.RENDER_SCALE)
-        y = int(10 * self.RENDER_SCALE)
+        x = int(10 * VideoSettings.RENDER_SCALE)
+        y = int(10 * VideoSettings.RENDER_SCALE)
         
         # TPS debug information
         tps_colour = '#ff0000' if self.DebugStruct.Average_TickRate < self.Timing.target_TPS * 0.95 else '#00ff00'
@@ -243,7 +241,7 @@ class GUIDebug():
             tps_colour,
             'left_top',
             x,
-            int(0 * self.RENDER_SCALE),
+            int(0 * VideoSettings.RENDER_SCALE),
         )
 
         self.font_hun2_small.draw(
@@ -281,8 +279,8 @@ class GUIDebug():
         """
         Draw the polling debug information
         """
-        x = int(10 * self.RENDER_SCALE)
-        y = int(10 * self.RENDER_SCALE)
+        x = int(10 * VideoSettings.RENDER_SCALE)
+        y = int(10 * VideoSettings.RENDER_SCALE)
         
         # Polling debug information
         poll_colour = '#ff0000' if self.DebugStruct.Average_PollingRate < self.Timing.target_POLLING_RATE * 0.95 else '#00ff00'
@@ -293,7 +291,7 @@ class GUIDebug():
             poll_colour,
             'left_top',
             x,
-            int(0 * self.RENDER_SCALE),
+            int(0 * VideoSettings.RENDER_SCALE),
         )
            
         self.font_hun2_small.draw(
@@ -333,8 +331,8 @@ class GUIDebug():
         """
         Draw the memory debug information
         """
-        x = int(10 * self.RENDER_SCALE)
-        y = int(0 * self.RENDER_SCALE)
+        x = int(10 * VideoSettings.RENDER_SCALE)
+        y = int(0 * VideoSettings.RENDER_SCALE)
         
         mem_colour = '#00ff00' if self.DebugStruct.MemoryPercent < 50 else '#ffff00' if self.DebugStruct.MemoryPercent < 75 else '#ff0000'
             
@@ -347,7 +345,7 @@ class GUIDebug():
             y,
         )
         
-        x += self.font_pfw_small.get_width() + int(10 * self.RENDER_SCALE)
+        x += self.font_pfw_small.get_width() + int(10 * VideoSettings.RENDER_SCALE)
         
         cpu_colour = '#00ff00' if self.DebugStruct.CPU_Usage < 50 else '#ffff00' if self.DebugStruct.CPU_Usage < 75 else '#ff0000'
         
@@ -360,7 +358,7 @@ class GUIDebug():
             y,
         )
         
-        x += self.font_pfw_small.get_width() + int(10 * self.RENDER_SCALE)
+        x += self.font_pfw_small.get_width() + int(10 * VideoSettings.RENDER_SCALE)
         
         self.font_pfw_small.draw(
             self.mem_surface, 
@@ -371,7 +369,7 @@ class GUIDebug():
             y,
         )
         
-        x += self.font_pfw_small.get_width() + int(10 * self.RENDER_SCALE)
+        x += self.font_pfw_small.get_width() + int(10 * VideoSettings.RENDER_SCALE)
         
         temp_colour = '#00ff00' if self.DebugStruct.GPUStats['gpu_temperature'] < 50 else '#ffff00' if self.DebugStruct.GPUStats['gpu_temperature'] < 75 else '#ff0000'
         
@@ -384,7 +382,7 @@ class GUIDebug():
             y,
         )
         
-        x += self.font_pfw_small.get_width() + int(10 * self.RENDER_SCALE)
+        x += self.font_pfw_small.get_width() + int(10 * VideoSettings.RENDER_SCALE)
         
         gpu_colour = '#00ff00' if self.DebugStruct.GPUStats['gpu_load'] < 50 else '#ffff00' if self.DebugStruct.GPUStats['gpu_load'] < 75 else '#ff0000'
         

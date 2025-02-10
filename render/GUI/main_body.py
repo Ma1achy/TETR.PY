@@ -11,9 +11,10 @@ from app.input.mouse.mouse import MouseEvents
 from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.nested_element import NestedElement
 from render.GUI.menu_elements.panel import Panel
+from app.core.config_manager import VideoSettings
 
 class MainBody(NestedElement):
-    def __init__(self, Mouse, Timing, ToolTips, Sound, rect, button_functions, dialog_resources, definition, parent, RENDER_SCALE = 1):
+    def __init__(self, Mouse, Timing, ToolTips, Sound, rect, button_functions, dialog_resources, definition, parent):
         super().__init__(parent)
         """
         The main body of the menu
@@ -30,8 +31,6 @@ class MainBody(NestedElement):
         self.Timing = Timing
         self.ToolTips = ToolTips
         self.Sound = Sound
-        
-        self.RENDER_SCALE = RENDER_SCALE
         
         self.button_functions = button_functions
         self.dialog_resources = dialog_resources
@@ -103,58 +102,58 @@ class MainBody(NestedElement):
         if 'menu' not in self.definition:
             return
         
-        y = int(35 * self.RENDER_SCALE)
+        y = int(35 * VideoSettings.RENDER_SCALE)
         
         if self.dropdown:
-            y += int(70 * self.RENDER_SCALE)
+            y += int(70 * VideoSettings.RENDER_SCALE)
         
         for idx, element in enumerate(self.definition['menu']['elements']):
             if element['type'] == 'bar_button':
-                y += int(10 * self.RENDER_SCALE)
+                y += int(10 * VideoSettings.RENDER_SCALE)
                 func = self.button_functions[element['function']]
-                button = ButtonBarMain(func, self.Mouse, self.Timing, self.Sound, self.body_surface, self.rect, element, y, height = int(120 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                button = ButtonBarMain(func, self.Mouse, self.Timing, self.Sound, self.body_surface, self.rect, element, y, height = int(120 * VideoSettings.RENDER_SCALE), parent = self, RENDER_SCALE = VideoSettings.RENDER_SCALE, ToolTips = self.ToolTips)
                 button.y_position = y
                 self.menu_elements.append(button)
-                y += button.height + int(10 * self.RENDER_SCALE)
+                y += button.height + int(10 * VideoSettings.RENDER_SCALE)
                 
             elif element['type'] == 'bar_button_sub':
-                y += int(7 * self.RENDER_SCALE)
+                y += int(7 * VideoSettings.RENDER_SCALE)
                 func = self.button_functions[element['function']] 
-                button = ButtonBarSub(func, self.Mouse, self.Timing, self.Sound, self.body_surface, self.rect, element, y, height = int(90 * self.RENDER_SCALE), parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                button = ButtonBarSub(func, self.Mouse, self.Timing, self.Sound, self.body_surface, self.rect, element, y, height = int(90 * VideoSettings.RENDER_SCALE), parent = self, RENDER_SCALE = VideoSettings.RENDER_SCALE, ToolTips = self.ToolTips)
                 button.y_position = y
                 self.menu_elements.append(button)
-                y += button.height + int(7 * self.RENDER_SCALE)
+                y += button.height + int(7 * VideoSettings.RENDER_SCALE)
             
             elif element['type'] == 'panel':
-                y += int(7 * self.RENDER_SCALE)
-                panel = Panel(self.button_functions, self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                y += int(7 * VideoSettings.RENDER_SCALE)
+                panel = Panel(self.button_functions, self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y_position = y, parent = self, RENDER_SCALE = VideoSettings.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.menu_elements.append(panel)
                 
-                y += panel.height + int(7 * self.RENDER_SCALE)
+                y += panel.height + int(7 * VideoSettings.RENDER_SCALE)
                 
             elif element['type'] == 'collapsible_panel_header':
-                y += int(7 * self.RENDER_SCALE)
-                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y, parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips, button_functions = self.button_functions)
+                y += int(7 * VideoSettings.RENDER_SCALE)
+                panel = CollapsiblePanelHeader(self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y, parent = self, RENDER_SCALE = VideoSettings.RENDER_SCALE, ToolTips = self.ToolTips, button_functions = self.button_functions)
                 self.menu_elements.append(panel)
-                y += panel.height + int(7 * self.RENDER_SCALE)
+                y += panel.height + int(7 * VideoSettings.RENDER_SCALE)
             
             elif element['type'] == 'collapsible_panel':
        
-                panel = CollapsiblePanel(self.button_functions, self.dialog_resources, self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+                panel = CollapsiblePanel(self.button_functions, self.dialog_resources, self.Timing, self.Mouse, self.Sound, self.body_surface, self.rect, element, y_position = y, linked_header = self.menu_elements[idx - 1], parent = self, RENDER_SCALE = VideoSettings.RENDER_SCALE, ToolTips = self.ToolTips)
                 self.menu_elements.append(panel)
             
             elif element['type'] == 'floating_text':
-                y += int(3 * self.RENDER_SCALE)
-                text = FloatingText(self.Timing, self.body_surface, element['content'], y, RENDER_SCALE = self.RENDER_SCALE)
+                y += int(3 * VideoSettings.RENDER_SCALE)
+                text = FloatingText(self.Timing, self.body_surface, element['content'], y, RENDER_SCALE = VideoSettings.RENDER_SCALE)
                 self.menu_elements.append(text)
-                y += text.height + int(3 * self.RENDER_SCALE)
+                y += text.height + int(3 * VideoSettings.RENDER_SCALE)
         
         self.content_height = y
         self.y_diff = y - self.rect.height
         self.scrollable = self.y_diff > 0
 
         if self.scrollable:
-            self.scroll_bar = ScrollBar(self.Mouse, self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
+            self.scroll_bar = ScrollBar(self.Mouse, self.body_surface, self.scroll_y, self.y_diff, self.scrollable)
                         
     def __init_back_button(self):
         """
@@ -164,7 +163,7 @@ class MainBody(NestedElement):
             return
         
         func = self.button_functions[self.definition['back_button']['function']]
-        self.back_button = BackButton(func, self.Mouse, self.Timing, self.Sound, self.body_surface, self.rect, self.definition['back_button'], parent = self, RENDER_SCALE = self.RENDER_SCALE, ToolTips = self.ToolTips)
+        self.back_button = BackButton(func, self.Mouse, self.Timing, self.Sound, self.body_surface, self.rect, self.definition['back_button'], parent = self, RENDER_SCALE = VideoSettings.RENDER_SCALE, ToolTips = self.ToolTips)
     
     def __init_logo(self):
         """
@@ -173,7 +172,7 @@ class MainBody(NestedElement):
         if 'logo' not in self.definition:
             return
         
-        self.logo = Logo(self.body_surface.get_rect(), self.definition['logo'], self.RENDER_SCALE)
+        self.logo = Logo(self.body_surface.get_rect(), self.definition['logo'], VideoSettings.RENDER_SCALE)
  
     def render(self):
         """
@@ -249,7 +248,7 @@ class MainBody(NestedElement):
         if not self.scrollable:
             return
         
-        if self.Mouse.in_dialog:
+        if self.Mouse.in_dialog or self.Mouse.slider_interaction_event:
             return
         
         if self.Mouse.in_dropdown and not self.dropdown:
@@ -348,51 +347,51 @@ class MainBody(NestedElement):
         Update the y positions of the elements
         """
         self.old_content_height = self.content_height
-        y = int(35 * self.RENDER_SCALE) 
+        y = int(35 * VideoSettings.RENDER_SCALE) 
         
         if self.dropdown:
-            y += int(70 * self.RENDER_SCALE)
+            y += int(70 * VideoSettings.RENDER_SCALE)
             
         for element in self.menu_elements:
             element.scroll_y = self.scroll_y
             
             if isinstance(element, ButtonBarMain):
-                y += int(10 * self.RENDER_SCALE)
+                y += int(10 * VideoSettings.RENDER_SCALE)
                 element.y_position = y 
-                y += element.height + int(10 * self.RENDER_SCALE)
+                y += element.height + int(10 * VideoSettings.RENDER_SCALE)
             
             elif isinstance(element, ButtonBarSub):
-                y += int(7 * self.RENDER_SCALE)
+                y += int(7 * VideoSettings.RENDER_SCALE)
                 element.y_position = y
-                y += element.height + int(7 * self.RENDER_SCALE)
+                y += element.height + int(7 * VideoSettings.RENDER_SCALE)
             
             elif isinstance(element, Panel):
-                y += int(7 * self.RENDER_SCALE)
+                y += int(7 * VideoSettings.RENDER_SCALE)
                 element.y_position = y 
-                y += element.height + int(7 * self.RENDER_SCALE)
+                y += element.height + int(7 * VideoSettings.RENDER_SCALE)
                 
             elif isinstance(element, CollapsiblePanelHeader):
-                y += int(7 * self.RENDER_SCALE)
+                y += int(7 * VideoSettings.RENDER_SCALE)
                 element.y_position = y 
-                y += element.height + int(7 * self.RENDER_SCALE)
+                y += element.height + int(7 * VideoSettings.RENDER_SCALE)
             
             elif isinstance(element, CollapsiblePanel):
                 if element.open:
-                    y -= int(10 * self.RENDER_SCALE)
+                    y -= int(10 * VideoSettings.RENDER_SCALE)
                     element.y_position = y
-                    y += element.height + int(7 * self.RENDER_SCALE)
+                    y += element.height + int(7 * VideoSettings.RENDER_SCALE)
             
             elif isinstance(element, FloatingText):
-                y += int(3 * self.RENDER_SCALE)
+                y += int(3 * VideoSettings.RENDER_SCALE)
                 element.y_position = y 
-                y += element.height + int(3 * self.RENDER_SCALE)
+                y += element.height + int(3 * VideoSettings.RENDER_SCALE)
              
         self.content_height = y
         self.y_diff = y - self.body_surface.get_rect().height
         self.scrollable = self.y_diff > 0 
 
         if self.old_content_height != self.content_height and self.scrollable:
-            self.scroll_bar = ScrollBar(self.Mouse, self.body_surface, self.scroll_y, self.y_diff, self.scrollable, self.RENDER_SCALE)
+            self.scroll_bar = ScrollBar(self.Mouse, self.body_surface, self.scroll_y, self.y_diff, self.scrollable)
         
         elif not self.scrollable:
             self.scroll_bar = None

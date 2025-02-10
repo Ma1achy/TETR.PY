@@ -1,8 +1,7 @@
 import pygame
-from dataclasses import dataclass, field
 import ctypes
 import platform
-from typing import Dict, Tuple
+from app.core.config_manager import VideoSettings
 
 class Render():
     def __init__(self, Timing, RenderStruct, Debug, GameInstances, MenuManager):
@@ -30,7 +29,7 @@ class Render():
         self.__get_darken_overlay()
         self.darken_overlay_layer_alpha = 200
         
-        self.fullscreen = self.RenderStruct.FULLSCREEN
+        self.fullscreen = VideoSettings.FULLSCREEN
     
     # ---------------------------------------------- WINDOW CREATION ----------------------------------------------
     def __get_available_display_area(self):
@@ -56,30 +55,30 @@ class Render():
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION, icontitle = self.RenderStruct.CAPTION)
 
-        if self.RenderStruct.RENDER_SCALE_MODE == "OFF":
-            self.RenderStruct.RENDER_SCALE = 1
-            if self.RenderStruct.FULLSCREEN:
+        if VideoSettings.RENDER_SCALE_MODE == "OFF":
+            VideoSettings.RENDER_SCALE = 1
+            if VideoSettings.FULLSCREEN:
                 width, height = self.monitor_width, self.monitor_height
             else:
                 #width, height = self.__get_available_display_area()
                 width, height = 1500, 900
         else:
-            if self.RenderStruct.FULLSCREEN and self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC":
+            if VideoSettings.FULLSCREEN and VideoSettings.RENDER_SCALE_MODE == "DYNAMIC":
                 width, height = self.monitor_width, self.monitor_height
             else:
                 width, height = 1500, 900
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
-        self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
-        self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
+        self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * VideoSettings.RENDER_SCALE)
+        self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * VideoSettings.RENDER_SCALE)
 
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE
         
-        if self.RenderStruct.FULLSCREEN:
+        if VideoSettings.FULLSCREEN:
             flags |= pygame.FULLSCREEN
 
-        if self.RenderStruct.RENDER_SCALE_MODE == "LOCKED" or self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC":
+        if VideoSettings.RENDER_SCALE_MODE == "LOCKED" or VideoSettings.RENDER_SCALE_MODE == "DYNAMIC":
             flags |= pygame.SCALED
             width, height = self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT
             
@@ -110,9 +109,9 @@ class Render():
     def handle_window_resize(self):
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = self.window.get_size()
         
-        if self.RenderStruct.RENDER_SCALE_MODE == "OFF":
-            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
-            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
+        if VideoSettings.RENDER_SCALE_MODE == "OFF":
+            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * VideoSettings.RENDER_SCALE)
+            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * VideoSettings.RENDER_SCALE)
     
         self.__load_background_image()
         self.__get_darken_overlay()
@@ -122,10 +121,10 @@ class Render():
         """
         Toggles the fullscreen mode while adjusting window and render sizes appropriately.
         """
-        if self.fullscreen == self.RenderStruct.FULLSCREEN:
+        if self.fullscreen == VideoSettings.FULLSCREEN:
             return 
 
-        self.fullscreen = self.RenderStruct.FULLSCREEN
+        self.fullscreen = VideoSettings.FULLSCREEN
 
         self.__recreate_window()
         self.handle_window_resize()
@@ -135,11 +134,11 @@ class Render():
         pygame.display.set_icon(self.icon)
         pygame.display.set_caption(self.RenderStruct.CAPTION, icontitle = self.RenderStruct.CAPTION)
         
-        if self.RenderStruct.FULLSCREEN:
+        if VideoSettings.FULLSCREEN:
             width, height = self.monitor_width, self.monitor_height
         else:
-            if self.RenderStruct.RENDER_SCALE_MODE == "OFF":
-                self.RenderStruct.RENDER_SCALE = 1
+            if VideoSettings.RENDER_SCALE_MODE == "OFF":
+                VideoSettings.RENDER_SCALE = 1
                 #width, height = self.__get_available_display_area()
                 width, height = 1500, 900
             else:
@@ -147,16 +146,16 @@ class Render():
 
         self.RenderStruct.WINDOW_WIDTH, self.RenderStruct.WINDOW_HEIGHT = width, height
         
-        if self.RenderStruct.RENDER_SCALE_MODE == "OFF" or self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC": # recalculate render size when fullscreen is toggled (makes ui appear the same size on screen but are rendered at a different resolution)
-            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * self.RenderStruct.RENDER_SCALE)
-            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * self.RenderStruct.RENDER_SCALE)
+        if VideoSettings.RENDER_SCALE_MODE == "OFF" or VideoSettings.RENDER_SCALE_MODE == "DYNAMIC": # recalculate render size when fullscreen is toggled (makes ui appear the same size on screen but are rendered at a different resolution)
+            self.RenderStruct.RENDER_WIDTH = int(self.RenderStruct.WINDOW_WIDTH * VideoSettings.RENDER_SCALE)
+            self.RenderStruct.RENDER_HEIGHT = int(self.RenderStruct.WINDOW_HEIGHT * VideoSettings.RENDER_SCALE)
 
         flags = pygame.HWSURFACE | pygame.DOUBLEBUF
         
-        if self.RenderStruct.FULLSCREEN:
+        if VideoSettings.FULLSCREEN:
             flags |= pygame.FULLSCREEN
             
-        if self.RenderStruct.RENDER_SCALE_MODE == "LOCKED" or self.RenderStruct.RENDER_SCALE_MODE == "DYNAMIC":
+        if VideoSettings.RENDER_SCALE_MODE == "LOCKED" or VideoSettings.RENDER_SCALE_MODE == "DYNAMIC":
             flags |= pygame.SCALED
             width, height = self.RenderStruct.RENDER_WIDTH, self.RenderStruct.RENDER_HEIGHT
         else:
@@ -175,99 +174,14 @@ class Render():
              
     def draw_frame(self):
         
+        self.window.fill((0, 0, 0))
         self.__check_if_fullscreen_toggled()
-        self.window.blit(self.image, (0, 0))
+        
+        if VideoSettings.BACKGROUND_VISIBILITY > 0:
+            self.image.set_alpha(255 * VideoSettings.BACKGROUND_VISIBILITY)
+            self.window.blit(self.image, (0, 0))
+        
         self.MenuManager.tick()
         
         pygame.display.flip()
-        
-@dataclass
-class StructRender():
-    
-    TARGET_FPS = "INF"
-    
-    CAPTION = 'TETR.PY'
-    WINDOW_WIDTH = 1500 
-    WINDOW_HEIGHT = 900
-
-    RENDER_SCALE_MODE = True
-    RENDER_SCALE = 1
-    FULLSCREEN = False
-    
-    MUST_RESTART_TO_APPLY_CHANGES = False
-    # old stuff (might need to be changed)
-    
-    # debug rendering flags
-    draw_guide_lines: bool = False
-    draw_bounding_box: bool = False
-    draw_origin: bool = False
-    draw_pivot: bool = False
-    current_time: float = 0
-    
-    key_dict: dict = None
-    
-    COLOUR_MAP: Dict[int, Tuple[int, int, int]] = field(default_factory = lambda: {
-    
-        'Z': (206, 0, 43),     
-        'L': (219, 87, 0),     
-        'O': (221, 158, 0),    
-        'S': (99, 177, 0),     
-        'I': (51, 156, 218),   
-        'J': (38, 64, 202),    
-        'T': (168, 34, 139),   
-        
-        'Garbage': (105, 105, 105),  
-        'Hurry': (32, 32, 32),
-        'Locked': (75, 75, 75)
-   
-    })
-    
-    COLOUR_MAP_AVG_TEXTURE_COLOUR : Dict[int, Tuple[int, int, int]] = field(default_factory = lambda: {
-    
-        'Z': (221, 67, 75),
-        'L': (221, 125, 67),     
-        'O': (221, 209, 67),
-        'S': (124, 221, 67),
-        'I': (67, 221, 178),
-        'J': (92, 67, 221),
-        'T': (207, 67, 221),
-        
-        'Garbage': (75, 75, 75),  
-        'Hurry': (43, 43, 43),
-        'Locked': (43, 43, 43)
-   
-    })
-    
-    TEXTURE_MAP: Dict[int, Tuple[int, int, int]] = field(default_factory = lambda: {
-        'Z': 0,     
-        'L': 1,     
-        'O': 2,    
-        'S': 3,     
-        'I': 4,   
-        'J': 5,    
-        'T': 6,   
-        
-        'Garbage': 7,  
-        'Hurry': 8,
-        'Locked': 9,
-        'Shadow': 10,
-        'Warning': 11
-    })
-    
-    # will have to move this to a per instance basis
-    spin_type: str = None
-    is_mini: bool = False
-    
-    lines_cleared: bool = False
-    cleared_blocks: list = None
-    cleared_idxs: list = None
-    # ========================
-    
-    def  __post_init__(self):
-        
-        self.RENDER_WIDTH = int(self.WINDOW_WIDTH * self.RENDER_SCALE)
-        self.RENDER_HEIGHT = int(self.WINDOW_HEIGHT * self.RENDER_SCALE)
-        
-        self.GRID_SIZE = int(self.WINDOW_WIDTH / 48)
-        self.BORDER_WIDTH = int(self.GRID_SIZE / 6)
 

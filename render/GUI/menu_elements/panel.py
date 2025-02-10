@@ -9,6 +9,7 @@ from render.GUI.buttons.start_button import StartButton
 from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
 from render.GUI.buttons.music_selector_button import MusicSelectorButton
+from app.core.config_manager import VideoSettings
 
 class Panel(NestedElement):
     def __init__(self, button_functions, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None):
@@ -253,7 +254,9 @@ class Panel(NestedElement):
             self.surface.blit(self.cached_surface, self.rect.topleft)
             return
         
-        self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+        if VideoSettings.BACKGROUND_VISIBILITY > 0:
+            self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+            
         self.panel_surface.blit(self.element_surface, (0, 0))
         self.surface.blit(self.panel_surface, self.rect.topleft)
          
