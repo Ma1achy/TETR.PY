@@ -169,7 +169,7 @@ class CollapsiblePanel(NestedElement):
             self.surface.blit(self.cached_surface, self.rect.topleft)
             return
         
-        if VideoSettings.BACKGROUND_VISIBILITY > 0:
+        if VideoSettings.DRAW_BACKGROUND:
             self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
             
         self.panel_surface.blit(self.element_surface, (0, 0))

@@ -112,6 +112,8 @@ class MenuManager():
         
         self.darken_overlay_layer_alpha = 0
         
+        self.in_game = False
+        
     def init_menus(self, window):
         """
         Initialise the menus and GUI elements
@@ -229,8 +231,8 @@ class MenuManager():
     def tick(self):
         """
         Update the menus and GUI elements
-        """
-        if VideoSettings.BACKGROUND_VISIBILITY > 0:
+        """    
+        if VideoSettings.DRAW_BACKGROUND:
             self.window.blit(self.gradient_overlay, (0, 0))
          
         if self.current_menu is not None:
@@ -260,7 +262,6 @@ class MenuManager():
          
         self.__handle_dialog_transitions()
         self.update_darken_overlay_alpha()
-        #self.reset_dialogs()
         self.get_actions()
         self.handle_exceptions()
         self.handle_menu_transitions()
@@ -274,7 +275,9 @@ class MenuManager():
         if self.ConfigManager.error_loading_config:
             self.notify("the provided config file could not be loaded and has been reset to the default settings.", "error")
             self.ConfigManager.error_loading_config = False
-            
+        
+        VideoSettings.DRAW_BACKGROUND = VideoSettings.BACKGROUND_VISIBILITY > 0 and (not VideoSettings.NO_BACKGROUND_IN_MENUS or self.in_game)
+          
     def render_darken_gradient(self):
         """
         Draw a transparent gradient from transparent to black on the gradient overlay surface.

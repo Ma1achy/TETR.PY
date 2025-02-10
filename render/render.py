@@ -177,7 +177,7 @@ class Render():
         self.window.fill((0, 0, 0))
         self.__check_if_fullscreen_toggled()
         
-        if VideoSettings.BACKGROUND_VISIBILITY > 0:
+        if VideoSettings.DRAW_BACKGROUND:
             self.image.set_alpha(255 * VideoSettings.BACKGROUND_VISIBILITY)
             self.window.blit(self.image, (0, 0))
         

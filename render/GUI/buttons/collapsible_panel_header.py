@@ -4,6 +4,7 @@ from render.GUI.buttons.button import Button
 from render.GUI.font import Font
 from render.GUI.buttons.generic_button import GenericButton
 from app.core.sound.sfx import SFX
+from app.core.config_manager import VideoSettings
 
 class CollapsiblePanelHeader(Button):
     def __init__(self, Timing, Mouse, Sound, surface, container, definition, y_position, parent, RENDER_SCALE = 1, ToolTips = None, button_functions = None):
@@ -279,7 +280,8 @@ class CollapsiblePanelHeader(Button):
         if not self.on_screen:
             return
         
-        self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
+        if VideoSettings.DRAW_BACKGROUND:
+            self.surface.blit(self.shadow_surface, self.shadow_rect.topleft)
         self.surface.blit(self.button_surface, self.rect.topleft)
         self.surface.blit(self.element_surface, self.rect.topleft)
     

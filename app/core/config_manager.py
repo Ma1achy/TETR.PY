@@ -667,6 +667,9 @@ class VideoSettings():
     NO_BACKGROUND_IN_MENUS: bool = False
     KEEP_REPLAY_TOOLS_OPEN: bool = False
     WARN_WHEN_NOT_FOCUSED: bool = True
+    
+    # not a changeable setting, used internally
+    DRAW_BACKGROUND: bool = True
         
 class CustomisationSettings():
     USE_CUSTOM_BACKGROUND: bool= False
