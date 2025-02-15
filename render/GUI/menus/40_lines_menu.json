@@ -122,6 +122,7 @@
                         {   
                             "type": "music_selector_button",
                             "function": "open_music_selector",
+                            "value_getter": "get_40l_song",
                             "tooltip": "Customise the music that will play in this mode.",
                             "text": {
                                 "display_text": "RANDOM: CALM",

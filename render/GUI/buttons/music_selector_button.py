@@ -5,7 +5,7 @@ from utils import load_image, align_element, brightness_maintain_alpha, align_ce
 from app.core.sound.sfx import SFX
 
 class MusicSelectorButton(Button):
-    def __init__(self, Timing, Mouse, Sound, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None):
+    def __init__(self, Timing, Mouse, Sound, surface, container, definition, function, parent, RENDER_SCALE = 1, ToolTips = None, button_functions = None):
         super().__init__(Timing, surface, Mouse, function, container, definition['size']['width'], definition['size']['height'], style = 'lighten', maintain_alpha = True, slider = None, parent = parent, RENDER_SCALE = RENDER_SCALE, ToolTips = ToolTips, Sound = Sound)
         """
         A generic button that can be used for any purpose
@@ -38,6 +38,12 @@ class MusicSelectorButton(Button):
         self.shadow_radius = int(3 * self.RENDER_SCALE)
          
         self.font = Font('hun2', int(30 * self.RENDER_SCALE))
+        
+        self.button_functions = button_functions
+        
+         
+        self.value_getter = self.button_functions[definition['value_getter']]
+        self.text = self.value_getter()
         
         self.__get_rect_and_surface()
         self.render()
@@ -86,7 +92,7 @@ class MusicSelectorButton(Button):
         """
         Render the text on the button
         """
-        self.font.draw(self.button_surface, self.definition['text']['display_text'], self.definition['text']['colour'], 'left', int(28 * self.RENDER_SCALE), 0)
+        self.font.draw(self.button_surface, self.text, self.definition['text']['colour'], 'left', int(28 * self.RENDER_SCALE), 0)
     
     def render_image(self):
         """
@@ -132,11 +138,27 @@ class MusicSelectorButton(Button):
         
         self.surface.blit(self.background_surface, self.rect.topleft)
         self.surface.blit(self.button_surface, self.rect.topleft)
+    
+    def get_value(self):
+        """
+        Get the value of the button
+        """
+        self.text = self.value_getter()
+    
+    def update_apperance(self):
+        if self.text == self.value_getter():
+            return
+        
+        self.background_surface.fill(self.definition['background']['colour'])
+        self.button_surface.fill((0, 0, 0, 0))
+        self.get_value()
+        self.render()
         
     def update(self):
         """
         Update the button
         """
+        self.update_apperance()
         super().update()
     
         

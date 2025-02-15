@@ -412,3 +412,31 @@ class SoundManager():
             special_songs.remove(self.Sound.current_music)
             
         return self.randomiser.shuffle_array(special_songs)[0]
+    
+    def get_song_artist_and_title(self, song):
+        """
+        Obtain the artist and title of a music track in the format "artist - title".
+        
+        args:
+            song (Music): The music track to obtain the artist and title from.
+        
+        returns:
+            "artist - title" (str): The artist and title of the music track.
+        """
+        if song is Music.RANDOM:
+            name = "random"
+        elif song is Music.RANDOM_CALM:
+            name = "random: calm"
+        elif song is Music.RANDOM_BATTLE:
+            name = "random: battle"
+        elif song is Music.RANDOM_INTERFACE:
+            name = "random: interface"
+        elif song is Music.RANDOM_SPECIAL:
+            name = "random: special"
+        else:
+            if song not in self.music_tracks.keys():
+                return "null - null"
+            
+            name = f"{self.music_tracks[song]["artist"].lower()} - {self.music_tracks[song]["title"].lower()}"
+            
+        return name

@@ -14,6 +14,8 @@ from app.input.keyboard.menu_kb_input_handler import UIAction
 from instance.handling.handling import Action
 from render.renderstruct import StructRender
 
+from app.core.sound.music import Music
+
 if sys.platform == "darwin":
     import os
     os.environ["TK_SILENCE_DEPRECATION"] = "1"
@@ -678,6 +680,8 @@ class CustomisationSettings():
     CUSTOM_BLOCK_SKIN_PATH: str = None
 
 class FortyLinesSettings():
+    SONG_SELECTION: Music = Music.RANDOM_CALM
+    
     PRO_MODE: bool = False
     ALERT_ON_FINESSE_FAULT: bool = False
     RETRY_ON_FINESSE_FAULT: bool = False
@@ -689,7 +693,7 @@ class FortyLinesSettings():
     LEFT_COUNTER_SLOT_4: bool = None
     RIGHT_COUNTER_SLOT: bool = None
     
-class BlitzSettings():
+class BlitzSettings():    
     PRO_MODE: bool = False
     ALERT_ON_FINESSE_FAULT: bool = False
     RETRY_ON_FINESSE_FAULT: bool = False
@@ -700,6 +704,9 @@ class BlitzSettings():
     LEFT_COUNTER_SLOT_3: bool = None
     LEFT_COUNTER_SLOT_4: bool = None
     RIGHT_COUNTER_SLOT: bool = None
+
+class CustomSoloSettings():
+    SONG_SELECTION: Music = Music.RANDOM_CALM
 
 # FIXME: need to change how config file is loaded, as currently if there is no user logged in it crashes
 # need to probably change the logic/simplify it and this seems bad? although the error handling/validation and malform fixing is good.

@@ -74,7 +74,7 @@ class TETRPY():
         self.pygame_events_queue = deque()
         
         self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.ConfigManager.menu_keybindings, self.Timing)
-        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager, self.Sound)
+        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager, self.SoundManager, self.Sound)
         self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
         self.Render = Render(self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Timing, self.RenderStruct, self.DebugStruct)

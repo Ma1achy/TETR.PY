@@ -42,7 +42,7 @@ class Font():
         
         self.height = self.font.get_height()
   
-    def draw(self, surface, text, colour, alignment, h_padding = 0, v_padding = 0, draw_background = None):
+    def draw(self, surface, text, colour, alignment, h_padding = 0, v_padding = 0, draw_background = None, alpha = 1):
         """
         Draw the text on the surface
         
@@ -61,6 +61,8 @@ class Font():
         self.__apply_padding()
         self.__draw_background(surface, colour, draw_background)
         
+        alpha = max(0, min(255, alpha * 255))
+        self.rendered_text.set_alpha(alpha) if alpha != 255 else None
         surface.blit(self.rendered_text, self.text_rect)
     
     def __get_padding(self, h_padding, v_padding):

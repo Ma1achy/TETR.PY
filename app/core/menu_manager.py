@@ -14,11 +14,11 @@ from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
 from render.GUI.menu_elements.config_slider import ConfigSlider
 from render.GUI.buttons.checkbox_button import CheckboxButton
 from render.GUI.notification import Notification
-from app.core.config_manager import VideoSettings
+from app.core.config_manager import VideoSettings, FortyLinesSettings, CustomSoloSettings
 
 # FIXME: dialog stack appears to be broken
 class MenuManager():
-    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, Sound):
+    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, SoundManager, Sound):
         """
         The menu manager, manages the current menu and GUI elements and transitions
         
@@ -31,6 +31,8 @@ class MenuManager():
             pygame_events_queue (queue): The pygame events queue
             AccountManager (AccountManager): The AccountManager object
             ConfigManager (ConfigManager): The ConfigManager object
+            SoundManager (SoundManager): The SoundManager object
+            Sound (Sound): 
         """
         self.Keyboard = Keyboard
         self.Mouse = Mouse
@@ -41,6 +43,7 @@ class MenuManager():
         
         self.AccountManager = AccountManager
         self.ConfigManager = ConfigManager
+        self.SoundManager = SoundManager
         self.Sound = Sound
         
         self.debug_overlay = False
@@ -91,6 +94,8 @@ class MenuManager():
             
             # music selector
             "select_song": self.select_song,
+            "get_40l_song": self.get_song_name_40l,
+            "get_custom_solo_song": self.get_song_name_custom_solo,
             
             # music room
             "play_song": self.play_song,	
@@ -219,10 +224,8 @@ class MenuManager():
         self.previous_menu = None
 
         self.current_dialog = None
-        self.next_dialog = None
-        self.previous_dialog = None
-        
         self.dialog_stack = []
+        
         self.notifications = [] 
         
         self.current_dropdown = None
@@ -928,6 +931,14 @@ class MenuManager():
     def select_song(self, song):
         if self.in_music_room:
             self.play_song(song)
+            return
+        
+        if self.current_menu is self.forty_lines_menu:
+            FortyLinesSettings.SONG_SELECTION = song
+        elif self.current_menu is self.custom_solo_menu:
+            CustomSoloSettings.SONG_SELECTION = song
+            
+        self.close_dropdown()
         
     def play_song(self, song):
         self.Sound.music_queue.append((song, True))
@@ -1019,5 +1030,15 @@ class MenuManager():
     def restart_app(self):
         self.Timing.restart = True
         self.quit_game()
-        
+    
+    # game mode music selectors
+    
+    def get_song_name_40l(self):
+        return self.get_selected_song_name(FortyLinesSettings.SONG_SELECTION)
+    
+    def get_song_name_custom_solo(self):
+        return self.get_selected_song_name(CustomSoloSettings.SONG_SELECTION) 
+    
+    def get_selected_song_name(self, song):
+        return self.SoundManager.get_song_artist_and_title(song)
     

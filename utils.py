@@ -482,7 +482,7 @@ def draw_linear_gradient(surface, start_colour, end_colour, rect):
         colour = [int(start_colour[i] + (y / rect.height) * (end_colour[i] - start_colour[i])) for i in range(3)]
         pygame.draw.line(surface, colour, (rect.left, rect.top + y), (rect.right, rect.top + y))
 
-def draw_solid_colour(surface, colour, rect):
+def draw_solid_colour(surface, colour, rect, alpha = 1):
     """
     Draw a solid colour rectangle
     
@@ -491,9 +491,12 @@ def draw_solid_colour(surface, colour, rect):
         colour (str): The colour of the rectangle
         rect (pygame.Rect): The rectangle to draw
     """
-    pygame.draw.rect(surface, hex_to_rgb(colour), rect)
+    alpha = max(0, min(255, int(alpha * 255)))
+    colour = hex_to_rgb(colour)
+    rgba = colour + (alpha,)
+    pygame.draw.rect(surface, rgba, rect)
 
-def draw_border(surface, border, rect, RENDER_SCALE = 1):
+def draw_border(surface, border, rect, RENDER_SCALE = 1, alpha = 1):
     """
     Draw a border around a rectangle
     
@@ -502,18 +505,20 @@ def draw_border(surface, border, rect, RENDER_SCALE = 1):
         border (dict): The border to draw
         rect (pygame.Rect): The rectangle to draw the border around
     """
+    alpha = max(0, min(255, int(alpha * 255)))
+    
     for side, value in border.items():
         width, colour = value
         width = int(width * RENDER_SCALE)
         
         if side == 'top':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.left, rect.top, rect.width, width))
+            pygame.draw.rect(surface, (hex_to_rgb(colour) + (alpha,)), pygame.Rect(rect.left, rect.top, rect.width, width))
         elif side == 'bottom':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.left, rect.bottom - width, rect.width, width))
+            pygame.draw.rect(surface, (hex_to_rgb(colour) + (alpha,)), pygame.Rect(rect.left, rect.bottom - width, rect.width, width))
         elif side == 'left':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.left, rect.top, width, rect.height))
+            pygame.draw.rect(surface, (hex_to_rgb(colour) + (alpha,)), pygame.Rect(rect.left, rect.top, width, rect.height))
         elif side == 'right':
-            pygame.draw.rect(surface, hex_to_rgb(colour), pygame.Rect(rect.right - width, rect.top, width, rect.height))
+            pygame.draw.rect(surface, (hex_to_rgb(colour) + (alpha,)), pygame.Rect(rect.right - width, rect.top, width, rect.height))
             
 def brightness(surface, brightness_factor):
     """

@@ -30,27 +30,28 @@
             "opacity": 32
         },
         "back_button": {
+            "type": "exit",
             "function": "go_to_exit",
             "main_text": {
-                "colour": "#c9c9c9",
+                "colour": "#fffffa",
                 "display_text": "EXIT"
             },
             "background": {
                 "style": "solid",
-                "colour": "#242424"
+                "colour": "#060606"
             },
             "border": {
                 "top": [
                     3,
-                    "#3d3d3d"
+                    "#222226"
                 ],
                 "bottom": [
                     3,
-                    "#0e0e0e"
+                    "#000006"
                 ],
                 "right": [
                     3,
-                    "#181818"
+                    "#040406"
                 ]
             }
         },

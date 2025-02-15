@@ -185,7 +185,7 @@ class Panel(NestedElement):
             
             elif element['type'] == "music_selector_button":
                 function = self.button_functions[element['function']]
-                music_selector_button = MusicSelectorButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips)
+                music_selector_button = MusicSelectorButton(self.Timing, self.Mouse, self.Sound, self.element_surface, self.panel_surface.get_rect(), element, function, self, self.RENDER_SCALE, self.ToolTips, self.button_functions)
                 self.elements.append(music_selector_button)
                 y -= int(10 * self.RENDER_SCALE)
                 
