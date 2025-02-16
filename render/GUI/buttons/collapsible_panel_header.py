@@ -230,9 +230,6 @@ class CollapsiblePanelHeader(Button):
         """
         self.open = not self.open
         
-        self.state = None
-        self.previous_state = None
-        
         self.get_state_overlays()
         
         if self.function is None:

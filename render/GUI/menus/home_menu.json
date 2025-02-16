@@ -33,7 +33,7 @@
             "type": "exit",
             "function": "go_to_exit",
             "main_text": {
-                "colour": "#fffffa",
+                "colour": "#ffffff",
                 "display_text": "EXIT"
             },
             "background": {

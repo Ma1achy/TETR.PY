@@ -72,7 +72,7 @@ class BackButton(Button):
         """
         self.render_shadow()
         if self.type == 'exit':
-            alpha_bg = 0.3
+            alpha_bg = 0.25
             alpha_br = 0.5
         else:
             alpha_bg = 1
@@ -88,7 +88,7 @@ class BackButton(Button):
         Render the text on the button
         """    
         if self.type == 'exit':
-            alpha = 0.5
+            alpha = 0.33
         else:
             alpha = 1
         self.font.draw(self.button_surface, self.definition['main_text']['display_text'], self.definition['main_text']['colour'], 'right', int(20 * self.RENDER_SCALE), 0, alpha = alpha)
@@ -163,7 +163,7 @@ class BackButton(Button):
             if self.type == 'exit':
                 self.draw_exit_apperance(self.hover_surface)
             brightness(self.hover_surface, 0.8)
-
+            
             self.pressed_surface = self.button_surface.copy()
             if self.type == 'exit':
                 self.draw_exit_apperance(self.pressed_surface)
@@ -171,7 +171,7 @@ class BackButton(Button):
             
     def draw_exit_apperance(self, surface):
         surface.fill((0, 0, 0, 0))
-        draw_solid_colour(surface, "#440000", surface.get_rect(), alpha = 0.3)
+        draw_solid_colour(surface, "#440000", surface.get_rect(), alpha = 0.4)
         draw_border(
             surface, 
             {
@@ -190,6 +190,6 @@ class BackButton(Button):
             }, 
             surface.get_rect(),
             self.RENDER_SCALE,
-            alpha = 0.6
+            alpha = 0.7
         )
-        self.font.draw(surface, self.definition['main_text']['display_text'], "#ffaaaa", 'right', int(20 * self.RENDER_SCALE), 0)
+        self.font.draw(surface, self.definition['main_text']['display_text'], "#ffaaaa", 'right', int(20 * self.RENDER_SCALE), 0, alpha = 0.7)
