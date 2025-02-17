@@ -237,6 +237,158 @@
                                 }
                             },
                             "tooltip": "Change the keybinding scheme."
+                        },
+                        {
+                            "type": "pages",
+                            "page_1": [
+                                {
+                                    "type": "list",
+                                    "elements": [
+                                        {
+                                            "left_text": "move falling piece left",
+                                            "right_text": "LEFT"
+                                        },
+                                        {
+                                            "left_text": "move falling piece right",
+                                            "right_text": "RIGHT"
+                                        },
+                                        {
+                                            "left_text": "soft drop",
+                                            "right_text": "DOWN"
+                                        },
+                                        {
+                                            "left_text": "hard drop",
+                                            "right_text": "SPACE"
+                                        },
+                                        {
+                                            "left_text": "rotate counterclockwise",
+                                            "right_text": "CTRL, Z"
+                                        },
+                                        {
+                                            "left_text": "rotate clockwise",
+                                            "right_text": "UP, X"
+                                        },
+                                        {
+                                            "left_text": "rotate 180",
+                                            "right_text": "A"
+                                        },
+                                        {
+                                            "left_text": "swap hold piece",
+                                            "right_text": "SHIFT, C"
+                                        },
+                                        {
+                                            "left_text": "forfeit game",
+                                            "right_text": "ESC"
+                                        },
+                                        {
+                                            "left_text": "retry game",
+                                            "right_text": "R"
+                                        },
+                                        {
+                                            "left_text": "pause game",
+                                            "right_text": "P"
+                                        },
+                                        {
+                                            "left_text": "move in menus",
+                                            "right_text": "UP (or W), DOWN (or S), LEFT (or A), RIGHT (or D)"
+                                        },
+                                        {
+                                            "left_text": "confirm in menus",
+                                            "right_text": "ENTER, SPACE"
+                                        },
+                                        {
+                                            "left_text": "back in menus",
+                                            "right_text": "ESC"
+                                        },
+                                        {
+                                            "left_text": "open music overlay",
+                                            "right_text": "TAB"
+                                        }
+                                    ],
+                                    "themeing": {
+                                        "left_text_colour": "#6275a7",
+                                        "right_text_colour": "#a7baec",
+                                        "background_colour": "#657497",
+                                        "seperator_colour": "#12151D"
+                                    }
+                                }
+                            ],
+                            "page_2": [
+                                {
+                                    "type": "list",
+                                    "elements": [
+                                        {
+                                            "left_text": "move falling piece left",
+                                            "right_text": "A"
+                                        },
+                                        {
+                                            "left_text": "move falling piece right",
+                                            "right_text": "D"
+                                        },
+                                        {
+                                            "left_text": "soft drop",
+                                            "right_text": "W"
+                                        },
+                                        {
+                                            "left_text": "hard drop",
+                                            "right_text": "S"
+                                        },
+                                        {
+                                            "left_text": "rotate counterclockwise",
+                                            "right_text": "LEFT"
+                                        },
+                                        {
+                                            "left_text": "rotate clockwise",
+                                            "right_text": "RIGHT"
+                                        },
+                                        {
+                                            "left_text": "rotate 180",
+                                            "right_text": "UP"
+                                        },
+                                        {
+                                            "left_text": "swap hold piece",
+                                            "right_text": "SHIFT, SPACE"
+                                        },
+                                        {
+                                            "left_text": "forfeit game",
+                                            "right_text": "ESC"
+                                        },
+                                        {
+                                            "left_text": "retry game",
+                                            "right_text": "R"
+                                        },
+                                        {
+                                            "left_text": "pause game",
+                                            "right_text": "P"
+                                        },
+                                        {
+                                            "left_text": "move in menus",
+                                            "right_text": "W (or UP), S (or DOWN), A (or LEFT), D (or RIGHT)"
+                                        },
+                                        {
+                                            "left_text": "confirm in menus",
+                                            "right_text": "ENTER, SPACE"
+                                        },
+                                        {
+                                            "left_text": "back in menus",
+                                            "right_text": "ESC"
+                                        },
+                                        {
+                                            "left_text": "open music overlay",
+                                            "right_text": "TAB"
+                                        }
+                                    ],
+                                    "themeing": {
+                                        "left_text_colour": "#6275a7",
+                                        "right_text_colour": "#a7baec",
+                                        "background_colour": "#657497",
+                                        "seperator_colour": "#12151D"
+                                    }
+                                }
+                            ],
+                            "page_3": [
+
+                            ]
                         }
                     ]
                 },
