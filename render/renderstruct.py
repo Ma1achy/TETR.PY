@@ -12,6 +12,7 @@ class StructRender():
 
     RENDER_SCALE_MODE = True
     RENDER_SCALE = 1
+    MAX_DEPTH = 10000
     FULLSCREEN = False
     
     MUST_RESTART_TO_APPLY_CHANGES = False

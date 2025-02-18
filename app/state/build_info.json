@@ -1,7 +1,7 @@
 {
-    "VERSION": "alpha 0.1",
-    "BUILD_DATE": "2025-02-17 16:53:10",
-    "GIT_COMMIT_HASH": "6f9833a63f368de6602766575efd70b50a5f4d68",
+    "VERSION": "indev 1.0",
+    "BUILD_DATE": "2025-02-18 22:22:56",
+    "GIT_COMMIT_HASH": "7ece6a34c54347d9ca4042e03862a68f9c702ca0",
     "GIT_BRANCH": "master",
     "BUILD_ENV": "development"
 }

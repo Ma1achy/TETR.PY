@@ -832,7 +832,7 @@ class Button(NestedElement):
         if self.previous_state is not None:
             return
         
-        self.Sound.sfx_queue.append(self.hover_sound)
+        self.Sound.sfx_queue.append((self.hover_sound, self.Mouse.position[0], self.Mouse.position[1], 0))
     
     def play_click_sound(self):
         if self.Sound is None:
@@ -841,4 +841,4 @@ class Button(NestedElement):
         if self.click_sound is None:
             return
         
-        self.Sound.sfx_queue.append(self.click_sound)
+        self.Sound.sfx_queue.append((self.click_sound, self.Mouse.position[0], self.Mouse.position[1], 0))

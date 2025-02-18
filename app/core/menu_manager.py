@@ -118,6 +118,7 @@ class MenuManager():
         self.darken_overlay_layer_alpha = 0
         
         self.in_game = False
+        self.sound_disabled = False
         
     def init_menus(self, window):
         """
@@ -392,11 +393,11 @@ class MenuManager():
         
         if self.Mouse.in_dialog and self.current_dialog is not None and self.current_dialog is not self.LoginDialog:
             self.close_dialog()
-            self.Sound.sfx_queue.append(SFX.MenuClick)
+            self.Sound.sfx_queue.append((SFX.MenuClick, 'center', 'center', 0))
             
         elif self.Mouse.in_dialog and self.current_dialog is self.LoginDialog:
             self.open_dialog(self.ExitDialog)
-            self.Sound.sfx_queue.append(SFX.MenuClick) 
+            self.Sound.sfx_queue.append((SFX.MenuClick, 'center', 'center', 0)) 
             
         elif self.Mouse.in_dropdown and self.current_dropdown is not None:
             self.current_dropdown.main_body.back_button.start_click()
@@ -998,6 +999,12 @@ class MenuManager():
         self.copied_text.draw(self.copied_text_surface, 'COPIED TO CLIPBOARD!', '#FFD800', 'center', 0, 0)
     
     def handle_menu_music_transitions(self):
+        if self.SoundManager.disable_all_sound != self.sound_disabled and self.SoundManager.disable_all_sound:
+            if self.Sound.current_music is not None:
+                self.Sound.music_queue.append((self.Sound.current_music, True))
+            else:
+                self.Sound.music_queue.append((Music.CHK_019, True))
+                
         if self.Sound.music_room_listening:
             return
         

@@ -8,6 +8,3 @@ class Sound():
     
     current_music: Music = None
     music_room_listening: bool = False
-    
-    music_volume: float = 0.05
-    sfx_volume: float = 1.0

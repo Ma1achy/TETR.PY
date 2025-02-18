@@ -171,7 +171,7 @@ class Notification():
             return
         
         self.play_appear_sound = False
-        self.Sound.sfx_queue.append(self.notify_sound)
+        self.Sound.sfx_queue.append((self.notify_sound, self.x_position, self.y_position, 0))
         
     def count_time_alive(self):
         if self.animate_appear or self.animate_disappear:

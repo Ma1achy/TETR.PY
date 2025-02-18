@@ -2,15 +2,25 @@ import pygame
 from app.core.sound.music import Music
 from app.core.sound.sfx import SFX
 from app.core.sound.sound import Sound
+from app.state.timing import Timing
 import os
 from instance.engine.four import RNG
 import random
 import re
+import math
+from app.core.config_manager import AudioSettings
+from utils import Vec3
 
 class SoundManager():
-    def __init__(self, Sound:Sound):
+    def __init__(self, Sound:Sound, Timing:Timing, RenderStruct):
         
         self.Sound = Sound
+        self.Timing = Timing
+        self.RenderStruct = RenderStruct
+        
+        self.paused = False
+        self.mute_when_hidden = False
+        self.disable_all_sound = False
         
         self.music_tracks = {
             Music.CHK_019   : {"path": "resources/sound/music/CHK-019 - Aerial City (Chika) - Interface.mp3",                        "loop": (11796,    92554) },    
@@ -108,9 +118,28 @@ class SoundManager():
         self.loop_end = 0   
         self.randomiser = RNG(seed = random.randint(0, 2**32 - 1))
         
-        self.set_music_channel_volume(self.Sound.music_volume)
+        self.music_percentage = -1
+        self.sfx_percentage = -1
+        self.max_music_volume = 0
+        self.max_sfx_volume = 0
+        self.pause_start_time = 0
+        
+        self.__update_music_volume()
+        self.__update_sfx_volume()
+        
+        self.music_position = 0
     
-    def extract_music_info(self, file_path):
+    # ---------------------------------------------------------- MUSIC META DATA ----------------------------------------------------------
+     
+    def __populate_music_info(self):
+        """
+        Populates the music tracks dictionary with type, artist, title, and track number.
+        """
+        for key, track in self.music_tracks.items():
+            info = self.__extract_music_info(track["path"])
+            self.music_tracks[key].update(info)
+    
+    def __extract_music_info(self, file_path):
         """
         Extracts type, artist, title, and track number from the file path using regex.
         
@@ -137,14 +166,36 @@ class SoundManager():
                 "title": "",
                 "track_number": ""
             }
+            
+    def get_song_artist_and_title(self, song):
+        """
+        Obtain the artist and title of a music track in the format "artist - title".
+        
+        args:
+            song (Music): The music track to obtain the artist and title from.
+        
+        returns:
+            "artist - title" (str): The artist and title of the music track.
+        """
+        if song is Music.RANDOM:
+            name = "random"
+        elif song is Music.RANDOM_CALM:
+            name = "random: calm"
+        elif song is Music.RANDOM_BATTLE:
+            name = "random: battle"
+        elif song is Music.RANDOM_INTERFACE:
+            name = "random: interface"
+        elif song is Music.RANDOM_SPECIAL:
+            name = "random: special"
+        else:
+            if song not in self.music_tracks.keys():
+                return "null - null"
+            
+            name = f"{self.music_tracks[song]["artist"].lower()} - {self.music_tracks[song]["title"].lower()}"
+            
+        return name
     
-    def __populate_music_info(self):
-        """
-        Populates the music tracks dictionary with type, artist, title, and track number.
-        """
-        for key, track in self.music_tracks.items():
-            info = self.extract_music_info(track["path"])
-            self.music_tracks[key].update(info)
+    # --------------------------------------------------------- SFX LOADING ---------------------------------------------------------
                 
     def __load_sfx(self):
         for sfx in self.sound_effects:
@@ -160,7 +211,9 @@ class SoundManager():
             channels = 2,
             buffer = self.buffer_size
         )
-
+    
+    # ------------------------------------------------------- AUDIO PLAYBACK --------------------------------------------------------
+    
     def quit(self):
         pygame.mixer.quit()
 
@@ -168,33 +221,43 @@ class SoundManager():
         pygame.mixer.set_num_channels(channels)
 
     def tick(self):
+        self.__update_music_position()
+        self.__manage_music_playback()
+        self.__update_music_volume()
+        self.__update_sfx_volume()
         self.__process_queues()
         
     def __process_queues(self):
+        
+        if AudioSettings.DISABLE_ALL_SOUND:
+            self.Sound.music_queue.clear()
+            self.Sound.sfx_queue.clear()
+            return
         
         if self.Sound.music_queue:
             music = self.Sound.music_queue.popleft()  
             self.__play_music(music)
 
         if self.Sound.sfx_queue:
-            sfx = self.Sound.sfx_queue.popleft() 
-            self.__play_sfx(sfx)
+            sound = self.Sound.sfx_queue.popleft() 
+            sfx, x, y, z = sound
+            self.__play_sfx(sfx, x, y, z)
     
-    def loop_current_song(self, event):
-        """
-        Handle Pygame events to manage music looping from specified loop points.
-        """
-        pygame.mixer.music.play(loops = 0, start = self.loop_start / 1000.0)
-        pygame.time.set_timer(pygame.USEREVENT, self.loop_end - self.loop_start) # timer plays loop end - loop start to only play the looped section
-        self.set_music_channel_volume(self.Sound.music_volume)
-        
-    def __play_sfx(self, sfx: SFX):
+    # ------------------------------------------------------ SFX PLAYBACK -----------------------------------------------------------  
+    
+    def __play_sfx(self, sfx: SFX, x = 0, y = 0, z = 0):
         """
         Play a sound effect if an available channel exists.
         
         args:
             sfx (SFX): The sound effect to play.
+            x (int): The x position of the sound effect in screen space.
+            y (int): The y position of the sound effect in screen space.
+            z (int): The z position of the sound effect in screen space.
         """
+        if AudioSettings.DISABLE_ALL_SOUND:
+            return
+        
         if sfx not in self.sound_effects:
             return
         
@@ -203,8 +266,66 @@ class SoundManager():
         
         channel = pygame.mixer.find_channel()
         if channel:
-            #channel.set_volume(left = left_volume, right = right_volume)
+            left_gain, right_gain = self.calculate_pan(x, y, z)
+            left_volume, right_volume = self.calculate_left_right_volume(left_gain, right_gain)
+            channel.set_volume(left_volume, right_volume)
             channel.play(self.sound_effects[sfx])
+    
+    # ------------------------------------------------------ PAN CALCULATION ---------------------------------------------------------
+    
+    def calculate_left_right_volume(self, left_gain, right_gain):
+        left_volume = self.max_sfx_volume * left_gain
+        right_volume = self.max_sfx_volume * right_gain
+
+        return left_volume, right_volume
+        
+    def calculate_pan(self, x, y, z):
+        """
+        Calculate the pan based on the x, and y position of the sound effect on the screen.
+        
+        args:
+            x (int): The x position of the sound effect in screen space.
+            y (int): The y position of the sound effect in screen space.
+            z (int): The z position of the sound effect in screen space.
+        """ 
+        
+        if x == 'center':
+            x = self.RenderStruct.RENDER_WIDTH / 2
+        
+        if y == 'center':
+            y = self.RenderStruct.RENDER_HEIGHT / 2
+            
+        x = max(0, min(x / self.RenderStruct.RENDER_WIDTH, 1))
+        y = max(0, min(y / self.RenderStruct.RENDER_HEIGHT, 1))
+        z = max(0, min(z / self.RenderStruct.MAX_DEPTH, 1))
+        
+        if AudioSettings.STEREO_BALANCE == 0:
+            x = 0.5
+            y = 0.5 
+                
+        audio_source = Vec3(x, 1 - y, z) - Vec3(0.5, 0.5, 0.5)
+        
+        if audio_source.x != 0 or audio_source.y != 0:
+            audio_source.x *= AudioSettings.STEREO_BALANCE / 100
+            audio_source.y *= AudioSettings.STEREO_BALANCE / 100
+        
+        listener_pos = Vec3(0, 0, 0)
+        listener_up = Vec3(0, 1, 0)
+        listener_forward = Vec3(0, 0, 1)
+        
+        side = listener_up.cross(listener_forward).normalise()
+        
+        audio_x = (audio_source - listener_pos).dot(side)
+        audio_z = (audio_source - listener_pos).dot(listener_forward)
+        
+        angle = math.atan2(audio_x, audio_z)
+        
+        left_gain = math.sqrt(2)/2 * (math.cos(angle) + math.sin(angle))
+        right_gain = math.sqrt(2)/2 * (math.cos(angle) - math.sin(angle))
+        
+        return left_gain**2, right_gain**2
+        
+    # ------------------------------------------------------ MUSIC PLAYBACK ---------------------------------------------------------
     
     def __play_music(self, song):
         
@@ -256,7 +377,6 @@ class SoundManager():
 
         pygame.mixer.music.load(music_path)
         pygame.mixer.music.play(loops = 0)
-        self.set_music_channel_volume(self.Sound.music_volume) 
         self.__set_current_song(music, loop)
  
     def __set_current_song(self, music, loop):
@@ -269,12 +389,198 @@ class SoundManager():
         self.loop_start, self.loop_end = loop
         pygame.time.set_timer(pygame.USEREVENT, self.loop_end)
         
-    def set_sound_volume(self, sound_enum, volume):
+        self.music_position = 0
+        self.remaining_time = 0
+    
+    # ------------------------------------------------------ MUSIC LOOPING -----------------------------------------------------------
+    
+    def loop_current_song(self, event):
         """
-        Set the volume for a specific sound or music.
+        Handle Pygame events to manage music looping from specified loop points.
+        """
+        if self.paused or AudioSettings.DISABLE_ALL_SOUND:
+            return
+        
+        pygame.mixer.music.play(loops = 0, start = self.loop_start / 1000.0)
+        self.music_position = self.loop_start / 1000.0
+        pygame.time.set_timer(pygame.USEREVENT, self.loop_end - self.loop_start) # timer plays loop end - loop start to only play the looped section
+        self.set_music_channel_volume(self.loudness_to_log_linear_picewise(AudioSettings.MUSIC_VOLUME, music = True))
+    
+    def __update_music_position(self):
+        """
+        Get the current position of the music track.
+        """
+        if self.Sound.current_music is None or self.Sound.current_music is Music.NONE:
+            self.music_position = 0
+            return
+        
+        if self.paused or self.disable_all_sound:
+            return
+        
+        self.music_position += self.Timing.frame_delta_time
+        
+        if self.music_position >= self.loop_end:
+            self.music_position = self.loop_end
+    
+    # ------------------------------------------------------ MUSIC PLAYBACK MANAGEMENT -------------------------------------------------
+    
+    def __manage_music_playback(self):
+        if self.disable_all_sound == AudioSettings.DISABLE_ALL_SOUND:
+            return
+        
+        self.disable_all_sound = AudioSettings.DISABLE_ALL_SOUND
+        
+        if self.disable_all_sound:
+            self.pause_all_sounds()
+            self.disable_music()
+        else:
+            self.resume_all_sounds()
+            self.enable_music()
+        
+    def enable_music(self):
+        """
+        Enable music playback.
+        """
+        self.resume_music()
+        
+    def disable_music(self):
+        """
+        Disable music playback.
+        """
+        self.pause_music()
+        
+    def toggle_music_mute(self, flag):
+        if not AudioSettings.MUTE_WHEN_HIDDEN or AudioSettings.DISABLE_ALL_SOUND:
+            return 
+        
+        if flag == self.mute_when_hidden:
+            return
+        
+        self.mute_when_hidden = flag
+        
+        if flag:
+            self.pause_music()
+        else:
+            self.resume_music()
+    
+    # ------------------------------------------------------ MUSIC PAUSE/RESUME ------------------------------------------------------
+       
+    def pause_music(self):
+        """
+        Pause the currently playing music.
+        """
+        if not pygame.mixer.music.get_busy() or self.paused:
+            return
+    
+        self.paused = True   
+        self.remaining_time = int(self.loop_end - self.music_position * 1000) # pygame timer uses ms
+        
+        if self.remaining_time <= 0:
+            self.remaining_time = 0
+            
+        pygame.mixer.music.stop()
+        pygame.time.set_timer(pygame.USEREVENT, 0)
+        
+    def resume_music(self):
+        """
+        Resume the currently playing music.
+        """
+        if not self.paused:
+            return
+    
+        self.paused = False
+        pygame.mixer.music.play(loops = 0, start = self.music_position)
+        pygame.time.set_timer(pygame.USEREVENT, self.remaining_time)
+    
+    # ------------------------------------------------------ VOLUME CONTROL ---------------------------------------------------------
+    
+    def loudness_to_log_linear_picewise(self, loudness, min_db = -80, max_db = 0, music = False):
+        """
+        Convert loudness (0-200%) to a mixed logarithmic and linear scale (0-1.0).
+        Volume is logarithmic up to 100% and linear from 100-200%.
         
         args:
-            sound_enum (SFX or Music): SFX or Music enum representing the sound.
+            loudness (float): The loudness level (0-200%).
+            min_db (float): The minimum decibel value.
+            max_db (float): The maximum decibel value.
+            music (bool): Whether the volume is for music or SFX.
+        
+        returns:
+            float: The volume in a mixed logarithmic and linear scale (0 - 1.0).
+        """
+        loudness /= 2
+        
+        if music:
+            factor = 0.2
+        else:
+            factor = 1.0
+            
+        if loudness == 0:
+            return 0.0
+
+        if loudness <= 50:
+            db_value = min_db + (loudness * (max_db - min_db) / 100) * factor
+            log_value = (db_value - min_db) / (max_db - min_db)
+              
+            if log_value <= 0.01:
+                log_value = 0.01
+
+            return log_value
+    
+        return loudness / 100 * factor
+    
+    # ------------------------------------------------------ MUSIC VOLUME -----------------------------------------------------------
+    
+    def __update_music_volume(self):
+        """
+        Update the volume of the music channel.
+        """
+        if self.music_percentage == AudioSettings.MUSIC_VOLUME:
+            return
+        
+        self.music_percentage = AudioSettings.MUSIC_VOLUME
+        self.max_music_volume = self.loudness_to_log_linear_picewise(AudioSettings.MUSIC_VOLUME, music = True)
+        self.set_music_channel_volume(self.max_music_volume)
+    
+    def set_music_channel_volume(self, volume):
+        """
+        Set the volume for the music channel.
+        
+        args:
+            volume (float): Volume level between 0.0 and 1.0
+        """
+        pygame.mixer.music.set_volume(volume)
+    
+    # ------------------------------------------------------ SFX VOLUME -----------------------------------------------------------
+      
+    def __update_sfx_volume(self):
+        """
+        Update the volume of the SFX channels.
+        """
+        
+        if self.sfx_percentage == AudioSettings.SFX_VOLUME:
+            return
+        
+        self.sfx_percentage = AudioSettings.SFX_VOLUME
+        self.max_sfx_volume = self.loudness_to_log_linear_picewise(AudioSettings.SFX_VOLUME)
+        #self.set_sfx_channels_volume(self.max_sfx_volume)
+       
+    def set_sfx_channels_volume(self, volume):
+        """
+        Set the volume for all SFX channels.
+        
+        args:
+            volume (float): Volume level between 0.0 and 1.0
+        """
+        for i in range(0, self.num_channels):
+            pygame.mixer.Channel(i).set_volume(volume)
+                     
+    def set_sound_volume(self, sound_enum, volume):
+        """
+        Set the volume for a specific SFX
+        
+        args:
+            sound_enum (SFX): SFX enum representing the sound.
             volume (float): Volume level between 0.0 and 1.0
         """
         if isinstance(sound_enum, SFX):
@@ -286,10 +592,10 @@ class SoundManager():
                 
     def get_sound_volume(self, sound_enum):
         """
-        Get the volume for a specific sound or music.
+        Get the volume for a specific SFX.
         
         args:
-            sound_enum (SFX or Music): SFX or Music enum representing the sound.
+            sound_enum (SFX or Music): SFX enum representing the sound.
         """
         if isinstance(sound_enum, SFX):
             
@@ -298,53 +604,8 @@ class SoundManager():
             else:
                 print(f"Sound effect '{sound_enum}' not loaded.")
                 return None
-            
-    def set_music_channel_volume(self, volume):
-        """
-        Set the volume for the music channel.
-        
-        args:
-            volume (float): Volume level between 0.0 and 1.0
-        """
-        pygame.mixer.music.set_volume(volume)
-        
-    def set_sfx_channels_volume(self, volume):
-        """
-        Set the volume for all SFX channels.
-        
-        args:
-            volume (float): Volume level between 0.0 and 1.0
-        """
-        for i in range(0, self.num_channels):
-            pygame.mixer.Channel(i).set_volume(volume)
-
-    def stop_all_sounds(self):
-        pygame.mixer.stop()
-
-    def pause_all_sounds(self):
-        pygame.mixer.pause()
-
-    def resume_all_sounds(self):
-        pygame.mixer.unpause()
-
-    def fade_out_all_sounds(self, time):
-        pygame.mixer.fadeout(time)
-
-    def is_mixer_busy(self):
-        return pygame.mixer.get_busy()
-    
-    def get_no_of_playing_channels(self):
-        """
-        Get the number of currently playing channels in the Pygame mixer.
-        
-        Returns:
-            int: The number of currently playing channels.
-        """
-        p = 0 
-        for i in range(self.num_channels):
-            if pygame.mixer.Channel(i).get_busy():
-                p += 1
-        return p
+          
+    # ---------------------------------------------------- MUSIC RANDOMISER --------------------------------------------------------
     
     def __get_random_song(self):
         """
@@ -413,30 +674,32 @@ class SoundManager():
             
         return self.randomiser.shuffle_array(special_songs)[0]
     
-    def get_song_artist_and_title(self, song):
+    # ------------------------------------------------------ UTILITY FUNCTIONS ------------------------------------------------------
+    
+    def stop_all_sounds(self):
+        pygame.mixer.stop()
+
+    def pause_all_sounds(self):
+        pygame.mixer.pause()
+
+    def resume_all_sounds(self):
+        pygame.mixer.unpause()
+
+    def fade_out_all_sounds(self, time):
+        pygame.mixer.fadeout(time)
+
+    def is_mixer_busy(self):
+        return pygame.mixer.get_busy()
+    
+    def get_no_of_playing_channels(self):
         """
-        Obtain the artist and title of a music track in the format "artist - title".
+        Get the number of currently playing channels in the Pygame mixer.
         
-        args:
-            song (Music): The music track to obtain the artist and title from.
-        
-        returns:
-            "artist - title" (str): The artist and title of the music track.
+        Returns:
+            int: The number of currently playing channels.
         """
-        if song is Music.RANDOM:
-            name = "random"
-        elif song is Music.RANDOM_CALM:
-            name = "random: calm"
-        elif song is Music.RANDOM_BATTLE:
-            name = "random: battle"
-        elif song is Music.RANDOM_INTERFACE:
-            name = "random: interface"
-        elif song is Music.RANDOM_SPECIAL:
-            name = "random: special"
-        else:
-            if song not in self.music_tracks.keys():
-                return "null - null"
-            
-            name = f"{self.music_tracks[song]["artist"].lower()} - {self.music_tracks[song]["title"].lower()}"
-            
-        return name
+        p = 0 
+        for i in range(self.num_channels):
+            if pygame.mixer.Channel(i).get_busy():
+                p += 1
+        return p

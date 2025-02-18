@@ -356,7 +356,7 @@ class ConfigSlider(NestedElement):
                 self.drag_sound_timer += self.Timing.frame_delta_time
                 
                 if self.drag_sound_timer >= self.drag_sound_time:
-                    self.Sound.sfx_queue.append(SFX.Move)
+                    self.Sound.sfx_queue.append((SFX.Move, self.Knob.collision_rect.centerx, self.Knob.collision_rect.centery, 0))
                     self.drag_sound_timer = 0
 
     def open_edit_field_value_dialog(self):

@@ -138,4 +138,4 @@ class TextInput():
                 return
         
         self.function(value)
-        self.Sound.sfx_queue.append(SFX.MenuHit1)
+        self.Sound.sfx_queue.append((SFX.MenuHit1, 'center', 'center', 0))

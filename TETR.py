@@ -29,7 +29,7 @@ from app.input.keyboard.keyboard import Keyboard
 from app.input.mouse.mouse import Mouse
 
 from app.core.account_manager import AccountManager
-from app.core.config_manager import ConfigManager
+from app.core.config_manager import ConfigManager, AudioSettings
 from app.core.sound.sound_manager import SoundManager
 from app.core.sound.sound import Sound
 
@@ -48,13 +48,12 @@ class TETRPY():
         self.is_focused = False
         self.game_instances = []
         
-        self.Sound = Sound()
+        self.Timing = Timing()
+        self.FrameClock = Clock()
         
         self.Keyboard = Keyboard()
         self.Mouse = Mouse()
-        
-        self.Timing = Timing()
-        self.FrameClock = Clock()
+        self.Sound = Sound()
         
         self.RenderStruct = self.ConfigManager.RenderStruct
         self.DebugStruct = DebugMetrics()
@@ -67,7 +66,7 @@ class TETRPY():
         
         self.__init_pygame()
         
-        self.SoundManager = SoundManager(self.Sound)
+        self.SoundManager = SoundManager(self.Sound, self.Timing, self.RenderStruct)
         
         self.__register_event_handlers()
     
@@ -92,6 +91,9 @@ class TETRPY():
             'TOP_OUT_OK': False,
             'RESET_ON_TOP_OUT': False
         }
+        
+        self.stored_music_volume = AudioSettings.MUSIC_VOLUME
+        self.stored_sfx_volume = AudioSettings.SFX_VOLUME
     
     def load_user_settings(self):
         """
@@ -367,6 +369,7 @@ class TETRPY():
         self.MenuManager.is_focused = self.is_focused
         self.MouseInputManager.is_focused = self.is_focused
         self.Timing.is_focused = self.MenuManager.is_focused
+        self.SoundManager.toggle_music_mute(not self.is_focused)
     
     def __update_mouse_position(self):
         """

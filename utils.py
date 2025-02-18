@@ -182,6 +182,59 @@ class Vec2():
     def distance(a, b): 
         return np.sqrt((a.x - b.x)**2 + (a.y - b.y)**2)
     
+    def dot(a, b):
+        return a.x * b.x + a.y * b.y
+    
+    def cross(a, b):
+        return a.x * b.y - a.y * b.x
+
+class Vec3():
+    def __init__(self, x, y, z):
+        """
+        Construct a 3D vector (x , y, z)
+        
+        args:
+            x (float): the x component of the vector
+            y (float): the y component of the vector
+            z (float): the z component of the vector
+        """
+        self.x = x
+        self.y = y
+        self.z = z
+    
+    def __str__(self):
+        return f"<Vec3 | x={self.x} y={self.y}, z={self.z}>" 
+    
+    def __repr__(self):
+        return f"<Vec3 | x={self.x} y={self.y}, z={self.z}>"
+        
+    def __truediv__(self, scalar): 
+        return Vec3(self.x/scalar , self.y/scalar, self.z/scalar) 
+    
+    def __add__(self, vec): 
+        return Vec3(self.x + vec.x , self.y + vec.y, self.z + vec.z)
+    
+    def __sub__(self, vec): 
+        return Vec3((self.x - vec.x) , (self.y - vec.y), (self.z - vec.z))
+    
+    def magnitude(self): 
+        return np.sqrt(self.x**2 + self.y**2 + self.z**2)
+    
+    def normalise(a): 
+        return a / a.magnitude()
+    
+    def __mul__(self, scalar):
+        return Vec3(self.x * scalar, self.y * scalar, self.z * scalar)
+    
+    def distance(a, b): 
+        return np.sqrt((a.x - b.x)**2 + (a.y - b.y)**2 + (a.z - b.z)**2)
+    
+    def dot(self, vec):
+        return self.x * vec.x + self.y * vec.y + self.z * vec.z
+    
+    def cross(self, vec):
+        return Vec3(self.y * vec.z - self.z * vec.y, self.z * vec.x - self.x * vec.z, self.x * vec.y - self.y * vec.x)
+    
 def RotateSurface(surface, angle, pivot, origin):
     """
     Rotate a surface around a pivot point.

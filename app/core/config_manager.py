@@ -165,7 +165,15 @@ class ConfigManager():
         self.validate()
         self.set_keybindings()
 
+        self.update_controls_settings()
+        self.update_handling_settings()
+        self.update_audio_settings()
+        self.update_gameplay_settings()
         self.update_video_settings()
+        self.update_customisation_settings()
+        self.update_forty_lines_settings()
+        self.update_blitz_settings()
+        
         self.RenderStruct.MUST_RESTART_TO_APPLY_CHANGES = True
         
     def validate(self):
