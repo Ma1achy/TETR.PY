@@ -1,9 +1,13 @@
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
+import pygame
+
 import threading
+
 import queue
 import concurrent.futures
 import time
-import pygame
-import os
 import logging
 import traceback
 import datetime
@@ -59,7 +63,7 @@ class TETRPY():
         self.DebugStruct = DebugMetrics()
         self.HandlingConfig = HandlingConfig()
         
-        self.DebugStruct.PRINT_WARNINGS = True
+        self.DebugStruct.PRINT_WARNINGS = False
         
         self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self. Timing, self.DebugStruct)
         self.MouseInputManager = MouseInputManager(self.Mouse)
@@ -527,7 +531,7 @@ class WorkerManager:
         self.tasks.join()     
         self.worker_thread.join()
         self.executor.shutdown(wait = True)
-  
+
 def main():
     app = TETRPY()
     app.run()
