@@ -14,7 +14,7 @@ class AccountManager():
         """
         Get the accounts from the config file
         """
-        self.parser.read('app/core/config/login.cfg')
+        self.parser.read('config/login.cfg')
         accounts = self.parser['USERS']['ACCOUNTS']
         
         if accounts == "[]":
@@ -26,7 +26,7 @@ class AccountManager():
         """
         Read the saved login from the config file
         """
-        self.parser.read('app/core/config/login.cfg')
+        self.parser.read('config/login.cfg')
         user = self.parser['LOGIN']['USER']
         
         if user == "":
@@ -63,12 +63,12 @@ class AccountManager():
         if user is None:
             return
          
-        with open('app/core/config/login.cfg', 'r') as configfile:
+        with open('config/login.cfg', 'r') as configfile:
             self.parser.read_file(configfile)
  
         self.parser['LOGIN']['USER'] = user
 
-        with open('app/core/config/login.cfg', 'w') as configfile:
+        with open('config/login.cfg', 'w') as configfile:
             self.parser.write(configfile)
         
     def user_exists(self, user):
@@ -96,7 +96,7 @@ class AccountManager():
         self.accounts.append(user)
         self.parser['USERS']['ACCOUNTS'] = str(self.accounts)
         
-        with open('app/core/config/login.cfg', 'w') as configfile:
+        with open('config/login.cfg', 'w') as configfile:
             self.parser.write(configfile)
     
     def delete_user(self, user):
@@ -112,7 +112,7 @@ class AccountManager():
         self.accounts.remove(user)
         self.parser['USERS']['ACCOUNTS'] = str(self.accounts)
         
-        with open('app/core/config/login.cfg', 'w') as configfile:
+        with open('config/login.cfg', 'w') as configfile:
             self.parser.write(configfile)
     
     def logout(self):

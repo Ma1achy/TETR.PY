@@ -199,26 +199,26 @@ class MenuManager():
             "pygame_event_queue": self.pygame_events_queue,
         }
                
-        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/login_menu.json')
-        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/home_menu.json')
-        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/solo_menu.json')
-        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/multi_menu.json')
-        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/records_menu.json')
+        self.login_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/login_menu.json')
+        self.home_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/home_menu.json')
+        self.solo_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/solo_menu.json')
+        self.multi_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/multi_menu.json')
+        self.records_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/records_menu.json')
         
-        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/about_menu.json')
+        self.about_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/about_menu.json')
         
-        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/config_menu.json')
+        self.config_menu         = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/config_menu.json')
 
-        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/account_menu.json')
+        self.account_menu        = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/account_menu.json')
 
-        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/40_lines_menu.json')
-        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/blitz_menu.json')
-        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/zen_menu.json')
-        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/custom_solo_menu.json')
+        self.forty_lines_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/40_lines_menu.json')
+        self.blitz_menu          = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/blitz_menu.json')
+        self.zen_menu            = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/zen_menu.json')
+        self.custom_solo_menu    = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/custom_solo_menu.json')
 
-        self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/game_menu.json')
+        self.game_menu           = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/game_menu.json')
         
-        self.music_selector_dropdown = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'render/GUI/menus/music_selector_dropdown.json')
+        self.music_selector_dropdown = Menu(self.window, self.Timing, self.Mouse, self.RenderStruct, self.button_functions, self.dialog_resources, self.Sound, menu_definition = 'resources/GUI/menus/music_selector_dropdown.json')
         
         self.current_menu = self.home_menu
         self.next_menu = None

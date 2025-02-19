@@ -527,7 +527,7 @@ class WorkerManager:
         self.tasks.join()     
         self.worker_thread.join()
         self.executor.shutdown(wait = True)
-    
+  
 def main():
     app = TETRPY()
     app.run()

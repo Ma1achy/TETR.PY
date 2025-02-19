@@ -51,7 +51,7 @@ class ConfigManager():
         """
         Load the default handling settings
         """
-        self.parser.read('app/core/config/default_handling.cfg')
+        self.parser.read('config/default_handling.cfg')
         self.default_handling_settings = {key: self.convert_value(value) for key, value in self.parser['HANDLING_SETTINGS'].items()}
 
         self.parser = configparser.ConfigParser()
@@ -61,7 +61,7 @@ class ConfigManager():
         """
         Load the default keybindings
         """
-        self.parser.read('app/core/config/default_keybindings.cfg')
+        self.parser.read('config/default_keybindings.cfg')
         self.guideline_keybindings = {key: self.convert_value(value) for key, value in self.parser['GUIDELINE_KEYBINDINGS'].items()}
         self.wasd_keybindings = {key: self.convert_value(value) for key, value in self.parser['WASD_KEYBINDINGS'].items()}
         
@@ -72,7 +72,7 @@ class ConfigManager():
         """
         Load the default settings
         """
-        self.parser.read('app/core/config/default.cfg')
+        self.parser.read('config/default.cfg')
         
         self.default_controls_settings      =   self.load_section('CONTROLS_SETTINGS')
         self.default_custom_keybindings     =   self.load_section('CUSTOM_KEYBINDINGS')
@@ -105,7 +105,7 @@ class ConfigManager():
         try:
             self.user = user
             cfg = f'@{user}.cfg'
-            path = os.path.join('app/core/config', cfg)
+            path = os.path.join('config', cfg)
             
             if not os.path.exists(path):
                 self.create_user_settings(user)
@@ -113,7 +113,7 @@ class ConfigManager():
             self.parser.read(path)
             self.load_settings()
         except Exception as e:
-            self.parser.read('app/core/config/default.cfg')
+            self.parser.read('config/default.cfg')
             self.load_settings()
             os.remove(path)
             self.create_user_settings(user)
@@ -130,9 +130,9 @@ class ConfigManager():
             return
         
         cfg = f'@{user}.cfg'
-        path = os.path.join('app/core/config', cfg)
+        path = os.path.join('config', cfg)
         
-        with open('app/core/config/default.cfg', 'r') as f:
+        with open('config/default.cfg', 'r') as f:
             with open(path, 'w') as new:
                 new.write(f.read())
     
@@ -199,7 +199,7 @@ class ConfigManager():
         
     def validate_section(self, loaded, default, section): 
         file = f'@{self.user}.cfg'
-        path = os.path.join('app/core/config', file)
+        path = os.path.join('config', file)
         
         with open(path, 'w') as configfile:
             self.parser.write(configfile)
@@ -347,7 +347,7 @@ class ConfigManager():
         """
         with self.lock:
             cfg = f'@{self.user}.cfg'
-            path = os.path.join('app/core/config', cfg)
+            path = os.path.join('config', cfg)
             
             with open(path, 'w') as configfile:
                 self.parser.write(configfile)
