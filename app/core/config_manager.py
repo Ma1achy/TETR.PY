@@ -11,10 +11,10 @@ from enum import Enum
 from enum import auto
 
 from app.input.keyboard.menu_kb_input_handler import UIAction
-from instance.handling.handling import Action
-from render.renderstruct import StructRender
+from app.instance.handling.handling import Action
+from app.render.renderstruct import StructRender
 
-from app.core.sound.music import Music
+from app.sound.music import Music
 
 if sys.platform == "darwin":
     import os

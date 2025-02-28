@@ -1,22 +1,21 @@
-from render.GUI.menu import Menu
-from render.GUI.font import Font
+from app.render.GUI.menu import Menu
+from app.render.GUI.font import Font
 from app.input.keyboard.menu_kb_input_handler import UIAction
-from render.GUI.debug_overlay import GUIDebug
-from render.GUI.focus_overlay import GUIFocus
-from render.GUI.diaglog_box import DialogBox
+from app.render.GUI.debug_overlay import GUIDebug
+from app.render.GUI.focus_overlay import GUIFocus
+from app.render.GUI.diaglog_box import DialogBox
 import webbrowser
-from utils import copy2clipboard, smoothstep, TransformSurface
+from app.utils import copy2clipboard, smoothstep, TransformSurface
 import pygame
-from render.GUI.menu_elements.text_input import TextInput
-from app.core.sound.sfx import SFX
-from app.core.sound.music import Music
-from render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
-from render.GUI.menu_elements.config_slider import ConfigSlider
-from render.GUI.buttons.checkbox_button import CheckboxButton
-from render.GUI.notification import Notification
+from app.render.GUI.menu_elements.text_input import TextInput
+from app.sound.sfx import SFX
+from app.sound.music import Music
+from app.render.GUI.menu_elements.collapsible_panel import CollapsiblePanel
+from app.render.GUI.menu_elements.config_slider import ConfigSlider
+from app.render.GUI.buttons.checkbox_button import CheckboxButton
+from app.render.GUI.notification import Notification
 from app.core.config_manager import VideoSettings, FortyLinesSettings, CustomSoloSettings
 
-# FIXME: dialog stack appears to be broken
 class MenuManager():
     def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, SoundManager, Sound):
         """
@@ -382,8 +381,19 @@ class MenuManager():
         pass
     
     def __menu_confirm(self):
-        pass
-    
+        if self.if_doing_animation():
+            return
+        
+        if self.Mouse.in_dialog and self.current_dialog is not None and self.current_dialog.TextEntry is None:
+            self.current_dialog.secondary_button.click()
+            
+        elif self.Mouse.in_dialog and self.current_dialog is not None and self.current_dialog.TextEntry is not None:
+            if self.current_dialog.TextEntry.focused:
+                self.current_dialog.TextEntry.call_function()
+                self.update_menu_elements_on_value_change() 
+            else:
+                self.current_dialog.text_entry_box.click()
+            
     def __menu_back(self):
         """
         Go back to the previous menu or close the current dialog
@@ -1049,3 +1059,14 @@ class MenuManager():
     def get_selected_song_name(self, song):
         return self.SoundManager.get_song_artist_and_title(song)
     
+    def update_menu_elements_on_value_change(self):
+        if self.current_menu.main_body is None:
+            return
+        
+        for element in self.current_menu.main_body.menu_elements:
+            if isinstance(element, CollapsiblePanel):
+                for e in element.elements:
+                    e.update()
+                element.use_cached_image = False
+                element.create_cached_image()
+                element.use_cached_image = True

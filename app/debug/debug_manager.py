@@ -7,19 +7,15 @@ import time
 import os
 import GPUtil
 
-
 class DebugManager():
     def __init__(self, TimingStruct, RenderStruct, DebugStruct):
         """
         Manage the debug information for the game
         
         args:
-            TimingStruct (StructTiming): The timing struct
-            HandlingStruct (StructHandling): The handling struct
-            GameInstanceStruct (StructGameInstance): The game instance struct
-            FlagStruct (StructFlags): The flag struct
-            RenderStruct (StructRender): The render struct
-            DebugStruct (StructDebug): The debug struct
+            TimingStruct (StructTiming): The timing information and constants
+            RenderStruct (StructRender): The render information and constants
+            DebugStruct (StructDebug): The debug information
         """
         self.Timing = TimingStruct
         self.RenderStruct = RenderStruct
@@ -27,10 +23,8 @@ class DebugManager():
         
         self.get_build_info()
         
-        # Prime the CPU usage to avoid blocking later
-        psutil.cpu_percent(interval=None)
+        psutil.cpu_percent(interval = None)
         
-        # Initialize cache and update intervals
         self.cpu_last_update_time = 0
         self.memory_last_update_time = 0
         self.gpu_last_update_time = 0
@@ -161,8 +155,10 @@ class DebugManager():
         return pygame.__version__
 
     def get_build_info(self):
-        
-        with open("app/state/build_info.json") as f:
+        """
+        Get the build information from the build_info.json file
+        """
+        with open("app/build_info.json") as f:
             build_info = json.load(f)
         
         self.DebugStruct.BuildInfo = build_info
@@ -172,9 +168,15 @@ class DebugManager():
         self.DebugStruct.PygameVersion = self.get_pygame_version()
         
     def get_python_version(self):
+        """
+        Get the current Python version
+        """
         return sys.version.split()[0]
 
     def get_os_version(self):
+        """
+        Get the OS version
+        """
         return platform.system() + " " + platform.release()
 
     def get_cpu_usage(self):
@@ -188,24 +190,28 @@ class DebugManager():
         return self.cached_cpu_usage
     
     def format_memory_size(self, size_in_bytes):
-        # Convert bytes to a more readable format (e.g., MB, GB)
+        """
+        Format a memory size in bytes to a human-readable format
+        """
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if size_in_bytes < 1024:
                 return f"{size_in_bytes:.2f} {unit}"
             size_in_bytes /= 1024
         
     def get_memory_usage(self):
+        """
+        Get the amount memory used by the app
+        """
         current_time = time.time()
         if current_time - self.memory_last_update_time > self.update_interval:
-            # Get total system memory
+  
             memory_info = psutil.virtual_memory()
             total_memory = self.format_memory_size(memory_info.total)
             
-            # Get memory usage of the current Python process
             process = psutil.Process(os.getpid())
             process_memory_info = process.memory_info()
-            used_memory = self.format_memory_size(process_memory_info.rss)  # Resident Set Size (RSS)
-            memory_percent = process.memory_percent()  # Memory usage as a percentage of total system memory
+            used_memory = self.format_memory_size(process_memory_info.rss)
+            memory_percent = process.memory_percent()
             
             self.cached_memory_usage = {
                 'total_memory': total_memory,
@@ -234,7 +240,7 @@ class DebugManager():
                     'gpu_temperature': 0
                 }
             else:
-                gpu = gpus[0]  # Assuming a single GPU. Modify if you need to handle multiple GPUs.
+                gpu = gpus[0]
                 self.cached_gpu_usage = {
                     'gpu_id': gpu.id,
                     'gpu_name': gpu.name,

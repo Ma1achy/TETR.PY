@@ -16,17 +16,17 @@ import json
 import pkg_resources
 from collections import deque
 
-from instance.handling.handling_config import HandlingConfig
+from app.instance.handling.handling_config import HandlingConfig
 from app.debug.debug_metrics import DebugMetrics
-from app.state.clock import Clock
+from app.core.timing import Clock
 
-from render.render import Render
+from app.render.render import Render
 from app.input.keyboard.keyboard_input_manager import KeyboardInputManager
 from app.core.game_instance_manager import GameInstanceManager
 from app.input.keyboard.menu_kb_input_handler import MenuKeyboardInputHandler
 from app.debug.debug_manager import DebugManager
 from app.core.pygame_event_handler import PygameEventHandler
-from app.state.timing import Timing
+from app.core.timing import Timing
 from app.core.menu_manager import MenuManager
 from app.input.mouse.mouse_input_handler import MouseInputManager
 from app.input.keyboard.keyboard import Keyboard
@@ -34,8 +34,8 @@ from app.input.mouse.mouse import Mouse
 
 from app.core.account_manager import AccountManager
 from app.core.config_manager import ConfigManager, AudioSettings
-from app.core.sound.sound_manager import SoundManager
-from app.core.sound.sound import Sound
+from app.sound.sound_manager import SoundManager
+from app.sound.sound import Sound
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
