@@ -7,13 +7,31 @@ import sys
 import datetime
 import json
 import pkg_resources
+from dataclasses import dataclass, field
+
+@dataclass
+class GameInstances:
+    instance_list: list = field(default_factory=list)
+    
+    def add_instance(self, instance):
+        self.instance_list.append(instance)
+        
+    def remove_instance(self, instance):
+        self.instance_list.remove(instance)
+        
+    def get_instance(self, instance_id):
+        for instance in self.instance_list:
+            if instance.id == instance_id:
+                return instance
+        return None
 class GameInstanceManager():
-    def __init__(self, Timing, Debug):
+    def __init__(self, Timing, Debug, GameInstances):
         
         self.Timing = Timing
         self.Debug = Debug
         
         self.max_main_ticks_per_iteration = 256
+        self.GameInstances = GameInstances
         
     def logic_loop(self):
         if self.Debug.PRINT_WARNINGS and self.Timing.restarts != 0:
@@ -69,9 +87,15 @@ class GameInstanceManager():
         if self.Timing.exited:
             return
 
+        self.tick_instances_engines()
+        
         self.Timing.main_tick_counter += 1
         self.Timing.iteration_times['logic_loop'] = time.perf_counter() - start
-        
+    
+    def tick_instances_engines(self):
+        for instance in self.GameInstances.instance_list:
+            instance.do_game_tick()
+    
     def get_tps(self):
         self.Timing.TPS = self.Timing.main_tick_counter
     
@@ -124,7 +148,6 @@ class GameInstanceManager():
             "Imported Packages": self.__get_imported_packages(),
             "Build Info": self.__get_build_info()
         }
-        
         
         logging.error(f"\033[91mException occurred at {timestamp} in thread {current_thread.name}:\n{tb_str}\033[0m")
         logging.error("Environment information: %s", env_info)

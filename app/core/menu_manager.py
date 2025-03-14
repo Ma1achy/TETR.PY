@@ -17,7 +17,7 @@ from app.render.GUI.notification import Notification
 from app.core.config_manager import VideoSettings, FortyLinesSettings, CustomSoloSettings
 
 class MenuManager():
-    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, SoundManager, Sound):
+    def __init__(self, Keyboard, Mouse, Timing, RenderStruct, Debug, pygame_events_queue, AccountManager, ConfigManager, SoundManager, Sound, GameInstances):
         """
         The menu manager, manages the current menu and GUI elements and transitions
         

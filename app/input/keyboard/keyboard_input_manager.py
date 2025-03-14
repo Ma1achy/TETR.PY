@@ -11,7 +11,7 @@ import json
 import pkg_resources
 
 class KeyboardInputManager:
-    def __init__(self, Keyboard, Timing, Debug):
+    def __init__(self, Keyboard, Timing, Debug, GameInstances):
         """
         A keyboard input manager
         
@@ -19,12 +19,14 @@ class KeyboardInputManager:
             Keyboard (Keyboard): The Keyboard instance
             Timing (Timing): The Timing instance
             Debug (Debug): The Debug instance
+            GameInstances (GameInstances): The GameInstances
         """
         self.Keyboard = Keyboard
         self.Timing = Timing
         self.Debug = Debug
         
         self.max_poll_ticks_per_iteration = 1000
+        self.GameInstances = GameInstances
         
     def start_keyboard_hook(self):
         """
@@ -192,10 +194,19 @@ class KeyboardInputManager:
             self.Keyboard.key_states = self.Keyboard.key_states_queue.get_nowait()
         except queue.Empty:
             self.reset_key_states()
-  
+
+        self.tick_instance_handling()
+        
         self.Timing.input_tick_counter += 1
         self.Timing.iteration_times['input_loop'] = time.perf_counter() - start
-        
+     
+    def tick_instance_handling(self):
+        """
+        Tick the instance handling
+        """
+        for instance in self.GameInstances.instance_list:
+            instance.do_handling_tick()
+            
     def get_poll_rate(self):
         """
         Get the polling rate of the input loop

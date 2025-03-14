@@ -36,12 +36,14 @@ from app.core.account_manager import AccountManager
 from app.core.config_manager import ConfigManager, AudioSettings
 from app.sound.sound_manager import SoundManager
 from app.sound.sound import Sound
+from app.core.game_instance_manager import GameInstances
 
 logging.basicConfig(level = logging.ERROR, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class TETRPY():
     def __init__(self):
         
+        self.GameInstances = GameInstances()
         self.WorkerManager = WorkerManager()
         
         self.ConfigManager = ConfigManager(self.WorkerManager)
@@ -65,7 +67,7 @@ class TETRPY():
         
         self.DebugStruct.PRINT_WARNINGS = False
         
-        self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self. Timing, self.DebugStruct)
+        self.KeyboardInputManager = KeyboardInputManager(self.Keyboard, self. Timing, self.DebugStruct, self.GameInstances)
         self.MouseInputManager = MouseInputManager(self.Mouse)
         
         self.__init_pygame()
@@ -77,8 +79,8 @@ class TETRPY():
         self.pygame_events_queue = deque()
         
         self.MenuInputHandler = MenuKeyboardInputHandler(self.Keyboard, self.ConfigManager.menu_keybindings, self.Timing)
-        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager, self.SoundManager, self.Sound)
-        self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct)
+        self.MenuManager = MenuManager(self.Keyboard, self.Mouse, self.Timing, self.RenderStruct, self.DebugStruct, self.pygame_events_queue, self.AccountManager, self.ConfigManager, self.SoundManager, self.Sound, self.GameInstances)
+        self.GameInstanceManager = GameInstanceManager(self.Timing, self.DebugStruct, self.GameInstances)
         self.Render = Render(self.Timing, self.RenderStruct, self.DebugStruct, self.game_instances, self.MenuManager)
         self.Debug = DebugManager(self.Timing, self.RenderStruct, self.DebugStruct)
         
